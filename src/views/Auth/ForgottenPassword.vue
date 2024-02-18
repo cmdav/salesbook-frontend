@@ -4,7 +4,6 @@
       class="mx-auto lg:w-[43%] w-full flex bg-white rounded-[4px] lg:p-10 p-4 lg:px-12 gap-[20px] lg:justify-between flex-col"
     >
       <div class="flex flex-col w-full justify-center items-center text-center">
-        <EmailIconInCircle />
         <div>
           <h2 class="lg:text-[24px] text-[20px] font-semibold text-[#000000] !my-5">
             RESET PASSWORD
