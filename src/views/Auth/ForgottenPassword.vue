@@ -11,7 +11,9 @@
           </h2>
         </div>
         <div class="px-[14px] py-[12px] my-[40px] bg-secondary-100/[50%] rounded-[4px]">
-          <p class="text-secondary-600 lg:text-[14px] text-[12px] font-medium">
+          <p
+            class="text-secondary-600 text-primary-1000 lg:text-[14px] text-[12px] font-medium"
+          >
             Please enter the email address associated with your account
           </p>
         </div>
@@ -43,75 +45,75 @@
   </AuthLayout>
 </template>
 <script setup>
-import { ref, computed, watch, reactive } from 'vue'
-import AuthLayout from '@/components/Layouts/AuthLayout.vue'
-import AuthInput from '@/components/UI/Input/AuthInput.vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, watch, reactive } from "vue";
+import AuthLayout from "@/components/Layouts/AuthLayout.vue";
+import AuthInput from "@/components/UI/Input/AuthInput.vue";
+import { useRouter } from "vue-router";
 
-const router = useRouter()
+const router = useRouter();
 const formData = reactive({
-  email: ''
-})
-let loading = ref(false)
+  email: "",
+});
+let loading = ref(false);
 
 const errors = reactive({
-  email: false
-})
+  email: false,
+});
 const errorsMsg = {
-  email: 'Email is required'
-}
-const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
+  email: "Email is required",
+};
+const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 const isValidEmail = computed(() => {
-  return emailRegex.test(formData.email)
-})
+  return emailRegex.test(formData.email);
+});
 
 const validateForm = () => {
   // Reset errorsMsg
   Object.keys(errors).forEach((key) => {
-    errors[key] = false
-  })
+    errors[key] = false;
+  });
 
   // Perform validation before submission
-  let isValid = true
+  let isValid = true;
 
   Object.keys(formData).forEach((key) => {
     if (!formData[key]) {
-      errors[key] = true
-      isValid = false
+      errors[key] = true;
+      isValid = false;
     }
-  })
+  });
   if (!isValidEmail.value) {
-    errors.email = true
-    errorsMsg.email
-    isValid = false
+    errors.email = true;
+    errorsMsg.email;
+    isValid = false;
   }
 
-  return isValid
-}
+  return isValid;
+};
 // Function to clear input errors
 const clearInputErrors = () => {
   Object.keys(errors).forEach((key) => {
-    errors[key] = false
-  })
+    errors[key] = false;
+  });
 
   Object.keys(errorsMsg).forEach((key) => {
-    errorsMsg[key] = ''
-  })
-}
+    errorsMsg[key] = "";
+  });
+};
 const isFormValid = computed(() => {
-  return formData.email.trim() !== ''
-})
+  return formData.email.trim() !== "";
+});
 const clearInputs = () => {
-  formData.email = ''
-}
+  formData.email = "";
+};
 watch(formData, () => {
-  clearInputErrors()
-})
+  clearInputErrors();
+});
 const handleForgotPassword = async () => {
-  loading.value = true
+  loading.value = true;
   if (!validateForm()) {
-    loading.value = false
-    return
+    loading.value = false;
+    return;
   }
   try {
     // let res = await forgottenPassword(formData.email)
@@ -126,9 +128,9 @@ const handleForgotPassword = async () => {
     // clearInputs()
     // return res
   } catch (error) {
-    console.log(error)
+    console.log(error);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 </script>

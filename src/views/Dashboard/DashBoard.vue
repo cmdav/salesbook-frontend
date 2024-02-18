@@ -1,3 +1,8 @@
 <template>
-  <div>dashboard</div>
+  <DashboardLayout>
+    <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">dashboard</div></DashboardLayout
+  >
 </template>
+<script setup>
+import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
+</script>
