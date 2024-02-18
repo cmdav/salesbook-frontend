@@ -1,0 +1,107 @@
+:root {
+  /* primary color */
+  ---primary-100: #FEF4E6;
+  ---primary-200: #FDE8CD;
+  ---primary-300: #cac9c8;
+  ---primary-400: #F8B15A;
+  ---primary-500: #F79E30;
+  ---primary-600: #F58A07;
+  ---primary-700: #CC7306;
+  ---primary-800: #A35C05;
+  ---primary-900: #7A4504;
+  ---primary-1000: #522E02;
+  ---primary-1100: #311C01;
+
+  /* secondary color */
+  ---secondary-100: #E3EFFC;
+  ---secondary-200: #C6DDF7;
+  ---secondary-300: #B6D8FF;
+  ---secondary-400: #80BBFF;
+  ---secondary-500: #3D89DF;
+  ---secondary-600: #1671D9;
+  ---secondary-700: #0D5EBA;
+  ---secondary-800: #034592;
+  ---secondary-900: #04326B;
+  ---secondary-1000: #012657;
+  ---secondary-1100: #001633;
+
+  /* success color */
+  ---success-100: #E7F6EC;
+  ---success-200: #B5E3C4;
+  ---success-300: #91D6A8;
+  ---success-400: #5FC381;
+  ---success-500: #40B869;
+  ---success-600: #0F973D;
+  ---success-700: #099137;
+  ---success-800: #04802E;
+  ---success-900: #036B26;
+  ---success-1000: #015B20;
+  ---success-1100: #004617;
+
+  /* warning color */
+  ---warning-100: #FEF6E7;
+  ---warning-200: #FBE2B7;
+  ---warning-300: #F7D394;
+  ---warning-400: #F7C164;
+  ---warning-500: #F5B546;
+  ---warning-600: #F3A218;
+  ---warning-700: #DD900D;
+  ---warning-800: #AD6F07;
+  ---warning-900: #865503;
+  ---warning-1000: #664101;
+  ---warning-1100: #523300;
+
+  /* error color */
+  ---error-100: #FBEAE9;
+  ---error-200: #F2BCBA;
+  ---error-300: #EB9B98;
+  ---error-400: #E26E6A;
+  ---error-500: #DD524D;
+  ---error-600: #D42620;
+  ---error-700: #CB1A14;
+  ---error-800: #BA110B;
+  ---error-900: #9E0A05;
+  ---error-1000: #800501;
+  ---error-1100: #591000;
+
+  /* neutral color */
+  ---neutral-100: #F9FAFB;
+  ---neutral-200: #F7F9FC;
+  ---neutral-300: #F0F2F5;
+  ---neutral-400: #E4E7EC;
+  ---neutral-500: #D0D5DD;
+  ---neutral-600: #98A2B3;
+  ---neutral-700: #667185;
+  ---neutral-800: #475367;
+  ---neutral-900: #344054;
+  ---neutral-1000: #1D2739;
+  ---neutral-1100: #101928;
+
+  /* brown color */
+  ---brown-100: #FBF1F1;
+  ---brown-200: #F0E6E6;
+  ---brown-300: #E4DBDB;
+  ---brown-400: #CDC4C4;
+  ---brown-500: #B7AFAF;
+  ---brown-600: #A29999;
+  ---brown-700: #8D8484;
+  ---brown-800: #787070;
+  ---brown-900: #645D5D;
+  ---brown-1000: #514A4A;
+  ---brown-1100: #3E3838;
+
+  /* shades  */
+  ---shades-white: #FFFFFFF;
+  ---shades-black: #000000;
+
+  /* text white */
+  ---text-white-100: #FFFFFF;
+  ---text-white-200: #C2C2C4;
+  ---text-white-300: #9D9EA1;
+
+  /* text black */
+  ---text-black-100: #1D2433;
+  ---text-black-200: #98A2B3;
+  ---text-black-300: #D0D5DD;
+
+}
