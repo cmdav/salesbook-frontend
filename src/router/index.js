@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import middleware from './Middleware'
 import Login from '@/views/Auth/Login.vue'
 import DashBoardVue from '@/views/Dashboard/DashBoard.vue'
 import Register from '@/views/Auth/Register.vue'
@@ -10,12 +11,14 @@ const router = createRouter({
     {
       path: '/',
       name: 'login',
-      component: Login
+      component: Login,
+      beforeEnter: [middleware.redirectDashboard]
     },
     {
       path: '/register',
       name: 'register',
-      component: Register
+      component: Register,
+      beforeEnter: [middleware.redirectDashboard]
     },
     {
       path: '/forgotten-password',
@@ -30,7 +33,13 @@ const router = createRouter({
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: DashBoardVue
+      component: DashBoardVue,
+      beforeEnter: [middleware.redirectLogin]
+    },
+    {
+      path: '/logout',
+      name: 'logout',
+      beforeEnter: [middleware.deleteSession]
     },
     {
       path: '/:catchAll(.*)',
