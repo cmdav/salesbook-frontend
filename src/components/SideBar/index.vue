@@ -2,7 +2,7 @@
   <header class="h-screen bg-primary-900">
     <div class="logo lg:visible invisible">
       <router-link to="/">
-        <h3 class="text-white text-[40px] my-4">Salesbook</h3>
+        <h3 class="text-white text-[40px] my-4">iSalesBook</h3>
         <!-- <img src="" class="h-12" alt=" logo" /> -->
       </router-link>
     </div>
@@ -12,9 +12,7 @@
         <router-link
           to="/dashboard"
           class="p-[10px] flex justify-start hover:bg-brand/[0.1] rounded-[5px]"
-          :class="
-            route.name === 'dashboard' ? 'text-white bg-brand' : 'text-secondary-900 '
-          "
+          :class="route.name === 'dashboard' ? 'text-white bg-brand' : 'text-secondary-900 '"
         >
           <div
             :class="route.name === 'dashboard' ? 'text-white ' : 'text-secondary-900 '"
@@ -37,9 +35,7 @@
           >
             <EmptyIcon />
           </div>
-          <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]"
-            >Store</span
-          >
+          <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]">Store</span>
         </router-link>
         <router-link
           to="/"
@@ -129,18 +125,16 @@
         >
           <EmptyIcon />
         </div>
-        <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]"
-          >Log Out</span
-        >
+        <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]">Log Out</span>
       </router-link>
     </div>
   </header>
 </template>
 <script setup>
-import EmptyIcon from "@/components/icons/EmptyIcon.vue";
-import { useRoute } from "vue-router";
+import EmptyIcon from '@/components/icons/EmptyIcon.vue'
+import { useRoute } from 'vue-router'
 
-const route = useRoute();
+const route = useRoute()
 </script>
 
 <style lang="scss" scoped>

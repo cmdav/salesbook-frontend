@@ -4,7 +4,7 @@
   >
     <div class="w-full">
       <h4 class="text-center font-semibold text-[20px] lg:text-[24px] my-10">
-        Welcome to Salesbook
+        Welcome to iSalesBook
       </h4>
 
       <form action="" @submit.prevent="">
@@ -67,105 +67,105 @@
 </template>
 
 <script setup>
-import AuthInput from "@/components/UI/Input/AuthInput.vue";
-import PasswordInput from "@/components/UI/Input/PasswordInput.vue";
-import { ref, reactive, watch, computed } from "vue";
-import { useRouter } from "vue-router";
-import { login } from "@/services/Auth";
-import { useStore } from "@/stores/user";
-import Loader from "@/components/UI/Loader.vue";
-const router = useRouter();
-let loading = ref(false);
-const store = useStore();
+import AuthInput from '@/components/UI/Input/AuthInput.vue'
+import PasswordInput from '@/components/UI/Input/PasswordInput.vue'
+import { ref, reactive, watch, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { login } from '@/services/Auth'
+import { useStore } from '@/stores/user'
+import Loader from '@/components/UI/Loader.vue'
+const router = useRouter()
+let loading = ref(false)
+const store = useStore()
 
 const formState = reactive({
-  login: "",
-  password: "",
-  code: "",
-});
+  login: '',
+  password: '',
+  code: ''
+})
 const errors = reactive({
   login: false,
   password: false,
-  code: false,
-});
+  code: false
+})
 const errorsMsg = {
-  password: "",
-};
+  password: ''
+}
 const isValidEmail = computed(() => {
-  return formState.login.trim() !== "";
-});
+  return formState.login.trim() !== ''
+})
 
 const isValidPassword = computed(() => {
-  return formState.password.trim() !== "";
-});
+  return formState.password.trim() !== ''
+})
 const validateForm = () => {
   // Reset errorsMsg
   Object.keys(errors).forEach((key) => {
-    errors[key] = false;
-  });
+    errors[key] = false
+  })
 
   // Perform validation before submission
-  let isValid = true;
+  let isValid = true
 
   if (!isValidEmail.value) {
-    errors.login = true;
-    isValid = false;
+    errors.login = true
+    isValid = false
   }
   if (!formState.code) {
-    errors.code = true;
-    isValid = false;
+    errors.code = true
+    isValid = false
   }
 
   if (!isValidPassword.value) {
-    errors.password = true;
-    errorsMsg.password = "Password is required";
-    isValid = false;
+    errors.password = true
+    errorsMsg.password = 'Password is required'
+    isValid = false
   }
 
-  return isValid; // Only return false if there are validation errors
-};
+  return isValid // Only return false if there are validation errors
+}
 const clearInputErrors = () => {
   Object.keys(errors).forEach((key) => {
-    errors[key] = false;
-  });
+    errors[key] = false
+  })
 
   Object.keys(errorsMsg).forEach((key) => {
-    errorsMsg[key] = "";
-  });
-};
+    errorsMsg[key] = ''
+  })
+}
 
 watch(formState, () => {
-  clearInputErrors();
-});
+  clearInputErrors()
+})
 const onFinish = async () => {
-  loading.value = true;
+  loading.value = true
   if (!validateForm()) {
-    loading.value = false;
-    return;
+    loading.value = false
+    return
   }
 
   try {
-    let res = await login(formState.email, formState.password, formState.code);
+    let res = await login(formState.email, formState.password, formState.code)
 
     if (res.data.status === true) {
-      store.saveUser(res.data);
-      router.push({ name: "dashboard" });
+      store.saveUser(res.data)
+      router.push({ name: 'dashboard' })
     } else {
       // Handle unsuccessful login
-      loading.value = false;
-      formState.login = "";
-      formState.password = "";
-      formState.code = "";
+      loading.value = false
+      formState.login = ''
+      formState.password = ''
+      formState.code = ''
     }
-    loading.value = false;
-    return res;
+    loading.value = false
+    return res
   } catch (error) {
-    return error;
+    return error
   } finally {
-    loading.value = false;
-    formState.login = "";
-    formState.password = "";
-    formState.code = "";
+    loading.value = false
+    formState.login = ''
+    formState.password = ''
+    formState.code = ''
   }
-};
+}
 </script>

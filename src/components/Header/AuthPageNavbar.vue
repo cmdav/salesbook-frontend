@@ -27,7 +27,7 @@ const toogleMobileMenu = () => {
         >
           <div class="flex items-center justify-between space-x-4 lg:space-x-6">
             <router-link to="/" class="text-[30px]">
-              Salesbook
+              iSalesBook
               <!-- <img
                 loading="lazy"
                 src="@/assets/BrandLogos/logo.png"
