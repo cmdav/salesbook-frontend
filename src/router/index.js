@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import middleware from './Middleware'
+import middleware from './Middleware/index.js'
 import Login from '@/views/Auth/Login.vue'
 import DashBoardVue from '@/views/Dashboard/DashBoard.vue'
 import Register from '@/views/Auth/Register.vue'
@@ -10,6 +10,10 @@ const router = createRouter({
   routes: [
     {
       path: '/',
+      redirect: '/dashboard'
+    },
+    {
+      path: '/login',
       name: 'login',
       component: Login,
       beforeEnter: [middleware.redirectDashboard]
