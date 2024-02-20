@@ -5,6 +5,7 @@ import DashBoardVue from '@/views/Dashboard/DashBoard.vue'
 import Register from '@/views/Auth/Register.vue'
 import ForgottenPasswordVue from '@/views/Auth/ForgottenPassword.vue'
 import VerifyPage from '@/views/Auth/VerifyPage.vue'
+import VerifyEmail from '@/views/Auth/VerifyEmail.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -23,6 +24,11 @@ const router = createRouter({
       name: 'register',
       component: Register,
       beforeEnter: [middleware.redirectDashboard]
+    },
+    {
+      path: '/email-verification/:token',
+      name: 'email-verification',
+      component: VerifyEmail
     },
     {
       path: '/forgotten-password',

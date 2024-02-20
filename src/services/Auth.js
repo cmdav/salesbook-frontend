@@ -47,6 +47,17 @@ export const resendEmail = async (email ) => {
     throw error
   }
 }
+export const verifyEmail = async (token) => {
+
+  try {
+    let res = await axios.put(`email-verification/${token}`)
+    catchAxiosSuccess(res)
+    return res
+  } catch (error) {
+    catchAxiosError(error)
+    throw error
+  }
+}
 
 // forgot password
 // export const forgottenPassword = async (email) => {
