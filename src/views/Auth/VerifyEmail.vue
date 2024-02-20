@@ -88,17 +88,3 @@ onMounted(async () => {
   }
 });
 </script>
-
-<style scoped>
-main {
-  background: #f2f1f9;
-}
-#main_content {
-  background: white !important;
-  padding: 3em;
-}
-h6 {
-  color: blue;
-  cursor: pointer;
-}
-</style>
