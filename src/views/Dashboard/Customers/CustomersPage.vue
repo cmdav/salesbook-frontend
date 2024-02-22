@@ -27,13 +27,13 @@
             <div class="flex lg:flex-row flex-col gap-3 px-4 justify-between mb-4">
               <div class="flex lg:flex-row flex-col justify-between w-full gap-3">
                 <div class="flex lg:flex-row flex-col w-[60%] gap-3">
-                  <input
+                  <!-- <input
                     class="border-[1px] w-[40%] border-gray-200 outline-none bg-[#F6F8FB] px-4 py-[4px] rounded-[4px]"
                     type="search"
                     placeholder="Search"
                     name=""
                     id=""
-                  />
+                  /> -->
                 </div>
 
                 <button
@@ -44,7 +44,6 @@
                 </button>
               </div>
             </div>
-            <!-- {{ Customer.data }} -->
             <div class="overflow-x-scroll hide-scrollbar">
               <div class="table-container overflow-x-scroll">
                 <table class="table-auto w-full">
@@ -77,6 +76,14 @@
                   <!---->
                 </table>
               </div>
+            </div>
+            <div class="mx-auto w-fit mt-5">
+              <Pagination
+                @changePage="(page) => (Customers.current_page = page)"
+                :currentPage="Customers?.current_page"
+                :pageSize="Customers?.per_page"
+                :totalPages="Customers?.last_page"
+              />
             </div>
           </div>
         </div>
@@ -183,6 +190,7 @@ import { useCustomerstore } from "@/stores/customers";
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import CenteredModalLarge from "@/components/UI/CenteredModalLarge.vue";
 import AuthInput from "@/components/UI/Input/AuthInput.vue";
+import Pagination from "@/components/UI/Pagination/Pagination.vue";
 import Loader from "@/components/UI/Loader.vue";
 import { useQuery } from "vue-query";
 import { storeToRefs } from "pinia";
