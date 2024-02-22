@@ -17,7 +17,7 @@
             v-model="formState.email"
           />
         </div>
-        <div class="mb-6 flex flex-col">
+        <!-- <div class="mb-6 flex flex-col">
           <AuthInput
             label="Institution Code"
             :error="errors.code"
@@ -25,7 +25,7 @@
             placeholder=""
             v-model="formState.code"
           />
-        </div>
+        </div> -->
 
         <div class="mb-3 flex flex-col">
           <PasswordInput
@@ -111,10 +111,10 @@ const validateForm = () => {
     errors.email = true;
     isValid = false;
   }
-  if (!formState.code) {
-    errors.code = true;
-    isValid = false;
-  }
+  // if (!formState.code) {
+  //   errors.code = true;
+  //   isValid = false;
+  // }
 
   if (!isValidPassword.value) {
     errors.password = true;
@@ -144,7 +144,7 @@ const onFinish = async () => {
     return;
   }
   try {
-    let res = await login(formState.email, formState.password, formState.code);
+    let res = await login(formState.email, formState.password);
     store.saveUser(res.data);
     router.push({ name: "dashboard" });
     loading.value = false;

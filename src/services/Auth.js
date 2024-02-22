@@ -2,11 +2,10 @@ import axios from "../axios";
 import { catchAxiosError, catchAxiosSuccess }  from "./Response"
 import { encrypt,decrypt } from "./Encrypt"
 
-export const login = async (email, password, organization_code) => {
+export const login = async (email, password) => {
   let data = {
     email,
     password,
-    organization_code
   }
   try {
     let res = await axios.post('login', data)
@@ -33,13 +32,14 @@ export const register = async (payload) => {
   
 }
 // resend email
-export const resendEmail = async (email ) => {
+export const resendEmail = async (email, type) => {
   let data = {
-    email
+    email,
+    type
   }
 
   try {
-    let res = await axios.post('email-verification', data)
+    let res = await axios.post('send-user-email', data)
     catchAxiosSuccess(res)
     return res
   } catch (error) {

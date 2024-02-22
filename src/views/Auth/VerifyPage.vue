@@ -35,7 +35,10 @@
                 @click="handleResendEmail"
                 class="btn-brand bg-brand !rounded-[5px] flex gap-2 items-center justify-center !text-white text-[14px] !py-[16px] font-semibold w-full"
               >
-                <span class="font-semibold !text-[15px]">Resend mail</span>
+                <span v-if="!loading" class="font-semibold !text-[15px]"
+                  >Resend mail</span
+                >
+                <Loader v-else />
               </button>
               <router-link
                 to="/login"
@@ -53,6 +56,8 @@
 <script setup>
 import { ref } from "vue";
 import AuthLayout from "@/components/Layouts/AuthLayout.vue";
+import Loader from "@/components/UI/Loader.vue";
+
 import { useRoute } from "vue-router";
 const route = useRoute();
 import { resendEmail } from "@/services/Auth";
@@ -62,7 +67,7 @@ const email = ref(route.params.email);
 const handleResendEmail = async () => {
   loading.value = true;
   try {
-    const res = await resendEmail(email.value);
+    const res = await resendEmail(email.value, "resend");
     console.log(res);
     return res;
   } catch (error) {

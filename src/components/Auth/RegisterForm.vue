@@ -174,7 +174,8 @@
             :class="!isFormValid ? '!bg-primary-100 cursor-not-allowed' : 'bg-brand'"
             class="btn-brand !rounded-[5px] flex gap-2 items-center justify-center !text-text-black-200 text-[14px] !py-[16px] font-semibold w-full"
           >
-            <span class="font-semibold">Submit</span>
+            <span v-if="!loading" class="font-semibold !text-[15px]">Submit</span>
+            <Loader v-else />
           </button>
         </div>
 
@@ -198,6 +199,8 @@
 import { ref, computed, watch, reactive } from "vue";
 import AuthInput from "@/components/UI/Input/AuthInput.vue";
 import PasswordInput from "@/components/UI/Input/PasswordInput.vue";
+import Loader from "@/components/UI/Loader.vue";
+
 import { useRouter } from "vue-router";
 import { useStore } from "@/stores/user";
 import { register } from "@/services/Auth";
@@ -358,6 +361,7 @@ const handleSignup = async () => {
     email: formData.email,
     password: formData.password,
     password_confirmation: confirmPassword.value,
+    type_id: 2,
   };
   try {
     let res = await register(payload);
