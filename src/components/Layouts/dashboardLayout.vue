@@ -1,11 +1,20 @@
 <script setup>
 import BaseSidebar from "@/components/SideBar/index.vue";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import "animate.css";
 const closeNav = ref(false);
 const closeBackdrop = ref(false);
 const showDropdown = ref(false);
 const showNotificationDropdown = ref(false);
+import { useStore } from "@/stores/user";
+import { storeToRefs } from "pinia";
+
+const store = useStore();
+const { userProfileDetails } = storeToRefs(store);
+
+onMounted(() => {
+  store.handleUserProfile();
+});
 
 const toggle = () => {
   closeNav.value = !closeNav.value;
@@ -52,6 +61,8 @@ const toogleDropdown = () => {
         <nav
           class="flex bg-[#FDFDF6] items-center gap-[3rem] justify-between px-3 min-[370px]:px-6 sticky top-0 py-3 min-[370px]:pt-5 z-50"
         >
+          <h4 class="text-[20px]">Welcome {{ userProfileDetails?.first_name }},</h4>
+
           <div class="lg:hidden">
             <div class="logo">
               <router-link :to="{ name: 'dashboard' }"

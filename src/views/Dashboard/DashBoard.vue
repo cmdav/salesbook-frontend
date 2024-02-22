@@ -110,7 +110,7 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  0
+                  {{ Supplier?.total }}
                 </div>
               </div>
             </div>
@@ -129,7 +129,7 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  0
+                  {{ Customers?.total }}
                 </div>
               </div>
             </div>
@@ -211,7 +211,22 @@
   </DashboardLayout>
 </template>
 <script setup>
+import { onMounted } from "vue";
+
 import { useStore } from "@/stores/user";
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
+import { useSupplierStore } from "@/stores/suppliers";
+import { useCustomerstore } from "@/stores/customers";
+
 const store = useStore();
+import { storeToRefs } from "pinia";
+const supplierStore = useSupplierStore();
+const { Supplier } = storeToRefs(supplierStore);
+const CustomerStore = useCustomerstore();
+const { Customers } = storeToRefs(CustomerStore);
+
+onMounted(async () => {
+  await supplierStore.allSupplier();
+  await CustomerStore.allCustomer();
+});
 </script>
