@@ -4,7 +4,7 @@
       <div>
         <div class="lg:px-6 px-3 pt-8 grid grid-rows gap-4">
           <div class="grid lg:grid-cols-3 grid-cols-1 gap-4">
-            <div class="flex flex-row justify-between rounded-[8px] bg-secondary-600 p-4">
+            <div class="flex flex-row justify-between rounded-[8px] bg-brand p-4">
               <div>
                 <!-- <div class="icon">
                   <img src="/assets/verifiedusers-5d08be57.svg" alt="" />
