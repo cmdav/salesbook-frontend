@@ -12,7 +12,9 @@
         <router-link
           to="/dashboard"
           class="p-[10px] flex justify-start hover:bg-brand/[0.1] rounded-[5px]"
-          :class="route.name === 'dashboard' ? 'text-white bg-brand' : 'text-secondary-900 '"
+          :class="
+            route.name === 'dashboard' ? 'text-white bg-brand' : 'text-secondary-900 '
+          "
         >
           <div
             :class="route.name === 'dashboard' ? 'text-white ' : 'text-secondary-900 '"
@@ -35,7 +37,9 @@
           >
             <EmptyIcon />
           </div>
-          <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]">Store</span>
+          <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]"
+            >Store</span
+          >
         </router-link>
         <router-link
           to="/"
@@ -68,12 +72,14 @@
           >
         </router-link>
         <router-link
-          to="/"
+          to="/supplier"
           class="p-[10px] flex justify-start hover:bg-brand/[0.1] rounded-[5px]"
-          :class="route.name === '' ? 'text-white bg-brand' : 'text-secondary-900 '"
+          :class="
+            route.name === 'supplier' ? 'text-white bg-brand' : 'text-secondary-900 '
+          "
         >
           <div
-            :class="route.name === '' ? 'text-white ' : 'text-secondary-900 '"
+            :class="route.name === 'supplier' ? 'text-white ' : 'text-secondary-900 '"
             class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
             <EmptyIcon />
@@ -125,16 +131,18 @@
         >
           <EmptyIcon />
         </div>
-        <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]">Log Out</span>
+        <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]"
+          >Log Out</span
+        >
       </router-link>
     </div>
   </header>
 </template>
 <script setup>
-import EmptyIcon from '@/components/icons/EmptyIcon.vue'
-import { useRoute } from 'vue-router'
+import EmptyIcon from "@/components/icons/EmptyIcon.vue";
+import { useRoute } from "vue-router";
 
-const route = useRoute()
+const route = useRoute();
 </script>
 
 <style lang="scss" scoped>

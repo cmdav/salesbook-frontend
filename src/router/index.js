@@ -6,6 +6,7 @@ import Register from '@/views/Auth/Register.vue'
 import ForgottenPasswordVue from '@/views/Auth/ForgottenPassword.vue'
 import VerifyPage from '@/views/Auth/VerifyPage.vue'
 import VerifyEmail from '@/views/Auth/VerifyEmail.vue'
+import SupplierPage from '@/views/Dashboard/Suppliers/SupplierPage.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -46,6 +47,13 @@ const router = createRouter({
       component: DashBoardVue,
       beforeEnter: [middleware.redirectLogin]
     },
+    {
+      path: '/supplier',
+      name: 'supplier',
+      component: SupplierPage,
+      beforeEnter: [middleware.redirectLogin]
+    },
+
     {
       path: '/logout',
       name: 'logout',
