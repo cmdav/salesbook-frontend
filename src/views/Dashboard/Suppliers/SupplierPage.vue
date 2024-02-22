@@ -90,31 +90,29 @@
                     <option value=""></option>
                   </select> -->
 
-                  <input
+                  <!-- <input
                     class="border-[1px] w-[40%] border-gray-200 outline-none bg-[#F6F8FB] px-4 py-[4px] rounded-[4px]"
                     type="search"
                     placeholder="Search"
                     name=""
                     id=""
-                  />
+                  /> -->
                 </div>
 
-                <button class="p-4 bg-brand py-[12px] text-white rounded-[4px]">
-                  Add Supplyer
+                <button
+                  @click="HandleToggleModal"
+                  class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
+                >
+                  Invite Supplyer
                 </button>
               </div>
             </div>
-            <!-- {{ Supplier.data }} -->
             <div class="overflow-x-scroll hide-scrollbar">
               <div class="table-container overflow-x-scroll">
                 <table class="table-auto w-full">
                   <thead class="bg-[#F9FBFF] text-[#A8AABC] text-[14px]">
                     <tr>
-                      <th class="py-4 pl-4 flex">
-                        <!-- <input class="mr-2 outline-none" type="checkbox" name="" id="" /> -->
-
-                        S/N
-                      </th>
+                      <th class="py-4 pl-4 flex">S/N</th>
                       <th class="text-left p-4 pr-0 px-6 capitalize">name</th>
                       <th class="text-left p-4 pr-0 px-6 capitalize">Bank</th>
                       <th class="text-left p-4 pr-0 px-6 capitalize">Email</th>
@@ -151,21 +149,198 @@
                 </table>
               </div>
             </div>
+            <div class="mx-auto w-fit mt-5">
+              <Pagination
+                @changePage="(page) => (Supplier.current_page = page)"
+                :currentPage="Supplier?.current_page"
+                :pageSize="Supplier?.per_page"
+                :totalPages="Supplier?.last_page"
+              />
+            </div>
           </div>
         </div>
       </div>
+      <CenteredModalLarge v-if="showModal">
+        <div class="p-4">
+          <header
+            class="flex flex-row items-center justify-between border-b-[#000000] pb-[35px] mb-[35px] border-b-[1px]"
+          >
+            <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">Invite Supplyer</h4>
+            <button @click="HandleToggleModal" class="text-[30px]">X</button>
+          </header>
+          <div>
+            <form
+              class="flex flex-col gap-[17px]"
+              action="POST"
+              @submit.prevent="handleSupplierInvite()"
+            >
+              <div class="flex flex-col gap-[17px]">
+                <div class="flex lg:flex-row flex-col w-full gap-[20px]">
+                  <div class="flex flex-col w-full">
+                    <AuthInput
+                      label="First Name"
+                      :error="errors.firstName"
+                      type="text"
+                      placeholder="Enter first name"
+                      v-model="formData.firstName"
+                    />
+                  </div>
+                  <div class="flex flex-col w-full">
+                    <AuthInput
+                      label="Last Name"
+                      :error="errors.lastName"
+                      type="text"
+                      placeholder="Enter last name"
+                      v-model="formData.lastName"
+                    />
+                  </div>
+                </div>
+
+                <div class="flex lg:flex-row flex-col w-full gap-[20px]">
+                  <div class="flex flex-col w-full">
+                    <AuthInput
+                      label="Email Address"
+                      :error="errors.email"
+                      type="email"
+                      placeholder="Enter email address"
+                      v-model="formData.email"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex flex-col lg:flex-row w-full gap-[30px]">
+                <div class="w-full flex justify-center">
+                  <button
+                    type="submit"
+                    class="btn-brand !border-none !w-[30%] mx-auto !py-3 lg:!px-10 !px-5 !text-[#FFFFFF] text-center"
+                  >
+                    <span v-if="!loading" class="text-[12.067px]">Invite</span>
+                    <Loader v-else />
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </CenteredModalLarge>
     </div>
   </DashboardLayout>
 </template>
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, reactive, watch } from "vue";
 import { useSupplierStore } from "@/stores/suppliers";
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
+import CenteredModalLarge from "@/components/UI/CenteredModalLarge.vue";
+import AuthInput from "@/components/UI/Input/AuthInput.vue";
+import Pagination from "@/components/UI/Pagination/Pagination.vue";
+import Loader from "@/components/UI/Loader.vue";
 import { storeToRefs } from "pinia";
 const supplierStore = useSupplierStore();
 const { Supplier } = storeToRefs(supplierStore);
+import { resendEmail } from "@/services/Auth";
 
-onMounted(() => {
-  supplierStore.allSupplier();
+import { useQuery } from "vue-query";
+let showModal = ref(false);
+
+const formData = reactive({
+  firstName: "",
+  lastName: "",
+  email: "",
 });
+let loading = ref(false);
+
+const errors = reactive({
+  firstName: false,
+  lastName: false,
+  email: false,
+});
+const validateForm = () => {
+  // Reset errorsMsg
+  Object.keys(errors).forEach((key) => {
+    errors[key] = false;
+  });
+
+  // Perform validation before submission
+  let isValid = true;
+
+  Object.keys(formData).forEach((key) => {
+    if (!formData[key]) {
+      errors[key] = true;
+      isValid = false;
+    }
+  });
+
+  return isValid;
+};
+// Function to clear input errors
+const clearInputErrors = () => {
+  Object.keys(errors).forEach((key) => {
+    errors[key] = false;
+  });
+};
+// const isFormValid = computed(() => {
+//   return (
+//     formData.firstName.trim() !== "" &&
+//     formData.lastName.trim() !== "" &&
+//     formData.email.trim() !== ""
+//   );
+// });
+const clearInputs = () => {
+  (formData.firstName = ""), (formData.lastName = ""), (formData.email = "");
+};
+watch(formData, () => {
+  clearInputErrors();
+});
+function HandleToggleModal() {
+  showModal.value = !showModal.value;
+  clearInputs();
+}
+
+// onMounted(() => {
+//   supplierStore.allSupplier();
+// });
+const getallSupplierData = async () => {
+  let response = await supplierStore.allSupplier();
+  return response;
+};
+const fetchData = async () => {
+  await Promise.all([getallSupplierData()]);
+};
+
+fetchData();
+
+useQuery(["allSupplier"], getallSupplierData, {
+  retry: 10,
+  staleTime: 10000,
+  onSuccess: (data) => {
+    Supplier.value = data;
+  },
+});
+const handleSupplierInvite = async () => {
+  loading.value = true;
+  if (!validateForm()) {
+    loading.value = false;
+    return;
+  }
+  let payload = {
+    first_name: formData.firstName,
+    last_name: formData.lastName,
+    // organization_id: 0,
+    email: formData.email,
+    type: "invitation",
+  };
+  try {
+    let res = await resendEmail(payload);
+    HandleToggleModal();
+    getallSupplierData();
+    loading.value = false;
+    clearInputs();
+    return res;
+  } catch (error) {
+    console.log(error);
+  } finally {
+    loading.value = false;
+  }
+};
 </script>

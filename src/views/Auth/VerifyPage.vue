@@ -66,8 +66,12 @@ let loading = ref(false);
 const email = ref(route.params.email);
 const handleResendEmail = async () => {
   loading.value = true;
+  let data = {
+    email: email.value,
+    type: "resend",
+  };
   try {
-    const res = await resendEmail(email.value, "resend");
+    const res = await resendEmail(data);
     console.log(res);
     return res;
   } catch (error) {

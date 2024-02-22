@@ -37,7 +37,7 @@
                 </div>
 
                 <button
-                  @click="HandleToggleEditImageModal"
+                  @click="HandleToggleModal"
                   class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
                 >
                   Add Customer
@@ -94,7 +94,7 @@
             class="flex flex-row items-center justify-between border-b-[#000000] pb-[35px] mb-[35px] border-b-[1px]"
           >
             <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">Add Customer</h4>
-            <button @click="HandleToggleEditImageModal" class="text-[30px]">X</button>
+            <button @click="HandleToggleModal" class="text-[30px]">X</button>
           </header>
           <div>
             <form
@@ -185,7 +185,7 @@
   </DashboardLayout>
 </template>
 <script setup>
-import { ref, onMounted, reactive, computed, watch } from "vue";
+import { ref, reactive,  watch } from "vue";
 import { useCustomerstore } from "@/stores/customers";
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import CenteredModalLarge from "@/components/UI/CenteredModalLarge.vue";
@@ -243,16 +243,16 @@ const clearInputErrors = () => {
     errors[key] = false;
   });
 };
-const isFormValid = computed(() => {
-  return (
-    formData.firstName.trim() !== "" &&
-    formData.lastName.trim() !== "" &&
-    formData.email.trim() !== "" &&
-    formData.middelName.trim() !== "" &&
-    formData.phoneNo.trim() !== "" &&
-    formData.dob.trim() !== ""
-  );
-});
+// const isFormValid = computed(() => {
+//   return (
+//     formData.firstName.trim() !== "" &&
+//     formData.lastName.trim() !== "" &&
+//     formData.email.trim() !== "" &&
+//     formData.middelName.trim() !== "" &&
+//     formData.phoneNo.trim() !== "" &&
+//     formData.dob.trim() !== ""
+//   );
+// });
 const clearInputs = () => {
   (formData.firstName = ""),
     (formData.lastName = ""),
@@ -264,7 +264,7 @@ const clearInputs = () => {
 watch(formData, () => {
   clearInputErrors();
 });
-function HandleToggleEditImageModal() {
+function HandleToggleModal() {
   showModal.value = !showModal.value;
   clearInputs();
 }
@@ -306,7 +306,7 @@ const handleCustomerRegisteration = async () => {
   };
   try {
     let res = await register(payload);
-    HandleToggleEditImageModal();
+    HandleToggleModal();
     getallCustomerData();
     loading.value = false;
     clearInputs();

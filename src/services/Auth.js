@@ -32,11 +32,7 @@ export const register = async (payload) => {
   
 }
 // resend email
-export const resendEmail = async (email, type) => {
-  let data = {
-    email,
-    type
-  }
+export const resendEmail = async (data) => {
 
   try {
     let res = await axios.post('send-user-email', data)
