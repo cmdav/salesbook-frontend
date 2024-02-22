@@ -57,12 +57,14 @@
           >
         </router-link>
         <router-link
-          to="/"
+          to="/customers"
           class="p-[10px] flex justify-start hover:bg-brand/[0.1] rounded-[5px]"
-          :class="route.name === '' ? 'text-white bg-brand' : 'text-secondary-900 '"
+          :class="
+            route.name === 'customers' ? 'text-white bg-brand' : 'text-secondary-900 '
+          "
         >
           <div
-            :class="route.name === '' ? 'text-white ' : 'text-secondary-900 '"
+            :class="route.name === 'customers' ? 'text-white ' : 'text-secondary-900 '"
             class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
             <EmptyIcon />

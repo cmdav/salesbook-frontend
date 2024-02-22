@@ -7,6 +7,7 @@ import ForgottenPasswordVue from '@/views/Auth/ForgottenPassword.vue'
 import VerifyPage from '@/views/Auth/VerifyPage.vue'
 import VerifyEmail from '@/views/Auth/VerifyEmail.vue'
 import SupplierPage from '@/views/Dashboard/Suppliers/SupplierPage.vue'
+import CustomersPage from '@/views/Dashboard/Customers/CustomersPage.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -51,6 +52,12 @@ const router = createRouter({
       path: '/supplier',
       name: 'supplier',
       component: SupplierPage,
+      beforeEnter: [middleware.redirectLogin]
+    },
+    {
+      path: '/customers',
+      name: 'customers',
+      component: CustomersPage,
       beforeEnter: [middleware.redirectLogin]
     },
 
