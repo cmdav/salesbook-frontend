@@ -9,6 +9,7 @@ import VerifyEmail from '@/views/Auth/VerifyEmail.vue'
 import SupplierPage from '@/views/Dashboard/Suppliers/SupplierPage.vue'
 import CustomersPage from '@/views/Dashboard/Customers/CustomersPage.vue'
 import RegisterSupplierPage from '@/views/Auth/RegisterSupplierPage.vue'
+import VerifySupplier from '@/views/Auth/VerifySupplier.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -32,6 +33,12 @@ const router = createRouter({
       path: '/new-supplier/:token',
       name: 'register-supplier',
       component: RegisterSupplierPage
+      // beforeEnter: [middleware.redirectDashboard]
+    },
+    {
+      path: '/existing-supplier/:token',
+      name: 'existing-supplier',
+      component: VerifySupplier
       // beforeEnter: [middleware.redirectDashboard]
     },
     {
