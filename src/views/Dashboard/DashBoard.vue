@@ -139,7 +139,7 @@
             <div class="flex lg:flex-row flex-col gap-3 px-4 justify-between mb-4">
               <div class="flex lg:flex-row flex-col justify-between w-full gap-3">
                 <div class="flex lg:flex-row flex-col gap-3">
-                  <select
+                  <!-- <select
                     class="border-[1px] border-gray-200 px-6 py-[12px] bg-[#f6f6f6] rounded-[4px]"
                     name=""
                     id=""
@@ -154,7 +154,7 @@
                     placeholder="Search"
                     name=""
                     id=""
-                  />
+                  /> -->
                 </div>
 
                 <button class="p-4 bg-brand py-[12px] text-white rounded-[4px]">
@@ -176,15 +176,13 @@
                         />S/N
                       </th>
                       <th class="text-left p-4 pr-0 px-6 capitalize">name</th>
-                      <th class="text-left p-4 pr-0 px-6 capitalize">plan</th>
-                      <th class="text-left p-4 pr-0 px-6 capitalize">balances</th>
-                      <th class="text-left p-4 pr-0 px-6 capitalize">monthly Income</th>
-                      <th class="text-left p-4 pr-0 px-6 capitalize">monthly Amount</th>
-                      <th class="text-left p-4 pr-0 px-6 capitalize">expiring Date</th>
+                      <th class="text-left p-4 pr-0 px-6 capitalize">Product</th>
+                      <th class="text-left p-4 pr-0 px-6 capitalize">Quantity</th>
+                      <th class="text-left p-4 pr-0 px-6 capitalize">Amount</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr class="border-b text-[14px]">
+                    <!-- <tr class="border-b text-[14px]">
                       <td class="py-4 pl-4">
                         <input class="mr-2 outline-none" type="checkbox" value="1" />1
                       </td>
@@ -198,7 +196,7 @@
                       <td class="text-left p-4 pr-0 pl-6 capitalize">$1000</td>
                       <td class="text-left p-4 pr-0 pl-6 capitalize">$1000</td>
                       <td class="text-left p-4 pr-0 pl-6 capitalize">Basic</td>
-                    </tr>
+                    </tr> -->
                   </tbody>
                   <!---->
                 </table>
