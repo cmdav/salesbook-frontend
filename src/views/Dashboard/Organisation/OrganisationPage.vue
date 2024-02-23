@@ -285,14 +285,14 @@ import Label from "@/components/UI/Input/Label.vue";
 import { storeToRefs } from "pinia";
 const organisationStore = useOrganisationStore();
 const { organisation } = storeToRefs(organisationStore);
-import { resendEmail } from "@/services/Auth";
-import { useStore } from "@/stores/user";
-const store = useStore();
-const { userProfileDetails } = storeToRefs(store);
+// import { resendEmail } from "@/services/Auth";
+// import { useStore } from "@/stores/user";
+// const store = useStore();
+// const { userProfileDetails } = storeToRefs(store);
 
-onMounted(() => {
-  store.handleUserProfile();
-});
+// onMounted(() => {
+//   store.handleUserProfile();
+// });
 
 import { useQuery } from "vue-query";
 let showModal = ref(false);
@@ -345,7 +345,8 @@ const clearInputErrors = () => {
 const clearInputs = () => {
   (formData.organization_name = ""),
     (formData.organization_url = ""),
-    (formData.organization_code = "");
+    (formData.organization_code = ""),
+    (formData.organization_logo = "");
 };
 watch(formData, () => {
   clearInputErrors();
