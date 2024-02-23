@@ -97,11 +97,7 @@
             <button @click="HandleToggleModal" class="text-[30px]">X</button>
           </header>
           <div>
-            <form
-              class="flex flex-col gap-[17px]"
-              action="POST"
-              @submit.prevent="handleCustomerRegisteration()"
-            >
+            <div class="flex flex-col gap-[17px]">
               <div class="flex flex-col gap-[17px]">
                 <div class="flex lg:flex-row flex-col w-full gap-[20px]">
                   <div class="flex flex-col w-full">
@@ -127,11 +123,12 @@
                 <div class="flex lg:flex-row flex-col w-full gap-[20px]">
                   <div class="flex flex-col w-full">
                     <AuthInput
-                      label="Middle Name"
-                      :error="errors.middelName"
+                      label="Middle Name (optional)"
+                      optional
+                      :error="false"
                       type="text"
                       placeholder="Enter Middel Name"
-                      v-model="formData.middelName"
+                      v-model="middelName"
                     />
                   </div>
                   <div class="flex flex-col w-full">
@@ -147,11 +144,12 @@
                 <div class="flex lg:flex-row flex-col w-full gap-[20px]">
                   <div class="flex flex-col w-full">
                     <AuthInput
-                      label="Date of Birth"
-                      :error="errors.dob"
+                      label="Date of Birth (optional)"
+                      optional
+                      :error="false"
                       type="date"
                       placeholder="Enter Date of Birth"
-                      v-model="formData.dob"
+                      v-model="dob"
                     />
                   </div>
                   <div class="flex flex-col w-full">
@@ -169,7 +167,7 @@
               <div class="flex flex-col lg:flex-row w-full gap-[30px]">
                 <div class="w-full flex justify-center">
                   <button
-                    type="submit"
+                    @click="handleCustomerRegisteration()"
                     class="btn-brand !border-none !w-[30%] mx-auto !py-3 lg:!px-10 !px-5 !text-[#FFFFFF] text-center"
                   >
                     <span v-if="!loading" class="text-[12.067px]">Add</span>
@@ -177,7 +175,7 @@
                   </button>
                 </div>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       </CenteredModalLarge>
@@ -185,7 +183,7 @@
   </DashboardLayout>
 </template>
 <script setup>
-import { ref, reactive,  watch } from "vue";
+import { ref, reactive, watch } from "vue";
 import { useCustomerstore } from "@/stores/customers";
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import CenteredModalLarge from "@/components/UI/CenteredModalLarge.vue";
@@ -202,20 +200,20 @@ let showModal = ref(false);
 
 const formData = reactive({
   firstName: "",
-  middelName: "",
   lastName: "",
   email: "",
-  dob: "",
   phoneNo: "",
 });
+let middelName = ref("");
+let dob = ref("");
 let loading = ref(false);
 
 const errors = reactive({
   firstName: false,
-  middelName: false,
+  // middelName: false,
   lastName: false,
   email: false,
-  dob: false,
+  // dob: false,
   phoneNo: false,
 });
 
@@ -257,9 +255,9 @@ const clearInputs = () => {
   (formData.firstName = ""),
     (formData.lastName = ""),
     (formData.email = ""),
-    (formData.middelName = "");
+    (middelName.value = "");
   formData.phoneNo = "";
-  formData.dob = "";
+  dob.value = "";
 };
 watch(formData, () => {
   clearInputErrors();
@@ -298,9 +296,9 @@ const handleCustomerRegisteration = async () => {
   let payload = {
     first_name: formData.firstName,
     last_name: formData.lastName,
-    middle_name: formData.middelName,
+    middle_name: middelName.value,
     phone_number: formData.phoneNo,
-    dob: formData.dob,
+    dob: dob.value,
     email: formData.email,
     type_id: 0,
   };
