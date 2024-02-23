@@ -10,6 +10,7 @@ import SupplierPage from '@/views/Dashboard/Suppliers/SupplierPage.vue'
 import CustomersPage from '@/views/Dashboard/Customers/CustomersPage.vue'
 import RegisterSupplierPage from '@/views/Auth/RegisterSupplierPage.vue'
 import VerifySupplier from '@/views/Auth/VerifySupplier.vue'
+import OrganisationPage from '@/views/Dashboard/Organisation/OrganisationPage.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -66,6 +67,12 @@ const router = createRouter({
       path: '/supplier',
       name: 'supplier',
       component: SupplierPage,
+      beforeEnter: [middleware.redirectLogin]
+    },
+    {
+      path: '/organisation',
+      name: 'organisation',
+      component: OrganisationPage,
       beforeEnter: [middleware.redirectLogin]
     },
     {

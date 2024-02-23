@@ -6,7 +6,7 @@ export const getAllCustomer = async () => {
       const token = await getToken()
 
   try {
-    let res = await axios.get(`/users?type=customer`, {
+    let res = await axios.get(`users?type=customer`, {
       headers: {
         Authorization: 'Bearer ' + token
       }

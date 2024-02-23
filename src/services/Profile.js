@@ -6,7 +6,7 @@ export const getUserProfile = async () => {
   const token = await getToken()
 
   try {
-    let res = await axios.get(`/users?type=profile`, {
+    let res = await axios.get(`users?type=profile`, {
       headers: {
         Authorization: 'Bearer ' + token
       }

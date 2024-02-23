@@ -228,7 +228,7 @@
   </DashboardLayout>
 </template>
 <script setup>
-import { ref, reactive, watch } from "vue";
+import { ref, reactive, watch, onMounted } from "vue";
 import { useSupplierStore } from "@/stores/suppliers";
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import CenteredModalLarge from "@/components/UI/CenteredModalLarge.vue";
@@ -239,6 +239,13 @@ import { storeToRefs } from "pinia";
 const supplierStore = useSupplierStore();
 const { Supplier } = storeToRefs(supplierStore);
 import { resendEmail } from "@/services/Auth";
+import { useStore } from "@/stores/user";
+const store = useStore();
+const { userProfileDetails } = storeToRefs(store);
+
+onMounted(() => {
+  store.handleUserProfile();
+});
 
 import { useQuery } from "vue-query";
 let showModal = ref(false);
@@ -326,7 +333,7 @@ const handleSupplierInvite = async () => {
   let payload = {
     first_name: formData.firstName,
     last_name: formData.lastName,
-    // organization_id: 0,
+    organization_id: userProfileDetails.value?.organization_id,
     email: formData.email,
     type: "invitation",
   };
