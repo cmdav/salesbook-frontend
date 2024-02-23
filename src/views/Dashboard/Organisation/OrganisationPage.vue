@@ -379,25 +379,36 @@ useQuery(["allorganisation"], getallorganisationData, {
 const previewImage = ref(null);
 const uploadedImageName = ref("");
 
+// const uploadFile = (event) => {
+//   // formData.organization_logo = previewImage.value.files[0];
+//   const file = event.target.files[0];
+
+//   if (file) {
+//     const reader = new FileReader();
+//     uploadedImageName.value = file.name;
+
+//     reader.onload = () => {
+//       formData.organization_logo = reader.result;
+//     };
+//     reader.readAsDataURL(file);
+//   } else {
+//     formData.organization_logo = "";
+//   }
+
+//   showImage();
+// };
 const uploadFile = (event) => {
-  // formData.organization_logo = previewImage.value.files[0];
   const file = event.target.files[0];
 
   if (file) {
-    const reader = new FileReader();
     uploadedImageName.value = file.name;
-
-    reader.onload = () => {
-      formData.organization_logo = reader.result;
-    };
-    reader.readAsDataURL(file);
+    formData.organization_logo = file;
   } else {
-    formData.organization_logo = "";
+    formData.organization_logo = null;
   }
 
   showImage();
 };
-
 const showImage = async () => {
   if (formData.organization_logo) {
     previewImage.value = URL.createObjectURL(formData.organization_logo);
