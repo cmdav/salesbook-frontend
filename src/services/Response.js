@@ -27,7 +27,7 @@ export const catchAxiosError = (error) => {
     }
   } else {
     // Handle generic error when no specific message is available
-    toast.error('An error occurred.', {
+    toast.error('', {
       timeout: 4000
     })
   }
