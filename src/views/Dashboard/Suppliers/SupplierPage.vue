@@ -247,7 +247,7 @@ onMounted(() => {
   store.handleUserProfile();
 });
 
-import { useQuery } from "vue-query";
+// import { useQuery } from "vue-query";
 let showModal = ref(false);
 
 const formData = reactive({
@@ -304,9 +304,9 @@ function HandleToggleModal() {
   clearInputs();
 }
 
-// onMounted(() => {
-//   supplierStore.allSupplier();
-// });
+onMounted(() => {
+  supplierStore.allSupplier();
+});
 const getallSupplierData = async () => {
   let response = await supplierStore.allSupplier();
   return response;
@@ -317,13 +317,13 @@ const fetchData = async () => {
 
 fetchData();
 
-useQuery(["allSupplier"], getallSupplierData, {
-  retry: 10,
-  staleTime: 10000,
-  onSuccess: (data) => {
-    Supplier.value = data;
-  },
-});
+// useQuery(["allSupplier"], getallSupplierData, {
+//   retry: 10,
+//   staleTime: 10000,
+//   onSuccess: (data) => {
+//     Supplier.value = data;
+//   },
+// });
 const handleSupplierInvite = async () => {
   loading.value = true;
   if (!validateForm()) {

@@ -183,14 +183,14 @@
   </DashboardLayout>
 </template>
 <script setup>
-import { ref, reactive, watch } from "vue";
+import { ref, reactive, watch, onMounted } from "vue";
 import { useCustomerstore } from "@/stores/customers";
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import CenteredModalLarge from "@/components/UI/CenteredModalLarge.vue";
 import AuthInput from "@/components/UI/Input/AuthInput.vue";
 import Pagination from "@/components/UI/Pagination/Pagination.vue";
 import Loader from "@/components/UI/Loader.vue";
-import { useQuery } from "vue-query";
+// import { useQuery } from "vue-query";
 import { storeToRefs } from "pinia";
 const CustomerStore = useCustomerstore();
 const { Customers } = storeToRefs(CustomerStore);
@@ -267,9 +267,9 @@ function HandleToggleModal() {
   clearInputs();
 }
 
-// onMounted(() => {
-//   CustomerStore.allCustomer();
-// });
+onMounted(() => {
+  CustomerStore.allCustomer();
+});
 const getallCustomerData = async () => {
   let response = await CustomerStore.allCustomer();
   return response;
@@ -280,13 +280,13 @@ const fetchData = async () => {
 
 fetchData();
 
-useQuery(["allCustomer"], getallCustomerData, {
-  retry: 10,
-  staleTime: 10000,
-  onSuccess: (data) => {
-    Customers.value = data;
-  },
-});
+// useQuery(["allCustomer"], getallCustomerData, {
+//   retry: 10,
+//   staleTime: 10000,
+//   onSuccess: (data) => {
+//     Customers.value = data;
+//   },
+// });
 const handleCustomerRegisteration = async () => {
   loading.value = true;
   if (!validateForm()) {

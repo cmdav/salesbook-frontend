@@ -294,7 +294,7 @@ const { organisation } = storeToRefs(organisationStore);
 //   store.handleUserProfile();
 // });
 
-import { useQuery } from "vue-query";
+// import { useQuery } from "vue-query";
 let showModal = ref(false);
 
 const formData = reactive({
@@ -356,9 +356,9 @@ function HandleToggleModal() {
   clearInputs();
 }
 
-// onMounted(() => {
-//   organisationStore.allorganisation();
-// });
+onMounted(() => {
+  organisationStore.allOrganisation();
+});
 const getallorganisationData = async () => {
   let response = await organisationStore.allOrganisation();
   return response;
@@ -369,13 +369,13 @@ const fetchData = async () => {
 
 fetchData();
 
-useQuery(["allorganisation"], getallorganisationData, {
-  retry: 10,
-  staleTime: 10000,
-  onSuccess: (data) => {
-    organisation.value = data;
-  },
-});
+// useQuery(["allorganisation"], getallorganisationData, {
+//   retry: 10,
+//   staleTime: 10000,
+//   onSuccess: (data) => {
+//     organisation.value = data;
+//   },
+// });
 const previewImage = ref(null);
 const uploadedImageName = ref("");
 
