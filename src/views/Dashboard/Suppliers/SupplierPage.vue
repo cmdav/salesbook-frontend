@@ -12,7 +12,7 @@
                 <div
                   class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
                 >
-                  <span>Total Supplyers</span>
+                  <span>Total Suppliers</span>
                 </div>
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
@@ -77,7 +77,7 @@
           <div class="chart hidden bg-white rounded-[8px] min-h-[100vh] p-4"></div>
           <div class="bg-white py-6 mt-12 rounded-lg">
             <div class="flex lg:flex-row flex-col gap-3 px-4 justify-between mb-4">
-              <div class="flex lg:flex-row flex-col justify-between w-full gap-3">
+              <div class="flex lg:flex-row flex-col justify-between w-full gap-2">
                 <div class="flex lg:flex-row flex-col w-[60%] gap-3">
                   <!-- <select
                     class="border-[1px] border-gray-200 px-6 py-[12px] bg-[#f6f6f6] rounded-[4px]"
@@ -100,10 +100,16 @@
                 </div>
 
                 <button
+                  @click="HandleToggleUploadModal"
+                  class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
+                >
+                  Upload Suppliers
+                </button>
+                <button
                   @click="HandleToggleModal"
                   class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
                 >
-                  Invite Supplyer
+                  Invite Suppliers
                 </button>
               </div>
             </div>
@@ -165,7 +171,9 @@
           <header
             class="flex flex-row items-center justify-between border-b-[#000000] pb-[35px] mb-[35px] border-b-[1px]"
           >
-            <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">Invite Supplyer</h4>
+            <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">
+              Invite Suppliers
+            </h4>
             <button @click="HandleToggleModal" class="text-[30px]">X</button>
           </header>
           <div>
@@ -224,6 +232,82 @@
           </div>
         </div>
       </CenteredModalLarge>
+      <CenteredModalLarge v-if="showUploadModal">
+        <div class="p-4">
+          <header
+            class="flex flex-row items-center justify-between border-b-[#000000] pb-[35px] mb-[35px] border-b-[1px]"
+          >
+            <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">
+              Upload Suppliers
+            </h4>
+            <button @click="HandleToggleUploadModal" class="text-[30px]">X</button>
+          </header>
+          <div>
+            <form
+              class="flex flex-col gap-[17px]"
+              action="POST"
+              @submit.prevent="handleSupplierInvite()"
+            >
+              <div class="flex flex-col gap-[17px]">
+                <div class="flex flex-col w-full gap-[10px]">
+                  <div class="flex h-40 rounded-lg flex-col w-full">
+                    <label
+                      for="upload_file"
+                      class="bg-secondary-800 border-dashed cursor-pointer border-[#254035AB] border-[1.789px] p-2 py-6 flex flex-col text-center relative rounded-[5.982px]"
+                    >
+                      <div class="flex flex-col">
+                        <p class="font-Satoshi500 text-[12.3px] text-[#000]">
+                          Drag and Drop file or <span class="underline">Browse</span>
+                        </p>
+                        <p class="text-[#000000] text-[8.516px] font-Satoshi500">
+                          Attach up to 3 files, max 10MB each.
+                        </p>
+                        <CloudUploadIcon class="mx-auto text-primary-900 mt-4" />
+                      </div>
+                      <span>{{}} </span>
+                    </label>
+                    <input
+                      type="file"
+                      name=""
+                      ref="previewImage"
+                      accept=".doc,.docx,.jpg,.png,.pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                      hidden
+                      id="upload_file"
+                    />
+                  </div>
+                  <button class="bg-brand text-center p-2 rounded-lg w-full">
+                    Download Sample
+                  </button>
+                </div>
+
+                <!-- <div class="flex lg:flex-row flex-col w-full gap-[20px]">
+                  <div class="flex flex-col w-full">
+                    <AuthInput
+                      label="Email Address"
+                      :error="errors.email"
+                      type="email"
+                      placeholder="Enter email address"
+                      v-model="formData.email"
+                    />
+                  </div>
+                </div> -->
+              </div>
+
+              <div class="flex flex-col lg:flex-row w-full gap-[30px]">
+                <div class="w-full flex justify-center">
+                  <button
+                    type="submit"
+                    class="btn-brand !border-none !w-[30%] mx-auto !py-3 lg:!px-10 !px-5 !text-[#FFFFFF] text-center"
+                  >
+                    <span v-if="!loading" class="text-[12.067px]">Invite</span>
+                    <Loader v-else />
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </CenteredModalLarge>
     </div>
   </DashboardLayout>
 </template>
@@ -242,14 +326,14 @@ import { resendEmail } from "@/services/Auth";
 import { useStore } from "@/stores/user";
 const store = useStore();
 const { userProfileDetails } = storeToRefs(store);
-
+import CloudUploadIcon from "@/components/icons/cloudUploadIcon.vue";
 onMounted(() => {
   store.handleUserProfile();
 });
 
 // import { useQuery } from "vue-query";
 let showModal = ref(false);
-
+let showUploadModal = ref(false);
 const formData = reactive({
   firstName: "",
   lastName: "",
@@ -301,6 +385,10 @@ watch(formData, () => {
 });
 function HandleToggleModal() {
   showModal.value = !showModal.value;
+  clearInputs();
+}
+function HandleToggleUploadModal() {
+  showUploadModal.value = !showUploadModal.value;
   clearInputs();
 }
 
