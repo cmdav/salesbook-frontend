@@ -96,7 +96,23 @@
             <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">Add Customer</h4>
             <button @click="HandleToggleModal" class="text-[30px]">X</button>
           </header>
-          <div>
+          <div v-if="step == 1">
+            <div class="flex flex-row py-[30px] w-full gap-[10px]">
+              <button
+                @click="addCompany"
+                class="bg-brand text-center py-4 text-white rounded-lg w-full"
+              >
+                Add Company
+              </button>
+              <button
+                @click="addIndividual"
+                class="bg-brand text-white text-center py-4 rounded-lg w-full"
+              >
+                Add Individual
+              </button>
+            </div>
+          </div>
+          <div v-if="step == 2">
             <div class="flex flex-col gap-[17px]">
               <div class="flex flex-col gap-[17px]">
                 <div class="flex lg:flex-row flex-col w-full gap-[20px]">
@@ -177,6 +193,7 @@
               </div>
             </div>
           </div>
+          <div v-if="step == 3">add company</div>
         </div>
       </CenteredModalLarge>
     </div>
@@ -197,6 +214,22 @@ const { Customers } = storeToRefs(CustomerStore);
 import { register } from "@/services/Auth";
 
 let showModal = ref(false);
+const step = ref(1);
+
+// const changeScreen = (from, to, type = null) => {
+//   step.value[from] = false;
+//   step.value[to] = true;
+// };
+const addCompany = () => {
+  step.value = 3;
+};
+const addIndividual = () => {
+  step.value = 2;
+};
+
+// const next = (data) => {
+//   step.value = data;
+// };
 
 const formData = reactive({
   firstName: "",
@@ -264,21 +297,22 @@ watch(formData, () => {
 });
 function HandleToggleModal() {
   showModal.value = !showModal.value;
+  step.value = 1;
   clearInputs();
 }
 
 onMounted(() => {
   CustomerStore.allCustomer();
 });
-const getallCustomerData = async () => {
-  let response = await CustomerStore.allCustomer();
-  return response;
-};
-const fetchData = async () => {
-  await Promise.all([getallCustomerData()]);
-};
+// const getallCustomerData = async () => {
+//   let response = await CustomerStore.allCustomer();
+//   return response;
+// };
+// const fetchData = async () => {
+//   await Promise.all([getallCustomerData()]);
+// };
 
-fetchData();
+// fetchData();
 
 // useQuery(["allCustomer"], getallCustomerData, {
 //   retry: 10,
@@ -304,8 +338,8 @@ const handleCustomerRegisteration = async () => {
   };
   try {
     let res = await register(payload);
+    CustomerStore.allCustomer();
     HandleToggleModal();
-    getallCustomerData();
     loading.value = false;
     clearInputs();
     return res;
