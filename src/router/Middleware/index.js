@@ -1,4 +1,5 @@
 import { decrypt } from '@/services/Encrypt'
+import { logout } from '@/services/Auth'
 
 const getUserFromLocalStorage = () => {
   const encryptedData = localStorage.getItem('_user_data')
@@ -15,12 +16,13 @@ const redirectDashboard = () => {
   return user && user.token ? { name: 'dashboard' } : undefined
 }
 
-const deleteSession = () => {
+const deleteSession = async () => {
   if (localStorage.getItem('_user_data')) {
+    logout()
     localStorage.removeItem('_user_data')
     return { name: 'login' }
   }
-  return undefined
+  return logout()
 }
 export default {
   redirectLogin,

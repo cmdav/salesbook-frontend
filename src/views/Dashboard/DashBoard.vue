@@ -13,7 +13,7 @@
                 <div
                   class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
                 >
-                  <span>Total transactions</span>
+                  <span>Total Transactions</span>
                 </div>
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
@@ -105,7 +105,7 @@
                 <div
                   class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
                 >
-                  <span>Total Supplyers</span>
+                  <span>Total Suppliers</span>
                 </div>
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"

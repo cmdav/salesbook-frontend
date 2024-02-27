@@ -1,13 +1,11 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
-import { encrypt,decrypt } from "../services/Encrypt"
+import { encrypt, decrypt } from '../services/Encrypt'
 import { getUserProfile } from '@/services/Profile'
 
 export const useStore = defineStore('user', () => {
-
   const user = ref(null)
   const userProfileDetails = ref(null)
-
 
   const getUser = computed(() => {
     let encryptedData = localStorage.getItem('_user_data')
@@ -33,12 +31,26 @@ export const useStore = defineStore('user', () => {
     }
   }
 
-
+  // const features = computed(() => {
+  //   const account = user.value.user.type
+  //   if (account) {
+  //     const accountLowerCase = account.toLowerCase()
+  //     if (accountLowerCase === '2') {
+  //       return ['STORE', 'PRODUCT', 'SUPPLIER','RECORDS','REPORTS']
+  //     } else if (accountLowerCase === '1') {
+  //       return ['JOBS', 'MY_APPLICATIONS', 'GO_PRO', 'COURSES', 'MESSAGES']
+  //     } else if (accountLowerCase === '0') {
+  //       return ['JOBS', 'MY_APPLICATIONS', 'GO_PRO', 'COURSES', 'MESSAGES']
+  //     }
+  //   }
+  //   return null
+  // })
   return {
     user,
     getUser,
     saveUser,
     userProfileDetails,
-    handleUserProfile
+    handleUserProfile,
+    // features
   }
 })

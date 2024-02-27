@@ -91,3 +91,18 @@ export const getUser = () => {
 }
 
 
+export const logout = async () => {
+        const token = await getToken()
+  try {
+    let res = await axios.post(`log-out`, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res)
+    return res
+  } catch (error) {
+    catchAxiosError(error)
+    throw error
+  }
+}
