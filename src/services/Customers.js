@@ -14,16 +14,21 @@ export const getAllCustomer = async () => {
     catchAxiosSuccess(res.data)
     return res.data
   } catch (error) {
-        console.log(error)
+    console.log(error)
   }
 }
-// export const getSingleTalent = async (uuid) => {
-//   try {
-//     let res = await axios.get(`talent/${uuid}`)
-//     catchAxiosSuccess(res.data)
-//     return res.data
-//   } catch (error) {
-//     catchAxiosError(error)
-//     throw error
-//   }
-// }
+export const getSingleCustomer = async (id) => {
+   const token = await getToken()
+
+  try {
+    let res = await axios.get(`users/${id}`, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res.data)
+    return res.data
+  } catch (error) {
+    console.log(error)
+  }
+}

@@ -138,7 +138,9 @@
                         {{ index + 1 }}
                       </td>
                       <td class="text-left p-4 pr-0 pl-6 capitalize">
-                        <a href="" class="">{{ i.first_name }} {{ i.last_name }}</a>
+                        <button @click="redirectToSingleSupplierPage(i.user_id)" class="">
+                          {{ i.first_name }} {{ i.last_name }}
+                        </button>
                       </td>
                       <td class="text-left p-4 pr-0 pl-6 capitalize">
                         {{ i.bank_name }}
@@ -161,6 +163,7 @@
                 :currentPage="Supplier?.current_page"
                 :pageSize="Supplier?.per_page"
                 :totalPages="Supplier?.last_page"
+                :alwaysShowNextAndPrevious="true"
               />
             </div>
           </div>
@@ -327,11 +330,13 @@ import { useStore } from "@/stores/user";
 const store = useStore();
 const { userProfileDetails } = storeToRefs(store);
 import CloudUploadIcon from "@/components/icons/cloudUploadIcon.vue";
-onMounted(() => {
-  store.handleUserProfile();
-});
+import { useRouter } from "vue-router";
+const router = useRouter();
 
-// import { useQuery } from "vue-query";
+const redirectToSingleSupplierPage = (id) => {
+  router.push({ name: "view-supplier", params: { id } });
+};
+
 let showModal = ref(false);
 let showUploadModal = ref(false);
 const formData = reactive({
@@ -392,26 +397,6 @@ function HandleToggleUploadModal() {
   clearInputs();
 }
 
-onMounted(() => {
-  supplierStore.allSupplier();
-});
-const getallSupplierData = async () => {
-  let response = await supplierStore.allSupplier();
-  return response;
-};
-const fetchData = async () => {
-  await Promise.all([getallSupplierData()]);
-};
-
-fetchData();
-
-// useQuery(["allSupplier"], getallSupplierData, {
-//   retry: 10,
-//   staleTime: 10000,
-//   onSuccess: (data) => {
-//     Supplier.value = data;
-//   },
-// });
 const handleSupplierInvite = async () => {
   loading.value = true;
   if (!validateForm()) {
@@ -427,8 +412,8 @@ const handleSupplierInvite = async () => {
   };
   try {
     let res = await resendEmail(payload);
+    supplierStore.allSupplier();
     HandleToggleModal();
-    getallSupplierData();
     loading.value = false;
     clearInputs();
     return res;
@@ -438,4 +423,8 @@ const handleSupplierInvite = async () => {
     loading.value = false;
   }
 };
+onMounted(async () => {
+  await supplierStore.allSupplier();
+  await store.handleUserProfile();
+});
 </script>

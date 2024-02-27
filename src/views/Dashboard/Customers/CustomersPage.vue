@@ -65,7 +65,9 @@
                         {{ index + 1 }}
                       </td>
                       <td class="text-left p-4 pr-0 pl-6 capitalize">
-                        <a href="" class="">{{ i.first_name }} {{ i.last_name }}</a>
+                        <button @click="redirectToSingleCustomerPage(i.id)" class="">
+                          {{ i.first_name }} {{ i.last_name }}
+                        </button>
                       </td>
                       <td class="text-left p-4 pr-0 pl-6">{{ i.email }}</td>
                       <td class="text-left p-4 pr-0 pl-6 capitalize">
@@ -83,6 +85,7 @@
                 :currentPage="Customers?.current_page"
                 :pageSize="Customers?.per_page"
                 :totalPages="Customers?.last_page"
+                :alwaysShowNextAndPrevious="true"
               />
             </div>
           </div>
@@ -212,24 +215,22 @@ import { storeToRefs } from "pinia";
 const CustomerStore = useCustomerstore();
 const { Customers } = storeToRefs(CustomerStore);
 import { register } from "@/services/Auth";
+import { useRouter } from "vue-router";
+const router = useRouter();
+
+const redirectToSingleCustomerPage = (id) => {
+  router.push({ name: "view-customers", params: { id } });
+};
 
 let showModal = ref(false);
 const step = ref(1);
 
-// const changeScreen = (from, to, type = null) => {
-//   step.value[from] = false;
-//   step.value[to] = true;
-// };
 const addCompany = () => {
   step.value = 3;
 };
 const addIndividual = () => {
   step.value = 2;
 };
-
-// const next = (data) => {
-//   step.value = data;
-// };
 
 const formData = reactive({
   firstName: "",
@@ -301,26 +302,6 @@ function HandleToggleModal() {
   clearInputs();
 }
 
-onMounted(() => {
-  CustomerStore.allCustomer();
-});
-// const getallCustomerData = async () => {
-//   let response = await CustomerStore.allCustomer();
-//   return response;
-// };
-// const fetchData = async () => {
-//   await Promise.all([getallCustomerData()]);
-// };
-
-// fetchData();
-
-// useQuery(["allCustomer"], getallCustomerData, {
-//   retry: 10,
-//   staleTime: 10000,
-//   onSuccess: (data) => {
-//     Customers.value = data;
-//   },
-// });
 const handleCustomerRegisteration = async () => {
   loading.value = true;
   if (!validateForm()) {
@@ -349,4 +330,7 @@ const handleCustomerRegisteration = async () => {
     loading.value = false;
   }
 };
+onMounted(async () => {
+  await CustomerStore.allCustomer();
+});
 </script>
