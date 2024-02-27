@@ -22,7 +22,6 @@ const deleteSession = async () => {
     localStorage.removeItem('_user_data')
     return { name: 'login' }
   }
-  return logout()
 }
 export default {
   redirectLogin,

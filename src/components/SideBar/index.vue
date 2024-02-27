@@ -57,6 +57,7 @@
           >
         </router-link>
         <router-link
+          v-if="feature.includes('CUSTOMERS')"
           to="/customers"
           class="p-[10px] flex justify-start hover:bg-brand/[0.1] rounded-[5px]"
           :class="
@@ -74,6 +75,7 @@
           >
         </router-link>
         <router-link
+          v-if="feature.includes('SUPPLIER')"
           to="/supplier"
           class="p-[10px] flex justify-start hover:bg-brand/[0.1] rounded-[5px]"
           :class="
@@ -90,7 +92,7 @@
             >Suppliers</span
           >
         </router-link>
-        <router-link
+        <!-- <router-link
           to="/organisation"
           class="p-[10px] flex justify-start hover:bg-brand/[0.1] rounded-[5px]"
           :class="
@@ -106,7 +108,7 @@
           <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]"
             >Organisation</span
           >
-        </router-link>
+        </router-link> -->
 
         <router-link
           to="/"
@@ -159,10 +161,15 @@
   </header>
 </template>
 <script setup>
+import { computed } from "vue";
+import { useStore } from "@/stores/user";
 import EmptyIcon from "@/components/icons/EmptyIcon.vue";
 import { useRoute } from "vue-router";
-
+const store = useStore();
 const route = useRoute();
+const feature = computed(() => {
+  return Array.isArray(store.features) ? store.features : [];
+});
 </script>
 
 <style lang="scss" scoped>

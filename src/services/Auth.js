@@ -92,7 +92,7 @@ export const getUser = () => {
 
 
 export const logout = async () => {
-        const token = await getToken()
+  const token = await getToken()
   try {
     let res = await axios.post(`log-out`, {
       headers: {
@@ -102,7 +102,7 @@ export const logout = async () => {
     catchAxiosSuccess(res)
     return res
   } catch (error) {
-    catchAxiosError(error)
+    console.log(error)
     throw error
   }
 }

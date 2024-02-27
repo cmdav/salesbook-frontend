@@ -49,6 +49,7 @@
               </div> -->
             </div>
             <div
+              v-if="feature.includes('INVENTORY')"
               class="flex flex-row justify-between rounded-[8px] p-4"
               style="background-color: rgb(123, 97, 255)"
             >
@@ -95,6 +96,7 @@
               </div> -->
             </div>
             <div
+              v-if="feature.includes('SUPPLIER')"
               class="flex flex-row justify-between rounded-[8px] p-4"
               style="background-color: rgb(6, 194, 112)"
             >
@@ -116,6 +118,7 @@
             </div>
 
             <div
+              v-if="feature.includes('CUSTOMERS')"
               class="flex flex-row justify-between rounded-[8px] p-4"
               style="background-color: rgb(0, 175, 239)"
             >
@@ -157,7 +160,10 @@
                   /> -->
                 </div>
 
-                <button class="p-4 bg-brand py-[12px] text-white rounded-[4px]">
+                <button
+                  v-if="feature.includes('INVENTORY')"
+                  class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
+                >
                   Add Inventory
                 </button>
               </div>
@@ -215,9 +221,13 @@ import { useStore } from "@/stores/user";
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import { useSupplierStore } from "@/stores/suppliers";
 import { useCustomerstore } from "@/stores/customers";
-
-const store = useStore();
 import { storeToRefs } from "pinia";
+import { computed } from "vue";
+const store = useStore();
+const feature = computed(() => {
+  return Array.isArray(store.features) ? store.features : [];
+});
+
 const supplierStore = useSupplierStore();
 const { Supplier } = storeToRefs(supplierStore);
 const CustomerStore = useCustomerstore();

@@ -31,26 +31,27 @@ export const useStore = defineStore('user', () => {
     }
   }
 
-  // const features = computed(() => {
-  //   const account = user.value.user.type
-  //   if (account) {
-  //     const accountLowerCase = account.toLowerCase()
-  //     if (accountLowerCase === '2') {
-  //       return ['STORE', 'PRODUCT', 'SUPPLIER','RECORDS','REPORTS']
-  //     } else if (accountLowerCase === '1') {
-  //       return ['JOBS', 'MY_APPLICATIONS', 'GO_PRO', 'COURSES', 'MESSAGES']
-  //     } else if (accountLowerCase === '0') {
-  //       return ['JOBS', 'MY_APPLICATIONS', 'GO_PRO', 'COURSES', 'MESSAGES']
-  //     }
-  //   }
-  //   return null
-  // })
+  const features = computed(() => {
+    const account = user.value?.user?.type
+    if (account) {
+      const accountLowerCase = account.toLowerCase()
+      console.log(accountLowerCase)
+      if (accountLowerCase === '2') {
+        return ['STORE', 'PRODUCT', 'SUPPLIER', 'RECORDS', 'REPORTS', 'CUSTOMERS', 'INVENTORY']
+      } else if (accountLowerCase === '1') {
+        return ['o']
+      } else if (accountLowerCase === '0') {
+        return ['0']
+      }
+    }
+    return null
+  })
   return {
     user,
     getUser,
     saveUser,
     userProfileDetails,
     handleUserProfile,
-    // features
+    features
   }
 })
