@@ -10,9 +10,7 @@
           </h2>
         </div>
         <div class="px-[14px] py-[12px] my-[40px] bg-secondary-100/[50%] rounded-[4px]">
-          <p
-            class="text-secondary-600 text-primary-1000 lg:text-[14px] text-[12px] font-medium"
-          >
+          <p class="text-primary-1000 lg:text-[14px] text-[12px] font-medium">
             Please enter the email address associated with your account
           </p>
         </div>
@@ -34,7 +32,8 @@
                 :class="!isFormValid ? '!bg-primary-100 cursor-not-allowed' : 'bg-brand'"
                 class="btn-brand !rounded-[5px] flex gap-2 items-center justify-center !text-text-black-200 text-[14px] !py-[16px] font-semibold w-full"
               >
-                <span class="font-semibold !text-[15px]">Proceed</span>
+                <span v-if="!loading" class="font-semibold !text-[15px]">Proceed</span>
+                <Loader v-else />
               </button>
             </div>
           </form>
@@ -48,6 +47,8 @@ import { ref, computed, watch, reactive } from "vue";
 import AuthLayout from "@/components/Layouts/AuthLayout.vue";
 import AuthInput from "@/components/UI/Input/AuthInput.vue";
 import { useRouter } from "vue-router";
+import { resendEmail } from "@/services/Auth";
+import Loader from "@/components/UI/Loader.vue";
 
 const router = useRouter();
 const formData = reactive({
@@ -114,18 +115,22 @@ const handleForgotPassword = async () => {
     loading.value = false;
     return;
   }
+  let payload = {
+    email: formData.email,
+    type: "reset-password",
+  };
   try {
-    // let res = await forgottenPassword(formData.email)
-    // if (res.data.status === true) {
-    //   router.push({ name: 'login' })
-    // } else {
-    //   // Handle unsuccessful login
-    //   loading.value = false
-    //   formData.email = ''
-    // }
-    // loading.value = false
-    // clearInputs()
-    // return res
+    let res = await resendEmail(payload);
+    if (res.data.status === true) {
+      router.push({ name: "login" });
+    } else {
+      // Handle unsuccessful login
+      loading.value = false;
+      formData.email = "";
+    }
+    loading.value = false;
+    clearInputs();
+    return res;
   } catch (error) {
     console.log(error);
   } finally {
