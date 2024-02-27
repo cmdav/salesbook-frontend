@@ -14,7 +14,7 @@ export const getUserProfile = async () => {
     catchAxiosSuccess(res.data)
     return res.data
   } catch (error) {
-    catchAxiosError(error)
+    console.log(error)
     throw error
   }
 }

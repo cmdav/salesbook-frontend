@@ -14,8 +14,7 @@ export const getAllOrganisation = async () => {
     catchAxiosSuccess(res.data)
     return res.data
   } catch (error) {
-    catchAxiosError(error)
-    throw error
+    console.log(error)
   }
 }
 export const addOrganisation = async (payload) => {
