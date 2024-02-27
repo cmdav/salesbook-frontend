@@ -14,8 +14,7 @@ export const getAllCustomer = async () => {
     catchAxiosSuccess(res.data)
     return res.data
   } catch (error) {
-    catchAxiosError(error)
-    throw error
+        console.log(error)
   }
 }
 // export const getSingleTalent = async (uuid) => {
