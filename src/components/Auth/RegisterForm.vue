@@ -34,10 +34,10 @@
             <div class="mb-3 flex flex-col w-full">
               <AuthInput
                 label="Middle Name"
-                :error="errors.middelName"
+                :error="false"
                 type="text"
                 placeholder="Enter Middel Name"
-                v-model="formData.middelName"
+                v-model="middelName"
               />
             </div>
             <div class="mb-3 flex flex-col w-full">
@@ -54,10 +54,10 @@
             <div class="mb-3 flex flex-col w-full">
               <AuthInput
                 label="Date of Birth"
-                :error="errors.dob"
+                :error="false"
                 type="date"
                 placeholder="Enter Date of Birth"
-                v-model="formData.dob"
+                v-model="dob"
               />
             </div>
             <div class="mb-3 flex flex-col w-full">
@@ -74,10 +74,10 @@
             <div class="mb-3 flex flex-col w-full">
               <AuthInput
                 label="Phone number"
-                :error="errors.phoneNo"
+                :error="false"
                 type="tel"
                 placeholder="Enter Phone number"
-                v-model="formData.phoneNo"
+                v-model="phoneNo"
               />
             </div>
           </div>
@@ -207,26 +207,25 @@ import { register } from "@/services/Auth";
 
 const router = useRouter();
 const store = useStore();
+
+const middelName = ref("");
+const phoneNo = ref("");
+const dob = ref("");
+
 const formData = reactive({
   firstName: "",
-  middelName: "",
   lastName: "",
   code: "",
   email: "",
-  dob: "",
-  phoneNo: "",
   password: "",
 });
 let loading = ref(false);
 
 const errors = reactive({
   firstName: false,
-  middelName: false,
   lastName: false,
   code: false,
   email: false,
-  dob: false,
-  phoneNo: false,
   password: false,
   confirmPassword: false,
 });
@@ -234,12 +233,9 @@ const confirmPassword = ref("");
 
 const errorsMsg = {
   firstName: "First name is required",
-  middelName: "Last name is required",
   lastName: "Last name is required",
   code: "Last name is required",
   email: "Last name is required",
-  dob: "Last name is required",
-  phoneNo: "Email is required",
   password: "Password is required",
   confirmPassword: "Password does not match",
 };
@@ -324,11 +320,8 @@ const isFormValid = computed(() => {
     formData.lastName.trim() !== "" &&
     formData.email.trim() !== "" &&
     formData.password.trim() !== "" &&
-    formData.middelName.trim() !== "" &&
-    formData.phoneNo.trim() !== "" &&
     formData.code.trim() !== "" &&
-    confirmPassword.value.trim() !== "" &&
-    formData.dob.trim() !== ""
+    confirmPassword.value.trim() !== ""
   );
 });
 const clearInputs = () => {
@@ -336,10 +329,10 @@ const clearInputs = () => {
     (formData.lastName = ""),
     (formData.email = ""),
     (formData.password = "");
-  formData.middelName = "";
-  formData.phoneNo = "";
+  middelName.value = "";
+  phoneNo.value = "";
   formData.code = "";
-  formData.dob = "";
+  dob.value = "";
   confirmPassword.value = "";
 };
 watch(formData, () => {
@@ -354,10 +347,10 @@ const handleSignup = async () => {
   let payload = {
     first_name: formData.firstName,
     last_name: formData.lastName,
-    middle_name: formData.middelName,
-    phone_number: formData.phoneNo,
+    middle_name: middelName.value,
+    phone_number: phoneNo.value,
     organization_code: formData.code,
-    dob: formData.dob,
+    dob: dob.value,
     email: formData.email,
     password: formData.password,
     password_confirmation: confirmPassword.value,
