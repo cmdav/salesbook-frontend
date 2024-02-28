@@ -20,7 +20,7 @@
             :class="route.name === 'dashboard' ? 'text-white ' : 'text-secondary-900 '"
             class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
-            <EmptyIcon />
+            <homeIcon />
           </div>
           <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]"
             >Dashboard</span
@@ -35,7 +35,7 @@
             :class="route.name === '' ? 'text-white ' : 'text-secondary-900 '"
             class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
-            <EmptyIcon />
+            <StoreIcon />
           </div>
           <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]"
             >Store</span
@@ -50,7 +50,7 @@
             :class="route.name === '' ? 'text-white ' : 'text-secondary-900 '"
             class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
-            <EmptyIcon />
+            <ProductIcon />
           </div>
           <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]"
             >Product</span
@@ -68,7 +68,7 @@
             :class="route.name === 'customers' ? 'text-white ' : 'text-secondary-900 '"
             class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
-            <EmptyIcon />
+            <CustomerIcon />
           </div>
           <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]"
             >Customers</span
@@ -86,7 +86,7 @@
             :class="route.name === 'supplier' ? 'text-white ' : 'text-secondary-900 '"
             class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
-            <EmptyIcon />
+            <SuppliersIcon />
           </div>
           <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]"
             >Suppliers</span
@@ -119,7 +119,7 @@
             :class="route.name === '' ? 'text-white ' : 'text-secondary-900 '"
             class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
-            <EmptyIcon />
+            <recordsIcon />
           </div>
           <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]"
             >Records</span
@@ -134,7 +134,7 @@
             :class="route.name === '' ? 'text-white ' : 'text-secondary-900 '"
             class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
-            <EmptyIcon />
+            <reportsIcon />
           </div>
           <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]"
             >Reports</span
@@ -151,7 +151,7 @@
           :class="route.name === '' ? 'text-white ' : 'text-secondary-900 '"
           class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
         >
-          <EmptyIcon />
+          <logoutIcon />
         </div>
         <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]"
           >Log Out</span
@@ -164,6 +164,14 @@
 import { computed } from "vue";
 import { useStore } from "@/stores/user";
 import EmptyIcon from "@/components/icons/EmptyIcon.vue";
+import homeIcon from "@/components/icons/homeIcon.vue";
+import StoreIcon from "@/components/icons/StoreIcon.vue";
+import ProductIcon from "@/components/icons/ProductIcon.vue";
+import recordsIcon from "@/components/icons/recordsIcon.vue";
+import reportsIcon from "@/components/icons/reportsIcon.vue";
+import logoutIcon from "@/components/icons/logoutIcon.vue";
+import SuppliersIcon from "@/components/icons/SuppliersIcon.vue";
+import CustomerIcon from "@/components/icons/CustomerIcon.vue";
 import { useRoute } from "vue-router";
 const store = useStore();
 const route = useRoute();
