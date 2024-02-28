@@ -196,7 +196,66 @@
               </div>
             </div>
           </div>
-          <div v-if="step == 3">add company</div>
+          <div v-if="step == 3">
+            <div class="flex flex-col gap-[17px]">
+              <div class="flex flex-col gap-[17px]">
+                <div class="flex lg:flex-row flex-col w-full gap-[20px]">
+                  <div class="flex flex-col w-full">
+                    <AuthInput
+                      label="Company Name"
+                      :error="errorsCom.company_name"
+                      type="text"
+                      placeholder="Enter company name"
+                      v-model="formCompanyData.company_name"
+                    />
+                  </div>
+                  <div class="flex flex-col w-full">
+                    <AuthInput
+                      label="Contact Individual"
+                      :error="errorsCom.contact_person"
+                      type="text"
+                      placeholder="Enter contact"
+                      v-model="formCompanyData.contact_person"
+                    />
+                  </div>
+                </div>
+
+                <div class="flex lg:flex-row flex-col w-full gap-[20px]">
+                  <div class="flex flex-col w-full">
+                    <AuthInput
+                      label="Email"
+                      optional
+                      :error="errorsCom.email"
+                      type="email"
+                      placeholder="Enter email company address"
+                      v-model="formCompanyData.email"
+                    />
+                  </div>
+                  <div class="flex flex-col w-full">
+                    <AuthInput
+                      label="Contact Number"
+                      :error="errorsCom.phone_number"
+                      type="tel"
+                      placeholder="Enter contact number"
+                      v-model="formCompanyData.phone_number"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex flex-col lg:flex-row w-full gap-[30px]">
+                <div class="w-full flex justify-center">
+                  <button
+                    @click="handleCompanyCustomerRegisteration()"
+                    class="btn-brand !border-none !w-[30%] mx-auto !py-3 lg:!px-10 !px-5 !text-[#FFFFFF] text-center"
+                  >
+                    <span v-if="!loading" class="text-[12.067px]">Add</span>
+                    <Loader v-else />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </CenteredModalLarge>
     </div>
@@ -217,6 +276,9 @@ const { Customers } = storeToRefs(CustomerStore);
 import { register } from "@/services/Auth";
 import { useRouter } from "vue-router";
 const router = useRouter();
+import { useStore } from "@/stores/user";
+const store = useStore();
+const { userProfileDetails } = storeToRefs(store);
 
 const redirectToSingleCustomerPage = (id) => {
   router.push({ name: "view-customers", params: { id } });
@@ -238,6 +300,12 @@ const formData = reactive({
   email: "",
   phoneNo: "",
 });
+const formCompanyData = reactive({
+  company_name: "",
+  contact_person: "",
+  email: "",
+  phone_number: "",
+});
 let middelName = ref("");
 let dob = ref("");
 let loading = ref(false);
@@ -249,6 +317,12 @@ const errors = reactive({
   email: false,
   // dob: false,
   phoneNo: false,
+});
+const errorsCom = reactive({
+  company_name: false,
+  contact_person: false,
+  email: false,
+  phone_number: false,
 });
 
 const validateForm = () => {
@@ -263,6 +337,24 @@ const validateForm = () => {
   Object.keys(formData).forEach((key) => {
     if (!formData[key]) {
       errors[key] = true;
+      isValid = false;
+    }
+  });
+
+  return isValid;
+};
+const validateAddCompanyForm = () => {
+  // Reset errorsMsg
+  Object.keys(errorsCom).forEach((key) => {
+    errorsCom[key] = false;
+  });
+
+  // Perform validation before submission
+  let isValid = true;
+
+  Object.keys(formCompanyData).forEach((key) => {
+    if (!formCompanyData[key]) {
+      errorsCom[key] = true;
       isValid = false;
     }
   });
@@ -292,7 +384,14 @@ const clearInputs = () => {
     (middelName.value = "");
   formData.phoneNo = "";
   dob.value = "";
+  formCompanyData.company_name = "";
+  formCompanyData.contact_person = "";
+  formCompanyData.email = "";
+  formCompanyData.phone_number = "";
 };
+watch(formCompanyData, () => {
+  clearInputErrors();
+});
 watch(formData, () => {
   clearInputErrors();
 });
@@ -316,6 +415,8 @@ const handleCustomerRegisteration = async () => {
     dob: dob.value,
     email: formData.email,
     type_id: 0,
+    role_id: 0,
+    organization_id: userProfileDetails.value?.organization_id,
   };
   try {
     let res = await register(payload);
@@ -330,6 +431,35 @@ const handleCustomerRegisteration = async () => {
     loading.value = false;
   }
 };
+const handleCompanyCustomerRegisteration = async () => {
+  loading.value = true;
+  if (!validateAddCompanyForm()) {
+    loading.value = false;
+    return;
+  }
+  let payload = {
+    company_name: formCompanyData.company_name,
+    contact_person: formCompanyData.contact_person,
+    phone_number: formCompanyData.phone_number,
+    email: formCompanyData.email,
+    role_id: 1,
+    type_id: 0,
+    organization_id: userProfileDetails.value?.organization_id,
+  };
+  try {
+    let res = await register(payload);
+    CustomerStore.allCustomer();
+    HandleToggleModal();
+    loading.value = false;
+    clearInputs();
+    return res;
+  } catch (error) {
+    console.log(error);
+  } finally {
+    loading.value = false;
+  }
+};
+// xcrops@example.net
 onMounted(async () => {
   await CustomerStore.allCustomer();
 });
