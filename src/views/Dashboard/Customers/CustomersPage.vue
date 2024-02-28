@@ -341,6 +341,8 @@ const redirectToSingleCustomerPage = (id) => {
 const toggleButton = ref(false);
 function handleToggleTableButton() {
   toggleButton.value = !toggleButton.value;
+  CustomerStore.allCustomer();
+  CustomerStore.allCompanyCustomers();
 }
 let showModal = ref(false);
 const step = ref(1);
