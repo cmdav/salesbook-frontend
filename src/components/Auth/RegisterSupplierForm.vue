@@ -359,7 +359,7 @@ const handleSupplierSignup = async () => {
   try {
     let res = await register(payload);
     // if (res.data.status === true) {
-    router.push({ name: "verify", params: { email: formData.email } });
+    router.push({ name: "login" });
     // } else {
     // Handle unsuccessful login
     //   loading.value = false;
