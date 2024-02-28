@@ -5,7 +5,7 @@
         class="mx-auto lg:w-[53%] w-full flex bg-white rounded-[4px] lg:p-10 p-4 lg:px-12 gap-[20px] lg:justify-between flex-col"
       >
         <h4 class="text-center font-semibold text-[20px] lg:text-[24px] my-10">
-          iSalesBok Email Verification...
+          iSalesBook Email Verification...
         </h4>
 
         <div
