@@ -7,11 +7,7 @@
         Create a Supplier Account
       </h4>
 
-      <form
-        class="flex flex-col gap-[17px]"
-        action="POST"
-        @submit.prevent="handleSignup()"
-      >
+      <div class="flex flex-col gap-[17px]">
         <div class="flex flex-col gap-[17px]">
           <div class="flex lg:flex-row flex-col w-full gap-[20px]">
             <div class="mb-3 flex flex-col w-full">
@@ -70,7 +66,7 @@
                 :error="false"
                 type="tel"
                 placeholder="Enter Phone number"
-                v-model="phoneNo"
+                v-model="formData.phoneNo"
               />
             </div>
           </div>
@@ -171,10 +167,9 @@
           </p>
         </div>
 
-        <div class="flex flex-col lg:flex-row w-full gap-[30px] mt-4">
+        <div class="mt-4">
           <button
-            :disabled="loading"
-            type="submit"
+            @click="handleSupplierSignup()"
             :class="!isFormValid ? '!bg-primary-100 cursor-not-allowed' : 'bg-brand'"
             class="btn-brand !rounded-[5px] flex gap-2 items-center justify-center !text-text-black-200 text-[14px] !py-[16px] font-semibold w-full"
           >
@@ -195,7 +190,7 @@
             >
           </span>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 </template>
@@ -231,6 +226,7 @@ const errors = reactive({
   firstName: false,
   lastName: false,
   email: false,
+  phoneNo: false,
   password: false,
   confirmPassword: false,
 });
@@ -240,6 +236,7 @@ const errorsMsg = {
   firstName: "First name is required",
   lastName: "Last name is required",
   email: "Last name is required",
+  phoneNo: "phone Number is required",
   password: "Password is required",
   confirmPassword: "Password does not match",
 };
@@ -333,14 +330,14 @@ const clearInputs = () => {
     (formData.email = ""),
     (formData.password = "");
   middelName.value = "";
-  phoneNo.value = "";
+  formData.phoneNo = "";
   dob.value = "";
   confirmPassword.value = "";
 };
 watch(formData, () => {
   clearInputErrors();
 });
-const handleSignup = async () => {
+const handleSupplierSignup = async () => {
   loading.value = true;
   if (!validateForm()) {
     loading.value = false;
@@ -350,13 +347,13 @@ const handleSignup = async () => {
     first_name: formData.firstName,
     last_name: formData.lastName,
     middle_name: middelName.value,
-    phone_number: phoneNo.value,
+    phone_number: formData.phoneNo,
     dob: dob.value,
     email: formData.email,
     password: formData.password,
     password_confirmation: confirmPassword.value,
     type_id: 1,
-    organization_id: VerificationRespData.value.data.organization_id,
+    organization_id: VerificationRespData.value?.data.organization_id,
     role_id: 0,
   };
   try {
