@@ -36,7 +36,7 @@
                 label="Middle Name"
                 :error="false"
                 type="text"
-                placeholder="Enter Middel Name"
+                placeholder="Enter middle Name"
                 v-model="middelName"
               />
             </div>
