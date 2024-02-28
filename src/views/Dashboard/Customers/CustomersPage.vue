@@ -26,25 +26,80 @@
           <div class="bg-white py-6 mt-12 rounded-lg">
             <div class="flex lg:flex-row flex-col gap-3 px-4 justify-between mb-4">
               <div class="flex lg:flex-row flex-col justify-between w-full gap-3">
-                <div class="flex lg:flex-row flex-col w-[60%] gap-3">
-                  <!-- <input
-                    class="border-[1px] w-[40%] border-gray-200 outline-none bg-[#F6F8FB] px-4 py-[4px] rounded-[4px]"
-                    type="search"
-                    placeholder="Search"
-                    name=""
-                    id=""
-                  /> -->
+                <div class="flex flex-row gap-4 mb-2 justify-end">
+                  <button
+                    @click="handleToggleTableButton"
+                    :class="
+                      !toggleButton
+                        ? 'bg-brand text-white'
+                        : 'bg-white border-brand text-brand border-[1px]'
+                    "
+                    class="p-4 py-[12px] rounded-[4px]"
+                  >
+                    Individual</button
+                  ><button
+                    @click="handleToggleTableButton"
+                    :class="
+                      toggleButton
+                        ? 'bg-brand text-white'
+                        : 'bg-white border-brand text-brand border-[1px]'
+                    "
+                    class="p-4 py-[12px] rounded-[4px]"
+                  >
+                    Company
+                  </button>
                 </div>
-
-                <button
-                  @click="HandleToggleModal"
-                  class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
-                >
-                  Add Customer
-                </button>
+                <div>
+                  <button
+                    @click="HandleToggleModal"
+                    class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
+                  >
+                    Add Customer
+                  </button>
+                </div>
               </div>
             </div>
-            <div class="overflow-x-scroll hide-scrollbar">
+            <div v-if="toggleButton" class="overflow-x-scroll hide-scrollbar">
+              <div class="table-container overflow-x-scroll">
+                <table class="table-auto w-full">
+                  <thead class="bg-[#F9FBFF] text-[#A8AABC] text-[14px]">
+                    <tr>
+                      <th class="py-4 pl-4 flex">S/N</th>
+                      <th class="text-left p-4 pr-0 px-6 capitalize">Company Name</th>
+                      <th class="text-left p-4 pr-0 px-6 capitalize">
+                        Company Representative
+                      </th>
+                      <th class="text-left p-4 pr-0 px-6 capitalize">Email</th>
+                      <th class="text-left p-4 pr-0 px-6 capitalize">Contact</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(i, index) in companiesCustomers?.data"
+                      :key="i"
+                      class="border-b text-[14px]"
+                    >
+                      <td class="py-4 pl-4">
+                        {{ index + 1 }}
+                      </td>
+                      <td class="text-left p-4 pr-0 pl-6 capitalize">
+                        <button @click="redirectToSingleCustomerPage(i.id)" class="">
+                          {{ i.company_name }}
+                        </button>
+                      </td>
+                      <td class="text-left p-4 pr-0 pl-6">{{ i.contact_person }}</td>
+                      <td class="text-left p-4 pr-0 pl-6">{{ i.email }}</td>
+                      <td class="text-left p-4 pr-0 pl-6 capitalize">
+                        {{ i.phone_number }}
+                      </td>
+                    </tr>
+                  </tbody>
+                  <!---->
+                </table>
+              </div>
+            </div>
+
+            <div v-else class="overflow-x-scroll hide-scrollbar">
               <div class="table-container overflow-x-scroll">
                 <table class="table-auto w-full">
                   <thead class="bg-[#F9FBFF] text-[#A8AABC] text-[14px]">
@@ -272,7 +327,7 @@ import Loader from "@/components/UI/Loader.vue";
 // import { useQuery } from "vue-query";
 import { storeToRefs } from "pinia";
 const CustomerStore = useCustomerstore();
-const { Customers } = storeToRefs(CustomerStore);
+const { Customers, companiesCustomers } = storeToRefs(CustomerStore);
 import { register } from "@/services/Auth";
 import { useRouter } from "vue-router";
 const router = useRouter();
@@ -283,7 +338,10 @@ const { userProfileDetails } = storeToRefs(store);
 const redirectToSingleCustomerPage = (id) => {
   router.push({ name: "view-customers", params: { id } });
 };
-
+const toggleButton = ref(false);
+function handleToggleTableButton() {
+  toggleButton.value = !toggleButton.value;
+}
 let showModal = ref(false);
 const step = ref(1);
 
@@ -462,5 +520,6 @@ const handleCompanyCustomerRegisteration = async () => {
 // xcrops@example.net
 onMounted(async () => {
   await CustomerStore.allCustomer();
+  await CustomerStore.allCompanyCustomers();
 });
 </script>
