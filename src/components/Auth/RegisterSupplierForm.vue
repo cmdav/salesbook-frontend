@@ -357,6 +357,7 @@ const handleSignup = async () => {
     password_confirmation: confirmPassword.value,
     type_id: 1,
     organization_id: VerificationRespData.value.data.organization_id,
+    role_id: 0,
   };
   try {
     let res = await register(payload);
