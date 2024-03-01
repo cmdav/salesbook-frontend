@@ -40,12 +40,12 @@
           >
         </router-link>
         <router-link
-          to="/"
+          to="/product"
           class="p-[10px] flex justify-start hover:bg-brand/[50%] rounded-[5px]"
-          :class="route.name === '' ? 'text-white bg-brand' : 'text-brand '"
+          :class="route.name === 'product' ? 'text-white bg-brand' : 'text-brand '"
         >
           <div
-            :class="route.name === '' ? 'text-white ' : 'text-brand '"
+            :class="route.name === 'product' ? 'text-white ' : 'text-brand '"
             class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
             <ProductIcon />
