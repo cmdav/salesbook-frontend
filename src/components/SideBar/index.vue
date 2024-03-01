@@ -1,9 +1,9 @@
 <template>
-  <header class="h-screen bg-primary-900">
+  <header class="h-screen bg-secondary-800/[40%]">
     <div class="logo lg:visible invisible">
       <router-link to="/">
         <!-- <h3 class="text-white text-[40px] my-4">iSalesBook</h3> -->
-        <img src="@/assets/iSalesbook-Option-02-White.png" class="h-[5rem]" alt=" logo" />
+        <img src="@/assets/iSalesbook-Option-02.png" class="h-[5rem]" alt=" logo" />
       </router-link>
     </div>
     <!-- The nav -->
@@ -11,13 +11,11 @@
       <nav class="nav !font-light">
         <router-link
           to="/dashboard"
-          class="p-[10px] flex justify-start hover:bg-brand/[0.1] rounded-[5px]"
-          :class="
-            route.name === 'dashboard' ? 'text-white bg-brand' : 'text-secondary-900 '
-          "
+          class="p-[10px] flex justify-start hover:bg-brand/[50%] hover:text-white rounded-[5px]"
+          :class="route.name === 'dashboard' ? 'text-white bg-brand' : 'text-brand '"
         >
           <div
-            :class="route.name === 'dashboard' ? 'text-white ' : 'text-secondary-900 '"
+            :class="route.name === 'dashboard' ? 'text-white ' : 'text-brand '"
             class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
             <homeIcon />
@@ -28,11 +26,11 @@
         </router-link>
         <router-link
           to="/"
-          class="p-[10px] flex justify-start hover:bg-brand/[0.1] rounded-[5px]"
-          :class="route.name === '' ? 'text-white bg-brand' : 'text-secondary-900 '"
+          class="p-[10px] flex justify-start hover:bg-brand/[50%] rounded-[5px]"
+          :class="route.name === '' ? 'text-white bg-brand' : 'text-brand '"
         >
           <div
-            :class="route.name === '' ? 'text-white ' : 'text-secondary-900 '"
+            :class="route.name === '' ? 'text-white ' : 'text-brand '"
             class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
             <StoreIcon />
@@ -43,11 +41,11 @@
         </router-link>
         <router-link
           to="/"
-          class="p-[10px] flex justify-start hover:bg-brand/[0.1] rounded-[5px]"
-          :class="route.name === '' ? 'text-white bg-brand' : 'text-secondary-900 '"
+          class="p-[10px] flex justify-start hover:bg-brand/[50%] rounded-[5px]"
+          :class="route.name === '' ? 'text-white bg-brand' : 'text-brand '"
         >
           <div
-            :class="route.name === '' ? 'text-white ' : 'text-secondary-900 '"
+            :class="route.name === '' ? 'text-white ' : 'text-brand '"
             class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
             <ProductIcon />
@@ -59,13 +57,11 @@
         <router-link
           v-if="feature.includes('CUSTOMERS')"
           to="/customers"
-          class="p-[10px] flex justify-start hover:bg-brand/[0.1] rounded-[5px]"
-          :class="
-            route.name === 'customers' ? 'text-white bg-brand' : 'text-secondary-900 '
-          "
+          class="p-[10px] flex justify-start hover:bg-brand/[50%] rounded-[5px]"
+          :class="route.name === 'customers' ? 'text-white bg-brand' : 'text-brand '"
         >
           <div
-            :class="route.name === 'customers' ? 'text-white ' : 'text-secondary-900 '"
+            :class="route.name === 'customers' ? 'text-white ' : 'text-brand '"
             class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
             <CustomerIcon />
@@ -77,13 +73,11 @@
         <router-link
           v-if="feature.includes('SUPPLIER')"
           to="/supplier"
-          class="p-[10px] flex justify-start hover:bg-brand/[0.1] rounded-[5px]"
-          :class="
-            route.name === 'supplier' ? 'text-white bg-brand' : 'text-secondary-900 '
-          "
+          class="p-[10px] flex justify-start hover:bg-brand/[50%] rounded-[5px]"
+          :class="route.name === 'supplier' ? 'text-white bg-brand' : 'text-brand '"
         >
           <div
-            :class="route.name === 'supplier' ? 'text-white ' : 'text-secondary-900 '"
+            :class="route.name === 'supplier' ? 'text-white ' : 'text-brand '"
             class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
             <SuppliersIcon />
@@ -94,13 +88,13 @@
         </router-link>
         <!-- <router-link
           to="/organisation"
-          class="p-[10px] flex justify-start hover:bg-brand/[0.1] rounded-[5px]"
+          class="p-[10px] flex justify-start hover:bg-brand/[50%] rounded-[5px]"
           :class="
-            route.name === 'organisation' ? 'text-white bg-brand' : 'text-secondary-900 '
+            route.name === 'organisation' ? 'text-white bg-brand' : 'text-brand '
           "
         >
           <div
-            :class="route.name === 'organisation' ? 'text-white ' : 'text-secondary-900 '"
+            :class="route.name === 'organisation' ? 'text-white ' : 'text-brand '"
             class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
             <EmptyIcon />
@@ -112,11 +106,11 @@
 
         <router-link
           to="/"
-          class="p-[10px] flex justify-start hover:bg-brand/[0.1] rounded-[5px]"
-          :class="route.name === '' ? 'text-white bg-brand' : 'text-secondary-900 '"
+          class="p-[10px] flex justify-start hover:bg-brand/[50%] rounded-[5px]"
+          :class="route.name === '' ? 'text-white bg-brand' : 'text-brand '"
         >
           <div
-            :class="route.name === '' ? 'text-white ' : 'text-secondary-900 '"
+            :class="route.name === '' ? 'text-white ' : 'text-brand '"
             class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
             <recordsIcon />
@@ -127,11 +121,11 @@
         </router-link>
         <router-link
           to="/"
-          class="p-[10px] flex justify-start hover:bg-brand/[0.1] rounded-[5px]"
-          :class="route.name === '' ? 'text-white bg-brand' : 'text-secondary-900 '"
+          class="p-[10px] flex justify-start hover:bg-brand/[50%] rounded-[5px]"
+          :class="route.name === '' ? 'text-white bg-brand' : 'text-brand '"
         >
           <div
-            :class="route.name === '' ? 'text-white ' : 'text-secondary-900 '"
+            :class="route.name === '' ? 'text-white ' : 'text-brand '"
             class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
             <reportsIcon />
@@ -144,11 +138,11 @@
 
       <router-link
         to="/logout"
-        class="p-[10px] flex justify-start hover:bg-brand/[0.1] rounded-[5px]"
-        :class="route.name === '' ? 'text-white bg-brand' : 'text-secondary-900 '"
+        class="p-[10px] flex justify-start hover:bg-brand/[50%] rounded-[5px]"
+        :class="route.name === '' ? 'text-white bg-brand' : 'text-brand '"
       >
         <div
-          :class="route.name === '' ? 'text-white ' : 'text-secondary-900 '"
+          :class="route.name === '' ? 'text-white ' : 'text-brand '"
           class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
         >
           <logoutIcon />
