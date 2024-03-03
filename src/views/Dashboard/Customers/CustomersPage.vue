@@ -12,7 +12,7 @@
                 <div
                   class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
                 >
-                  <span>Total Customers</span>
+                  <span>Total Individuals </span>
                 </div>
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
@@ -21,35 +21,56 @@
                 </div>
               </div>
             </div>
+            <div class="flex flex-row justify-between rounded-[8px] bg-brand p-4">
+              <div>
+                <!-- <div class="icon">
+                  <img src="/assets/verifiedusers-5d08be57.svg" alt="" />
+                </div> -->
+                <div
+                  class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
+                >
+                  <span>Total Companies </span>
+                </div>
+                <div
+                  class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
+                >
+                  {{ companiesCustomers?.total }}
+                </div>
+              </div>
+            </div>
           </div>
           <div class="chart hidden bg-white rounded-[8px] min-h-[100vh] p-4"></div>
           <div class="bg-white py-6 mt-12 rounded-lg">
             <div class="flex lg:flex-row flex-col gap-3 px-4 justify-between mb-4">
               <div class="flex lg:flex-row flex-col justify-between w-full gap-3">
-                <div class="flex flex-row gap-4 mb-2 justify-end">
-                  <button
-                    @click="handleToggleTableButton"
-                    :class="
-                      !toggleButton
-                        ? 'bg-brand text-white'
-                        : 'bg-white border-brand text-brand border-[1px]'
-                    "
-                    class="p-4 py-[12px] rounded-[4px]"
-                  >
-                    Individual</button
-                  ><button
-                    @click="handleToggleTableButton"
-                    :class="
-                      toggleButton
-                        ? 'bg-brand text-white'
-                        : 'bg-white border-brand text-brand border-[1px]'
-                    "
-                    class="p-4 py-[12px] rounded-[4px]"
-                  >
-                    Company
-                  </button>
+                <div class="w-[40%]">
+                  <AuthInput :error="false" type="text" placeholder="search" />
                 </div>
-                <div>
+                <div class="flex flex-row gap-[12px]">
+                  <div
+                    class="flex flex-row justify-end border-brand rounded-[4px] overflow-auto border-[1px]"
+                  >
+                    <button
+                      @click="handleToggleTableButton"
+                      :class="
+                        toggleButton ? 'bg-brand text-white' : 'bg-white  text-brand'
+                      "
+                      class="p-4 py-[12px]"
+                    >
+                      Individual</button
+                    ><button
+                      @click="handleToggleCompanyTable"
+                      :class="
+                        toggleCompanyTable
+                          ? 'bg-brand text-white'
+                          : 'bg-white  text-brand '
+                      "
+                      class="p-4 py-[12px]"
+                    >
+                      Company
+                    </button>
+                  </div>
+
                   <button
                     @click="HandleToggleModal"
                     class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
@@ -59,7 +80,7 @@
                 </div>
               </div>
             </div>
-            <div v-if="toggleButton" class="overflow-x-scroll hide-scrollbar">
+            <div v-if="toggleCompanyTable" class="overflow-x-scroll hide-scrollbar">
               <div class="table-container overflow-x-scroll">
                 <table class="table-auto w-full">
                   <thead class="bg-[#F9FBFF] text-[#A8AABC] text-[14px]">
@@ -97,9 +118,18 @@
                   <!---->
                 </table>
               </div>
+              <div class="mx-auto w-fit my-5">
+                <Pagination
+                  @changePage="(page) => (Customers.current_page = page)"
+                  :currentPage="Customers?.current_page"
+                  :pageSize="Customers?.per_page"
+                  :totalPages="Customers?.last_page"
+                  :alwaysShowNextAndPrevious="true"
+                />
+              </div>
             </div>
 
-            <div v-else class="overflow-x-scroll hide-scrollbar">
+            <div v-if="toggleButton" class="overflow-x-scroll hide-scrollbar">
               <div class="table-container overflow-x-scroll">
                 <table class="table-auto w-full">
                   <thead class="bg-[#F9FBFF] text-[#A8AABC] text-[14px]">
@@ -133,8 +163,17 @@
                   <!---->
                 </table>
               </div>
+              <div class="mx-auto w-fit my-5">
+                <Pagination
+                  @changePage="(page) => (Customers.current_page = page)"
+                  :currentPage="Customers?.current_page"
+                  :pageSize="Customers?.per_page"
+                  :totalPages="Customers?.last_page"
+                  :alwaysShowNextAndPrevious="true"
+                />
+              </div>
             </div>
-            <div class="mx-auto w-fit mt-5">
+            <!-- <div class="mx-auto w-fit mt-5">
               <Pagination
                 @changePage="(page) => (Customers.current_page = page)"
                 :currentPage="Customers?.current_page"
@@ -142,7 +181,7 @@
                 :totalPages="Customers?.last_page"
                 :alwaysShowNextAndPrevious="true"
               />
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -324,6 +363,7 @@ import CenteredModalLarge from "@/components/UI/CenteredModalLarge.vue";
 import AuthInput from "@/components/UI/Input/AuthInput.vue";
 import Pagination from "@/components/UI/Pagination/Pagination.vue";
 import Loader from "@/components/UI/Loader.vue";
+
 // import { useQuery } from "vue-query";
 import { storeToRefs } from "pinia";
 const CustomerStore = useCustomerstore();
@@ -338,12 +378,19 @@ const { userProfileDetails } = storeToRefs(store);
 const redirectToSingleCustomerPage = (id) => {
   router.push({ name: "view-customers", params: { id } });
 };
-const toggleButton = ref(false);
+const toggleButton = ref(true);
+const toggleCompanyTable = ref(false);
 function handleToggleTableButton() {
-  toggleButton.value = !toggleButton.value;
+  toggleCompanyTable.value = false;
+  toggleButton.value = true;
   CustomerStore.allCustomer();
+}
+function handleToggleCompanyTable() {
+  toggleCompanyTable.value = true;
+  toggleButton.value = false;
   CustomerStore.allCompanyCustomers();
 }
+
 let showModal = ref(false);
 const step = ref(1);
 

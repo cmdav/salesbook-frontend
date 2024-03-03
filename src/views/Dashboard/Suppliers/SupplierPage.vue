@@ -78,39 +78,23 @@
           <div class="bg-white py-6 mt-12 rounded-lg">
             <div class="flex lg:flex-row flex-col gap-3 px-4 justify-between mb-4">
               <div class="flex lg:flex-row flex-col justify-between w-full gap-2">
-                <div class="flex lg:flex-row flex-col w-[60%] gap-3">
-                  <!-- <select
-                    class="border-[1px] border-gray-200 px-6 py-[12px] bg-[#f6f6f6] rounded-[4px]"
-                    name=""
-                    id=""
-                  >
-                    <option>All Status</option>
-                    <option value="ACTIVE">Active</option>
-                    <option value=""></option>
-                    <option value=""></option>
-                  </select> -->
-
-                  <!-- <input
-                    class="border-[1px] w-[40%] border-gray-200 outline-none bg-[#F6F8FB] px-4 py-[4px] rounded-[4px]"
-                    type="search"
-                    placeholder="Search"
-                    name=""
-                    id=""
-                  /> -->
+                <div class="w-[40%]">
+                  <AuthInput :error="false" type="text" placeholder="search" />
                 </div>
-
-                <button
-                  @click="HandleToggleUploadModal"
-                  class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
-                >
-                  Upload Suppliers
-                </button>
-                <button
-                  @click="HandleToggleModal"
-                  class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
-                >
-                  Invite Suppliers
-                </button>
+                <div class="flex flex-row gap-[12px]">
+                  <button
+                    @click="HandleToggleUploadModal"
+                    class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
+                  >
+                    Upload Suppliers
+                  </button>
+                  <button
+                    @click="HandleToggleModal"
+                    class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
+                  >
+                    Invite Suppliers
+                  </button>
+                </div>
               </div>
             </div>
             <div class="overflow-x-scroll hide-scrollbar">

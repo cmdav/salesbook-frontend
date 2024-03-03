@@ -78,39 +78,23 @@
           <div class="bg-white py-6 mt-12 rounded-lg">
             <div class="flex lg:flex-row flex-col gap-3 px-4 justify-between mb-4">
               <div class="flex lg:flex-row flex-col justify-between w-full gap-2">
-                <div class="flex lg:flex-row flex-col w-[60%] gap-3">
-                  <!-- <select
-                    class="border-[1px] border-gray-200 px-6 py-[12px] bg-[#f6f6f6] rounded-[4px]"
-                    name=""
-                    id=""
-                  >
-                    <option>All Status</option>
-                    <option value="ACTIVE">Active</option>
-                    <option value=""></option>
-                    <option value=""></option>
-                  </select> -->
-
-                  <!-- <input
-                    class="border-[1px] w-[40%] border-gray-200 outline-none bg-[#F6F8FB] px-4 py-[4px] rounded-[4px]"
-                    type="search"
-                    placeholder="Search"
-                    name=""
-                    id=""
-                  /> -->
+                <div class="w-[40%]">
+                  <AuthInput :error="false" type="text" placeholder="search" />
                 </div>
-
-                <button
-                  @click="HandleToggleUploadModal"
-                  class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
-                >
-                  Add Products Categories
-                </button>
-                <button
-                  @click="HandleToggleModal"
-                  class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
-                >
-                  Add Products
-                </button>
+                <div class="flex flex-row gap-[12px]">
+                  <button
+                    @click="HandleToggleUploadModal"
+                    class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
+                  >
+                    Add Products Categories
+                  </button>
+                  <button
+                    @click="HandleToggleModal"
+                    class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
+                  >
+                    Add Products
+                  </button>
+                </div>
               </div>
             </div>
             <div class="">
@@ -247,7 +231,7 @@
             <button @click="HandleToggleModal" class="text-[30px]">X</button>
           </header>
           <div>
-            <form
+            <!-- <form
               class="flex flex-col gap-[17px]"
               action="POST"
               @submit.prevent="handleProductInvite()"
@@ -298,7 +282,7 @@
                   </button>
                 </div>
               </div>
-            </form>
+            </form> -->
           </div>
         </div>
       </CenteredModalLarge>
@@ -307,11 +291,13 @@
           <header
             class="flex flex-row items-center justify-between border-b-[#000000] pb-[35px] mb-[35px] border-b-[1px]"
           >
-            <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">Upload Products</h4>
+            <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">
+              Add Products Categories
+            </h4>
             <button @click="HandleToggleUploadModal" class="text-[30px]">X</button>
           </header>
           <div>
-            <form
+            <!-- <form
               class="flex flex-col gap-[17px]"
               action="POST"
               @submit.prevent="handleProductInvite()"
@@ -348,17 +334,6 @@
                   </button>
                 </div>
 
-                <!-- <div class="flex lg:flex-row flex-col w-full gap-[20px]">
-                  <div class="flex flex-col w-full">
-                    <AuthInput
-                      label="Email Address"
-                      :error="errors.email"
-                      type="email"
-                      placeholder="Enter email address"
-                      v-model="formData.email"
-                    />
-                  </div>
-                </div> -->
               </div>
 
               <div class="flex flex-col lg:flex-row w-full gap-[30px]">
@@ -372,7 +347,7 @@
                   </button>
                 </div>
               </div>
-            </form>
+            </form> -->
           </div>
         </div>
       </CenteredModalLarge>
