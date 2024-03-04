@@ -82,12 +82,12 @@
                   <AuthInput :error="false" type="text" placeholder="search" />
                 </div>
                 <div class="flex flex-row gap-[12px]">
-                  <button
+                  <!-- <button
                     @click="HandleToggleUploadModal"
                     class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
                   >
                     Add Products Categories
-                  </button>
+                  </button> -->
                   <button
                     @click="HandleToggleModal"
                     class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
@@ -222,132 +222,257 @@
           </div>
         </div>
       </div>
+
       <CenteredModalLarge v-if="showModal">
         <div class="p-4">
-          <header
-            class="flex flex-row items-center justify-between border-b-[#000000] pb-[35px] mb-[35px] border-b-[1px]"
-          >
-            <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">Add Products</h4>
-            <button @click="HandleToggleModal" class="text-[30px]">X</button>
-          </header>
-          <div>
-            <!-- <form
-              class="flex flex-col gap-[17px]"
-              action="POST"
-              @submit.prevent="handleProductInvite()"
+          <div v-if="step == 1">
+            <header
+              class="flex flex-row items-center justify-between border-b-[#000000] pb-[5px] mb-[10px] border-b-[1px]"
             >
-              <div class="flex flex-col gap-[17px]">
-                <div class="flex lg:flex-row flex-col w-full gap-[20px]">
-                  <div class="flex flex-col w-full">
-                    <AuthInput
-                      label="First Name"
-                      :error="errors.firstName"
-                      type="text"
-                      placeholder="Enter first name"
-                      v-model="formData.firstName"
-                    />
-                  </div>
-                  <div class="flex flex-col w-full">
-                    <AuthInput
-                      label="Last Name"
-                      :error="errors.lastName"
-                      type="text"
-                      placeholder="Enter last name"
-                      v-model="formData.lastName"
-                    />
-                  </div>
-                </div>
-
-                <div class="flex lg:flex-row flex-col w-full gap-[20px]">
-                  <div class="flex flex-col w-full">
-                    <AuthInput
-                      label="Email Address"
-                      :error="errors.email"
-                      type="email"
-                      placeholder="Enter email address"
-                      v-model="formData.email"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div class="flex flex-col lg:flex-row w-full gap-[30px]">
-                <div class="w-full flex justify-center">
-                  <button
-                    type="submit"
-                    class="btn-brand !border-none !w-[30%] mx-auto !py-3 lg:!px-10 !px-5 !text-[#FFFFFF] text-center"
-                  >
-                    <span v-if="!loading" class="text-[12.067px]">Invite</span>
-                    <Loader v-else />
-                  </button>
-                </div>
-              </div>
-            </form> -->
-          </div>
-        </div>
-      </CenteredModalLarge>
-      <CenteredModalLarge v-if="showUploadModal">
-        <div class="p-4">
-          <header
-            class="flex flex-row items-center justify-between border-b-[#000000] pb-[35px] mb-[35px] border-b-[1px]"
-          >
-            <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">
-              Add Products Categories
-            </h4>
-            <button @click="HandleToggleUploadModal" class="text-[30px]">X</button>
-          </header>
-          <div>
-            <!-- <form
-              class="flex flex-col gap-[17px]"
-              action="POST"
-              @submit.prevent="handleProductInvite()"
+              <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">Add Product</h4>
+              <button @click="HandleToggleModal" class="text-[30px]">X</button>
+            </header>
+            <div
+              class="flex flex-row w-full justify-end gap-[10px] pb-6 border-b-[#000000] border-b-[1px]"
             >
+              <button
+                @click="addCategory"
+                class="bg-brand text-white w-[30%] text-center py-2 px-1 rounded-lg"
+              >
+                Add Category
+              </button>
+              <button
+                @click="addSubCategory"
+                class="bg-brand text-white w-[30%] text-center py-2 px-1 rounded-lg"
+              >
+                Add sub category
+              </button>
+              <button
+                @click="addSubCategory"
+                class="bg-brand text-white w-[40%] text-center py-2 px-1 rounded-lg"
+              >
+                Add measurement
+              </button>
+            </div>
+
+            <div>
               <div class="flex flex-col gap-[17px]">
-                <div class="flex flex-col w-full gap-[10px]">
-                  <div class="flex h-40 rounded-lg flex-col w-full">
-                    <label
-                      for="upload_file"
-                      class="bg-secondary-800 border-dashed cursor-pointer border-[#254035AB] border-[1.789px] p-2 py-6 flex flex-col text-center relative rounded-[5.982px]"
-                    >
-                      <div class="flex flex-col">
-                        <p class="font-Satoshi500 text-[12.3px] text-[#000]">
-                          Drag and Drop file or <span class="underline">Browse</span>
-                        </p>
-                        <p class="text-[#000000] text-[8.516px] font-Satoshi500">
-                          Attach up to 3 files, max 10MB each.
-                        </p>
-                        <CloudUploadIcon class="mx-auto text-primary-900 mt-4" />
+                <div class="flex flex-col gap-[17px]">
+                  <div class="flex lg:flex-row flex-col w-full gap-[20px]">
+                    <div class="flex flex-col rounded-lg h-auto w-full">
+                      <Label>Product Image</Label>
+
+                      <label
+                        for="upload_file"
+                        class="bg-secondary-800 border-dashed cursor-pointer overflow-hidden h-[117px] border-[#254035AB] border-[1.789px] flex flex-col text-center relative rounded-[5.982px]"
+                      >
+                        <img
+                          v-if="addProductData.product_image"
+                          :src="addProductData.product_image"
+                          class="w-full h-[117px] object-cover mb-4 rounded-md"
+                        />
+
+                        <div v-else class="flex flex-col p-2 py-4">
+                          <p class="font-Satoshi500 text-[12.3px] text-[#000]">
+                            Drag and Drop file or <span class="underline">Browse</span>
+                          </p>
+                          <CloudUploadIcon class="mx-auto text-primary-900 mt-4" />
+                        </div>
+                      </label>
+                      <input
+                        type="file"
+                        name=""
+                        ref="previewImage"
+                        accept=".jpg,.png"
+                        hidden
+                        id="upload_file"
+                        @change="uploadFile"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="flex lg:flex-row flex-col w-full gap-[20px]">
+                    <div class="flex flex-col w-full">
+                      <AuthInput
+                        label="Product Name"
+                        :error="false"
+                        type="text"
+                        v-model="addProductData.product_name"
+                      />
+                    </div>
+                    <div class="flex flex-col w-full">
+                      <Label>Category</Label>
+                      <div
+                        class="w-full font-light font-Satoshi400 bg-white !p-0 border-neutral-900 border-[0.509px] opacity-[0.8029] rounded-[4px] text-[12.68px]"
+                      >
+                        <a-select
+                          :bordered="false"
+                          :show-arrow="false"
+                          class="w-full"
+                          show-search
+                          v-model:value="addProductData.category"
+                        >
+                          <a-select-option
+                            v-for="item in productCategories"
+                            :key="item.id"
+                            :value="item.id"
+                          >
+                            {{ item.category_name }}
+                          </a-select-option>
+                        </a-select>
                       </div>
-                      <span>{{}} </span>
-                    </label>
-                    <input
-                      type="file"
-                      name=""
-                      ref="previewImage"
-                      accept=".doc,.docx,.jpg,.png,.pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                      hidden
-                      id="upload_file"
-                    />
+                    </div>
                   </div>
-                  <button class="bg-brand text-center p-2 rounded-lg w-full">
-                    Download Sample
-                  </button>
+                  <div class="flex lg:flex-row flex-col w-full gap-[20px]">
+                    <div class="flex flex-col w-full">
+                      <Label>Measurement</Label>
+                      <div
+                        class="w-full font-light font-Satoshi400 bg-white !p-0 border-neutral-900 border-[0.509px] opacity-[0.8029] rounded-[4px] text-[12.68px]"
+                      >
+                        <a-select
+                          :bordered="false"
+                          :show-arrow="false"
+                          class="w-full"
+                          show-search
+                          v-model:value="addProductData.measurement_id"
+                        >
+                          <a-select-option
+                            v-for="item in measurements"
+                            :key="item.id"
+                            :value="item.id"
+                          >
+                            {{ item.measurement_name }} ( {{ item.unit }}
+                            )
+                          </a-select-option>
+                        </a-select>
+                      </div>
+                    </div>
+                    <div class="flex flex-col w-full">
+                      <Label>Sub Category</Label>
+                      <div
+                        class="w-full font-light font-Satoshi400 bg-white !p-0 border-neutral-900 border-[0.509px] opacity-[0.8029] rounded-[4px] text-[12.68px]"
+                      >
+                        <a-select
+                          :bordered="false"
+                          :show-arrow="false"
+                          class="w-full"
+                          show-search
+                          v-model:value="addProductData.sub_category_id"
+                        >
+                          <a-select-option
+                            v-for="item in allProductSubCategories"
+                            :key="item.id"
+                            :value="item.id"
+                          >
+                            {{ item.sub_category_name }}
+                          </a-select-option>
+                        </a-select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="flex lg:flex-row flex-col w-full gap-[20px]">
+                    <div class="flex flex-col w-full">
+                      <Label>Description</Label>
+                      <div
+                        class="w-full font-light font-Satoshi400 bg-white !p-0 border-neutral-900 border-[0.509px] opacity-[0.8029] rounded-[4px] text-[12.68px]"
+                      >
+                        <a-textarea
+                          :bordered="false"
+                          v-model:value="addProductData.product_description"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
+                <div class="flex flex-col lg:flex-row w-full gap-[30px]">
+                  <div class="w-full flex justify-center">
+                    <button
+                      @click="handleAddProduct"
+                      class="btn-brand !border-none !w-[30%] mx-auto !py-3 lg:!px-10 !px-5 !text-[#FFFFFF] text-center"
+                    >
+                      <span v-if="!loading" class="text-[12.067px]">Add</span>
+                      <Loader v-else />
+                    </button>
+                  </div>
+                </div>
               </div>
+            </div>
+          </div>
+          <div v-if="step == 2" class="flex flex-col w-full gap-[20px]">
+            <header
+              class="flex flex-row items-center gap-2 justify-start border-b-[#000000] pb-[5px] mb-[10px] border-b-[1px]"
+            >
+              <button @click="changeStep(1)" class="text-[30px]">
+                <ArrowLeftIcon class="!h-[40px]" />
+              </button>
 
-              <div class="flex flex-col lg:flex-row w-full gap-[30px]">
-                <div class="w-full flex justify-center">
-                  <button
-                    type="submit"
-                    class="btn-brand !border-none !w-[30%] mx-auto !py-3 lg:!px-10 !px-5 !text-[#FFFFFF] text-center"
+              <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">Add Category</h4>
+            </header>
+
+            <div class="flex flex-col w-full py-4">
+              <AuthInput label="Category Name" :error="false" type="text" />
+            </div>
+            <div class="flex flex-col lg:flex-row w-full gap-[30px]">
+              <div class="w-full flex justify-center">
+                <button
+                  type="submit"
+                  class="btn-brand !border-none !w-[30%] mx-auto !py-3 lg:!px-10 !px-5 !text-[#FFFFFF] text-center"
+                >
+                  <span v-if="!loading" class="text-[12.067px]">Add</span>
+                  <Loader v-else />
+                </button>
+              </div>
+            </div>
+          </div>
+          <div v-if="step == 3" class="flex flex-col w-full gap-[20px]">
+            <header
+              class="flex flex-row items-center gap-2 justify-start border-b-[#000000] pb-[5px] mb-[10px] border-b-[1px]"
+            >
+              <button @click="changeStep(1)" class="text-[30px]">
+                <ArrowLeftIcon class="!h-[40px]" />
+              </button>
+
+              <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">
+                Add Sub Category
+              </h4>
+            </header>
+            <div class="flex flex-col w-full">
+              <Label>Select Category</Label>
+              <div
+                class="w-full font-light font-Satoshi400 bg-white !p-0 border-neutral-900 border-[0.509px] opacity-[0.8029] rounded-[4px] text-[12.68px]"
+              >
+                <a-select
+                  :bordered="false"
+                  :show-arrow="false"
+                  class="w-full"
+                  show-search
+                >
+                  <a-select-option
+                    v-for="item in ['india', 'pakistan']"
+                    :key="item"
+                    :value="item"
                   >
-                    <span v-if="!loading" class="text-[12.067px]">Invite</span>
-                    <Loader v-else />
-                  </button>
-                </div>
+                    {{ item }}
+                  </a-select-option>
+                </a-select>
               </div>
-            </form> -->
+            </div>
+            <div class="flex flex-col w-full py-4">
+              <AuthInput label="Sub Category Name" :error="false" type="text" />
+            </div>
+            <div class="flex flex-col lg:flex-row w-full gap-[30px]">
+              <div class="w-full flex justify-center">
+                <button
+                  type="submit"
+                  class="btn-brand !border-none !w-[30%] mx-auto !py-3 lg:!px-10 !px-5 !text-[#FFFFFF] text-center"
+                >
+                  <span v-if="!loading" class="text-[12.067px]">Add</span>
+                  <Loader v-else />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </CenteredModalLarge>
@@ -363,9 +488,17 @@ import AuthInput from "@/components/UI/Input/AuthInput.vue";
 import Pagination from "@/components/UI/Pagination/Pagination.vue";
 import Loader from "@/components/UI/Loader.vue";
 import Dropdown from "@/components/UI/Dropdown/Dropdown.vue";
+import Label from "@/components/UI/Input/Label.vue";
+import ArrowLeftIcon from "@/components/icons/ArrowLeftIcon.vue";
 import { storeToRefs } from "pinia";
 const productsStore = useProductStore();
-const { products } = storeToRefs(productsStore);
+const {
+  products,
+  productCategories,
+  productSubCategories,
+  allProductSubCategories,
+  measurements,
+} = storeToRefs(productsStore);
 import { useStore } from "@/stores/user";
 const store = useStore();
 const { userProfileDetails } = storeToRefs(store);
@@ -374,9 +507,27 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 const showDocument = ref({});
 const showDocumentToggle = ref(false);
-const reason = ref("");
 const redirectToSingleProductPage = () => {
   // router.push({ name: "view-Product", params: { id } });
+};
+const step = ref(1);
+const addProductData = reactive({
+  product_name: "",
+  product_description: "",
+  product_image: "",
+  measurement_id: "",
+  sub_category_id: "",
+  category: "",
+});
+
+const addCategory = () => {
+  step.value = 2;
+};
+const addSubCategory = () => {
+  step.value = 3;
+};
+const changeStep = (value) => {
+  step.value = value;
 };
 let showModal = ref(false);
 let showUploadModal = ref(false);
@@ -388,9 +539,12 @@ const formData = reactive({
 let loading = ref(false);
 
 const errors = reactive({
-  firstName: false,
-  lastName: false,
-  email: false,
+  product_name: false,
+  product_description: false,
+  product_image: false,
+  measurement_id: false,
+  sub_category_id: false,
+  category: false,
 });
 const validateForm = () => {
   // Reset errorsMsg
@@ -401,8 +555,8 @@ const validateForm = () => {
   // Perform validation before submission
   let isValid = true;
 
-  Object.keys(formData).forEach((key) => {
-    if (!formData[key]) {
+  Object.keys(addProductData).forEach((key) => {
+    if (!addProductData[key]) {
       errors[key] = true;
       isValid = false;
     }
@@ -424,7 +578,12 @@ const clearInputErrors = () => {
 //   );
 // });
 const clearInputs = () => {
-  (formData.firstName = ""), (formData.lastName = ""), (formData.email = "");
+  (addProductData.product_name = ""),
+    (addProductData.product_description = ""),
+    (addProductData.product_image = null);
+  addProductData.measurement_id = "";
+  addProductData.sub_category_id = "";
+  addProductData.category = "";
 };
 watch(formData, () => {
   clearInputErrors();
@@ -448,35 +607,115 @@ function HandleToggleUploadModal() {
   showUploadModal.value = !showUploadModal.value;
   clearInputs();
 }
+const previewImage = ref(null);
+const uploadedImageName = ref("");
 
-const handleProductInvite = async () => {
+// const uploadFile = (event) => {
+//   // businessDetails.value.company_logo = previewImage.value.files[0];
+//   const file = event.target.files[0];
+
+//   if (file) {
+//     const reader = new FileReader();
+//     uploadedImageName.value = file.name;
+
+//     reader.onload = () => {
+//       addProductData.product_image = reader.result;
+//     };
+//     reader.readAsDataURL(file);
+//   } else {
+//     addProductData.product_image = "";
+//   }
+
+//   showImage();
+// };
+const uploadFile = (event) => {
+  const file = event.target.files[0]; // Retrieve the uploaded file
+
+  if (file) {
+    // Check if a file is uploaded
+    const validImageTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/jpg",
+      "image/gif",
+      "image/svg",
+    ]; // Define valid image file types
+
+    if (validImageTypes.includes(file.type)) {
+      // Check if the file type is valid
+      if (file.size <= 2048 * 1024) {
+        // Check if the file size is within the limit (2048 KB)
+        const reader = new FileReader(); // Create a FileReader object to read file content
+
+        // Set the uploaded image name to display
+        uploadedImageName.value = file.name;
+
+        reader.onload = () => {
+          // When FileReader has loaded the file
+          // Set the product image data to the result of FileReader
+          addProductData.product_image = reader.result;
+        };
+
+        // Read the file as a data URL
+        reader.readAsDataURL(file);
+      } else {
+        // File size exceeds the limit, handle error
+        console.error("The uploaded file size exceeds the limit.");
+      }
+    } else {
+      // Invalid file type, handle error
+      console.error("Invalid file type. Please upload an image file.");
+    }
+  } else {
+    // If no file is uploaded
+    addProductData.product_image = ""; // Clear the product image data
+  }
+
+  showImage(); // Show the uploaded image
+};
+
+const showImage = async () => {
+  if (addProductData.product_image) {
+    previewImage.value = URL.createObjectURL(addProductData.product_image);
+  } else {
+    previewImage.value = null;
+  }
+};
+
+const handleAddProduct = async () => {
   loading.value = true;
   if (!validateForm()) {
     loading.value = false;
     return;
   }
   let payload = {
-    first_name: formData.firstName,
-    last_name: formData.lastName,
-    organization_id: userProfileDetails.value?.organization_id,
-    email: formData.email,
-    type: "invitation",
+    product_name: addProductData.product_name,
+    product_description: addProductData.product_description,
+    product_image: addProductData.product_image,
+    measurement_id: addProductData.measurement_id,
+    sub_category_id: addProductData.sub_category_id,
+    category_id: addProductData.category,
   };
   try {
-    // let res = await resendEmail(payload);
-    // ProductStore.allProduct();
+    let res = await productsStore.handleAddProducts(payload);
+    productsStore.handleGetProducts();
     HandleToggleModal();
     loading.value = false;
     clearInputs();
-    // return res;
+    return res;
   } catch (error) {
     console.log(error);
   } finally {
     loading.value = false;
   }
 };
+
 onMounted(async () => {
   await productsStore.handleGetProducts();
+  await productsStore.handleGetProductCategories();
+  await productsStore.handleGetProductSubCategories();
+  await productsStore.handleGetAllProductSubCategories();
+  await productsStore.handleGetMeasurements();
   await store.handleUserProfile();
 });
 </script>

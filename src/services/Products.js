@@ -17,11 +17,43 @@ export const getProductCategories = async () => {
     console.log(error)
   }
 }
+export const addProductCategories = async (payload) => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.post(`product-categories`,payload ,{
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res)
+    return res.data
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 export const getProductSubCategories = async () => {
   const token = await getToken()
 
   try {
     let res = await axios.get(`product-sub-categories`, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res)
+    return res.data
+  } catch (error) {
+    catchAxiosError(error)
+    throw error
+  }
+}
+export const addProductSubCategories = async (payload) => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.get(`product-sub-categories`,payload, {
       headers: {
         Authorization: 'Bearer ' + token
       }
@@ -70,6 +102,22 @@ export const getProducts = async () => {
 
   try {
     let res = await axios.get(`products`, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res)
+    return res.data
+  } catch (error) {
+    catchAxiosError(error)
+    throw error
+  }
+}
+export const addProducts = async (payload) => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.post(`products`, payload, {
       headers: {
         Authorization: 'Bearer ' + token
       }
@@ -150,6 +198,38 @@ export const updateInventories = async (id, payload) => {
 
   try {
     let res = await axios.put(`stores/${id}`, payload, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res)
+    return res.data
+  } catch (error) {
+    catchAxiosError(error)
+    throw error
+  }
+}
+export const addMeasurements = async ( payload) => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.post(`measurements`, payload, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res)
+    return res.data
+  } catch (error) {
+    catchAxiosError(error)
+    throw error
+  }
+}
+export const getMeasurements = async () => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.get(`measurements`, {
       headers: {
         Authorization: 'Bearer ' + token
       }

@@ -32,10 +32,9 @@ export const useStore = defineStore('user', () => {
   }
 
   const features = computed(() => {
-    const account = user.value?.user?.type
+    const account = getUser?.value?.user?.type
     if (account) {
       const accountLowerCase = account.toLowerCase()
-      console.log(accountLowerCase)
       if (accountLowerCase === '2') {
         return ['STORE', 'PRODUCT', 'SUPPLIER', 'RECORDS', 'REPORTS', 'CUSTOMERS', 'INVENTORY']
       } else if (accountLowerCase === '1') {

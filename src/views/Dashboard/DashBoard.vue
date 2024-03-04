@@ -232,12 +232,16 @@ const supplierStore = useSupplierStore();
 const { Supplier } = storeToRefs(supplierStore);
 const CustomerStore = useCustomerstore();
 const { Customers, companiesCustomers } = storeToRefs(CustomerStore);
-const TotalCustomers = computed(
-  () => Customers?.value?.total + companiesCustomers?.value?.total
-);
+const TotalCustomers = computed(() => {
+  return Customers?.value?.total + companiesCustomers?.value?.total;
+});
 onMounted(async () => {
-  await supplierStore.allSupplier();
-  await CustomerStore.allCustomer();
-  await CustomerStore.allCompanyCustomers();
+  try {
+    await supplierStore.allSupplier();
+    await CustomerStore.allCustomer();
+    await CustomerStore.allCompanyCustomers();
+  } catch (error) {
+    console.log(error);
+  }
 });
 </script>

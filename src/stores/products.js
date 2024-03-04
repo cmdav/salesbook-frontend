@@ -10,7 +10,12 @@ import {
   getAllSupplierProducts,
   getStores,
   addSales,
-  updateInventories
+  updateInventories,
+  addProductCategories,
+  addProductSubCategories,
+  addMeasurements,
+  addProducts,
+  getMeasurements
 } from '@/services/Products'
 
 export const useProductStore = defineStore('Products', () => {
@@ -22,7 +27,16 @@ export const useProductStore = defineStore('Products', () => {
   const supplierProducts = ref({})
   const allSupplierProducts = ref({})
   const stores = ref({})
+  const measurements = ref({})
 
+  const handleGetMeasurements = async () => {
+    try {
+      measurements.value = await getMeasurements()
+      return measurements.value
+    } catch (error) {
+      console.error(error)
+    }
+  }
   const handleGetProductCategories = async () => {
     try {
       productCategories.value = await getProductCategories()
@@ -96,6 +110,14 @@ export const useProductStore = defineStore('Products', () => {
       console.error(error)
     }
   }
+  const handleAddProducts = async (payload) => {
+    try {
+      let res = await addProducts(payload)
+      return res
+    } catch (error) {
+      console.error(error)
+    }
+  }
   const handleUpdateInventories = async (id, payload) => {
     try {
       let res = await updateInventories(id, payload)
@@ -123,6 +145,9 @@ export const useProductStore = defineStore('Products', () => {
     handleAddSales,
     handleUpdateInventories,
     products,
-    stores
+    stores,
+    handleGetMeasurements,
+    measurements,
+    handleAddProducts
   }
 })

@@ -39,6 +39,9 @@ h6 {
 select {
   @apply bg-transparent;
 }
+th{
+  @apply text-black
+}
 @layer base {
   body {
     font-family: 'Poppins-Light';
