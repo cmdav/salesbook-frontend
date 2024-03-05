@@ -212,10 +212,10 @@
             </div>
             <div class="mx-auto w-fit mt-5">
               <Pagination
-                @changePage="(page) => (products.current_page = page)"
+                @changePage="setCurrentPage"
                 :currentPage="products?.current_page"
                 :pageSize="products?.per_page"
-                :totalPages="products?.last_page"
+                :totalPages="2"
                 :alwaysShowNextAndPrevious="true"
               />
             </div>
@@ -613,6 +613,7 @@ const addSubProductCategoryData = reactive({
   category_id: "",
   sub_category_description: "",
 });
+const currentPage = ref(1);
 
 const addCategory = () => {
   step.value = 2;
@@ -860,8 +861,21 @@ const addMeasurements = async () => {
     addMeasurementsData.unit = "";
   }
 };
+const fetchProducts = async (page) => {
+  try {
+    let res = await productsStore.handleGetProducts(page);
+    return res;
+  } catch (error) {
+    console.error("Error fetching products:", error);
+  }
+};
+const setCurrentPage = (page) => {
+  products.value.current_page = page;
+  fetchProducts(page);
+};
+
 onMounted(async () => {
-  await productsStore.handleGetProducts();
+  await productsStore.handleGetProducts(products?.value?.current_page);
   await productsStore.handleGetProductCategories();
   await productsStore.handleGetProductSubCategories();
   await productsStore.handleGetAllProductSubCategories();

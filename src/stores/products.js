@@ -77,9 +77,9 @@ export const useProductStore = defineStore('Products', () => {
       console.error(error)
     }
   }
-  const handleGetProducts = async () => {
+  const handleGetProducts = async (page) => {
     try {
-      products.value = await getProducts()
+      products.value = await getProducts(page)
       return products.value
     } catch (error) {
       console.error(error)

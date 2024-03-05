@@ -21,7 +21,7 @@ export const addProductCategories = async (payload) => {
   const token = await getToken()
 
   try {
-    let res = await axios.post(`product-categories`,payload, {
+    let res = await axios.post(`product-categories`, payload, {
       headers: {
         Authorization: 'Bearer ' + token
       }
@@ -53,7 +53,7 @@ export const addProductSubCategories = async (payload) => {
   const token = await getToken()
 
   try {
-    let res = await axios.post(`product-sub-categories`,payload, {
+    let res = await axios.post(`product-sub-categories`, payload, {
       headers: {
         Authorization: 'Bearer ' + token
       }
@@ -97,11 +97,11 @@ export const getAllProducts = async () => {
     throw error
   }
 }
-export const getProducts = async () => {
+export const getProducts = async (page) => {
   const token = await getToken()
 
   try {
-    let res = await axios.get(`products`, {
+    let res = await axios.get(`products?page=${page}`, {
       headers: {
         Authorization: 'Bearer ' + token
       }
@@ -209,7 +209,7 @@ export const updateInventories = async (id, payload) => {
     throw error
   }
 }
-export const addMeasurements = async ( payload) => {
+export const addMeasurements = async (payload) => {
   const token = await getToken()
 
   try {
