@@ -79,7 +79,12 @@
             <div class="flex lg:flex-row flex-col gap-3 px-4 justify-between mb-4">
               <div class="flex lg:flex-row flex-col justify-between w-full gap-2">
                 <div class="w-[40%]">
-                  <AuthInput :error="false" type="text" placeholder="search" />
+                  <AuthInput
+                    :error="false"
+                    type="text"
+                    placeholder="search"
+                    v-model="sortInput.name"
+                  />
                 </div>
                 <div class="flex flex-row gap-[12px]">
                   <!-- <button
@@ -113,7 +118,7 @@
                   </thead>
                   <tbody>
                     <tr
-                      v-for="(i, index) in products?.data"
+                      v-for="(i, index) in filteredJobs"
                       :key="i"
                       class="border-b text-[14px]"
                     >
@@ -561,7 +566,7 @@
   </DashboardLayout>
 </template>
 <script setup>
-import { ref, reactive, watch, onMounted } from "vue";
+import { ref, reactive, watch, onMounted, computed } from "vue";
 import { useProductStore } from "@/stores/products";
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import CenteredModalLarge from "@/components/UI/CenteredModalLarge.vue";
@@ -591,6 +596,9 @@ const showDocumentToggle = ref(false);
 const redirectToSingleProductPage = () => {
   // router.push({ name: "view-Product", params: { id } });
 };
+let sortInput = reactive({
+  name: "",
+});
 const step = ref(1);
 const addProductData = reactive({
   product_name: "",
@@ -873,6 +881,19 @@ const setCurrentPage = (page) => {
   products.value.current_page = page;
   fetchProducts(page);
 };
+const filteredJobs = computed(() => {
+  // Create a shallow copy of the jobs array
+  let filtered = products.value?.data;
+
+  // Filtering based on the search criteria
+  if (sortInput.name) {
+    return filtered.filter((item) =>
+      item.product_name.toLowerCase().includes(sortInput.name.toLowerCase())
+    );
+  }
+
+  return filtered; // Return the filtered array
+});
 
 onMounted(async () => {
   await productsStore.handleGetProducts(products?.value?.current_page);
