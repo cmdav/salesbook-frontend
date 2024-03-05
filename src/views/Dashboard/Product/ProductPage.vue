@@ -78,13 +78,20 @@
           <div class="bg-white py-6 mt-12 rounded-lg">
             <div class="flex lg:flex-row flex-col gap-3 px-4 justify-between mb-4">
               <div class="flex lg:flex-row flex-col justify-between w-full gap-2">
-                <div class="w-[40%]">
+                <div class="w-[50%] flex items-center">
                   <AuthInput
                     :error="false"
                     type="text"
                     placeholder="search"
                     v-model="sortInput.name"
+                    class="w-full"
                   />
+                  <button
+                    @click="clearSearch"
+                    class="p-4 bg-brand py-[12px] text-white !rounded-l-0 rounded-r-[4px]"
+                  >
+                    Clear
+                  </button>
                 </div>
                 <div class="flex flex-row gap-[12px]">
                   <!-- <button
@@ -881,6 +888,10 @@ const setCurrentPage = (page) => {
   products.value.current_page = page;
   fetchProducts(page);
 };
+function clearSearch() {
+  sortInput.name = "";
+  fetchProducts(1);
+}
 const filteredJobs = computed(() => {
   // Create a shallow copy of the jobs array
   let filtered = products.value?.data;
