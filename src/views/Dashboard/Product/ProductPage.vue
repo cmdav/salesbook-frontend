@@ -248,7 +248,7 @@
                 Add sub category
               </button>
               <button
-                @click="addSubCategory"
+                @click="changeStep(4)"
                 class="bg-brand text-white w-[40%] text-center py-2 px-1 rounded-lg"
               >
                 Add measurement
@@ -400,6 +400,7 @@
               </div>
             </div>
           </div>
+          <!-- add product category -->
           <div v-if="step == 2" class="flex flex-col w-full gap-[20px]">
             <header
               class="flex flex-row items-center gap-2 justify-start border-b-[#000000] pb-[5px] mb-[10px] border-b-[1px]"
@@ -412,12 +413,30 @@
             </header>
 
             <div class="flex flex-col w-full py-4">
-              <AuthInput label="Category Name" :error="false" type="text" />
+              <AuthInput
+                v-model="addProductCategoryData.category_name"
+                label="Category Name"
+                :error="false"
+                type="text"
+              />
+            </div>
+            <div class="flex lg:flex-row flex-col w-full gap-[20px]">
+              <div class="flex flex-col w-full">
+                <Label>Description</Label>
+                <div
+                  class="w-full font-light font-Satoshi400 bg-white !p-0 border-neutral-900 border-[0.509px] opacity-[0.8029] rounded-[4px] text-[12.68px]"
+                >
+                  <a-textarea
+                    v-model:value="addProductCategoryData.category_description"
+                    :bordered="false"
+                  />
+                </div>
+              </div>
             </div>
             <div class="flex flex-col lg:flex-row w-full gap-[30px]">
               <div class="w-full flex justify-center">
                 <button
-                  type="submit"
+                  @click="handleAddProductCategory"
                   class="btn-brand !border-none !w-[30%] mx-auto !py-3 lg:!px-10 !px-5 !text-[#FFFFFF] text-center"
                 >
                   <span v-if="!loading" class="text-[12.067px]">Add</span>
@@ -426,6 +445,7 @@
               </div>
             </div>
           </div>
+          <!-- sub product categoy -->
           <div v-if="step == 3" class="flex flex-col w-full gap-[20px]">
             <header
               class="flex flex-row items-center gap-2 justify-start border-b-[#000000] pb-[5px] mb-[10px] border-b-[1px]"
@@ -447,25 +467,86 @@
                   :bordered="false"
                   :show-arrow="false"
                   class="w-full"
+                  v-model:value="addSubProductCategoryData.category_id"
                   show-search
                 >
                   <a-select-option
-                    v-for="item in ['india', 'pakistan']"
-                    :key="item"
-                    :value="item"
+                    v-for="item in productCategories"
+                    :key="item.id"
+                    :value="item.id"
                   >
-                    {{ item }}
+                    {{ item.category_name }}
                   </a-select-option>
                 </a-select>
               </div>
             </div>
             <div class="flex flex-col w-full py-4">
-              <AuthInput label="Sub Category Name" :error="false" type="text" />
+              <AuthInput
+                label="Sub Category Name"
+                :error="false"
+                type="text"
+                v-model="addSubProductCategoryData.sub_category_name"
+              />
+            </div>
+            <div class="flex lg:flex-row flex-col w-full gap-[20px]">
+              <div class="flex flex-col w-full">
+                <Label>Description</Label>
+                <div
+                  class="w-full font-light font-Satoshi400 bg-white !p-0 border-neutral-900 border-[0.509px] opacity-[0.8029] rounded-[4px] text-[12.68px]"
+                >
+                  <a-textarea
+                    v-model:value="addSubProductCategoryData.sub_category_description"
+                    :bordered="false"
+                  />
+                </div>
+              </div>
             </div>
             <div class="flex flex-col lg:flex-row w-full gap-[30px]">
               <div class="w-full flex justify-center">
                 <button
-                  type="submit"
+                  @click="handleAddProductSubCategory"
+                  class="btn-brand !border-none !w-[30%] mx-auto !py-3 lg:!px-10 !px-5 !text-[#FFFFFF] text-center"
+                >
+                  <span v-if="!loading" class="text-[12.067px]">Add</span>
+                  <Loader v-else />
+                </button>
+              </div>
+            </div>
+          </div>
+          <div v-if="step == 4" class="flex flex-col w-full gap-[20px]">
+            <header
+              class="flex flex-row items-center gap-2 justify-start border-b-[#000000] pb-[5px] mb-[10px] border-b-[1px]"
+            >
+              <button @click="changeStep(1)" class="text-[30px]">
+                <ArrowLeftIcon class="!h-[40px]" />
+              </button>
+
+              <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">
+                Add Measurements
+              </h4>
+            </header>
+
+            <div class="flex flex-col w-full py-4">
+              <AuthInput
+                v-model="addMeasurementsData.measurement_name"
+                label=" Name"
+                :error="false"
+                type="text"
+              />
+            </div>
+            <div class="flex flex-col w-full py-4">
+              <AuthInput
+                v-model="addMeasurementsData.unit"
+                label="unit "
+                :error="false"
+                type="text"
+              />
+            </div>
+
+            <div class="flex flex-col lg:flex-row w-full gap-[30px]">
+              <div class="w-full flex justify-center">
+                <button
+                  @click="addMeasurements"
                   class="btn-brand !border-none !w-[30%] mx-auto !py-3 lg:!px-10 !px-5 !text-[#FFFFFF] text-center"
                 >
                   <span v-if="!loading" class="text-[12.067px]">Add</span>
@@ -519,6 +600,19 @@ const addProductData = reactive({
   sub_category_id: "",
   category: "",
 });
+const addProductCategoryData = reactive({
+  category_name: "",
+  category_description: "",
+});
+const addMeasurementsData = reactive({
+  measurement_name: "",
+  unit: "",
+});
+const addSubProductCategoryData = reactive({
+  sub_category_name: "",
+  category_id: "",
+  sub_category_description: "",
+});
 
 const addCategory = () => {
   step.value = 2;
@@ -530,12 +624,6 @@ const changeStep = (value) => {
   step.value = value;
 };
 let showModal = ref(false);
-let showUploadModal = ref(false);
-const formData = reactive({
-  firstName: "",
-  lastName: "",
-  email: "",
-});
 let loading = ref(false);
 
 const errors = reactive({
@@ -570,13 +658,6 @@ const clearInputErrors = () => {
     errors[key] = false;
   });
 };
-// const isFormValid = computed(() => {
-//   return (
-//     formData.firstName.trim() !== "" &&
-//     formData.lastName.trim() !== "" &&
-//     formData.email.trim() !== ""
-//   );
-// });
 const clearInputs = () => {
   (addProductData.product_name = ""),
     (addProductData.product_description = ""),
@@ -585,7 +666,7 @@ const clearInputs = () => {
   addProductData.sub_category_id = "";
   addProductData.category = "";
 };
-watch(formData, () => {
+watch(addProductData, () => {
   clearInputErrors();
 });
 function HandleToggleModal() {
@@ -603,10 +684,6 @@ const closeDropdown = () => {
   showDocumentToggle.value = false;
 };
 
-function HandleToggleUploadModal() {
-  showUploadModal.value = !showUploadModal.value;
-  clearInputs();
-}
 const previewImage = ref(null);
 const uploadedImageName = ref("");
 
@@ -709,7 +786,80 @@ const handleAddProduct = async () => {
     loading.value = false;
   }
 };
-
+const handleAddProductCategory = async () => {
+  loading.value = true;
+  // if (!validateForm()) {
+  //   loading.value = false;
+  //   return;
+  // }
+  let payload = {
+    category_name: addProductCategoryData.category_name,
+    category_description: addProductCategoryData.category_description,
+  };
+  try {
+    let res = await productsStore.handleAddProductsCategory(payload);
+    productsStore.handleGetProductCategories();
+    loading.value = false;
+    changeStep(1);
+    return res;
+  } catch (error) {
+    console.log(error);
+  } finally {
+    loading.value = false;
+    addProductCategoryData.category_name = "";
+    addProductCategoryData.category_description = "";
+  }
+};
+const handleAddProductSubCategory = async () => {
+  loading.value = true;
+  // if (!validateForm()) {
+  //   loading.value = false;
+  //   return;
+  // }
+  let payload = {
+    sub_category_name: addSubProductCategoryData.sub_category_name,
+    category_id: addSubProductCategoryData.category_id,
+    sub_category_description: addSubProductCategoryData.sub_category_description,
+  };
+  try {
+    let res = await productsStore.handleAddProductsSubCategory(payload);
+    productsStore.handleGetProductSubCategories();
+    loading.value = false;
+    changeStep(1);
+    return res;
+  } catch (error) {
+    console.log(error);
+  } finally {
+    loading.value = false;
+    addSubProductCategoryData.product_name = "";
+    addSubProductCategoryData.category_id = "";
+    addSubProductCategoryData.sub_category_description = "";
+  }
+};
+const addMeasurements = async () => {
+  loading.value = true;
+  // if (!validateForm()) {
+  //   loading.value = false;
+  //   return;
+  // }
+  let payload = {
+    measurement_name: addMeasurementsData.measurement_name,
+    unit: addMeasurementsData.unit,
+  };
+  try {
+    let res = await productsStore.handleAddMeasurements(payload);
+    productsStore.handleGetMeasurements();
+    loading.value = false;
+    changeStep(1);
+    return res;
+  } catch (error) {
+    console.log(error);
+  } finally {
+    loading.value = false;
+    addMeasurementsData.measurement_name = "";
+    addMeasurementsData.unit = "";
+  }
+};
 onMounted(async () => {
   await productsStore.handleGetProducts();
   await productsStore.handleGetProductCategories();

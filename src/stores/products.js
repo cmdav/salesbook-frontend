@@ -37,6 +37,14 @@ export const useProductStore = defineStore('Products', () => {
       console.error(error)
     }
   }
+  const handleAddMeasurements = async (payload) => {
+    try {
+      let res = await addMeasurements(payload)
+      return res
+    } catch (error) {
+      console.error(error)
+    }
+  }
   const handleGetProductCategories = async () => {
     try {
       productCategories.value = await getProductCategories()
@@ -118,6 +126,22 @@ export const useProductStore = defineStore('Products', () => {
       console.error(error)
     }
   }
+  const handleAddProductsCategory = async (payload) => {
+    try {
+      let res = await addProductCategories(payload)
+      return res
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  const handleAddProductsSubCategory = async (payload) => {
+    try {
+      let res = await addProductSubCategories(payload)
+      return res
+    } catch (error) {
+      console.error(error)
+    }
+  }
   const handleUpdateInventories = async (id, payload) => {
     try {
       let res = await updateInventories(id, payload)
@@ -148,6 +172,9 @@ export const useProductStore = defineStore('Products', () => {
     stores,
     handleGetMeasurements,
     measurements,
-    handleAddProducts
+    handleAddProducts,
+    handleAddProductsCategory,
+    handleAddProductsSubCategory,
+    handleAddMeasurements
   }
 })

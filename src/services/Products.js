@@ -21,7 +21,7 @@ export const addProductCategories = async (payload) => {
   const token = await getToken()
 
   try {
-    let res = await axios.post(`product-categories`,payload ,{
+    let res = await axios.post(`product-categories`,payload, {
       headers: {
         Authorization: 'Bearer ' + token
       }
@@ -53,7 +53,7 @@ export const addProductSubCategories = async (payload) => {
   const token = await getToken()
 
   try {
-    let res = await axios.get(`product-sub-categories`,payload, {
+    let res = await axios.post(`product-sub-categories`,payload, {
       headers: {
         Authorization: 'Bearer ' + token
       }
