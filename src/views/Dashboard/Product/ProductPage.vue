@@ -273,7 +273,7 @@
                   <div class="flex lg:flex-row flex-col w-full gap-[20px]">
                     <div class="flex flex-col rounded-lg h-auto w-full">
                       <Label>Product Image</Label>
-
+                      <!-- <Uploader @defaultImage="handleImageChange" /> -->
                       <label
                         for="upload_file"
                         class="bg-secondary-800 border-dashed cursor-pointer overflow-hidden h-[117px] border-[#254035AB] border-[1.789px] flex flex-col text-center relative rounded-[5.982px]"
@@ -583,6 +583,7 @@ import Loader from "@/components/UI/Loader.vue";
 import Dropdown from "@/components/UI/Dropdown/Dropdown.vue";
 import Label from "@/components/UI/Input/Label.vue";
 import ArrowLeftIcon from "@/components/icons/ArrowLeftIcon.vue";
+import Uploader from "@/components/UI/Upload/Uploader.vue";
 import { storeToRefs } from "pinia";
 const productsStore = useProductStore();
 const {
@@ -610,7 +611,7 @@ const step = ref(1);
 const addProductData = reactive({
   product_name: "",
   product_description: "",
-  product_image: "",
+  product_image: null,
   measurement_id: "",
   sub_category_id: "",
   category: "",
@@ -628,7 +629,14 @@ const addSubProductCategoryData = reactive({
   category_id: "",
   sub_category_description: "",
 });
-const currentPage = ref(1);
+
+const handleImageChange = (file) => {
+  // Assuming you want to store the file object and its URL
+  addProductData.product_image = {
+    file,
+    url: URL.createObjectURL(file),
+  };
+};
 
 const addCategory = () => {
   step.value = 2;
@@ -781,16 +789,16 @@ const handleAddProduct = async () => {
     loading.value = false;
     return;
   }
-  let payload = {
-    product_name: addProductData.product_name,
-    product_description: addProductData.product_description,
-    product_image: addProductData.product_image,
-    measurement_id: addProductData.measurement_id,
-    sub_category_id: addProductData.sub_category_id,
-    category_id: addProductData.category,
-  };
+
+  const formData = new FormData();
+  formData.append("product_name", addProductData.product_name);
+  formData.append("product_description", addProductData.product_description);
+  formData.append("product_image", addProductData.product_image);
+  formData.append("measurement_id", addProductData.measurement_id);
+  formData.append("sub_category_id", addProductData.sub_category_id);
+  formData.append("category_id", addProductData.category);
   try {
-    let res = await productsStore.handleAddProducts(payload);
+    let res = await productsStore.handleAddProducts(formData);
     productsStore.handleGetProducts();
     HandleToggleModal();
     loading.value = false;
