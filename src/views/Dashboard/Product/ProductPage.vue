@@ -120,7 +120,7 @@
                       <th class="text-left p-4 pr-0 px-6 capitalize">category</th>
                       <th class="text-left p-4 pr-0 px-6 capitalize">sub-category</th>
                       <th class="text-left p-4 pr-0 px-6 capitalize">unit</th>
-                      <th class="text-left p-4 pr-0 px-6 capitalize"></th>
+                      <!-- <th class="text-left p-4 pr-0 px-6 capitalize"></th> -->
                     </tr>
                   </thead>
                   <tbody>
@@ -153,7 +153,7 @@
                         {{ i.product_sub_category }}
                       </td>
                       <td class="text-left p-4 pr-0 pl-6 capitalize">{{ i.unit }}</td>
-                      <td class="relative !flex !justify-end !items-center">
+                      <!-- <td class="relative !flex !justify-end !items-center">
                         <button
                           class="flex h-full justify-end items-center p-6 !px-6"
                           @click="toggleDocument(i)"
@@ -215,7 +215,7 @@
                             </li>
                           </ul>
                         </Dropdown>
-                      </td>
+                      </td> -->
                     </tr>
                   </tbody>
                   <!---->
