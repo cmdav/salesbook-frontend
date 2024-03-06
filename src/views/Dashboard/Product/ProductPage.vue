@@ -125,7 +125,7 @@
                   </thead>
                   <tbody>
                     <tr
-                      v-for="(i, index) in filteredJobs"
+                      v-for="(i, index) in filteredProduct"
                       :key="i"
                       class="border-b text-[14px]"
                     >
@@ -900,7 +900,7 @@ function clearSearch() {
   sortInput.name = "";
   fetchProducts(1);
 }
-const filteredJobs = computed(() => {
+const filteredProduct = computed(() => {
   // Create a shallow copy of the jobs array
   let filtered = products.value?.data;
 

@@ -41,46 +41,52 @@
           </div>
           <div class="chart hidden bg-white rounded-[8px] min-h-[100vh] p-4"></div>
           <div class="bg-white py-6 mt-12 rounded-lg">
-            <div class="flex lg:flex-row flex-col gap-3 px-4 justify-between mb-4">
-              <div class="flex lg:flex-row flex-col justify-between w-full gap-3">
-                <div class="w-[40%]">
-                  <AuthInput :error="false" type="text" placeholder="search" />
-                </div>
-                <div class="flex flex-row gap-[12px]">
-                  <div
-                    class="flex flex-row justify-end border-brand rounded-[4px] overflow-auto border-[1px]"
-                  >
+            <div v-if="toggleCompanyTable" class="overflow-x-scroll hide-scrollbar">
+              <div class="flex lg:flex-row flex-col gap-3 px-4 justify-between mb-4">
+                <div class="flex lg:flex-row flex-col justify-between w-full gap-3">
+                  <div class="w-[40%]">
+                    <AuthInput
+                      :error="false"
+                      type="text"
+                      placeholder="search"
+                      v-model="sortInput.companies"
+                    />
+                  </div>
+                  <div class="flex flex-row gap-[12px]">
+                    <div
+                      class="flex flex-row justify-end border-brand rounded-[4px] overflow-auto border-[1px]"
+                    >
+                      <button
+                        @click="handleToggleTableButton"
+                        :class="
+                          toggleButton ? 'bg-brand text-white' : 'bg-white  text-brand'
+                        "
+                        class="p-4 py-[12px]"
+                      >
+                        Individual</button
+                      ><button
+                        @click="handleToggleCompanyTable"
+                        :class="
+                          toggleCompanyTable
+                            ? 'bg-brand text-white'
+                            : 'bg-white  text-brand '
+                        "
+                        class="p-4 py-[12px]"
+                      >
+                        Company
+                      </button>
+                    </div>
+
                     <button
-                      @click="handleToggleTableButton"
-                      :class="
-                        toggleButton ? 'bg-brand text-white' : 'bg-white  text-brand'
-                      "
-                      class="p-4 py-[12px]"
+                      @click="HandleToggleModal"
+                      class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
                     >
-                      Individual</button
-                    ><button
-                      @click="handleToggleCompanyTable"
-                      :class="
-                        toggleCompanyTable
-                          ? 'bg-brand text-white'
-                          : 'bg-white  text-brand '
-                      "
-                      class="p-4 py-[12px]"
-                    >
-                      Company
+                      Add Customer
                     </button>
                   </div>
-
-                  <button
-                    @click="HandleToggleModal"
-                    class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
-                  >
-                    Add Customer
-                  </button>
                 </div>
               </div>
-            </div>
-            <div v-if="toggleCompanyTable" class="overflow-x-scroll hide-scrollbar">
+
               <div class="table-container overflow-x-scroll">
                 <table class="table-auto w-full">
                   <thead class="bg-[#F9FBFF] text-[#A8AABC] text-[14px]">
@@ -96,7 +102,7 @@
                   </thead>
                   <tbody>
                     <tr
-                      v-for="(i, index) in companiesCustomers?.data"
+                      v-for="(i, index) in filteredCompany"
                       :key="i"
                       class="border-b text-[14px]"
                     >
@@ -130,6 +136,51 @@
             </div>
 
             <div v-if="toggleButton" class="overflow-x-scroll hide-scrollbar">
+              <div class="flex lg:flex-row flex-col gap-3 px-4 justify-between mb-4">
+                <div class="flex lg:flex-row flex-col justify-between w-full gap-3">
+                  <div class="w-[40%]">
+                    <AuthInput
+                      :error="false"
+                      type="text"
+                      placeholder="search"
+                      v-model="sortInput.Customers"
+                    />
+                  </div>
+                  <div class="flex flex-row gap-[12px]">
+                    <div
+                      class="flex flex-row justify-end border-brand rounded-[4px] overflow-auto border-[1px]"
+                    >
+                      <button
+                        @click="handleToggleTableButton"
+                        :class="
+                          toggleButton ? 'bg-brand text-white' : 'bg-white  text-brand'
+                        "
+                        class="p-4 py-[12px]"
+                      >
+                        Individual</button
+                      ><button
+                        @click="handleToggleCompanyTable"
+                        :class="
+                          toggleCompanyTable
+                            ? 'bg-brand text-white'
+                            : 'bg-white  text-brand '
+                        "
+                        class="p-4 py-[12px]"
+                      >
+                        Company
+                      </button>
+                    </div>
+
+                    <button
+                      @click="HandleToggleModal"
+                      class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
+                    >
+                      Add Customer
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               <div class="table-container overflow-x-scroll">
                 <table class="table-auto w-full">
                   <thead class="bg-[#F9FBFF] text-[#A8AABC] text-[14px]">
@@ -142,7 +193,7 @@
                   </thead>
                   <tbody>
                     <tr
-                      v-for="(i, index) in Customers?.data"
+                      v-for="(i, index) in filteredCustomer"
                       :key="i"
                       class="border-b text-[14px]"
                     >
@@ -173,15 +224,6 @@
                 />
               </div>
             </div>
-            <!-- <div class="mx-auto w-fit mt-5">
-              <Pagination
-                @changePage="(page) => (Customers.current_page = page)"
-                :currentPage="Customers?.current_page"
-                :pageSize="Customers?.per_page"
-                :totalPages="Customers?.last_page"
-                :alwaysShowNextAndPrevious="true"
-              />
-            </div> -->
           </div>
         </div>
       </div>
@@ -356,7 +398,7 @@
   </DashboardLayout>
 </template>
 <script setup>
-import { ref, reactive, watch, onMounted } from "vue";
+import { ref, reactive, watch, onMounted, computed } from "vue";
 import { useCustomerstore } from "@/stores/customers";
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import CenteredModalLarge from "@/components/UI/CenteredModalLarge.vue";
@@ -390,6 +432,40 @@ function handleToggleCompanyTable() {
   toggleButton.value = false;
   CustomerStore.allCompanyCustomers();
 }
+let sortInput = reactive({
+  Customers: "",
+  companies: "",
+});
+function clearSearch() {
+  sortInput.Customers = "";
+  sortInput.companies = "";
+}
+const filteredCustomer = computed(() => {
+  // Create a shallow copy of the jobs array
+  let filtered = Customers.value?.data;
+
+  // Filtering based on the search criteria
+  if (sortInput.Customers) {
+    return filtered.filter((item) =>
+      item.first_name.toLowerCase().includes(sortInput.Customers.toLowerCase())
+    );
+  }
+
+  return filtered; // Return the filtered array
+});
+const filteredCompany = computed(() => {
+  // Create a shallow copy of the jobs array
+  let filtered = companiesCustomers.value?.data;
+
+  // Filtering based on the search criteria
+  if (sortInput.companies) {
+    return filtered.filter((item) =>
+      item.company_name.toLowerCase().includes(sortInput.companies.toLowerCase())
+    );
+  }
+
+  return filtered; // Return the filtered array
+});
 
 let showModal = ref(false);
 const step = ref(1);
