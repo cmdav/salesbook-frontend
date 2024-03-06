@@ -132,7 +132,7 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  {{ TotalCustomers }}
+                  {{ Customers?.total + companiesCustomers?.total }}
                 </div>
               </div>
             </div>
@@ -232,16 +232,25 @@ const supplierStore = useSupplierStore();
 const { Supplier } = storeToRefs(supplierStore);
 const CustomerStore = useCustomerstore();
 const { Customers, companiesCustomers } = storeToRefs(CustomerStore);
-const TotalCustomers = computed(() => {
-  return Customers?.value?.total + companiesCustomers?.value?.total;
-});
 onMounted(async () => {
   try {
     await supplierStore.allSupplier();
     await CustomerStore.allCustomer();
-    await CustomerStore.allCompanyCustomers();
+    // await CustomerStore.allCompanyCustomers();
   } catch (error) {
     console.log(error);
   }
 });
+onMounted(async () => {
+  try {
+    let res = await CustomerStore.allCompanyCustomers();
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+// const TotalCustomers = computed(() => {
+//   return Customers?.value?.total + companiesCustomers?.value?.total;
+// });
 </script>
