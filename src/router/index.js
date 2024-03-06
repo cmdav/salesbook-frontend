@@ -14,6 +14,7 @@ import OrganisationPage from '@/views/Dashboard/Organisation/OrganisationPage.vu
 import SupplierSinglePage from '@/views/Dashboard/Suppliers/SupplierSinglePage.vue'
 import CustomersSinglePage from '@/views/Dashboard/Customers/CustomersSinglePage.vue'
 import ProductsPage from '@/views/Dashboard/Product/ProductPage.vue'
+import SupplierProductsPage from '@/views/Dashboard/SupplierProduct/SupplierProductPage.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -94,6 +95,12 @@ const router = createRouter({
       path: '/product',
       name: 'product',
       component: ProductsPage,
+      beforeEnter: [middleware.redirectLogin]
+    },
+    {
+      path: '/supplier-product',
+      name: 'supplier-product',
+      component: SupplierProductsPage,
       beforeEnter: [middleware.redirectLogin]
     },
     {

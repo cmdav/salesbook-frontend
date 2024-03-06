@@ -40,7 +40,24 @@
           >
         </router-link>
         <router-link
+          v-if="feature.includes('PRODUCT')"
           to="/product"
+          class="p-[10px] flex justify-start hover:bg-brand/[50%] rounded-[5px]"
+          :class="route.name === 'product' ? 'text-white bg-brand' : 'text-brand '"
+        >
+          <div
+            :class="route.name === 'product' ? 'text-white ' : 'text-brand '"
+            class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
+          >
+            <ProductIcon />
+          </div>
+          <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]"
+            >Product</span
+          >
+        </router-link>
+        <router-link
+          v-if="feature.includes('SUPPLIER_PRODUCT')"
+          to="/supplier-product"
           class="p-[10px] flex justify-start hover:bg-brand/[50%] rounded-[5px]"
           :class="route.name === 'product' ? 'text-white bg-brand' : 'text-brand '"
         >
