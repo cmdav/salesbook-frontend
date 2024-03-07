@@ -12,6 +12,7 @@
           <AuthInput
             label="Email"
             :error="errors.email"
+            :errorsMsg="errorsMsg.email"
             type="email"
             placeholder="janedoe@gmail.com"
             v-model="formState.email"
@@ -89,6 +90,7 @@ const errors = reactive({
   code: false,
 });
 const errorsMsg = {
+  email: "",
   password: "",
 };
 const isValidEmail = computed(() => {
@@ -109,6 +111,8 @@ const validateForm = () => {
 
   if (!isValidEmail.value) {
     errors.email = true;
+    errorsMsg.email = "Email is required";
+
     isValid = false;
   }
   // if (!formState.code) {
