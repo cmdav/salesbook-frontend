@@ -10,7 +10,14 @@
             <thead>
               <tr>
                 <!-- Loop through unique keys and modify them for display -->
-                <th v-for="key in displayKeys" :key="key" class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th v-for="key in displayKeys"
+                          :key="key" 
+                          class="px-5 py-3 
+                                 border-b-2 
+                                 border-gray-200
+                                  bg-gray-100 text-left text-xs font-semibold 
+                                  text-gray-600 uppercase tracking-wider"
+                  >
                   {{ formatKey(key) }}
                 </th>
               </tr>
@@ -19,14 +26,14 @@
             <tbody>
               <!-- Loop through products for each row -->
               <tr v-for="product in products" :key="product.id" class="hover:bg-gray-100">
-                <!-- Render product values based on keys -->
+               
                 <td v-for="key in displayKeys" :key="key" class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                  <!-- Check if key indicates an image, logo, or file -->
+                      <!-- Check if key indicates an image, logo, or file -->
                   <template v-if="isMediaKey(key)">
-                    <img :src="product[key]" alt="Media" class="w-20 h-20 object-cover"> <!-- Display image -->
+                    <img :src="product[key]" alt="Media" class="w-20 h-20 object-cover"> 
                   </template>
                   <template v-else>
-                    {{ product[key] }} <!-- Display normal value -->
+                    {{ product[key] }} 
                   </template>
                 </td>
               </tr>
@@ -45,7 +52,7 @@ import apiService from '@/services/apiService';
 
 const products = ref([]);
 const uniqueKeys = ref([]);
-const excludedKeys = ['id']; // Keys that should not be rendered
+const excludedKeys = ['id']; 
 
 // Function to extract and process unique keys from the data array
 function extractUniqueKeys(dataArray) {
