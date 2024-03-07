@@ -39,6 +39,19 @@
               </tr>
             </tbody>
           </table>
+
+          <div class="flex overflow-x-auto mt-4">
+            <ul class="flex space-x-2">
+              <li v-for="(link, index) in paginationArray" :key="index" 
+                  :class="{'bg-blue-500': currentPage === link, 'bg-gray-200': currentPage !== link}" 
+                  class="flex items-center justify-center min-w-[32px] h-[32px] rounded-full cursor-pointer text-white">
+                <a @click.prevent="fetchPage(link)" class="block">
+                  {{ link }}
+                </a>
+              </li>
+            </ul>
+          </div>
+
         </div>
       </div>
     </div>
@@ -53,6 +66,11 @@ import apiService from '@/services/apiService';
 const products = ref([]);
 const uniqueKeys = ref([]);
 const excludedKeys = ['id']; 
+const links = ref('');
+const currentPage = ref(1); 
+const itemsPerPage = ref(1);
+const totalPage = ref(1);
+const lastPage = ref(1);
 
 // Function to extract and process unique keys from the data array
 function extractUniqueKeys(dataArray) {
@@ -83,14 +101,35 @@ function isMediaKey(key) {
 
 // Component mounted lifecycle hook
 onMounted(async () => {
+    await fetchPage(1);
+});
+
+// Add reactive properties for handling pagination
+const paginationArray = computed(() => {
+  console.log(lastPage.value)
+  let pages = [];
+  for (let i = 1; i <= lastPage.value; i++) {
+    pages.push(i);
+  }
+  return pages;
+});
+
+// Add method for fetching specific page
+const fetchPage = async (page) => {
   try {
-    const data = await apiService.get('products');
+    const data = await apiService.get(`products?page=${page}`);
     products.value = data.data;
     uniqueKeys.value = extractUniqueKeys(data.data);
+    links.value = data.links;
+    itemsPerPage.value = data.per_page; // record per page
+    currentPage.value = data.current_page; // current page no
+    lastPage.value = data.last_page; // last page no
+    totalPage.value = data.total; // total pages
   } catch (error) {
-    console.error('Error fetching products:', error);
+    console.error('Error fetching page:', error);
   }
-});
+};
+
 </script>
 
 <style scoped>
@@ -107,4 +146,33 @@ th, td {
 tr:hover {
   background-color: #f5f5f5;
 }
+.flex {
+  display: flex;
+  overflow-x: auto;
+}
+
+/* .flex::-webkit-scrollbar {
+  display: none; 
+}
+
+.flex {
+  -ms-overflow-style: none; 
+  scrollbar-width: none;
+} */
+
+/* Style for the active link */
+.bg-blue-500 {
+  background-color: #4299e1; /* Adjust the color based on your design */
+}
+
+/* Style for the non-active links */
+.bg-gray-200 {
+  background-color: #edf2f7; /* Adjust the color based on your design */
+}
+
+/* Ensure text is centered and white for all links */
+.flex a {
+  color: white;
+}
+
 </style>
