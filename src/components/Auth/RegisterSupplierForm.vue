@@ -176,7 +176,7 @@
           <button
             @click="handleSupplierSignup()"
             :class="!isFormValid ? '!bg-primary-100 cursor-not-allowed' : 'bg-brand'"
-            class="btn-brand !rounded-[5px] flex gap-2 items-center justify-center !text-text-black-200 text-[14px] !py-[16px] font-semibold w-full"
+            class="btn-brand !rounded-[5px] flex gap-2 items-center justify-center !text-white text-[14px] !py-[16px] font-semibold w-full"
           >
             <span v-if="!loading" class="font-semibold !text-[15px]">Submit</span>
             <Loader v-else />
