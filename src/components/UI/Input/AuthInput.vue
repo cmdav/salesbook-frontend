@@ -9,13 +9,16 @@
       :value="modelValue"
       @input="$emit('update:modelValue', $event.target.value)"
     />
+    <errorInputIcon v-if="error" class="absolute top-8 right-2" />
+    <span v-if="error" class="text-red-600 font-Satoshi400 text-sm">{{ errorsMsg }}</span>
   </div>
 </template>
 
 <script setup>
-import { defineAsyncComponent } from 'vue'
+import { defineAsyncComponent } from "vue";
+import errorInputIcon from "@/components/icons/errorInputIcon.vue";
 
-const Label = defineAsyncComponent(() => import('./Label.vue'))
+const Label = defineAsyncComponent(() => import("./Label.vue"));
 defineProps({
   modelValue: String | Number,
   type: String,
@@ -23,8 +26,8 @@ defineProps({
   error: Boolean,
   errorsMsg: String,
   label: String,
-  labelClasses: String
-})
+  labelClasses: String,
+});
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(["update:modelValue"]);
 </script>

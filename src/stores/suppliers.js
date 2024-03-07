@@ -1,11 +1,17 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { getAllSupplier, getSingleSupplier } from '@/services/Suppliers'
+import {
+  getAllSupplier,
+  getSingleSupplier,
+  getSupplierProduct,
+  getAllSupplierProduct
+} from '@/services/Suppliers'
 
 export const useSupplierStore = defineStore('Supplier', () => {
   const Supplier = ref({})
   const singleSupplier = ref({})
-
+  const allSupplierProduct = ref({})
+  const supplierProduct = ref({})
   const allSupplier = async () => {
     try {
       Supplier.value = await getAllSupplier()
@@ -22,12 +28,33 @@ export const useSupplierStore = defineStore('Supplier', () => {
       console.error(error)
     }
   }
+  const handleAllSupplierProduct = async () => {
+    try {
+      allSupplierProduct.value = await getAllSupplierProduct()
+      return allSupplierProduct.value
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  const handleGetSupplierProduct = async () => {
+    try {
+      supplierProduct.value = await getSupplierProduct()
+      return supplierProduct.value
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
 
 
   return {
     Supplier,
     allSupplier,
     singleSupplier,
-    handleGetSingleSupplier
+    handleGetSingleSupplier,
+    allSupplierProduct,
+    supplierProduct,
+    handleAllSupplierProduct,
+    handleGetSupplierProduct
   }
 })

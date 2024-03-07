@@ -33,3 +33,35 @@ export const getSingleSupplier = async (id) => {
     throw error
   }
 }
+export const getSupplierProduct = async () => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.get(`supplier-products`, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res)
+    return res.data
+  } catch (error) {
+    catchAxiosError(error)
+    throw error
+  }
+}
+export const getAllSupplierProduct = async () => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.get(`all-supplier-products`, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res)
+    return res.data
+  } catch (error) {
+    catchAxiosError(error)
+    throw error
+  }
+}

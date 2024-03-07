@@ -12,8 +12,9 @@
           <div class="flex lg:flex-row flex-col w-full gap-[20px]">
             <div class="mb-3 flex flex-col w-full">
               <AuthInput
-                label="First Name"
+                label="First Name*"
                 :error="errors.firstName"
+                :errorsMsg="errorsMsg.firstName"
                 type="text"
                 placeholder="Enter first name"
                 v-model="formData.firstName"
@@ -21,10 +22,11 @@
             </div>
             <div class="mb-3 flex flex-col w-full">
               <AuthInput
-                label="Last Name"
+                label="Last Name*"
                 :error="errors.lastName"
                 type="text"
                 placeholder="Enter last name"
+                :errorsMsg="errorsMsg.lastName"
                 v-model="formData.lastName"
               />
             </div>
@@ -42,8 +44,9 @@
             </div>
             <div class="mb-3 flex flex-col w-full">
               <AuthInput
-                label="Email Address"
+                label="Email Address*"
                 :error="errors.email"
+                :errorsMsg="errorsMsg.email"
                 type="email"
                 placeholder="Enter email address"
                 v-model="formData.email"
@@ -62,8 +65,9 @@
             </div>
             <div class="mb-3 flex flex-col w-full">
               <AuthInput
-                label="Organizational Code"
+                label="Organizational Code*"
                 :error="errors.code"
+                :errorsMsg="errorsMsg.code"
                 type="number"
                 placeholder="Enter Organizational Code"
                 v-model="formData.code"
@@ -73,7 +77,7 @@
           <div class="flex lg:flex-row flex-col w-full gap-[20px]">
             <div class="mb-3 flex flex-col w-full">
               <AuthInput
-                label="Phone number"
+                label="Phone number(optional)"
                 :error="false"
                 type="tel"
                 placeholder="Enter Phone number"
@@ -84,7 +88,7 @@
           <div class="flex lg:flex-row flex-col w-full gap-[20px]">
             <div class="mb-3 flex flex-col w-full">
               <PasswordInput
-                label="Password"
+                label="Password*"
                 :error="errors.password"
                 :errorsMsg="errorsMsg.password"
                 v-model="formData.password"
@@ -97,7 +101,7 @@
                 :error="errors.confirmPassword || !passwordsMatch"
                 :errorsMsg="errorsMsg.confirmPassword"
                 placeholder="Confirm Password*"
-                v-model="confirmPassword"
+                v-model="formData.confirmPassword"
               />
             </div>
           </div>
@@ -218,6 +222,7 @@ const formData = reactive({
   code: "",
   email: "",
   password: "",
+  confirmPassword: "",
 });
 let loading = ref(false);
 
@@ -235,7 +240,7 @@ const errorsMsg = {
   firstName: "First name is required",
   lastName: "Last name is required",
   code: "Last name is required",
-  email: "Last name is required",
+  email: "Email is required",
   password: "Password is required",
   confirmPassword: "Password does not match",
 };
@@ -245,7 +250,7 @@ const isValidEmail = computed(() => {
   return emailRegex.test(formData.email);
 });
 const passwordsMatch = computed(() => {
-  return formData.password === confirmPassword.value;
+  return formData.password === formData.confirmPassword;
 });
 
 const isValidPassword = computed(() => {
@@ -297,8 +302,9 @@ const validateForm = () => {
     isValid = false;
   }
 
-  if (formData.password !== confirmPassword.value) {
+  if (formData.password !== formData.confirmPassword) {
     errors.confirmPassword = true;
+    errorsMsg.confirmPassword;
     isValid = false;
   }
 
