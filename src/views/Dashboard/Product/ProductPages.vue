@@ -8,7 +8,11 @@
           <table class="min-w-full leading-normal">
             <!-- Table headers -->
             <thead>
+             
               <tr>
+                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  S.No 
+                </th>
                 <!-- Loop through unique keys and modify them for display -->
                 <th v-for="key in displayKeys"
                           :key="key" 
@@ -22,11 +26,13 @@
                 </th>
               </tr>
             </thead>
-            <!-- Table body -->
+            
             <tbody>
               <!-- Loop through products for each row -->
-              <tr v-for="product in products" :key="product.id" class="hover:bg-gray-100">
-               
+              <tr v-for="(product, index) in products" :key="product.id" class="hover:bg-gray-100">
+                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                     {{ ((parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10)) + index + 1 }} 
+                </td>
                 <td v-for="key in displayKeys" :key="key" class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                       <!-- Check if key indicates an image, logo, or file -->
                   <template v-if="isMediaKey(key)">
@@ -150,15 +156,6 @@ tr:hover {
   display: flex;
   overflow-x: auto;
 }
-
-/* .flex::-webkit-scrollbar {
-  display: none; 
-}
-
-.flex {
-  -ms-overflow-style: none; 
-  scrollbar-width: none;
-} */
 
 /* Style for the active link */
 .bg-blue-500 {
