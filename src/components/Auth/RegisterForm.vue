@@ -57,10 +57,12 @@
             <div class="mb-3 flex flex-col w-full">
               <AuthInput
                 label="Date of Birth (optional)"
-                :error="false"
+                :error="dobError"
                 type="date"
                 placeholder="Enter Date of Birth"
                 v-model="dob"
+                :min="minDate"
+                :errorsMsg="dobErrorMsg"
               />
             </div>
             <div class="mb-3 flex flex-col w-full">
@@ -234,6 +236,8 @@ const errors = reactive({
   password: false,
   confirmPassword: false,
 });
+const dobError = ref(false);
+const dobErrorMsg = ref("date of birth is lower than 18");
 const confirmPassword = ref("");
 
 const errorsMsg = {
@@ -244,6 +248,15 @@ const errorsMsg = {
   password: "Password is required",
   confirmPassword: "Password does not match",
 };
+const minDate = ref(getMinDate());
+
+function getMinDate() {
+  const today = new Date();
+  const minDate = new Date(today.getFullYear() - 5, today.getMonth(), today.getDate());
+  // Return the minimum date in the format required by the input[type=date] field
+  return minDate.toISOString().split("T")[0];
+}
+console.log(minDate.value);
 const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/;
 const isValidEmail = computed(() => {
@@ -307,6 +320,14 @@ const validateForm = () => {
     errorsMsg.confirmPassword;
     isValid = false;
   }
+  // Check if Date of Birth is not less than 5 years from today
+  const minDOB = new Date(minDate.value);
+  const selectedDOB = new Date(dob.value);
+  if (selectedDOB > minDOB) {
+    // DOB is less than 5 years from today
+    dobError.value = true;
+    isValid = false;
+  }
 
   return isValid;
 };
@@ -342,6 +363,9 @@ const clearInputs = () => {
   confirmPassword.value = "";
 };
 watch(formData, () => {
+  clearInputErrors();
+});
+watch(dob, () => {
   clearInputErrors();
 });
 const handleSignup = async () => {
