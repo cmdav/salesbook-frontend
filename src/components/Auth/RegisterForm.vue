@@ -317,7 +317,7 @@ const validateForm = () => {
 
   if (formData.password !== formData.confirmPassword) {
     errors.confirmPassword = true;
-    errorsMsg.confirmPassword;
+    errorsMsg.confirmPassword = "Password does not match";
     isValid = false;
   }
   // Check if Date of Birth is not less than 5 years from today

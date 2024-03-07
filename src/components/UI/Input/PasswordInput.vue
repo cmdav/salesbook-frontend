@@ -8,7 +8,7 @@
         :placeholder="placeholder"
         :value="modelValue"
         :class="error ? 'border-[#ef4b4b]' : 'border-[#254035]'"
-        class="w-full font-light font-Satoshi400 text-[14px] !p-[14px] outline-none border-[0.509px] opacity-[0.8029] rounded-[4.074px] text-sm"
+        class="w-full font-light font-Satoshi400 text-[14px] !p-[14px] outline-none border-[0.909px] opacity-[0.8029] rounded-[4.074px] text-sm"
       />
       <div class="absolute right-3 top-3 text-[#D1D1D6]">
         <button type="button" @click="toggleShowPassword()" v-if="showPassword">
