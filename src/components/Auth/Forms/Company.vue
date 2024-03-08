@@ -47,29 +47,6 @@
         </div>
       </div>
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
-        <!-- <div class="mb-3 flex flex-col w-full">
-                  <AuthInput
-                    label="Date of Birth (optional)"
-                    :error="dobError"
-                    type="date"
-                    placeholder="Enter Date of Birth"
-                    v-model="dob"
-                    :min="minDate"
-                    :errorsMsg="dobErrorMsg"
-                  />
-                </div> -->
-        <div class="mb-3 flex flex-col w-full">
-          <AuthInput
-            label="Organizational Code*"
-            :error="CompanyErrors.code"
-            :errorsMsg="CompanyErrorsMsg.code"
-            type="number"
-            placeholder="Enter Organizational Code"
-            v-model="CompanyformData.code"
-          />
-        </div>
-      </div>
-      <div class="flex lg:flex-row flex-col w-full gap-[20px]">
         <div class="mb-3 flex flex-col w-full">
           <AuthInput
             label="Company contact number"
@@ -78,6 +55,16 @@
             type="tel"
             placeholder="Enter Company contact number"
             v-model="CompanyformData.phone_number"
+          />
+        </div>
+        <div class="mb-3 flex flex-col w-full">
+          <AuthInput
+            label="Organizational Code*"
+            :error="CompanyErrors.code"
+            :errorsMsg="CompanyErrorsMsg.code"
+            type="number"
+            placeholder="Enter Organizational Code"
+            v-model="CompanyformData.code"
           />
         </div>
       </div>
