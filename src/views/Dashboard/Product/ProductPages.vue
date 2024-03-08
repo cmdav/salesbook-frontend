@@ -3,49 +3,57 @@
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
       <!-- Button to Open Modal -->
       <button @click="showModal = true" class="btn btn-primary">Add Product</button>
-      <DataTableLayout endpoint="products" />
+      <DataTableLayout :key="forceUpdate" endpoint="products" />
     </div>
-    <FormModal v-if="showModal" @close="closeModal" :formTitle="formTitle">
+    <FormModal v-if="showModal" @close="closeModal" :formTitle="formTitle" >
       <template v-slot:default>
+        
         <form  @submit.prevent="submitForm">
-          <ReusableForm :fields="formFields"  @fetchDataForSubCategory="fetchDataForSubCategory" :isLoadingMsg="isLoadingMsg"/>
-          <input type="submit" value="Submit" class="btn btn-primary mt-3">
+          <p v-if="isError" class="text-red-500">{{ errorMessage }}</p>
+          <ReusableForm :fields="formFields"  @fetchDataForSubCategory="fetchDataForSubCategory" :isLoadingMsg="isLoadingMsg" :allError="allError"/>
+          <input type="submit"  v-if="!loading"  value="Submit" class="btn btn-primary mt-3">
+          
+                    <Loader v-else />
+          
         </form>
       </template>
     </FormModal>
+    
   </DashboardLayout>
 </template>
 
 
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import DataTableLayout from "@/components/Layouts/dataTableLayout.vue";
 import FormModal from "@/components/UI/FormModal.vue";
 import ReusableForm from "@/components/Forms/ReusableForm.vue"; 
 import apiService from '@/services/apiService';
-//import { useDataTable} from '@/composable/useDataTable';
+import Loader from "@/components/UI/Loader.vue";
 
-let showModal = ref(false);
-let isLoadingMsg = ref(" ");
+import { usePostComposable} from '@/composable/usePostComposable';
+import { formFields } from '@/formfields/formFields';
+
+
+
 const formTitle = "Add Product";
-//use composable
-// const { fetchPage } = useDataTable();
 
-const formFields = ref([
-  { label: 'Product Name', type: 'text', value: 'a', required: true, placeholder: 'Enter product name' , databaseField:"product_name"},
-  { label: 'Product Description', type: 'textarea', value: 'b', required: false, placeholder: 'Enter product description', databaseField:"product_description" },
-  { label: 'Product Image', type: 'image', value: '', required: false, placeholder: 'Enter image URL', databaseField:"product_image" },
-  { label: 'Measurement', type: 'select', value: '', required: true, placeholder: 'Select Measurement', options: [], databaseField:"measurement_id"},
-  { label: 'Category',  type: 'select', value: '', required: true, placeholder: 'Enter category ',  options: [], databaseField:"category_id"},
-  { label:'Sub Category', type: 'select', value: '', required: true, placeholder: 'Select Sub category', options: [], showLoading: true, databaseField:"sub_category_id"},
-  // { label: 'Sex', type: 'select', value: '', required: true, placeholder: 'Enter category ', options: ['male', 'female'] }
-]);
+const { 
+    
+     showModal, 
+     isLoadingMsg,
+     loading, 
+     allError,
+     forceUpdate,
+     errorMessage, 
+     isError,  
+     closeModal, 
+     submitForm
+     } = usePostComposable('/products', formFields);
 
-const closeModal = () => {
-  showModal.value = false;
-};
+
 
 const fetchDataForSubCategory = async (value, label) => {
   if (label === 'Category') {
@@ -102,37 +110,6 @@ const fetchDataForSelect = async (field, endpoint, valueProp, labelProp) => {
 };
 
 
-const submitForm = async () => {
-  try {
-    const formData = new FormData();
-
-    // Append other form fields to FormData
-    formFields.value.forEach(field => {
-      formData.append(field.databaseField, field.value);
-    });
-
-    // Append file data to FormData
-    const fileField = formFields.value.find(field => field.databaseField === 'product_image');
-    if (fileField && fileField.value instanceof File) {
-      formData.append('product_image', fileField.value);
-    }
-
-    // Submit FormData to the server
-    const response = await apiService.post('/products', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data' // Set the content type to multipart/form-data
-      }
-    });
-    
-    console.log(response);
-    //await fetchPage("/products", 1);
-  } catch (error) {
-    console.error('Error submitting form:', error);
-  }
-  showModal.value = false;
-};
-
-
 // Fetch data for select options on component mount
 onMounted(async () => {
 
@@ -140,6 +117,8 @@ onMounted(async () => {
   await fetchDataForSelect('Category', '/product-categories', 'id', 'category_name');
 
 });
+
+
 </script>
 
 

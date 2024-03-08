@@ -56,12 +56,13 @@
 import { defineProps, defineEmits, ref } from 'vue';
 
 // Destructure fields from props
-const { fields, isLoadingMsg } = defineProps({
+const { fields, isLoadingMsg, allError } = defineProps({
   fields: Array,
+  allError:Object,
   isLoadingMsg: String
 });
 const emit = defineEmits(['fetchDataForSubCategory'])
-
+console.log(allError)
 const localFields = ref(fields);
 
 const handleImageChange = (index, event) => {
@@ -76,4 +77,6 @@ const handleCategoryChange = (value, label) => {
     emit('fetchDataForSubCategory', value, label);
   }
 };
+
+
 </script>

@@ -71,7 +71,7 @@
 
 <script setup>
 import { onMounted } from 'vue';
-import { useDataTable} from '@/composable/useDataTable';
+import { useReadComposable} from '@/composable/useReadComposable';
 
 //import PaginationComponent from '@/components/UI/Pagination/DataTablePagination.vue';
 
@@ -79,7 +79,7 @@ const props = defineProps({
   endpoint: String, 
   excludedKeys: { 
     type: Array,
-    default: () => ['id'] // Default value is ['id'] if not provided
+    default: () => ['id'] 
   }
 });
 
@@ -95,7 +95,7 @@ const {
   isMediaKey,
   fetchPage,
   paginationArray
-} = useDataTable(props);
+} = useReadComposable(props);
 
 onMounted(async () => {
   await fetchPage(props.endpoint, 1);

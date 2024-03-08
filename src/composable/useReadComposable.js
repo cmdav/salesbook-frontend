@@ -3,7 +3,7 @@
 import { ref, computed } from 'vue';
 import apiService from '@/services/apiService';
 
-export function useDataTable(props = {}) {
+export function useReadComposable(props = {}) {
   const products = ref([]);
 
   const uniqueKeys = ref([]);
