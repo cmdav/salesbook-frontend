@@ -1,6 +1,8 @@
 <template>
   <div v-for="(field, index) in localFields" :key="index" class="spacing">
     <label class="form-label mt-3">{{ field.label }}</label>
+    <!-- Check if the field is required and add asterisk with red symbol if required -->
+    <label v-if="field.required" class="text-danger">*</label>
     <template v-if="field.type === 'textarea'">
       <textarea
         class="form-control"
@@ -17,12 +19,12 @@
         :required="field.required"
         @change="handleCategoryChange(field.value, field.label)"
       >
-
+        <!-- Option with asterisk if required -->
         <option v-for="(option, optionIndex) in field.options" 
                    :key="optionIndex" 
                    :value="option['value']"
                 >
-          {{ option['label'] }}
+          {{ option['label'] }} {{ field.required ? '*' : '' }}
         </option>
       </select>
       <span v-if="field.showLoading === true" class="text-danger"> {{ isLoadingMsg}}</span>
@@ -50,16 +52,14 @@
 </template>
 
 <script setup>
-import { defineProps,  ref} from 'vue';
+import { defineProps, defineEmits, ref } from 'vue';
 
 // Destructure fields from props
-const { fields, isLoadingMsg} = defineProps({
+const { fields, isLoadingMsg } = defineProps({
   fields: Array,
-  isLoadingMsg:String
+  isLoadingMsg: String
 });
 const emit = defineEmits(['fetchDataForSubCategory'])
-
-
 
 const localFields = ref(fields);
 
@@ -74,12 +74,9 @@ const handleImageChange = (index, event) => {
 
 // emit an event on change
 const handleCategoryChange = (value, label) => {
-  
   const selectedField = localFields.value.find(field => field.label === label);
   if (selectedField) {
-   // console.log(selectedField.showLoading);
+    emit('fetchDataForSubCategory', value, label);
   }
-  emit('fetchDataForSubCategory', value, label);
 };
-
 </script>

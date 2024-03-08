@@ -36,7 +36,7 @@ const formFields = ref([
   { label: 'Measurement', type: 'select', value: '', required: true, placeholder: 'Select Measurement', options: []},
   { label: 'Category',  type: 'select', value: '', required: true, placeholder: 'Enter category ',  options: []},
   { label:'Sub Category', type: 'select', value: '', required: true, placeholder: 'Select Sub category', options: [], showLoading: true},
-  { label: 'Sex', type: 'select', value: '', required: true, placeholder: 'Enter category ', options: ['male', 'female'] }
+  // { label: 'Sex', type: 'select', value: '', required: true, placeholder: 'Enter category ', options: ['male', 'female'] }
 ]);
 
 const closeModal = () => {
