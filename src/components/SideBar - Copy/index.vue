@@ -91,59 +91,6 @@
         </router-link>
 
 
-        <router-link
-          v-if="feature.includes('PRODUCTCATEGORY')"
-          to="/product-category"
-          class="p-[10px] flex justify-start hover:bg-brand/[50%] rounded-[5px]"
-          :class="route.name === 'ProductCategory' ? 'text-white bg-brand' : 'text-brand '"
-        >
-          <div
-            :class="route.name === 'ProductCategory' ? 'text-white ' : 'text-brand '"
-            class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
-          >
-            <ProductIcon />
-          </div>
-          <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]"
-            >Product Category</span
-          >
-        </router-link>
-
-        <router-link
-          v-if="feature.includes('PRODUCTSUBCATEGORY')"
-          to="/product-sub-category"
-          class="p-[10px] flex justify-start hover:bg-brand/[50%] rounded-[5px]"
-          :class="route.name === 'ProductSubCategory' ? 'text-white bg-brand' : 'text-brand '"
-        >
-          <div
-            :class="route.name === 'ProductSubCategory' ? 'text-white ' : 'text-brand '"
-            class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
-          >
-            <ProductIcon />
-          </div>
-          <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]"
-            >Product Sub Category</span
-          >
-        </router-link>
-        
-
-        <router-link
-          v-if="feature.includes('CURRENCY')"
-          to="/Currency"
-          class="p-[10px] flex justify-start hover:bg-brand/[50%] rounded-[5px]"
-          :class="route.name === 'Currency' ? 'text-white bg-brand' : 'text-brand '"
-        >
-          <div
-            :class="route.name === 'Currency' ? 'text-white ' : 'text-brand '"
-            class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
-          >
-            <ProductIcon />
-          </div>
-          <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]"
-            >Currency</span
-          >
-        </router-link>
-
-
 
 
 

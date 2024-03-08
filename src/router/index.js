@@ -14,6 +14,11 @@ import OrganisationPage from '@/views/Dashboard/Organisation/OrganisationPage.vu
 import SupplierSinglePage from '@/views/Dashboard/Suppliers/SupplierSinglePage.vue'
 import CustomersSinglePage from '@/views/Dashboard/Customers/CustomersSinglePage.vue'
 import ProductsPage from '@/views/Dashboard/Product/ProductPage.vue'
+import ProductsPages from '@/views/Dashboard/Product/ProductPages.vue'
+import ProductCategoryPage from '@/views/Dashboard/Product/ProductCategoryPage.vue'
+import ProductSubCategoryPage from '@/views/Dashboard/Product/ProductSubCategoryPage.vue'
+import CurrencyPage from '@/views/Dashboard/Product/CurrencyPage.vue'
+import MeasurementPage from '@/views/Dashboard/Product/MeasurementPage.vue'
 import SupplierProductsPage from '@/views/Dashboard/SupplierProduct/SupplierProductPage.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -97,6 +102,38 @@ const router = createRouter({
       component: ProductsPage,
       beforeEnter: [middleware.redirectLogin]
     },
+    // added routes
+    {
+      path: '/products',
+      name: 'products',
+      component: ProductsPages,
+      beforeEnter: [middleware.redirectLogin]
+    },
+    {
+      path: '/measurement',
+      name: 'measurement',
+      component: MeasurementPage,
+      beforeEnter: [middleware.redirectLogin]
+    },
+
+    {
+      path: '/product-category',
+      name: 'product-category',
+      component: ProductCategoryPage,
+      beforeEnter: [middleware.redirectLogin]
+    },
+    {
+      path: '/product-sub-category',
+      name: 'product-sub-category',
+      component: ProductSubCategoryPage,
+      beforeEnter: [middleware.redirectLogin]
+    },
+    {
+      path: '/currency',
+      name: 'currency',
+      component: CurrencyPage,
+      beforeEnter: [middleware.redirectLogin]
+    },
     {
       path: '/supplier-product',
       name: 'supplier-product',
@@ -120,7 +157,13 @@ const router = createRouter({
     }
   ],
   scrollBehavior(to, from, savedPosition) {
-    return { top: 0 }
+    console.log(to);
+    console.log(from);
+    console.log(savedPosition);
+    return { top: 0 
+      
+    }
+    
   }
 })
 

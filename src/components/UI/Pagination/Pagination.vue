@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-const emit = defineEmits<{
-  (event: "changePage", page: number): void;
-}>();
+const emit = defineEmits<{(event: "changePage", page: number): void;}>();
 
 const props = withDefaults(
   defineProps<{

@@ -733,6 +733,7 @@ const uploadFile = (event) => {
   const file = event.target.files[0]; // Retrieve the uploaded file
 
   if (file) {
+  
     // Check if a file is uploaded
     const validImageTypes = [
       "image/jpeg",
@@ -755,6 +756,7 @@ const uploadFile = (event) => {
           // When FileReader has loaded the file
           // Set the product image data to the result of FileReader
           addProductData.product_image = reader.result;
+          console.log("Image Data", reader.result);
         };
 
         // Read the file as a data URL

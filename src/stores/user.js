@@ -30,21 +30,34 @@ export const useStore = defineStore('user', () => {
       console.error(error)
     }
   }
-
   const features = computed(() => {
-    const account = getUser?.value?.user?.type
-    if (account) {
-      const accountLowerCase = account.toLowerCase()
-      if (accountLowerCase === '2') {
-        return ['STORE', 'PRODUCT', 'SUPPLIER', 'RECORDS', 'REPORTS', 'CUSTOMERS', 'INVENTORY']
-      } else if (accountLowerCase === '1') {
-        return ['SUPPLIER_PRODUCT']
-      } else if (accountLowerCase === '0') {
-        return ['0']
+    const accountLowerCase = getUser?.value?.user?.type;
+    
+      
+      if (accountLowerCase === 2) {
+        return ['STORE',
+               'PRODUCT',
+               'SUPPLIER',
+                'RECORDS', 
+                'REPORTS', 
+                'CUSTOMERS', 
+                'INVENTORY',
+                'PRODUCTS',
+                'MEASUREMENT',
+                'PRODUCTCATEGORY',
+                'PRODUCTSUBCATEGORY',
+                'CURRENCY',
+            ];
+      } else if (accountLowerCase === 1) {
+        return ['SUPPLIER_PRODUCT'];
+      } else if (accountLowerCase === 0) {
+        return ['0'];
       }
-    }
-    return null
-  })
+    
+    return null;
+  });
+  
+ 
   return {
     user,
     getUser,
