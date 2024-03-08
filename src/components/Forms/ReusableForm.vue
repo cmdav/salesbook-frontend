@@ -9,6 +9,7 @@
         :placeholder="field.placeholder"
       ></textarea>
     </template>
+    <!-- select field-->
     <template v-else-if="field.type === 'select'">
       <select
         class="form-control"
@@ -24,7 +25,9 @@
           {{ option['label'] }}
         </option>
       </select>
+      <span v-if="field.showLoading === true" class="text-danger"> {{ isLoadingMsg}}</span>
     </template>
+    <!-- image field -->
     <template v-else-if="field.type === 'image'">
       <input
         type="file"
@@ -47,13 +50,15 @@
 </template>
 
 <script setup>
-import { defineProps, ref} from 'vue';
+import { defineProps,  ref} from 'vue';
 
 // Destructure fields from props
-const { fields } = defineProps({
-  fields: Array
+const { fields, isLoadingMsg} = defineProps({
+  fields: Array,
+  isLoadingMsg:String
 });
 const emit = defineEmits(['fetchDataForSubCategory'])
+
 
 
 const localFields = ref(fields);
@@ -69,6 +74,11 @@ const handleImageChange = (index, event) => {
 
 // emit an event on change
 const handleCategoryChange = (value, label) => {
+  
+  const selectedField = localFields.value.find(field => field.label === label);
+  if (selectedField) {
+   // console.log(selectedField.showLoading);
+  }
   emit('fetchDataForSubCategory', value, label);
 };
 
