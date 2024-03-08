@@ -27,15 +27,14 @@
 <script setup>
 import { onMounted } from 'vue';
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
-import DataTableLayout from "@/components/Layouts/dataTableLayout.vue";
-import FormModal from "@/components/UI/FormModal.vue";
-import ReusableForm from "@/components/Forms/ReusableForm.vue"; 
+import DataTableLayout from "@/components/Layouts/dataTableLayout.vue"; // read data
+import FormModal from "@/components/UI/FormModal.vue"; // show modal
+import ReusableForm from "@/components/Forms/ReusableForm.vue";  // To create form
 import apiService from '@/services/apiService';
 import Loader from "@/components/UI/Loader.vue";
 
 import { usePostComposable} from '@/composable/usePostComposable';
 import { formFields } from '@/formfields/formFields';
-
 
 
 const formTitle = "Add Product";

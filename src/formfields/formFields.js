@@ -8,3 +8,8 @@ export const formFields = ref([
   { label: 'Category', type: 'select', value: '', required: true, placeholder: 'Enter category ', options: [], databaseField: "category_id" },
   { label: 'Sub Category', type: 'select', value: '', required: true, placeholder: 'Select Sub category', options: [], showLoading: true, databaseField: "sub_category_id" },
 ]);
+
+export const measurementFormFields = ref([
+  { label: 'Measurement Name', type: 'text', value: '', required: true, placeholder: 'Enter measurement name', databaseField: "measurement_name" },
+  { label: 'Unit', type: 'text', value: '', required: true, placeholder: 'Enter unit', maxLength: 5, databaseField: "unit" },
+]);
