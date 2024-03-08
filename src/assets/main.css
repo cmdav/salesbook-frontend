@@ -336,3 +336,45 @@ textarea {
 .ant-input-number-input {
   transition: none;
 }
+/* Style the tabs */
+
+.tabs {
+  overflow: auto;
+  column-gap: 25px;
+  background: #f0f5f3;
+  padding-bottom: 0 !important;
+  scroll-padding-bottom: 0;
+  text-transform: capitalize !important;
+  color: rgba(33, 37, 41, 0.6);
+  @apply text-[14px] leading-[18.2px] font-medium rounded-full;
+}
+
+.tabs::-webkit-scrollbar {
+  width: 0px;
+}
+
+.tabs a {
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 0.2s;
+  color: rgba(0, 0, 0, 0.5);
+  @apply p-4 px-5 text-center;
+}
+
+.tabs a:last-child {
+  border-right: 0px solid #ccc;
+}
+
+/* Change background color of tabs on hover */
+/* .tabs a:hover {
+    color: #484848;
+} */
+
+/* Styling for active tab */
+.tabs a.active {
+  cursor: default;
+  font-weight: 500;
+  border: 0.521px solid #C35214;
+  @apply text-brand bg-white rounded-full text-center;
+}
+
