@@ -13,6 +13,7 @@
     </template>
     <!-- select field-->
     <template v-else-if="field.type === 'select'">
+      
       <select
         class="form-control"
         v-model="field.value"
@@ -24,7 +25,7 @@
                    :key="optionIndex" 
                    :value="option['value']"
                 >
-          {{ option['label'] }} {{ field.required ? '*' : '' }}
+          {{ option['label'] }} 
         </option>
       </select>
       <span v-if="field.showLoading === true" class="text-danger"> {{ isLoadingMsg}}</span>
@@ -65,11 +66,7 @@ const localFields = ref(fields);
 
 const handleImageChange = (index, event) => {
   const file = event.target.files[0];
-  const reader = new FileReader();
-  reader.onload = () => {
-    localFields.value[index].value = reader.result; 
-  };
-  reader.readAsDataURL(file);
+  localFields.value[index].value = file; 
 };
 
 // emit an event on change

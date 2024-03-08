@@ -7,8 +7,9 @@
     </div>
     <FormModal v-if="showModal" @close="closeModal" :formTitle="formTitle">
       <template v-slot:default>
-        <form>
+        <form  @submit.prevent="submitForm">
           <ReusableForm :fields="formFields"  @fetchDataForSubCategory="fetchDataForSubCategory" :isLoadingMsg="isLoadingMsg"/>
+          <input type="submit" value="Submit" class="btn btn-primary mt-3">
         </form>
       </template>
     </FormModal>
@@ -24,18 +25,21 @@ import DataTableLayout from "@/components/Layouts/dataTableLayout.vue";
 import FormModal from "@/components/UI/FormModal.vue";
 import ReusableForm from "@/components/Forms/ReusableForm.vue"; 
 import apiService from '@/services/apiService';
+//import { useDataTable} from '@/composable/useDataTable';
 
 let showModal = ref(false);
 let isLoadingMsg = ref(" ");
 const formTitle = "Add Product";
+//use composable
+// const { fetchPage } = useDataTable();
 
 const formFields = ref([
-  { label: 'Product Name', type: 'text', value: '', required: true, placeholder: 'Enter product name' },
-  { label: 'Product Description', type: 'textarea', value: '', required: false, placeholder: 'Enter product description' },
-  { label: 'Product Image', type: 'image', value: '', required: false, placeholder: 'Enter image URL' },
-  { label: 'Measurement', type: 'select', value: '', required: true, placeholder: 'Select Measurement', options: []},
-  { label: 'Category',  type: 'select', value: '', required: true, placeholder: 'Enter category ',  options: []},
-  { label:'Sub Category', type: 'select', value: '', required: true, placeholder: 'Select Sub category', options: [], showLoading: true},
+  { label: 'Product Name', type: 'text', value: 'a', required: true, placeholder: 'Enter product name' , databaseField:"product_name"},
+  { label: 'Product Description', type: 'textarea', value: 'b', required: false, placeholder: 'Enter product description', databaseField:"product_description" },
+  { label: 'Product Image', type: 'image', value: '', required: false, placeholder: 'Enter image URL', databaseField:"product_image" },
+  { label: 'Measurement', type: 'select', value: '', required: true, placeholder: 'Select Measurement', options: [], databaseField:"measurement_id"},
+  { label: 'Category',  type: 'select', value: '', required: true, placeholder: 'Enter category ',  options: [], databaseField:"category_id"},
+  { label:'Sub Category', type: 'select', value: '', required: true, placeholder: 'Select Sub category', options: [], showLoading: true, databaseField:"sub_category_id"},
   // { label: 'Sex', type: 'select', value: '', required: true, placeholder: 'Enter category ', options: ['male', 'female'] }
 ]);
 
@@ -79,9 +83,6 @@ const fetchDataForSubCategory = async (value, label) => {
 };
 
 
-
-
-
 const fetchDataForSelect = async (field, endpoint, valueProp, labelProp) => {
   try {
     const response = await apiService.get(endpoint);
@@ -100,6 +101,36 @@ const fetchDataForSelect = async (field, endpoint, valueProp, labelProp) => {
   }
 };
 
+
+const submitForm = async () => {
+  try {
+    const formData = new FormData();
+
+    // Append other form fields to FormData
+    formFields.value.forEach(field => {
+      formData.append(field.databaseField, field.value);
+    });
+
+    // Append file data to FormData
+    const fileField = formFields.value.find(field => field.databaseField === 'product_image');
+    if (fileField && fileField.value instanceof File) {
+      formData.append('product_image', fileField.value);
+    }
+
+    // Submit FormData to the server
+    const response = await apiService.post('/products', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data' // Set the content type to multipart/form-data
+      }
+    });
+    
+    console.log(response);
+    //await fetchPage("/products", 1);
+  } catch (error) {
+    console.error('Error submitting form:', error);
+  }
+  showModal.value = false;
+};
 
 
 // Fetch data for select options on component mount

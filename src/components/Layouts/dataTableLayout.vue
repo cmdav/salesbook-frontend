@@ -14,13 +14,8 @@
                 </th>
                 <th v-for="key in displayKeys"
                           :key="key" 
-                          class="px-5 py-3 
-                                 border-b-2 
-                                 border-gray-200
-                                  bg-gray-100 text-left text-xs font-semibold 
-                                  text-gray-600 uppercase tracking-wider"
-                  >
-                  {{ formatKey(key) }}
+                          class="px-5 py-3 border-b-2 border-gray-20 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        {{ formatKey(key) }}
                 </th>
               </tr>
             </thead>
@@ -52,7 +47,7 @@
               <li v-for="(link, index) in paginationArray" :key="index" 
                   :class="{'bg-blue-500': currentPage === link, 'bg-gray-200': currentPage !== link}" 
                   class="flex items-center justify-center min-w-[32px] h-[32px] rounded-full cursor-pointer text-white">
-                <a @click.prevent="fetchPage(link)" class="block">
+                <a @click.prevent="fetchPage(props.endpoint,link)" class="block">
                   {{ link }}
                 </a>
               </li>
@@ -75,107 +70,36 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from 'vue';
-import apiService from '@/services/apiService';
+import { onMounted } from 'vue';
+import { useDataTable} from '@/composable/useDataTable';
+
+//import PaginationComponent from '@/components/UI/Pagination/DataTablePagination.vue';
 
 const props = defineProps({
   endpoint: String, 
-  excludedKeys: { // Now excludedKeys is a prop
+  excludedKeys: { 
     type: Array,
     default: () => ['id'] // Default value is ['id'] if not provided
   }
 });
 
+const {
+  products,
+  currentPage,
+  itemsPerPage,
+  lastPage,
+  isLoading,
+  hasError,
+  displayKeys,
+  formatKey,
+  isMediaKey,
+  fetchPage,
+  paginationArray
+} = useDataTable(props);
 
-const products = ref([]);
-const uniqueKeys = ref([]);
-
-
-//const links = ref('');
-const currentPage = ref(1); 
-const itemsPerPage = ref(1);
-const totalPage = ref(1);
-const lastPage = ref(1);
-
-const isLoading = ref(false);
-const hasError = ref(false);
-
-
-// Function to extract and process unique keys from the data array
-function extractUniqueKeys(dataArray) {
-  return dataArray.reduce((keys, obj) => {
-    Object.keys(obj).forEach((key) => {
-      if (!keys.includes(key) && !props.excludedKeys.includes(key)) {
-        keys.push(key);
-      }
-    });
-    return keys;
-  }, []);
-}
-
-// Computed property for keys that should be displayed (excluding certain keys)
-const displayKeys = computed(() => {
-  return uniqueKeys.value.filter(key => !props.excludedKeys.includes(key)); // Use props.excludedKeys
-});
-
-// Format key for display: replace underscores with spaces
-function formatKey(key) {
-  return key.replace(/_/g, ' ');
-}
-
-// Check if a key corresponds to media (image, logo, file)
-function isMediaKey(key) {
-  return ['image', 'logo', 'file'].some(suffix => key.toLowerCase().endsWith(suffix));
-}
-
-// Component mounted lifecycle hook
 onMounted(async () => {
-    await fetchPage(1);
+  await fetchPage(props.endpoint, 1);
 });
-
-// Add reactive properties for handling pagination
-const paginationArray = computed(() => {
-  
-  let pages = [];
-  for (let i = 1; i <= lastPage.value; i++) {
-    pages.push(i);
-  }
-  return pages;
-});
-
-// Add method for fetching specific page
-const fetchPage = async (page) => {
-  isLoading.value = true;
-  hasError.value = false; // Reset error state on new request
-  try {
-    const data = await apiService.get(`${props.endpoint}?page=${page}`);
-    if (data.data && Array.isArray(data.data)) {
-      products.value = data.data;
-      uniqueKeys.value = extractUniqueKeys(data.data);
-      currentPage.value = data.current_page;
-      lastPage.value = data.last_page;
-      totalPage.value = data.total;
-      itemsPerPage.value = data.per_page;
-    } else if (Array.isArray(data)) {
-      // Handle non-paginated data
-      console.log(data);
-      products.value = data;
-      uniqueKeys.value = extractUniqueKeys(data);
-      currentPage.value = 1;  
-      lastPage.value = 1;  
-      totalPage.value = 1;  // Only one page
-      itemsPerPage.value = data.length;  // All items are on this single page
-    } else {
-      // No valid data
-      products.value = [];
-    }
-  } catch (error) {
-    console.error('Error fetching page:', error);
-    hasError.value = true; // Set error state
-  } finally {
-    isLoading.value = false; // Reset loading state regardless of outcome
-  }
-};
 
 
 </script>

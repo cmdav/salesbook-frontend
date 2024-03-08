@@ -55,7 +55,7 @@ const toogleDropdown = () => {
       <div class="hidden lg:block flex-shrink-0 md:w-[256px]">
         <BaseSidebar />
       </div>
-      <div class="flex-grow pb-20">
+      <div class="flex-grow pb-20" style="overflow:auto;padding:0 2em;">
         <!-- top-menu flex items-center justify-between py-3 px-4 lg:px-0 -->
         <!-- flex items-center gap-[3rem] justify-between px-4 min-[370px]:px-6 sticky top-0 pt-4 min-[370px]:pt-5 bg-white z-50  -->
         <nav
