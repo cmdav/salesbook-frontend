@@ -6,7 +6,7 @@
       <DataTableLayout
            :key="forceUpdate"
             endpoint="products"
-            :clickableKeys="{'product_name': navigateToProductDetail}"
+            :clickableKeys="{'product_name': navigateToProductDetail,'product_type': navigateToProductType}"
             :additionalColumns="[{ name: 'edit', action: handleEdit }, { name: 'delete', action: handleDelete }]"
             />
     </div>
@@ -61,6 +61,10 @@ const {
 const navigateToProductDetail = (product) => {
   console.log(product);
  // router.push({ name: 'product-detail', params: { id: product.id } });
+};
+
+const navigateToProductType = (product) => {
+  console.log(product);
 };
 
 const handleEdit = (product) => {
