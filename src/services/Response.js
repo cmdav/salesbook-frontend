@@ -14,17 +14,17 @@ export const catchAxiosError = (error) => {
     }
 
     // Display individual error messages
-    if (responseData.errors) {
-      for (const key in responseData.errors) {
-        if (responseData.errors.hasOwnProperty(key)) {
-          responseData.errors[key].forEach((errorMessage) => {
-            toast.error(errorMessage, {
-              timeout: 6000
-            })
-          })
-        }
-      }
-    }
+    // if (responseData.errors) {
+    //   for (const key in responseData.errors) {
+    //     if (responseData.errors.hasOwnProperty(key)) {
+    //       responseData.errors[key].forEach((errorMessage) => {
+    //         toast.error(errorMessage, {
+    //           timeout: 6000
+    //         })
+    //       })
+    //     }
+    //   }
+    // }
   } else {
     // Handle generic error when no specific message is available
     toast.error('', {

@@ -113,7 +113,7 @@
                   </thead>
                   <tbody>
                     <tr
-                      v-for="(i, index) in Supplier?.data"
+                      v-for="(i, index) in filteredSupplier"
                       :key="i"
                       class="border-b text-[14px]"
                     >
@@ -299,7 +299,7 @@
   </DashboardLayout>
 </template>
 <script setup>
-import { ref, reactive, watch, onMounted } from "vue";
+import { ref, reactive, watch, onMounted, computed } from "vue";
 import { useSupplierStore } from "@/stores/suppliers";
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import CenteredModalLarge from "@/components/UI/CenteredModalLarge.vue";
@@ -329,6 +329,22 @@ const formData = reactive({
   email: "",
 });
 let loading = ref(false);
+let sortInput = reactive({
+  name: "",
+});
+const filteredSupplier = computed(() => {
+  // Create a shallow copy of the jobs array
+  let filtered = Supplier.value?.data;
+
+  // Filtering based on the search criteria
+  if (sortInput.name) {
+    return filtered.filter((item) =>
+      item.first_name.toLowerCase().includes(sortInput.name.toLowerCase())
+    );
+  }
+
+  return filtered; // Return the filtered array
+});
 
 const errors = reactive({
   firstName: false,

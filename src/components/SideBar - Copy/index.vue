@@ -90,11 +90,6 @@
           >
         </router-link>
 
-
-
-
-
-
         <router-link
           v-if="feature.includes('SUPPLIER_PRODUCT')"
           to="/supplier-product"
@@ -111,9 +106,6 @@
             >Product</span
           >
         </router-link>
-
-        
-
 
         <router-link
           v-if="feature.includes('CUSTOMERS')"

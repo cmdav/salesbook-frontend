@@ -301,7 +301,7 @@ const formData = reactive({
   organization_name: "",
   organization_url: "",
   organization_code: "",
-  organization_logo: "",
+  organization_logo: null,
 });
 let loading = ref(false);
 
@@ -346,7 +346,7 @@ const clearInputs = () => {
   (formData.organization_name = ""),
     (formData.organization_url = ""),
     (formData.organization_code = ""),
-    (formData.organization_logo = "");
+    (formData.organization_logo = null);
 };
 watch(formData, () => {
   clearInputErrors();
@@ -380,41 +380,10 @@ const previewImage = ref(null);
 const uploadedImageName = ref("");
 
 const uploadFile = (event) => {
-  // formData.organization_logo = previewImage.value.files[0];
   const file = event.target.files[0];
-
-  if (file) {
-    const reader = new FileReader();
-    uploadedImageName.value = file.name;
-
-    reader.onload = () => {
-      formData.organization_logo = reader.result;
-    };
-    reader.readAsDataURL(file);
-  } else {
-    formData.organization_logo = "";
-  }
-
-  showImage();
-};
-// const uploadFile = (event) => {
-//   const file = event.target.files[0];
-
-//   if (file) {
-//     uploadedImageName.value = file.name;
-//     formData.organization_logo = file;
-//   } else {
-//     formData.organization_logo = null;
-//   }
-
-//   showImage();
-// };
-const showImage = async () => {
-  if (formData.organization_logo) {
-    previewImage.value = URL.createObjectURL(formData.organization_logo);
-  } else {
-    previewImage.value = null;
-  }
+  formData.organization_logo = file;
+  previewImage.value = file;
+  uploadedImageName.value = file.name;
 };
 
 const handleorganisationInvite = async () => {
@@ -423,14 +392,22 @@ const handleorganisationInvite = async () => {
     loading.value = false;
     return;
   }
-  let payload = {
-    organization_name: formData.organization_name,
-    organization_url: formData.organization_url,
-    organization_code: formData.organization_code,
-    organization_logo: formData.organization_logo,
-  };
   try {
-    let res = await organisationStore.handleAddOrganisation(payload);
+    let payload = {
+      organization_name: formData.organization_name,
+      organization_url: formData.organization_url,
+      organization_code: formData.organization_code,
+      organization_type: 0,
+    };
+
+    // Append organization_logo to the payload as a FormData object
+    const formDataPayload = new FormData();
+    formDataPayload.append("organization_logo", formData.organization_logo);
+    // Append other fields to the formDataPayload
+    Object.entries(payload).forEach(([key, value]) => {
+      formDataPayload.append(key, value);
+    });
+    let res = await organisationStore.handleAddOrganisation(formDataPayload);
     HandleToggleModal();
     getallorganisationData();
     loading.value = false;

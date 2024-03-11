@@ -14,6 +14,7 @@
               <AuthInput
                 label="First Name"
                 :error="errors.firstName"
+                :errorsMsg="errorsMsg.firstName"
                 type="text"
                 placeholder="Enter first name"
                 v-model="formData.firstName"
@@ -23,6 +24,7 @@
               <AuthInput
                 label="Last Name"
                 :error="errors.lastName"
+                :errorsMsg="errorsMsg.lastName"
                 type="text"
                 placeholder="Enter last name"
                 v-model="formData.lastName"
@@ -44,6 +46,7 @@
               <AuthInput
                 label="Email Address"
                 :error="errors.email"
+                :errorsMsg="errorsMsg.email"
                 type="email"
                 placeholder="Enter email address"
                 v-model="formData.email"
@@ -54,16 +57,18 @@
             <div class="mb-3 flex flex-col w-full">
               <AuthInput
                 label="Date of Birth (optional)"
-                :error="false"
+                :error="dobError"
                 type="date"
                 placeholder="Enter Date of Birth"
                 v-model="dob"
+                :min="minDate"
+                :errorsMsg="dobErrorMsg"
               />
             </div>
             <div class="mb-3 flex flex-col w-full">
               <AuthInput
                 label="Phone number"
-                :error="false"
+                :error="errorsMsg.phoneNo"
                 type="tel"
                 placeholder="Enter Phone number"
                 v-model="formData.phoneNo"
@@ -93,11 +98,11 @@
             </div>
             <div class="mb-3 flex flex-col w-full">
               <PasswordInput
-                label="Confirm Password"
+                label="Confirm Password*"
                 :error="errors.confirmPassword || !passwordsMatch"
                 :errorsMsg="errorsMsg.confirmPassword"
                 placeholder="Confirm Password*"
-                v-model="confirmPassword"
+                v-model="formData.confirmPassword"
               />
             </div>
           </div>
@@ -171,7 +176,7 @@
           <button
             @click="handleSupplierSignup()"
             :class="!isFormValid ? '!bg-primary-100 cursor-not-allowed' : 'bg-brand'"
-            class="btn-brand !rounded-[5px] flex gap-2 items-center justify-center !text-text-black-200 text-[14px] !py-[16px] font-semibold w-full"
+            class="btn-brand !rounded-[5px] flex gap-2 items-center justify-center !text-white text-[14px] !py-[16px] font-semibold w-full"
           >
             <span v-if="!loading" class="font-semibold !text-[15px]">Submit</span>
             <Loader v-else />
@@ -219,6 +224,7 @@ const formData = reactive({
   email: "",
   phoneNo: "",
   password: "",
+  confirmPassword: "",
 });
 let loading = ref(false);
 
@@ -231,6 +237,8 @@ const errors = reactive({
   confirmPassword: false,
 });
 const confirmPassword = ref("");
+const dobError = ref(false);
+const dobErrorMsg = ref("date of birth is lower than 18");
 
 const errorsMsg = {
   firstName: "First name is required",
@@ -240,13 +248,23 @@ const errorsMsg = {
   password: "Password is required",
   confirmPassword: "Password does not match",
 };
+
+// Define the minimum date for the Date of Birth field
+const minDate = ref(getMinDate());
+
+function getMinDate() {
+  const today = new Date();
+  const minDate = new Date(today.getFullYear() - 5, today.getMonth(), today.getDate());
+  // Return the minimum date in the format required by the input[type=date] field
+  return minDate.toISOString().split("T")[0];
+}
 const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/;
 const isValidEmail = computed(() => {
   return emailRegex.test(formData.email);
 });
 const passwordsMatch = computed(() => {
-  return formData.password === confirmPassword.value;
+  return formData.password === formData.confirmPassword;
 });
 
 const isValidPassword = computed(() => {
@@ -298,8 +316,17 @@ const validateForm = () => {
     isValid = false;
   }
 
-  if (formData.password !== confirmPassword.value) {
+  if (formData.password !== formData.confirmPassword) {
     errors.confirmPassword = true;
+    errorsMsg.confirmPassword;
+    isValid = false;
+  }
+  // Check if Date of Birth is not less than 5 years from today
+  const minDOB = new Date(minDate.value);
+  const selectedDOB = new Date(dob.value);
+  if (selectedDOB > minDOB) {
+    // DOB is less than 5 years from today
+    dobError.value = true;
     isValid = false;
   }
 
@@ -321,7 +348,7 @@ const isFormValid = computed(() => {
     formData.lastName.trim() !== "" &&
     formData.email.trim() !== "" &&
     formData.password.trim() !== "" &&
-    confirmPassword.value.trim() !== ""
+    formData.confirmPassword.trim() !== ""
   );
 });
 const clearInputs = () => {
@@ -332,7 +359,7 @@ const clearInputs = () => {
   middelName.value = "";
   formData.phoneNo = "";
   dob.value = "";
-  confirmPassword.value = "";
+  formData.confirmPassword = "";
 };
 watch(formData, () => {
   clearInputErrors();

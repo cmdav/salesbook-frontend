@@ -17,7 +17,7 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  {{ products?.total }}
+                  {{ supplierProduct?.total }}
                 </div>
               </div>
             </div>
@@ -100,12 +100,12 @@
                   >
                     Add Products Categories
                   </button> -->
-                  <button
+                  <!-- <button
                     @click="HandleToggleModal"
                     class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
                   >
                     Add Products
-                  </button>
+                  </button> -->
                 </div>
               </div>
             </div>
@@ -125,7 +125,7 @@
                   </thead>
                   <tbody>
                     <tr
-                      v-for="(i, index) in filteredJobs"
+                      v-for="(i, index) in filteredProducts"
                       :key="i"
                       class="border-b text-[14px]"
                     >
@@ -225,8 +225,8 @@
             <div class="mx-auto w-fit mt-5">
               <Pagination
                 @changePage="setCurrentPage"
-                :currentPage="products?.current_page"
-                :pageSize="products?.per_page"
+                :currentPage="supplierProduct?.current_page"
+                :pageSize="supplierProduct?.per_page"
                 :totalPages="2"
                 :alwaysShowNextAndPrevious="true"
               />
@@ -235,7 +235,7 @@
         </div>
       </div>
 
-      <CenteredModalLarge v-if="showModal">
+      <!-- <CenteredModalLarge v-if="showModal">
         <div class="p-4">
           <div v-if="step == 1">
             <header
@@ -273,7 +273,6 @@
                   <div class="flex lg:flex-row flex-col w-full gap-[20px]">
                     <div class="flex flex-col rounded-lg h-auto w-full">
                       <Label>Product Image</Label>
-                      <!-- <Uploader @defaultImage="handleImageChange" /> -->
                       <label
                         for="upload_file"
                         class="bg-secondary-800 border-dashed cursor-pointer overflow-hidden h-[117px] border-[#254035AB] border-[1.789px] flex flex-col text-center relative rounded-[5.982px]"
@@ -372,7 +371,7 @@
                           v-model:value="addProductData.sub_category_id"
                         >
                           <a-select-option
-                            v-for="item in allProductSubCategories"
+                            v-for="item in allSupplierProduct"
                             :key="item.id"
                             :value="item.id"
                           >
@@ -412,7 +411,6 @@
               </div>
             </div>
           </div>
-          <!-- add product category -->
           <div v-if="step == 2" class="flex flex-col w-full gap-[20px]">
             <header
               class="flex flex-row items-center gap-2 justify-start border-b-[#000000] pb-[5px] mb-[10px] border-b-[1px]"
@@ -457,7 +455,6 @@
               </div>
             </div>
           </div>
-          <!-- sub product categoy -->
           <div v-if="step == 3" class="flex flex-col w-full gap-[20px]">
             <header
               class="flex flex-row items-center gap-2 justify-start border-b-[#000000] pb-[5px] mb-[10px] border-b-[1px]"
@@ -568,13 +565,13 @@
             </div>
           </div>
         </div>
-      </CenteredModalLarge>
+      </CenteredModalLarge> -->
     </div>
   </DashboardLayout>
 </template>
 <script setup>
 import { ref, reactive, watch, onMounted, computed } from "vue";
-import { useProductStore } from "@/stores/products";
+import { useSupplierStore } from "@/stores/suppliers";
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import CenteredModalLarge from "@/components/UI/CenteredModalLarge.vue";
 import AuthInput from "@/components/UI/Input/AuthInput.vue";
@@ -585,14 +582,8 @@ import Label from "@/components/UI/Input/Label.vue";
 import ArrowLeftIcon from "@/components/icons/ArrowLeftIcon.vue";
 import Uploader from "@/components/UI/Upload/Uploader.vue";
 import { storeToRefs } from "pinia";
-const productsStore = useProductStore();
-const {
-  products,
-  productCategories,
-  productSubCategories,
-  allProductSubCategories,
-  measurements,
-} = storeToRefs(productsStore);
+const suppliersStore = useSupplierStore();
+const { supplierProduct } = storeToRefs(suppliersStore);
 import { useStore } from "@/stores/user";
 const store = useStore();
 const { userProfileDetails } = storeToRefs(store);
@@ -798,8 +789,8 @@ const handleAddProduct = async () => {
   formData.append("sub_category_id", addProductData.sub_category_id);
   formData.append("category_id", addProductData.category);
   try {
-    let res = await productsStore.handleAddProducts(formData);
-    productsStore.handleGetProducts();
+    let res = await suppliersStore.handleAddProducts(formData);
+    suppliersStore.handleGetProducts();
     HandleToggleModal();
     loading.value = false;
     clearInputs();
@@ -821,8 +812,8 @@ const handleAddProductCategory = async () => {
     category_description: addProductCategoryData.category_description,
   };
   try {
-    let res = await productsStore.handleAddProductsCategory(payload);
-    productsStore.handleGetProductCategories();
+    let res = await suppliersStore.handleAddProductsCategory(payload);
+    suppliersStore.handleGetProductCategories();
     loading.value = false;
     changeStep(1);
     return res;
@@ -846,8 +837,8 @@ const handleAddProductSubCategory = async () => {
     sub_category_description: addSubProductCategoryData.sub_category_description,
   };
   try {
-    let res = await productsStore.handleAddProductsSubCategory(payload);
-    productsStore.handleGetProductSubCategories();
+    let res = await suppliersStore.handleAddProductsSubCategory(payload);
+    suppliersStore.handleGetProductSubCategories();
     loading.value = false;
     changeStep(1);
     return res;
@@ -871,8 +862,8 @@ const addMeasurements = async () => {
     unit: addMeasurementsData.unit,
   };
   try {
-    let res = await productsStore.handleAddMeasurements(payload);
-    productsStore.handleGetMeasurements();
+    let res = await suppliersStore.handleAddMeasurements(payload);
+    suppliersStore.handleGetMeasurements();
     loading.value = false;
     changeStep(1);
     return res;
@@ -886,23 +877,23 @@ const addMeasurements = async () => {
 };
 const fetchProducts = async (page) => {
   try {
-    let res = await productsStore.handleGetProducts(page);
+    let res = await suppliersStore.handleGetProducts(page);
     return res;
   } catch (error) {
     console.error("Error fetching products:", error);
   }
 };
 const setCurrentPage = (page) => {
-  products.value.current_page = page;
+  supplierProduct.value.current_page = page;
   fetchProducts(page);
 };
 function clearSearch() {
   sortInput.name = "";
   fetchProducts(1);
 }
-const filteredJobs = computed(() => {
+const filteredProducts = computed(() => {
   // Create a shallow copy of the jobs array
-  let filtered = products.value?.data;
+  let filtered = supplierProduct.value?.data;
 
   // Filtering based on the search criteria
   if (sortInput.name) {
@@ -915,11 +906,8 @@ const filteredJobs = computed(() => {
 });
 
 onMounted(async () => {
-  await productsStore.handleGetProducts(products?.value?.current_page);
-  await productsStore.handleGetProductCategories();
-  await productsStore.handleGetProductSubCategories();
-  await productsStore.handleGetAllProductSubCategories();
-  await productsStore.handleGetMeasurements();
+  // await suppliersStore.handleAllSupplierProduct();
+  await suppliersStore.handleGetSupplierProduct();
   await store.handleUserProfile();
 });
 </script>
