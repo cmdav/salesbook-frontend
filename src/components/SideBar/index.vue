@@ -194,23 +194,21 @@
             >Suppliers</span
           >
         </router-link>
-        <!-- <router-link
+        <router-link
           to="/organisation"
           class="p-[10px] flex justify-start hover:bg-brand/[50%] rounded-[5px]"
-          :class="
-            route.name === 'organisation' ? 'text-white bg-brand' : 'text-brand '
-          "
+          :class="route.name === 'organisation' ? 'text-white bg-brand' : 'text-brand '"
         >
           <div
             :class="route.name === 'organisation' ? 'text-white ' : 'text-brand '"
             class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
-            <EmptyIcon />
+            <reportsIcon />
           </div>
           <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]"
             >Organisation</span
           >
-        </router-link> -->
+        </router-link>
         <router-link
           to="/"
           class="p-[10px] flex justify-start hover:bg-brand/[50%] rounded-[5px]"
