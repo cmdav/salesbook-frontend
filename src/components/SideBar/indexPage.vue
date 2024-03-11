@@ -33,7 +33,7 @@
   </header>
 </template>
 <script setup>
-import { computed,ref } from "vue";
+import { computed } from "vue";
 import { useStore } from "@/stores/user";
 //import EmptyIcon from "@/components/icons/EmptyIcon.vue";
 import homeIcon from "@/components/icons/homeIcon.vue";
@@ -53,7 +53,7 @@ const feature = computed(() => {
 
 
 
-const menuItems = ref([
+const menuItems = [
   { name: 'Dashboard',                 route: '/dashboard',            icon: homeIcon,       feature: '' },
   //{ name: 'Store',                     route: '/',                     icon: StoreIcon,      feature: '' },
   // { name: 'Product',             route: '/product', icon: ProductIcon, feature: 'PRODUCT' },
@@ -76,7 +76,7 @@ const menuItems = ref([
   { name: 'Records',                route: '/',                        icon: recordsIcon,      feature: '' },
   { name: 'Reports',                route: '/',                       icon: reportsIcon,       feature: '' },
   { name: 'Log Out',                route: '/logout',                 icon: logoutIcon,        feature: '' }
-]);
+];
 </script>
 
 <style lang="scss" scoped>

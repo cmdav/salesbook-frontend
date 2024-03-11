@@ -3,7 +3,12 @@
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
       <!-- Button to Open Modal -->
       <button @click="showModal = true" class="btn btn-primary">Add Product </button>
-      <DataTableLayout :key="forceUpdate" endpoint="products" />
+      <DataTableLayout
+           :key="forceUpdate"
+            endpoint="products"
+            :clickableKeys="{'product_name': navigateToProductDetail}"
+            :additionalColumns="[{ name: 'edit', action: handleEdit }, { name: 'delete', action: handleDelete }]"
+            />
     </div>
     <FormModal v-if="showModal" @close="closeModal" :formTitle="formTitle" >
       <template v-slot:default>
@@ -52,6 +57,20 @@ const {
      submitForm
      } = usePostComposable('/products', formFields);
 
+
+const navigateToProductDetail = (product) => {
+  console.log(product);
+ // router.push({ name: 'product-detail', params: { id: product.id } });
+};
+
+const handleEdit = (product) => {
+  console.log('Editing product', product);
+};
+
+const handleDelete = (product) => {
+  // Your delete logic here
+  console.log('Deleting product', product);
+};
 
 
 const fetchDataForSubCategory = async (value, label) => {
