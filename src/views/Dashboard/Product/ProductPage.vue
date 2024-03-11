@@ -372,9 +372,9 @@
                           v-model:value="addProductData.sub_category_id"
                         >
                           <a-select-option
-                            v-for="item in allProductSubCategories"
+                            v-for="item in productSubCategories?.data"
                             :key="item.id"
-                            :value="item.id"
+                            :value="item.sub_category_id"
                           >
                             {{ item.sub_category_name }}
                           </a-select-option>
@@ -922,7 +922,7 @@ onMounted(async () => {
     await productsStore.handleGetProducts(products?.value?.current_page);
     await productsStore.handleGetProductCategories();
     await productsStore.handleGetProductSubCategories();
-    await productsStore.handleGetAllProductSubCategories();
+    // await productsStore.handleGetAllProductSubCategories();
     await productsStore.handleGetMeasurements();
     await store.handleUserProfile();
   } catch (error) {
