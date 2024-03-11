@@ -144,7 +144,7 @@
                         </button>
                       </td>
                       <td class="text-left p-4 pr-0 pl-6 capitalize">
-                        {{ i.measurement_name }}
+                        {{ i.measurement }}
                       </td>
                       <td class="text-left p-4 pr-0 pl-6 capitalize">
                         {{ i.product_category }}
@@ -280,13 +280,13 @@
                       >
                         <img
                           v-if="addProductData.product_image"
-                          :src="addProductData.product_image"
+                          :src="image"
                           class="w-full h-[117px] object-cover mb-4 rounded-md"
                         />
 
                         <div v-else class="flex flex-col p-2 py-4">
                           <p class="font-Satoshi500 text-[12.3px] text-[#000]">
-                            Drag and Drop file or <span class="underline">Browse</span>
+                            <span class="underline">Browse</span>
                           </p>
                           <CloudUploadIcon class="mx-auto text-primary-900 mt-4" />
                         </div>
@@ -729,11 +729,12 @@ const uploadedImageName = ref("");
 
 //   showImage();
 // };
+let image = ref(null);
 const uploadFile = (event) => {
   const file = event.target.files[0]; // Retrieve the uploaded file
-
+  addProductData.product_image = file;
+  console.log(file);
   if (file) {
-  
     // Check if a file is uploaded
     const validImageTypes = [
       "image/jpeg",
@@ -755,7 +756,7 @@ const uploadFile = (event) => {
         reader.onload = () => {
           // When FileReader has loaded the file
           // Set the product image data to the result of FileReader
-          addProductData.product_image = reader.result;
+          image.value = reader.result;
           console.log("Image Data", reader.result);
         };
 
@@ -778,8 +779,8 @@ const uploadFile = (event) => {
 };
 
 const showImage = async () => {
-  if (addProductData.product_image) {
-    previewImage.value = URL.createObjectURL(addProductData.product_image);
+  if (image.value) {
+    previewImage.value = URL.createObjectURL(image.value);
   } else {
     previewImage.value = null;
   }
@@ -917,11 +918,15 @@ const filteredProduct = computed(() => {
 });
 
 onMounted(async () => {
-  await productsStore.handleGetProducts(products?.value?.current_page);
-  await productsStore.handleGetProductCategories();
-  await productsStore.handleGetProductSubCategories();
-  await productsStore.handleGetAllProductSubCategories();
-  await productsStore.handleGetMeasurements();
-  await store.handleUserProfile();
+  try {
+    await productsStore.handleGetProducts(products?.value?.current_page);
+    await productsStore.handleGetProductCategories();
+    await productsStore.handleGetProductSubCategories();
+    await productsStore.handleGetAllProductSubCategories();
+    await productsStore.handleGetMeasurements();
+    await store.handleUserProfile();
+  } catch (error) {
+    console.error(error);
+  }
 });
 </script>

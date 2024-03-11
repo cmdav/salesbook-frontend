@@ -71,7 +71,7 @@
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
         <div class="mb-3 flex flex-col w-full">
           <AuthInput
-            label="Phone number(optional)"
+            label="Phone number*"
             :error="false"
             type="tel"
             placeholder="Enter Phone number"

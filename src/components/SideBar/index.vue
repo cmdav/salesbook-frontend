@@ -7,7 +7,7 @@
       </router-link>
     </div>
     <!-- The nav -->
-    <div class="flex flex-col justify-between h-full w-[90%] !px-0">
+    <div class="flex flex-col justify-between h-full w-[100%] !px-0">
       <nav class="nav !font-light">
         <router-link
           to="/dashboard"
@@ -16,7 +16,7 @@
         >
           <div
             :class="route.name === 'dashboard' ? 'text-white ' : 'text-brand '"
-            class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
+            class="mr-[10px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
             <homeIcon />
           </div>
@@ -31,7 +31,7 @@
         >
           <div
             :class="route.name === '' ? 'text-white ' : 'text-brand '"
-            class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
+            class="mr-[10px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
             <StoreIcon />
           </div>
@@ -47,7 +47,7 @@
         >
           <div
             :class="route.name === 'product' ? 'text-white ' : 'text-brand '"
-            class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
+            class="mr-[10px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
             <ProductIcon />
           </div>
@@ -64,7 +64,7 @@
         >
           <div
             :class="route.name === 'products' ? 'text-white ' : 'text-brand '"
-            class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
+            class="mr-[10px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
             <ProductIcon />
           </div>
@@ -81,7 +81,7 @@
         >
           <div
             :class="route.name === 'measurement' ? 'text-white ' : 'text-brand '"
-            class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
+            class="mr-[10px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
             <ProductIcon />
           </div>
@@ -90,16 +90,17 @@
           >
         </router-link>
 
-
         <router-link
           v-if="feature.includes('PRODUCTCATEGORY')"
           to="/product-category"
           class="p-[10px] flex justify-start hover:bg-brand/[50%] rounded-[5px]"
-          :class="route.name === 'ProductCategory' ? 'text-white bg-brand' : 'text-brand '"
+          :class="
+            route.name === 'ProductCategory' ? 'text-white bg-brand' : 'text-brand '
+          "
         >
           <div
             :class="route.name === 'ProductCategory' ? 'text-white ' : 'text-brand '"
-            class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
+            class="mr-[10px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
             <ProductIcon />
           </div>
@@ -112,11 +113,13 @@
           v-if="feature.includes('PRODUCTSUBCATEGORY')"
           to="/product-sub-category"
           class="p-[10px] flex justify-start hover:bg-brand/[50%] rounded-[5px]"
-          :class="route.name === 'ProductSubCategory' ? 'text-white bg-brand' : 'text-brand '"
+          :class="
+            route.name === 'ProductSubCategory' ? 'text-white bg-brand' : 'text-brand '
+          "
         >
           <div
             :class="route.name === 'ProductSubCategory' ? 'text-white ' : 'text-brand '"
-            class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
+            class="mr-[10px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
             <ProductIcon />
           </div>
@@ -124,7 +127,6 @@
             >Product Sub Category</span
           >
         </router-link>
-        
 
         <router-link
           v-if="feature.includes('CURRENCY')"
@@ -134,7 +136,7 @@
         >
           <div
             :class="route.name === 'Currency' ? 'text-white ' : 'text-brand '"
-            class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
+            class="mr-[10px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
             <ProductIcon />
           </div>
@@ -142,11 +144,6 @@
             >Currency</span
           >
         </router-link>
-
-
-
-
-
 
         <router-link
           v-if="feature.includes('SUPPLIER_PRODUCT')"
@@ -156,7 +153,7 @@
         >
           <div
             :class="route.name === 'product' ? 'text-white ' : 'text-brand '"
-            class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
+            class="mr-[10px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
             <ProductIcon />
           </div>
@@ -164,9 +161,6 @@
             >Product</span
           >
         </router-link>
-
-        
-
 
         <router-link
           v-if="feature.includes('CUSTOMERS')"
@@ -176,7 +170,7 @@
         >
           <div
             :class="route.name === 'customers' ? 'text-white ' : 'text-brand '"
-            class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
+            class="mr-[10px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
             <CustomerIcon />
           </div>
@@ -192,7 +186,7 @@
         >
           <div
             :class="route.name === 'supplier' ? 'text-white ' : 'text-brand '"
-            class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
+            class="mr-[10px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
             <SuppliersIcon />
           </div>
@@ -217,7 +211,6 @@
             >Organisation</span
           >
         </router-link> -->
-
         <router-link
           to="/"
           class="p-[10px] flex justify-start hover:bg-brand/[50%] rounded-[5px]"
@@ -225,7 +218,7 @@
         >
           <div
             :class="route.name === '' ? 'text-white ' : 'text-brand '"
-            class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
+            class="mr-[10px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
             <recordsIcon />
           </div>
@@ -240,7 +233,7 @@
         >
           <div
             :class="route.name === '' ? 'text-white ' : 'text-brand '"
-            class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
+            class="mr-[10px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
           >
             <reportsIcon />
           </div>
@@ -257,7 +250,7 @@
       >
         <div
           :class="route.name === '' ? 'text-white ' : 'text-brand '"
-          class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
+          class="mr-[10px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
         >
           <logoutIcon />
         </div>
@@ -281,10 +274,14 @@ import logoutIcon from "@/components/icons/logoutIcon.vue";
 import SuppliersIcon from "@/components/icons/SuppliersIcon.vue";
 import CustomerIcon from "@/components/icons/CustomerIcon.vue";
 import { useRoute } from "vue-router";
+import { storeToRefs } from "pinia";
+
 const store = useStore();
+const { features } = storeToRefs(store);
+
 const route = useRoute();
 const feature = computed(() => {
-  return Array.isArray(store.features) ? store.features : [];
+  return Array.isArray(features.value) ? features.value : [];
 });
 </script>
 
