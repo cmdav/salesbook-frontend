@@ -2,15 +2,15 @@
   <DashboardLayout>
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
       <!-- Button to Open Modal -->
-      <button @click="showModal = true" class="btn btn-primary">Add Product Category</button>
-      <DataTableLayout :key="forceUpdate" endpoint="product-categories" />
+      <button @click="showModal = true" class="btn btn-primary">Add Product Type</button>
+      <DataTableLayout :key="forceUpdate" endpoint="currencies" />
     </div>
     <FormModal v-if="showModal" @close="closeModal" :formTitle="formTitle" >
       <template v-slot:default>
         
         <form  @submit.prevent="submitForm">
           <p v-if="isError" class="text-red-500">{{ errorMessage }}</p>
-          <ReusableForm :fields="productCategoryFormFields" :isLoadingMsg="isLoadingMsg" :allError="allError"/>
+          <ReusableForm :fields="productTypeFormFields" :isLoadingMsg="isLoadingMsg" :allError="allError"/>
           <input type="submit"  v-if="!loading"  value="Submit" class="btn btn-primary mt-3">
           
                     <Loader v-else />
@@ -34,10 +34,10 @@ import ReusableForm from "@/components/Forms/ReusableForm.vue";  // To create fo
 import Loader from "@/components/UI/Loader.vue";
 
 import { usePostComposable} from '@/composable/usePostComposable';
-import { productCategoryFormFields } from '@/formfields/formFields';
+import { productTypeFormFields } from '@/formfields/formFields';
 
 
-const formTitle = "Add  Product Category";
+const formTitle = "Add Product Type";
 
 const { 
     
@@ -50,7 +50,7 @@ const {
      isError,  
      closeModal, 
      submitForm
-     } = usePostComposable('/product-categories', productCategoryFormFields);
+     } = usePostComposable('/currencies', productTypeFormFields);
 
 </script>
 

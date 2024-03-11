@@ -2,7 +2,7 @@
   <DashboardLayout>
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
       <!-- Button to Open Modal -->
-      <button @click="showModal = true" class="btn btn-primary">Add Product</button>
+      <button @click="showModal = true" class="btn btn-primary">Add Product </button>
       <DataTableLayout :key="forceUpdate" endpoint="products" />
     </div>
     <FormModal v-if="showModal" @close="closeModal" :formTitle="formTitle" >

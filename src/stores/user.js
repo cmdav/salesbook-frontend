@@ -36,8 +36,7 @@ export const useStore = defineStore('user', () => {
       
       if (accountLowerCase === 2) {
         return ['STORE',
-               'PRODUCT',
-               'SUPPLIER',
+                'SUPPLIER',
                 'RECORDS', 
                 'REPORTS', 
                 'CUSTOMERS', 
@@ -47,6 +46,11 @@ export const useStore = defineStore('user', () => {
                 'PRODUCTCATEGORY',
                 'PRODUCTSUBCATEGORY',
                 'CURRENCY',
+                'PRODUCTTYPE',
+                'SALE',
+                'PURCHASE',
+                'STORE',
+                'PRICE'
             ];
       } else if (accountLowerCase === 1) {
         return ['SUPPLIER_PRODUCT'];
