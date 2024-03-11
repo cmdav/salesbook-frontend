@@ -52,9 +52,9 @@ export const useStore = defineStore('user', () => {
                 'STORE',
                 'PRICE'
             ];
-      } else if (accountLowerCase === "1") {
+      } else if (accountLowerCase === 1) {
         return ['SUPPLIER_PRODUCT'];
-      } else if (accountLowerCase === "0") {
+      } else if (accountLowerCase === 0) {
         return ['0'];
       }
     
