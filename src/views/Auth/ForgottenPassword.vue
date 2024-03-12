@@ -20,6 +20,7 @@
               <AuthInput
                 label="Email"
                 :error="errors.email"
+                :errorsMsg="errorsMsg.email"
                 type="email"
                 placeholder=" email address"
                 v-model="formData.email"
