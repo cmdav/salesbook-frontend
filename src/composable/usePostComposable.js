@@ -49,8 +49,8 @@ const submitForm = async () => {
     // Submit FormData to the server
     const submitUrl = postUrl || url;
     const response = await apiService.post(submitUrl, formData);
-    console.log(response);
-    await fetchPage(url, 1);
+   
+    await fetchPage(submitUrl, 1);
     console.log(response);
 
      // Clear form fields

@@ -14,15 +14,19 @@ export function useReadComposable(props = {}) {
   const hasError = ref(false);
 
   function extractUniqueKeys(dataArray) {
+    
+    const excludedKeys = Array.isArray(props.excludedKeys) ? props.excludedKeys : [];
+
     return dataArray.reduce((keys, obj) => {
-      Object.keys(obj).forEach((key) => {
-        if (!keys.includes(key) && !props.excludedKeys.includes(key)) {
-          keys.push(key);
-        }
-      });
-      return keys;
+        Object.keys(obj).forEach((key) => {
+            if (!keys.includes(key) && !excludedKeys.includes(key)) {
+                keys.push(key);
+            }
+        });
+        return keys;
     }, []);
-  }
+}
+
 
   const displayKeys = computed(() => {
     return uniqueKeys.value.filter(key => !props.excludedKeys.includes(key));
@@ -40,8 +44,9 @@ export function useReadComposable(props = {}) {
     isLoading.value = true;
     hasError.value = false;
     try {
-
-      const data = await apiService.get(`${apiUrl}?page=${page}`);
+       console.log(apiUrl);
+      const data = await apiService.get(`/${apiUrl}?page=${page}`);
+      //console.log(data);
       // process paginated endpoint
       if (data.data && Array.isArray(data.data)) {
         products.value = data.data;
@@ -59,7 +64,7 @@ export function useReadComposable(props = {}) {
         products.value = [];
       }
     } catch (error) {
-      console.error('Error fetching page:', error);
+      console.log('Error fetching page:', error);
       hasError.value = true;
     } finally {
       isLoading.value = false;
