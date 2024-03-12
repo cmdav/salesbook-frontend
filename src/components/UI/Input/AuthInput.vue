@@ -3,7 +3,7 @@
     <Label :class="labelClasses">{{ label }}</Label>
     <input
       :class="error ? 'border-[#DA5252]' : ' border-neutral-900'"
-      class="w-full font-light font-Satoshi400 text-[14px] outline-none !p-[14px] border-[0.909px] opacity-[0.8029] rounded-[4px] text-sm"
+      class="w-full font-light font-Satoshi400 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
       :placeholder="placeholder"
       :type="type"
       :value="modelValue"
