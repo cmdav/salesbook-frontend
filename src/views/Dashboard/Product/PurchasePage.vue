@@ -29,7 +29,7 @@
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import DataTableLayout from "@/components/Layouts/dataTableLayout.vue"; // read data
 import FormModal from "@/components/UI/FormModal.vue"; // show modal
-import ReusableForm from "@/components/Forms/ReusableForm.vue";  // To create form
+import ReusableForm from "@/components/Form/ReusableForm.vue"  // To create form
 //import apiService from '@/services/apiService';
 import Loader from "@/components/UI/Loader.vue";
 

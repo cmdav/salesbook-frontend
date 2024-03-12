@@ -25,7 +25,8 @@
                      {{ ((parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10)) + index + 1 }} 
                 </td>
                 <td v-for="key in displayKeys" :key="key" class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                     
+                  
+                    <!-- Check for columns with onclick event -->
                   <template v-if="clickableKeys[key]">
                     <span @click.prevent="clickableKeys[key](product)" class="text-blue-500 cursor-pointer">{{ product[key] }}</span>
                   </template>

@@ -63,8 +63,8 @@ const menuItems = [
   { name: 'Product Sub Category',      route: '/product-sub-category', icon: StoreIcon,       feature: 'PRODUCTSUBCATEGORY'},
   { name: 'Products',                  route: '/products',             icon: recordsIcon,     feature: 'PRODUCTS' },
   //
-  { name: 'Product Type',             route: '/product-type',          icon: ProductIcon,     feature: 'PRODUCTTYPE' },
-  { name: 'Price',                    route: '/price',                 icon: StoreIcon,     feature: 'PRICE' }, 
+  //{ name: 'Product Type',             route: '/product-type',          icon: ProductIcon,     feature: 'PRODUCTTYPE' },
+  //{ name: 'Price',                    route: '/price',                 icon: StoreIcon,     feature: 'PRICE' }, 
   { name: 'Sale',                     route: '/sale',                  icon: ProductIcon,     feature: 'SALE' },
   { name: 'Purchase',                 route: '/purchase',              icon: ProductIcon,     feature: 'PURCHASE' },
   { name: 'Store',                    route: '/store',                 icon: ProductIcon,     feature: 'STORE' },

@@ -146,14 +146,14 @@ const router = createRouter({
       beforeEnter: [middleware.redirectLogin]
     },
     {
-      path: '/product-type',
+      path: '/product-type/:id',
       name: 'product-type',
       component: ProductTypePage,
-      beforeEnter: [middleware.redirectLogin]
+     // beforeEnter: [middleware.redirectLogin]
     },
 
     {
-      path: '/price',
+      path: '/price/:id',
       name: 'price',
       component: PricePage,
       beforeEnter: [middleware.redirectLogin]

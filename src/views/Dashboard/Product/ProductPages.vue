@@ -6,7 +6,8 @@
       <DataTableLayout
            :key="forceUpdate"
             endpoint="products"
-            :clickableKeys="{'product_name': navigateToProductDetail,'product_type': navigateToProductType}"
+            :excludedKeys="['id', 'product_description']"
+            :clickableKeys="{'product_name': openProductDetailModal,'product_type': navigateToProductType}"
             :additionalColumns="[{ name: 'edit', action: handleEdit }, { name: 'delete', action: handleDelete }]"
             />
     </div>
@@ -23,18 +24,23 @@
         </form>
       </template>
     </FormModal>
-    
+    <ViewModal  v-if="showViewModal"   @close="closeViewModal" :modalTitle="modalTitle" >
+        <ViewModalDetail :products="products"/>
+    </ViewModal>
   </DashboardLayout>
 </template>
 
 
 
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import DataTableLayout from "@/components/Layouts/dataTableLayout.vue"; // read data
-import FormModal from "@/components/UI/FormModal.vue"; // show modal
-import ReusableForm from "@/components/Forms/ReusableForm.vue";  // To create form
+import FormModal from "@/components/UI/FormModal.vue"; // show  form modal
+import ViewModal from "@/components/UI/ViewModal.vue"; // show read modal
+import ViewModalDetail from "@/components/UI/ViewModalDetail.vue"; 
+import ReusableForm from "@/components/Form/ReusableForm.vue"  // To create form
 import apiService from '@/services/apiService';
 import Loader from "@/components/UI/Loader.vue";
 
@@ -43,10 +49,13 @@ import { formFields } from '@/formfields/formFields';
 
 
 const formTitle = "Add Product";
-
+const modalTitle = "View Product";
+const router = useRouter();
+const products = ref();
 const { 
     
      showModal, 
+     showViewModal,
      isLoadingMsg,
      loading, 
      allError,
@@ -54,17 +63,21 @@ const {
      errorMessage, 
      isError,  
      closeModal, 
+     closeViewModal,
      submitForm
      } = usePostComposable('/products', formFields);
 
 
-const navigateToProductDetail = (product) => {
-  console.log(product);
- // router.push({ name: 'product-detail', params: { id: product.id } });
+const openProductDetailModal = (product) => {
+  // console.log(product);
+  products.value = product
+  showViewModal.value = true;
+ 
 };
 
 const navigateToProductType = (product) => {
-  console.log(product);
+  
+   router.push({ name: 'product-type', params: { id: product.id } });
 };
 
 const handleEdit = (product) => {

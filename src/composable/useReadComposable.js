@@ -5,16 +5,12 @@ import apiService from '@/services/apiService';
 
 export function useReadComposable(props = {}) {
   const products = ref([]);
-
   const uniqueKeys = ref([]);
-
   const currentPage = ref(1);
   const itemsPerPage = ref(1);
   const totalPage = ref(1);
   const lastPage = ref(1);
-
   const isLoading = ref(false);
-
   const hasError = ref(false);
 
   function extractUniqueKeys(dataArray) {
