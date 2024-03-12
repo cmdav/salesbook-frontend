@@ -1,40 +1,40 @@
 <script setup>
-import BaseSidebar from "@/components/SideBar/indexPage.vue";
-import { ref, onMounted } from "vue";
-import "animate.css";
-const closeNav = ref(false);
-const closeBackdrop = ref(false);
-const showDropdown = ref(false);
-const showNotificationDropdown = ref(false);
-import { useStore } from "@/stores/user";
-import { storeToRefs } from "pinia";
+import BaseSidebar from '@/components/SideBar/indexPage.vue'
+import { ref, onMounted } from 'vue'
+import 'animate.css'
+const closeNav = ref(false)
+const closeBackdrop = ref(false)
+const showDropdown = ref(false)
+const showNotificationDropdown = ref(false)
+import { useStore } from '@/stores/user'
+import { storeToRefs } from 'pinia'
 
-const store = useStore();
-const { userProfileDetails } = storeToRefs(store);
+const store = useStore()
+const { userProfileDetails } = storeToRefs(store)
 
 onMounted(() => {
-  store.handleUserProfile();
-});
+  store.handleUserProfile()
+})
 
 const toggle = () => {
-  closeNav.value = !closeNav.value;
+  closeNav.value = !closeNav.value
 
   if (closeNav.value) {
-    closeBackdrop.value = !closeBackdrop.value;
+    closeBackdrop.value = !closeBackdrop.value
   }
 
   if (!closeNav.value) {
     setTimeout(() => {
-      closeBackdrop.value = !closeBackdrop.value;
-    }, 1000);
+      closeBackdrop.value = !closeBackdrop.value
+    }, 1000)
   }
-};
+}
 const toogleDropdown = () => {
-  showDropdown.value = !showDropdown.value;
+  showDropdown.value = !showDropdown.value
   if (showNotificationDropdown.value === true) {
-    showNotificationDropdown.value = false;
+    showNotificationDropdown.value = false
   }
-};
+}
 </script>
 
 <template>
@@ -121,10 +121,9 @@ const toogleDropdown = () => {
           </div>
         </nav>
 
-        <div class="flex-grow content-container pb-20" style="padding:0 2em;">
+        <div class="flex-grow pb-20">
           <slot></slot>
         </div>
-
       </div>
     </div>
   </div>
