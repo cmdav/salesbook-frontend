@@ -12,11 +12,9 @@
                 <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   S.No 
                 </th>
-                <th v-for="key in displayKeys"
-                          :key="key" 
-                          class="px-5 py-3 border-b-2 border-gray-20 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        {{ formatKey(key) }}
-                </th>
+                <th v-for="col in [...displayKeys, ...additionalColumns.map(col => col.name)]" :key="col" class="...">
+                  {{ formatKey(col) }}
+              </th>
               </tr>
             </thead>
             
@@ -27,14 +25,29 @@
                      {{ ((parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10)) + index + 1 }} 
                 </td>
                 <td v-for="key in displayKeys" :key="key" class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                      <!-- Check if key indicates an image, logo, or file -->
-                  <template v-if="isMediaKey(key)">
+                  
+                    <!-- Check for columns with onclick event -->
+                  <template v-if="clickableKeys[key]">
+                    <span @click.prevent="clickableKeys[key](product)" class="text-blue-500 cursor-pointer">{{ product[key] }}</span>
+                  </template>
+
+                   <!-- Check if key indicates an image, logo, or file -->
+                  <template v-else-if="isMediaKey(key)">
                     <img :src="product[key]" alt="Media" class="w-20 h-20 object-cover"> 
                   </template>
+
                   <template v-else>
                     {{ product[key] }} 
                   </template>
                 </td>
+                <!-- template for additional code -->
+                <template v-for="(col, index) in additionalColumns" :key="`${index}`">
+                <td>
+                  <button @click="col.action(product)">
+                    {{ formatKey(col.name) }}
+                  </button>
+                </td>
+              </template>
               </tr>
             </tbody>
           </table>
@@ -80,7 +93,15 @@ const props = defineProps({
   excludedKeys: { 
     type: Array,
     default: () => ['id'] 
-  }
+  },
+  clickableKeys: {
+    type: Object,
+    default: () => ({}), 
+  },
+  additionalColumns: { 
+    type: Array,
+    default: () => [] 
+  },
 });
 
 const {

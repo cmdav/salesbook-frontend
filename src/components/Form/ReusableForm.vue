@@ -1,49 +1,49 @@
 <template>
-  <div v-for="(field, index) in localFields" :key="index" class="spacing">
-    <label class="form-label mt-3">{{ field.label }}</label>
-    <!-- Check if the field is required and add asterisk with red symbol if required -->
-    <label v-if="field.required" class="text-danger">*</label>
+  <div v-for="(field, index) in localFields" :key="index" class="mb-4">
+    <label :for="field.id" class="block text-sm font-medium text-gray-700">
+      {{ field.label }}
+      <span v-if="field.required" class="text-red-500">*</span>
+    </label>
+
     <template v-if="field.type === 'textarea'">
-      <textarea
-        class="form-control"
+      <textarea :id="field.id"
+        class="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
         v-model="field.value"
         :required="field.required"
         :placeholder="field.placeholder"
       ></textarea>
     </template>
-    <!-- select field-->
+    
     <template v-else-if="field.type === 'select'">
-      
-      <select
-        class="form-control"
+      <select :id="field.id"
+        class="mt-1 block w-full p-2 rounded-md border-gray-300 bg-white shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
         v-model="field.value"
         :required="field.required"
         @change="handleCategoryChange(field.value, field.label)"
       >
-        <!-- Option with asterisk if required -->
         <option v-for="(option, optionIndex) in field.options" 
-                   :key="optionIndex" 
-                   :value="option['value']"
-                >
-          {{ option['label'] }} 
+                :key="optionIndex" 
+                :value="option['value']">
+          {{ option['label'] }}
         </option>
       </select>
-      <span v-if="field.showLoading === true" class="text-danger"> {{ isLoadingMsg}}</span>
+      <span v-if="field.showLoading === true" class="text-sm text-red-500"> {{ isLoadingMsg }}</span>
     </template>
-    <!-- image field -->
+
     <template v-else-if="field.type === 'image'">
-      <input
+      <input :id="field.id"
         type="file"
-        class="form-control"
+        class="mt-1 block w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
         @change="handleImageChange(index, $event)"
         :required="field.required"
         :placeholder="field.placeholder"
       />
     </template>
+
     <template v-else>
-      <input
+      <input :id="field.id"
         :type="field.type"
-        class="form-control"
+        class="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
         v-model="field.value"
         :required="field.required"
         :placeholder="field.placeholder"
@@ -53,7 +53,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref } from 'vue';
+import { defineEmits, ref } from 'vue';
 
 // Destructure fields from props
 const { fields, isLoadingMsg, allError } = defineProps({

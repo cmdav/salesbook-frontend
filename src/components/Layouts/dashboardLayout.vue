@@ -1,5 +1,5 @@
 <script setup>
-import BaseSidebar from "@/components/SideBar/index.vue";
+import BaseSidebar from "@/components/SideBar/indexPage.vue";
 import { ref, onMounted } from "vue";
 import "animate.css";
 const closeNav = ref(false);
@@ -121,7 +121,10 @@ const toogleDropdown = () => {
           </div>
         </nav>
 
-        <slot></slot>
+        <div class="flex-grow content-container pb-20" style="padding:0 2em;">
+          <slot></slot>
+        </div>
+
       </div>
     </div>
   </div>
@@ -131,5 +134,27 @@ const toogleDropdown = () => {
 .menubg {
   background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(7px);
+}
+
+.content-container {
+  overflow-x: auto; // Enable horizontal scrolling
+  white-space: nowrap; // Ensure the content extends in a single line
+  // Remove vertical scrolling if you only want horizontal scrolling
+  overflow-y: hidden; // Optional based on your design needs
+  display: flex; // Keep it as flex to maintain current layout, adjust as necessary
+  gap: 1rem; // Optional: adds gap between child elements if needed
+}
+
+.content-container ::-webkit-scrollbar {
+  height: 10px; // Optional: change the height of the scrollbar to your preference
+}
+
+.content-container ::-webkit-scrollbar-thumb {
+  background: #ccc; // Optional: change the color of the scrollbar thumb to your preference
+  border-radius: 5px; // Optional: round the corners of the scrollbar thumb
+}
+
+.content-container ::-webkit-scrollbar-track {
+  background: #efefef; // Optional: change the color of the scrollbar track to your preference
 }
 </style>

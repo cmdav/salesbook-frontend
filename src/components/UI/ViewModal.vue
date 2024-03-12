@@ -1,16 +1,18 @@
 <template>
   <div class="modal backdrop-blur z-[100] fixed animate__zoomIn animate__rubberBand animate__fadeOut min-h-screen h-full">
     <div class="modal__body relative w-full md:max-w-[600px] bg-white m-0 md:px-5 py-4 px-4">
-      <h3>{{ formTitle }}</h3>
+      <h3>{{ modalTitle || 'Default Modal Title' }}</h3>
+
       <button class="close-button" @click="$emit('close')">&#10005;</button>
-      <slot></slot>
+      
+        <slot></slot>
     </div>
   </div>
 </template>
 
 <script setup>
-  const { formTitle } = defineProps({
-    formTitle: String
+  const { modalTitle } = defineProps({
+    modalTitle: String
   });
 </script>
 

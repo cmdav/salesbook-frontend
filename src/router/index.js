@@ -18,6 +18,11 @@ import ProductsPages from '@/views/Dashboard/Product/ProductPages.vue'
 import ProductCategoryPage from '@/views/Dashboard/Product/ProductCategoryPage.vue'
 import ProductSubCategoryPage from '@/views/Dashboard/Product/ProductSubCategoryPage.vue'
 import CurrencyPage from '@/views/Dashboard/Product/CurrencyPage.vue'
+import StorePage from '@/views/Dashboard/Product/StorePage.vue'
+import SalePage from '@/views/Dashboard/Product/SalePage.vue'
+import ProductTypePage from '@/views/Dashboard/Product/ProductTypePage.vue'
+import PricePage from '@/views/Dashboard/Product/PricePage.vue'
+import PurchasePage from '@/views/Dashboard/Product/PurchasePage.vue'
 import MeasurementPage from '@/views/Dashboard/Product/MeasurementPage.vue'
 import SupplierProductsPage from '@/views/Dashboard/SupplierProduct/SupplierProductPage.vue'
 const router = createRouter({
@@ -132,6 +137,38 @@ const router = createRouter({
       path: '/currency',
       name: 'currency',
       component: CurrencyPage,
+      beforeEnter: [middleware.redirectLogin]
+    },
+    {
+      path: '/sale',
+      name: 'sale',
+      component: SalePage,
+      beforeEnter: [middleware.redirectLogin]
+    },
+    {
+      path: '/product-type/:id',
+      name: 'product-type',
+      component: ProductTypePage,
+     // beforeEnter: [middleware.redirectLogin]
+    },
+
+    {
+      path: '/price/:id',
+      name: 'price',
+      component: PricePage,
+      beforeEnter: [middleware.redirectLogin]
+    },
+
+    {
+      path: '/store',
+      name: 'store',
+      component: StorePage,
+      beforeEnter: [middleware.redirectLogin]
+    },
+    {
+      path: '/purchase',
+      name: 'purchase',
+      component: PurchasePage,
       beforeEnter: [middleware.redirectLogin]
     },
     {

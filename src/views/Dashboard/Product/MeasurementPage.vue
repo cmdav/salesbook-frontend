@@ -2,7 +2,7 @@
   <DashboardLayout>
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
       <!-- Button to Open Modal -->
-      <button @click="showModal = true" class="btn btn-primary">Add Measuerement</button>
+      <button @click="showModal = true" class="btn btn-primary">Add Measurement</button>
       <DataTableLayout :key="forceUpdate" endpoint="measurements" />
     </div>
     <FormModal v-if="showModal" @close="closeModal" :formTitle="formTitle" >
@@ -29,7 +29,7 @@
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import DataTableLayout from "@/components/Layouts/dataTableLayout.vue"; // read data
 import FormModal from "@/components/UI/FormModal.vue"; // show modal
-import ReusableForm from "@/components/Forms/ReusableForm.vue";  // To create form
+import ReusableForm from "@/components/Form/ReusableForm.vue"  // To create form
 //import apiService from '@/services/apiService';
 import Loader from "@/components/UI/Loader.vue";
 
@@ -51,12 +51,6 @@ const {
      closeModal, 
      submitForm
      } = usePostComposable('/measurements', measurementFormFields);
-
-
-
-
-
-
 
 </script>
 
