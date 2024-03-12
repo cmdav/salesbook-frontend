@@ -1,57 +1,72 @@
 <template>
   <DashboardLayout>
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
+      <!-- Back Button -->
+      <button @click="goBack" class="btn btn-secondary mb-3">Back to Products |</button>
+      
       <!-- Button to Open Modal -->
-      <button @click="showModal = true" class="btn btn-primary">Price</button>
-      <DataTableLayout :key="forceUpdate" endpoint="prices" />
+      <button @click="showModal = true" class="btn btn-primary">Add Price</button>
+      
+      <DataTableLayout 
+        :key="forceUpdate" 
+        :endpoint="computedEndpoint" 
+       
+      />
     </div>
     <FormModal v-if="showModal" @close="closeModal" :formTitle="formTitle" >
       <template v-slot:default>
-        
-        <form  @submit.prevent="submitForm">
+        <form @submit.prevent="submitForm">
           <p v-if="isError" class="text-red-500">{{ errorMessage }}</p>
           <ReusableForm :fields="priceFormFields" :isLoadingMsg="isLoadingMsg" :allError="allError"/>
-          <input type="submit"  v-if="!loading"  value="Submit" class="btn btn-primary mt-3">
-          
-                    <Loader v-else />
-          
+          <input type="submit" v-if="!loading" value="Submit" class="btn btn-primary mt-3">
+          <Loader v-else />
         </form>
       </template>
     </FormModal>
-    
   </DashboardLayout>
 </template>
 
-
-
 <script setup>
-//import { onMounted } from 'vue';
+import { computed, ref } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
-import DataTableLayout from "@/components/Layouts/dataTableLayout.vue"; // read data
-import FormModal from "@/components/UI/FormModal.vue"; // show modal
-import ReusableForm from "@/components/Form/ReusableForm.vue"  // To create form
-//import apiService from '@/services/apiService';
+import DataTableLayout from "@/components/Layouts/dataTableLayout.vue";
+import FormModal from "@/components/UI/FormModal.vue";
+import ReusableForm from "@/components/Form/ReusableForm.vue";
 import Loader from "@/components/UI/Loader.vue";
-
-import { usePostComposable} from '@/composable/usePostComposable';
+import { usePostComposable } from '@/composable/usePostComposable';
 import { priceFormFields } from '@/formfields/formFields';
 
-
+const router = useRouter();
+const route = useRoute();
 const formTitle = "Add Price";
+const productTypeId = ref(route.params.id); 
+
+const fieldOverrides = {
+   product_type_id: productTypeId.value, 
+};
+
+
 
 const { 
-    
-     showModal, 
-     isLoadingMsg,
-     loading, 
-     allError,
-     forceUpdate,
-     errorMessage, 
-     isError,  
-     closeModal, 
-     submitForm
-     } = usePostComposable('/prices', priceFormFields);
+  showModal, 
+  isLoadingMsg,
+  loading, 
+  allError,
+  forceUpdate,
+  errorMessage, 
+  isError,  
+  closeModal, 
+  submitForm
+} = usePostComposable(productTypeId.value ? `/product-type-by-id/${productTypeId.value}` : '/prices', priceFormFields, 'prices',fieldOverrides);
 
+
+const computedEndpoint = computed(() => {
+  return productTypeId.value ? `/product-type-by-id/${productTypeId.value}` : '/prices';
+});
+
+
+const goBack = () => {
+  router.push({ name: 'products' });
+};
 </script>
-
-
