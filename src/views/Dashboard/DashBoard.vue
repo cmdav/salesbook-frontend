@@ -132,7 +132,11 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  {{ Customers?.total + companiesCustomers?.total }}
+                  {{
+                    Customers?.total + companiesCustomers?.total
+                      ? Customers?.total + companiesCustomers?.total
+                      : 0
+                  }}
                 </div>
               </div>
             </div>
