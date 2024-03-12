@@ -271,9 +271,19 @@ const validateForm = () => {
       isValid = false;
     }
   });
-  if (!isValidEmail.value) {
+  // if (!isValidEmail.value) {
+  //   CompanyErrors.email = true;
+  //   CompanyErrorsMsg.email;
+  //   isValid = false;
+  // }
+
+  if (!CompanyformData.email) {
     CompanyErrors.email = true;
-    CompanyErrorsMsg.email;
+    CompanyErrorsMsg.email = "Email is required";
+    isValid = false;
+  } else if (!isValidEmail.value) {
+    CompanyErrors.email = true;
+    CompanyErrorsMsg.email = "Invalid email";
     isValid = false;
   }
 

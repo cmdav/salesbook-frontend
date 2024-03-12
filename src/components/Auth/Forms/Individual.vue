@@ -169,7 +169,7 @@
       <button
         :disabled="loading"
         @click="handleSignup()"
-        :class="!isFormValid ? '!bg-primary-100 cursor-not-allowed' : 'bg-brand'"
+        :class="!isFormValid ? '!bg-primary-100/[30%] cursor-not-allowed' : 'bg-brand'"
         class="btn-brand !rounded-[5px] flex gap-2 items-center justify-center !text-white text-[14px] !py-[16px] font-semibold w-full"
       >
         <span v-if="!loading" class="font-semibold !text-[15px]">Submit</span>
@@ -292,12 +292,15 @@ const validateForm = () => {
       isValid = false;
     }
   });
-  if (!isValidEmail.value) {
+  if (!formData.email) {
     errors.email = true;
-    errorsMsg.email;
+    errorsMsg.email = "Email is required";
+    isValid = false;
+  } else if (!isValidEmail.value) {
+    errors.email = true;
+    errorsMsg.email = "Invalid email";
     isValid = false;
   }
-
   if (!isValidPassword.value) {
     errors.password = true;
     errorsMsg.password = "Password is required";
