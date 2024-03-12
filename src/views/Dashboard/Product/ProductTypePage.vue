@@ -61,11 +61,11 @@ const {
   isError,  
   closeModal, 
   submitForm
-} = usePostComposable(productTypeId.value ? `/product-type-by-id/${productTypeId.value}` : '/product-type-by-id', productTypeFormFields, 'product-types',fieldOverrides);
+} = usePostComposable(productTypeId.value ? `product-type-by-id/${productTypeId.value}` : 'product-type-by-id', productTypeFormFields, 'product-types',fieldOverrides);
 
 
 const computedEndpoint = computed(() => {
-  return productTypeId.value ? `/product-type-by-id/${productTypeId.value}` : '/product-type-by-id';
+  return productTypeId.value ? `product-type-by-id/${productTypeId.value}` : 'product-type-by-id';
 });
 
 
