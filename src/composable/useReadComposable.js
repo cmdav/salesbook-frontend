@@ -44,9 +44,9 @@ export function useReadComposable(props = {}) {
     isLoading.value = true;
     hasError.value = false;
     try {
-
-      const data = await apiService.get(`${apiUrl}?page=${page}`);
-      console.log(data);
+       
+      const data = await apiService.get(`/${apiUrl}?page=${page}`);
+      //console.log(data);
       // process paginated endpoint
       if (data.data && Array.isArray(data.data)) {
         products.value = data.data;
@@ -64,7 +64,7 @@ export function useReadComposable(props = {}) {
         products.value = [];
       }
     } catch (error) {
-      console.error('Error fetching page:', error);
+      console.log('Error fetching page:', error);
       hasError.value = true;
     } finally {
       isLoading.value = false;
