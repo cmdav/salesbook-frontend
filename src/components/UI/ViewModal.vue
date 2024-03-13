@@ -1,19 +1,28 @@
 <template>
-  <div class="modal backdrop-blur z-[100] fixed animate__zoomIn animate__rubberBand animate__fadeOut min-h-screen h-full">
-    <div class="modal__body relative w-full md:max-w-[600px] bg-white m-0 md:px-5 py-4 px-4">
-      <h3>{{ modalTitle || 'Default Modal Title' }}</h3>
+  <div
+    class="modal backdrop-blur z-[100] fixed animate__zoomIn animate__rubberBand animate__fadeOut min-h-screen h-full"
+  >
+    <div
+      class="modal__body relative w-full md:max-w-[600px] bg-white m-0 md:px-5 py-4 px-4"
+    >
+      <header
+        class="flex flex-row items-center justify-between border-b-[#000000] pb-[5px] mb-[35px] border-b-[1px]"
+      >
+        <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">
+          {{ modalTitle || "Default Modal Title" }}
+        </h4>
+        <button class="close-button" @click="$emit('close')">&#10005;</button>
+      </header>
 
-      <button class="close-button" @click="$emit('close')">&#10005;</button>
-      
-        <slot></slot>
+      <slot></slot>
     </div>
   </div>
 </template>
 
 <script setup>
-  const { modalTitle } = defineProps({
-    modalTitle: String
-  });
+const { modalTitle } = defineProps({
+  modalTitle: String,
+});
 </script>
 
 <style lang="scss" scoped>
@@ -24,7 +33,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden; 
+  overflow: hidden;
   background: rgba(0, 0, 0, 0.3);
 }
 
