@@ -3,7 +3,7 @@
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
       <!-- Back Button -->
       <button @click="goBack" class="btn btn-secondary mb-3">Back to Products |</button>
-
+      
       <!-- Button to Open Modal -->
       <button @click="showModal = true" class="btn btn-primary">Add Price</button>
       
@@ -14,19 +14,13 @@
        
       />
     </div>
-    <FormModal v-if="showModal" @close="closeModal" :formTitle="formTitle">
+    <FormModal v-if="showModal" @close="closeModal" :formTitle="formTitle" >
       <template v-slot:default>
         <form @submit.prevent="submitForm">
           <p v-if="isError" class="text-red-500">{{ errorMessage }}</p>
-          <ReusableForm
-            :fields="priceFormFields"
-            :isLoadingMsg="isLoadingMsg"
-            :allError="allError"
-          />
-          <div class="flex justify-center items-center">
-            <input type="submit" v-if="!loading" value="Submit" class="btn-brand mt-3" />
-            <Loader v-else />
-          </div>
+          <ReusableForm :fields="priceFormFields" :isLoadingMsg="isLoadingMsg" :allError="allError"/>
+          <input type="submit" v-if="!loading" value="Submit" class="btn btn-primary mt-3">
+          <Loader v-else />
         </form>
       </template>
     </FormModal>
@@ -49,10 +43,10 @@ import { priceFormFields } from '@/formfields/formFields';
 const router = useRouter();
 const route = useRoute();
 const formTitle = "Add Price";
-const productTypeId = ref(route.params.id);
+const productTypeId = ref(route.params.id); 
 
 const fieldOverrides = {
-  product_type_id: productTypeId.value,
+   product_type_id: productTypeId.value, 
 };
 
 const { fetchDataForSelect } = useSelectComposable(priceFormFields); 
@@ -65,8 +59,9 @@ const computedEndpoint = computed(() => {
   return productTypeId.value ? `get-price-by-product-type/${productTypeId.value}` : 'prices';
 });
 
+
 const goBack = () => {
-  router.push({ name: "products" });
+  router.push({ name: 'products' });
 };
 // Fetch data for select options on component mount
 onMounted(async () => {
