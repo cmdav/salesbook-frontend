@@ -5,9 +5,10 @@
       <button @click="goBack" class="btn btn-secondary mb-3">Back to Products |</button>
 
       <!-- Button to Open Modal -->
-      <button @click="showModal = true" class="btn btn-primary">Add Product Type</button>
+      <!-- <button @click="showModal = true" class="btn btn-primary">Add Product Type</button> -->
 
       <DataTableLayout
+        @toggleModal="showModal = !showModal"
         :key="forceUpdate"
         :endpoint="computedEndpoint"
         :clickableKeys="{ view_price: navigateToPrice }"

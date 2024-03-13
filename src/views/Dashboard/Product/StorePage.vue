@@ -3,7 +3,11 @@
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
       <!-- Button to Open Modal -->
       <!-- <button @click="showModal = true" class="btn btn-primary">Add Store</button> -->
-      <DataTableLayout :key="forceUpdate" endpoint="stores" />
+      <DataTableLayout
+        @toggleModal="showModal = !showModal"
+        :key="forceUpdate"
+        endpoint="stores"
+      />
     </div>
     <FormModal v-if="showModal" @close="closeModal" :formTitle="formTitle">
       <template v-slot:default>

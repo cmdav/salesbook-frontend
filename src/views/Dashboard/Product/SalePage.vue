@@ -1,12 +1,11 @@
 <template>
   <DashboardLayout>
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
-      <div
-        class="px-5 py-2 mt-8 border-b-2 border-gray-200 flex justify-end bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
-      >
-        <button @click="showModal = true" class="btn-brand">Add Sales</button>
-      </div>
-      <DataTableLayout :key="forceUpdate" endpoint="sales" />
+      <DataTableLayout
+        @toggleModal="showModal = !showModal"
+        :key="forceUpdate"
+        endpoint="sales"
+      />
     </div>
     <FormModal v-if="showModal" @close="closeModal" :formTitle="formTitle">
       <template v-slot:default>

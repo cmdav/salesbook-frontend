@@ -20,14 +20,11 @@
       </div>
 
       <!-- Button to Open Modal -->
-      <div
-        class="px-5 py-2 mt-8 border-b-2 border-gray-200 flex justify-end bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
-      >
-        <button @click="showModal = true" class="btn-brand">Add Product</button>
-      </div>
       <DataTableLayout
         :key="forceUpdate"
         endpoint="products"
+        @toggleModal="showModal = !showModal"
+        toggleButtonLabel="Add Product"
         :excludedKeys="['id', 'product_description']"
         :clickableKeys="{
           product_name: openProductDetailModal,

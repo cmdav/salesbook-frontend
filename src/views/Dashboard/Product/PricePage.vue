@@ -5,9 +5,13 @@
       <button @click="goBack" class="btn btn-secondary mb-3">Back to Products |</button>
 
       <!-- Button to Open Modal -->
-      <button @click="showModal = true" class="btn btn-primary">Add Price</button>
+      <!-- <button @click="showModal = true" class="btn btn-primary">Add Price</button> -->
 
-      <DataTableLayout :key="forceUpdate" :endpoint="computedEndpoint" />
+      <DataTableLayout
+        @toggleModal="showModal = !showModal"
+        :key="forceUpdate"
+        :endpoint="computedEndpoint"
+      />
     </div>
     <FormModal v-if="showModal" @close="closeModal" :formTitle="formTitle">
       <template v-slot:default>
