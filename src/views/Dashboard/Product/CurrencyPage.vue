@@ -1,14 +1,13 @@
 <template>
   <DashboardLayout>
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
-      <DataTableLayout :key="forceUpdate" endpoint="currencies" />
+      <DataTableLayout
+        @toggleModal="showModal = !showModal"
+        :key="forceUpdate"
+        endpoint="currencies"
+      />
     </div>
-    <FormModal
-      @toggleModal="showModal = !showModal"
-      v-if="showModal"
-      @close="closeModal"
-      :formTitle="formTitle"
-    >
+    <FormModal v-if="showModal" @close="closeModal" :formTitle="formTitle">
       <template v-slot:default>
         <form @submit.prevent="submitForm">
           <p v-if="isError" class="text-red-500">{{ errorMessage }}</p>
