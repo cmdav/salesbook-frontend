@@ -3,7 +3,7 @@
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
       <div>
         <div class="lg:px-6 px-3 pt-8 grid grid-rows gap-4">
-          <div class="grid lg:grid-cols-3 grid-cols-1 gap-4">
+          <div class="grid lg:grid-cols-4 grid-cols-1 gap-4">
             <div
               class="flex flex-row justify-between rounded-[8px] p-4"
               style="background-color: rgb(44, 43, 108)"
@@ -21,32 +21,6 @@
                   0
                 </div>
               </div>
-              <!-- <div class="flex flex-col justify-between">
-                <div>
-                  <div
-                    class="title font-Satoshi700 text-white text-right text-[14px] leading-[21.6px]"
-                  >
-                    NGN
-                  </div>
-                  <div
-                    class="amount font-Satoshi700 text-white text-right text-[28px] leading-[43.2px]"
-                  >
-                    0
-                  </div>
-                </div>
-                <div>
-                  <div
-                    class="title font-Satoshi700 text-white text-right text-[14px] leading-[21.6px]"
-                  >
-                    USD
-                  </div>
-                  <div
-                    class="amount font-Satoshi700 text-white text-right text-[28px] leading-[43.2px]"
-                  >
-                    0
-                  </div>
-                </div>
-              </div> -->
             </div>
             <div
               v-if="feature.includes('INVENTORY')"
