@@ -10,6 +10,7 @@
       <DataTableLayout 
         :key="forceUpdate" 
         :endpoint="computedEndpoint" 
+        :excludedKeys="['id','product_type_id']"
        
       />
     </div>
@@ -27,7 +28,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import DataTableLayout from "@/components/Layouts/dataTableLayout.vue";
@@ -35,7 +36,9 @@ import FormModal from "@/components/UI/FormModal.vue";
 import ReusableForm from "@/components/Form/ReusableForm.vue";
 import Loader from "@/components/UI/Loader.vue";
 import { usePostComposable } from '@/composable/usePostComposable';
+import { useSelectComposable } from '@/composable/useSelectComposable';
 import { priceFormFields } from '@/formfields/formFields';
+
 
 const router = useRouter();
 const route = useRoute();
@@ -46,27 +49,24 @@ const fieldOverrides = {
    product_type_id: productTypeId.value, 
 };
 
+const { fetchDataForSelect } = useSelectComposable(priceFormFields); 
 
-
-const { 
-  showModal, 
-  isLoadingMsg,
-  loading, 
-  allError,
-  forceUpdate,
-  errorMessage, 
-  isError,  
-  closeModal, 
-  submitForm
-} = usePostComposable(productTypeId.value ? `product-type-by-id/${productTypeId.value}` : 'prices', priceFormFields, 'prices',fieldOverrides);
+const { showModal,isLoadingMsg,loading,allError,forceUpdate, errorMessage, isError, closeModal, submitForm}
+       = usePostComposable(productTypeId.value ? `get-price-by-product-type/${productTypeId.value}` : 'prices', priceFormFields, 'prices',fieldOverrides);
 
 
 const computedEndpoint = computed(() => {
-  return productTypeId.value ? `product-type-by-id/${productTypeId.value}` : 'prices';
+  return productTypeId.value ? `get-price-by-product-type/${productTypeId.value}` : 'prices';
 });
 
 
 const goBack = () => {
   router.push({ name: 'products' });
 };
+// Fetch data for select options on component mount
+onMounted(async () => {
+
+await fetchDataForSelect('Currency Name', '/currencies', 'id', 'currency_name');
+
+});
 </script>
