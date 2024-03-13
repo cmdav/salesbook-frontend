@@ -311,7 +311,7 @@
                     <AuthInput
                       label="Phone number"
                       :error="errors.phoneNo"
-                      type="tel"
+                      type="number"
                       placeholder="Enter Phone number"
                       v-model="formData.phoneNo"
                     />
@@ -371,7 +371,7 @@
                     <AuthInput
                       label="Contact Number"
                       :error="errorsCom.phone_number"
-                      type="tel"
+                      type="number"
                       placeholder="Enter contact number"
                       v-model="formCompanyData.phone_number"
                     />

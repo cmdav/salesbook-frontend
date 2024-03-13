@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-const emit = defineEmits<{(event: "changePage", page: number): void;}>();
+const emit = defineEmits<{ (event: "changePage", page: number): void }>();
 
 const props = withDefaults(
   defineProps<{
@@ -77,7 +77,7 @@ const pagesToDisplay = computed(() => [
           d="M165.66 202.34a8 8 0 0 1-11.32 11.32l-80-80a8 8 0 0 1 0-11.32l80-80a8 8 0 0 1 11.32 11.32L91.31 128Z"
         />
       </svg>
-      <span class="inline-block">Back</span>
+      <span class="inline-block">Prev</span>
     </button>
 
     <!-- Displays the First Page before the ellipses (not on mobile) -->

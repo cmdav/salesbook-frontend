@@ -1,6 +1,9 @@
 <template>
   <DashboardLayout>
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
+      <div class="py-8">
+        <router-link to="/products" class="font-bold !my-8">Back</router-link>
+      </div>
       <div>
         <div
           class="lg:px-6 px-3 p-8 lg:w-[60%] w-full rounded-lg mx-auto bg-secondary-700 flex flex-col gap-4"
