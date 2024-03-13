@@ -6,34 +6,41 @@
     </label>
 
     <template v-if="field.type === 'textarea'">
-      <textarea :id="field.id"
-        class="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+      <textarea
+        :id="field.id"
+        class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
         v-model="field.value"
         :required="field.required"
         :placeholder="field.placeholder"
       ></textarea>
     </template>
-    
+
     <template v-else-if="field.type === 'select'">
-      <select :id="field.id"
-        class="mt-1 block w-full p-2 rounded-md border-gray-300 bg-white shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+      <select
+        :id="field.id"
+        class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
         v-model="field.value"
         :required="field.required"
         @change="handleCategoryChange(field.value, field.label)"
       >
-        <option v-for="(option, optionIndex) in field.options" 
-                :key="optionIndex" 
-                :value="option['value']">
-          {{ option['label'] }}
+        <option
+          v-for="(option, optionIndex) in field.options"
+          :key="optionIndex"
+          :value="option['value']"
+        >
+          {{ option["label"] }}
         </option>
       </select>
-      <span v-if="field.showLoading === true" class="text-sm text-red-500"> {{ isLoadingMsg }}</span>
+      <span v-if="field.showLoading === true" class="text-sm text-red-500">
+        {{ isLoadingMsg }}</span
+      >
     </template>
 
     <template v-else-if="field.type === 'image'">
-      <input :id="field.id"
+      <input
+        :id="field.id"
         type="file"
-        class="mt-1 block w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
+        class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
         @change="handleImageChange(index, $event)"
         :required="field.required"
         :placeholder="field.placeholder"
@@ -41,9 +48,10 @@
     </template>
 
     <template v-else>
-      <input :id="field.id"
+      <input
+        :id="field.id"
         :type="field.type"
-        class="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+        class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
         v-model="field.value"
         :required="field.required"
         :placeholder="field.placeholder"
@@ -53,30 +61,28 @@
 </template>
 
 <script setup>
-import { defineEmits, ref } from 'vue';
+import { defineEmits, ref } from "vue";
 
 // Destructure fields from props
 const { fields, isLoadingMsg, allError } = defineProps({
   fields: Array,
-  allError:Object,
-  isLoadingMsg: String
+  allError: Object,
+  isLoadingMsg: String,
 });
-const emit = defineEmits(['fetchDataForSubCategory'])
-console.log(allError)
+const emit = defineEmits(["fetchDataForSubCategory"]);
+console.log(allError);
 const localFields = ref(fields);
 
 const handleImageChange = (index, event) => {
   const file = event.target.files[0];
-  localFields.value[index].value = file; 
+  localFields.value[index].value = file;
 };
 
 // emit an event on change
 const handleCategoryChange = (value, label) => {
-  const selectedField = localFields.value.find(field => field.label === label);
+  const selectedField = localFields.value.find((field) => field.label === label);
   if (selectedField) {
-    emit('fetchDataForSubCategory', value, label);
+    emit("fetchDataForSubCategory", value, label);
   }
 };
-
-
 </script>

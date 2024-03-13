@@ -49,14 +49,10 @@
             :isLoadingMsg="isLoadingMsg"
             :allError="allError"
           />
-          <input
-            type="submit"
-            v-if="!loading"
-            value="Submit"
-            class="btn btn-primary mt-3"
-          />
-
-          <Loader v-else />
+          <div class="flex justify-center items-center">
+            <input type="submit" v-if="!loading" value="Submit" class="btn-brand mt-3" />
+            <Loader v-else />
+          </div>
         </form>
       </template>
     </FormModal>
