@@ -11,24 +11,11 @@
       <template v-slot:default>
         <form @submit.prevent="submitForm">
           <p v-if="isError" class="text-red-500">{{ errorMessage }}</p>
-<<<<<<< HEAD
           <ReusableForm :fields="purchaseFormFields"   @fetchDataForSubCategory="fetchDataForSubCategory" :isLoadingMsg="isLoadingMsg" :allError="allError"/>
           <input type="submit"  v-if="!loading"  value="Submit" class="btn btn-primary mt-3">
           
                     <Loader v-else />
           
-=======
-          <ReusableForm
-            :fields="purchaseFormFields"
-            :isLoadingMsg="isLoadingMsg"
-            :allError="allError"
-          />
-          <div class="flex justify-center items-center">
-            <input type="submit" v-if="!loading" value="Submit" class="btn-brand mt-3" />
-
-            <Loader v-else />
-          </div>
->>>>>>> main
         </form>
       </template>
     </FormModal>
