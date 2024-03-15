@@ -1,5 +1,5 @@
 <template>
-  <DashboardLayout>
+  <DashboardLayout pageTitle="Product Page">
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
       <div class="grid lg:grid-cols-3 grid-cols-1 gap-4">
         <div class="flex flex-row justify-between rounded-[8px] bg-brand p-4">

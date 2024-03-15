@@ -1,5 +1,5 @@
 <template>
-  <DashboardLayout>
+  <DashboardLayout pageTitle="Product type page">
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
       <!-- Back Button -->
       <button @click="goBack" class="btn btn-secondary mb-3">Back to Products |</button>
