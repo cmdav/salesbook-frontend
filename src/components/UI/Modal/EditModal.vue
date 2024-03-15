@@ -39,7 +39,9 @@ const props = defineProps({
 });
 
 const { items, formField, modalTitle } = toRefs(props); 
-const { editForm, loading} = useEditComposable()
+
+
+const { editForm, loading} = useEditComposable(formField, "currencies", items.value["id"])
 
 watch(items, (newItems) => {
   if (newItems) {
