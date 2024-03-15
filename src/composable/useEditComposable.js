@@ -3,7 +3,7 @@
 import { ref } from 'vue';
 import apiService from '@/services/apiService';
 
-export function useEditComposable(formFields, url) {
+export function useEditComposable(formFields, url,itemId) {
     
 
   let showEditModal = ref(false);
@@ -49,9 +49,9 @@ export function useEditComposable(formFields, url) {
       // Submit FormData to the server
       //const submitUrl = postUrl || url;
      // const editUrl = items.value["id"]
-       console.log(formData)
        
-       const response = await apiService.update(url, formData);
+       const Url = `url/${itemId}`
+       const response = await apiService.update(Url, formData);
      console.log("m")
       //  // await fetchPage(submitUrl, 1);
        console.log(response);
