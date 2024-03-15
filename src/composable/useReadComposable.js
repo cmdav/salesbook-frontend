@@ -13,6 +13,7 @@ export function useReadComposable(props = {}) {
   const isLoading = ref(false);
   const hasError = ref(false);
 
+  // Remove all keys you don't want to render on the table. This key are passed as props
   function extractUniqueKeys(dataArray) {
     
     const excludedKeys = Array.isArray(props.excludedKeys) ? props.excludedKeys : [];
@@ -26,16 +27,11 @@ export function useReadComposable(props = {}) {
         return keys;
     }, []);
 }
-
-
-  const displayKeys = computed(() => {
-    return uniqueKeys.value.filter(key => !props.excludedKeys.includes(key));
-  });
-
+ // replace underscores with space
   function formatKey(key) {
     return key.replace(/_/g, ' ');
   }
-
+  //check for image
   function isMediaKey(key) {
     return ['image', 'logo', 'file'].some(suffix => key.toLowerCase().endsWith(suffix));
   }
@@ -88,7 +84,7 @@ export function useReadComposable(props = {}) {
     lastPage,
     isLoading,
     hasError,
-    displayKeys,
+   // displayKeys,
     formatKey,
     isMediaKey,
     fetchPage,

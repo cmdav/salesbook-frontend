@@ -26,7 +26,7 @@
       </button>
     </div>
 
-    <!-- Section for the products table -->
+    <!-- Section for the  table -->
     <div class="" v-if="!isLoading && !hasError && products.length > 0">
       <table class="min-w-full leading-normal">
         <thead>
@@ -36,8 +36,9 @@
             >
               S.No
             </th>
+            <!-- Merge the additional columns with keys from the api -->
             <th
-              v-for="col in [...displayKeys, ...additionalColumns.map((col) => col.name)]"
+              v-for="col in [...uniqueKeys, ...additionalColumns.map((col) => col.name)]"
               :key="col"
               class="px-5 py-5 border-b-2 border-gray-200 bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
             >
@@ -59,7 +60,7 @@
               }}
             </td>
             <td
-              v-for="key in displayKeys"
+              v-for="key in uniqueKeys"
               :key="key"
               class="px-5 py-5 border-b border-gray-200 bg-white text-sm"
             >
@@ -96,7 +97,7 @@
           </tr>
         </tbody>
         <tbody v-else>
-          <!-- Loop through products for each row -->
+          <!-- Loop through product which represents Items for each row -->
           <tr
             v-for="(product, index) in products"
             :key="product.id"
@@ -108,7 +109,7 @@
               }}
             </td>
             <td
-              v-for="key in displayKeys"
+              v-for="key in uniqueKeys"
               :key="key"
               class="px-5 py-5 border-b border-gray-200 bg-white text-sm"
             >
@@ -134,7 +135,7 @@
                 {{ product[key] }}
               </template>
             </td>
-            <!-- template for additional code -->
+            <!-- render content for additional code -->
             <template v-for="(col, index) in additionalColumns" :key="`${index}`">
               <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                 <button @click="col.action(product)">
@@ -201,18 +202,7 @@ const props = defineProps({
   },
 });
 
-const {
-  products,
-  currentPage,
-  itemsPerPage,
-  lastPage,
-  isLoading,
-  hasError,
-  displayKeys,
-  formatKey,
-  isMediaKey,
-  fetchPage,
-  paginationArray,
+const {products,currentPage,itemsPerPage,lastPage,isLoading,hasError,uniqueKeys,formatKey,isMediaKey,fetchPage,paginationArray,
 } = useReadComposable(props);
 
 onMounted(async () => {

@@ -11,6 +11,10 @@
         :key="forceUpdate" 
         :endpoint="computedEndpoint" 
         :excludedKeys="['id','product_type_id']"
+        :additionalColumns="[
+          { name: 'edit', action: handleEdit },
+          { name: 'delete', action: handleDelete },
+        ]"
        
       />
     </div>
@@ -32,7 +36,7 @@ import { computed, ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import DataTableLayout from "@/components/Layouts/dataTableLayout.vue";
-import FormModal from "@/components/UI/FormModal.vue";
+import FormModal from "@/components/UI/Modal/FormModal.vue";
 import ReusableForm from "@/components/Form/ReusableForm.vue";
 import Loader from "@/components/UI/Loader.vue";
 import { usePostComposable } from '@/composable/usePostComposable';
