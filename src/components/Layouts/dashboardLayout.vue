@@ -35,6 +35,7 @@ const toogleDropdown = () => {
     showNotificationDropdown.value = false
   }
 }
+defineProps({ pageTitle: String })
 </script>
 
 <template>
@@ -122,6 +123,7 @@ const toogleDropdown = () => {
         </nav>
 
         <div class="flex-grow pb-20">
+          <h3 class="container mt-8 text-[19px] font-bold">{{ pageTitle }}</h3>
           <slot></slot>
         </div>
       </div>

@@ -1,5 +1,5 @@
 <template>
-  <DashboardLayout>
+  <DashboardLayout pageTitle="Suppliers Page">
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
       <div>
         <div class="lg:px-6 px-3 pt-8 grid grid-rows gap-4">
