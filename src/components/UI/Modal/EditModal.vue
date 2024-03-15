@@ -35,11 +35,14 @@ const title = ref();
 const props = defineProps({
   items: Object,
   formField: Object,
-  modalTitle:String
+  modalTitle:String,
+  url: String
 });
 
-const { items, formField, modalTitle } = toRefs(props); 
-const { editForm, loading} = useEditComposable()
+const { items, formField, modalTitle, url } = toRefs(props); 
+
+
+const { editForm, loading} = useEditComposable(formField, url.value, items.value["id"])
 
 watch(items, (newItems) => {
   if (newItems) {

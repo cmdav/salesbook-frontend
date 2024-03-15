@@ -36,6 +36,7 @@ export default {
 
     
     update(resource, data) {
+        
         return api.put(resource, data).then(response => response.data);
     },
 

@@ -28,12 +28,8 @@
         </form>
       </template>
     </FormModal>
-    <EditModal v-if="showEditModal"
-               @close="closeEditModal"
-                :items="items" 
-                :formField="currenciesFormFields"
-                :modalTitle="modalTitle"
-                />
+    <EditModal v-if="showEditModal" @close="closeEditModal" :items="items" :formField="currenciesFormFields" :modalTitle="modalTitle" 
+            :url ="'/currencies'"/>
 
   </DashboardLayout>
 </template>
@@ -51,6 +47,8 @@ import { useEditComposable } from "@/composable/useEditComposable";
 
 const formTitle = "Add Currencies";
 const modalTitle = "currency_name"
+
+
 const {showModal,isLoadingMsg,loading,allError,forceUpdate,errorMessage,isError,closeModal,submitForm} = usePostComposable("/currencies", currenciesFormFields);
 const {handleEdit, handleDelete, showEditModal, closeEditModal, items} = useEditComposable()
 

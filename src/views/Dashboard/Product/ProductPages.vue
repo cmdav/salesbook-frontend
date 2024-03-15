@@ -64,7 +64,6 @@ import ViewModal from "@/components/UI/Modal/ViewModal.vue"; // show read modal
 import ViewModalDetail from "@/components/UI/Modal/ViewModalDetail.vue"; 
 import ReusableForm from "@/components/Form/ReusableForm.vue"  // To create form
 import Loader from "@/components/UI/Loader.vue";
-
 import { usePostComposable} from '@/composable/usePostComposable';
 import { useSelectComposable} from '@/composable/useSelectComposable';
 import { formFields } from '@/formfields/formFields';
@@ -75,13 +74,10 @@ const modalTitle = "View Product";
 const router = useRouter();
 const url = '/all-product-sub-categories-by-category-id';
 const products = ref();
-const { showModal, showViewModal,loading, allError,forceUpdate,errorMessage,isError,closeModal,closeViewModal,submitForm}
-       = usePostComposable('/products', formFields);
-
+const { showModal, showViewModal,loading, allError,forceUpdate,errorMessage,isError,closeModal,closeViewModal,submitForm} = usePostComposable('/products', formFields);
       // fetchDataForSubCategory is emitted
 const { fetchDataForSelect, fetchDataForSubCategory,isOptionLoadingMsg} = useSelectComposable(formFields, url,"Category", "Sub Category", "sub_category_name"); 
-// import { useEditDeleteComposable } from "@/composable/useEditDeleteComposable";
-// const {handleEdit, handleDelete} = useEditDeleteComposable()
+
 
 const openProductDetailModal = (product) => {
   // console.log(product);
@@ -92,15 +88,6 @@ const openProductDetailModal = (product) => {
 const navigateToProductType = (product) => {
   router.push({ name: "product-type", params: { id: product.id } });
 };
-
-// const handleEdit = (product) => {
-//   console.log("Editing product", product);
-// };
-
-// const handleDelete = (product) => {
-//   // Your delete logic here
-//   console.log("Deleting product", product);
-// };
 
 // Fetch data for select options on component mount
 onMounted(async () => {

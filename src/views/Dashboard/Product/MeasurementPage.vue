@@ -29,38 +29,34 @@
         </form>
       </template>
     </FormModal>
+
+  <EditModal v-if="showEditModal" @close="closeEditModal" :items="items" :formField="measurementFormFields" :url="'/measurements'"
+              :modalTitle="modalTitle"/>
+
   </DashboardLayout>
 </template>
 
 <script setup>
 import { onMounted } from "vue";
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
-import DataTableLayout from "@/components/Layouts/dataTableLayout.vue"; // read data
-import FormModal from "@/components/UI/Modal/FormModal.vue"; // show modal
-import ReusableForm from "@/components/Form/ReusableForm.vue"; // To create form
-//import apiService from '@/services/apiService';
+import DataTableLayout from "@/components/Layouts/dataTableLayout.vue"; 
+import FormModal from "@/components/UI/Modal/FormModal.vue"
+import ReusableForm from "@/components/Form/ReusableForm.vue"; 
 import Loader from "@/components/UI/Loader.vue";
 import { useProductStore } from "@/stores/products";
-const productsStore = useProductStore();
-
+import EditModal from "@/components/UI/Modal/EditModal.vue"; 
 import { usePostComposable } from "@/composable/usePostComposable";
 import { measurementFormFields } from "@/formfields/formFields";
-// import { useEditDeleteComposable } from "@/composable/useEditDeleteComposable";
-// const {handleEdit, handleDelete} = useEditDeleteComposable()
+import { useEditComposable } from "@/composable/useEditComposable";
+
 
 const formTitle = "Add Measurement";
+const modalTitle = "measurement_name"
+const productsStore = useProductStore();
 
-const {
-  showModal,
-  isLoadingMsg,
-  loading,
-  allError,
-  forceUpdate,
-  errorMessage,
-  isError,
-  closeModal,
-  submitForm,
-} = usePostComposable("/measurements", measurementFormFields);
+const {showModal,isLoadingMsg,loading,allError,forceUpdate,errorMessage,isError,closeModal,submitForm } = usePostComposable("/measurements", measurementFormFields);
+const {handleEdit, handleDelete, showEditModal, closeEditModal, items} = useEditComposable()
+
 onMounted(async () => {
   try {
     await productsStore.handleGetMeasurements();
