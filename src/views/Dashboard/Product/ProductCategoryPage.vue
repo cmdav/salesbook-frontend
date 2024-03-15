@@ -28,34 +28,27 @@
         </form>
       </template>
     </FormModal>
+
+    <EditModal v-if="showEditModal" @close="closeEditModal" :items="items" :formField="productCategoryFormFields" :url="'/product-categories'"
+              :modalTitle="modalTitle"/>
   </DashboardLayout>
 </template>
 
 <script setup>
-//import { onMounted } from 'vue';
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
-import DataTableLayout from "@/components/Layouts/dataTableLayout.vue"; // read data
-import FormModal from "@/components/UI/Modal/FormModal.vue"; // show modal
-import ReusableForm from "@/components/Form/ReusableForm.vue"; // To create form
-//import apiService from '@/services/apiService';
+import DataTableLayout from "@/components/Layouts/dataTableLayout.vue"; 
+import FormModal from "@/components/UI/Modal/FormModal.vue"; 
+import ReusableForm from "@/components/Form/ReusableForm.vue"; 
 import Loader from "@/components/UI/Loader.vue";
-
+import EditModal from "@/components/UI/Modal/EditModal.vue"; 
 import { usePostComposable } from "@/composable/usePostComposable";
 import { productCategoryFormFields } from "@/formfields/formFields";
-// import { useEditDeleteComposable } from "@/composable/useEditDeleteComposable";
-// const {handleEdit, handleDelete} = useEditDeleteComposable()
+import { useEditComposable } from "@/composable/useEditComposable";
+
 
 const formTitle = "Add  Product Category";
+const modalTitle = "category_name"
 
-const {
-  showModal,
-  isLoadingMsg,
-  loading,
-  allError,
-  forceUpdate,
-  errorMessage,
-  isError,
-  closeModal,
-  submitForm,
-} = usePostComposable("/product-categories", productCategoryFormFields);
+const {showModal,isLoadingMsg,loading,allError,forceUpdate,errorMessage,isError,closeModal,submitForm,} = usePostComposable("/product-categories", productCategoryFormFields);
+const {handleEdit, handleDelete, showEditModal, closeEditModal, items} = useEditComposable()
 </script>
