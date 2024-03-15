@@ -38,12 +38,14 @@ import { computed, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import DataTableLayout from "@/components/Layouts/dataTableLayout.vue";
-import FormModal from "@/components/UI/FormModal.vue";
+import FormModal from "@/components/UI/Modal/FormModal.vue";
 import ReusableForm from "@/components/Form/ReusableForm.vue";
 import Loader from "@/components/UI/Loader.vue";
 import { usePostComposable } from "@/composable/usePostComposable";
 import { productTypeFormFields } from "@/formfields/formFields";
 
+// import { useEditDeleteComposable } from "@/composable/useEditDeleteComposable";
+// const {handleEdit, handleDelete} = useEditDeleteComposable()
 const router = useRouter();
 const route = useRoute();
 const formTitle = "Add Product Type";
@@ -52,6 +54,7 @@ const productTypeId = ref(route.params.id);
 const fieldOverrides = {
   product_id: productTypeId.value,
 };
+
 
 const navigateToPrice = (product) => {
   router.push({ name: "price", params: { id: product.id } });

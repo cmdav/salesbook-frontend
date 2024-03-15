@@ -4,7 +4,7 @@
       {{ field.label }}
       <span v-if="field.required" class="text-red-500">*</span>
     </label>
-
+     <!-- Textarea field -->
     <template v-if="field.type === 'textarea'">
       <textarea
         :id="field.id"
@@ -14,7 +14,7 @@
         :placeholder="field.placeholder"
       ></textarea>
     </template>
-
+     <!-- Select field -->
     <template v-else-if="field.type === 'select'">
       <select
         :id="field.id"
@@ -35,13 +35,36 @@
         {{ isLoadingMsg }}</span
       >
     </template>
-
+     <!-- Image field -->
     <template v-else-if="field.type === 'image'">
       <input
         :id="field.id"
         type="file"
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
         @change="handleImageChange(index, $event)"
+        :required="field.required"
+        :placeholder="field.placeholder"
+      />
+    </template>
+
+      <!-- Number field -->
+      <template v-else-if="field.type === 'number'">
+      <input :id="field.id"
+        type="number"
+        class="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+        v-model.number="field.value"
+        :required="field.required"
+        :placeholder="field.placeholder"
+        :min="field.min || 0"  
+      />
+    </template>
+
+    <!-- Date field -->
+    <template v-else-if="field.type === 'date'">
+      <input :id="field.id"
+        type="date"
+        class="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+        v-model="field.value"
         :required="field.required"
         :placeholder="field.placeholder"
       />
@@ -82,7 +105,7 @@ const handleImageChange = (index, event) => {
 const handleCategoryChange = (value, label) => {
   const selectedField = localFields.value.find((field) => field.label === label);
   if (selectedField) {
-    emit("fetchDataForSubCategory", value, label);
+    emit('fetchDataForSubCategory', value, label, selectedField);
   }
 };
 </script>
