@@ -51,6 +51,7 @@
     <ViewModal v-if="showViewModal" @close="closeViewModal" :modalTitle="modalTitle">
       <ViewModalDetail :products="products" />
     </ViewModal>
+    <EditModal v-if="showEditModal" @close="closeEditModal" :items="items" :formField="formFields" :url="'/products'"/>
   </DashboardLayout>
 </template>
 
@@ -64,8 +65,12 @@ import ViewModal from "@/components/UI/Modal/ViewModal.vue"; // show read modal
 import ViewModalDetail from "@/components/UI/Modal/ViewModalDetail.vue"; 
 import ReusableForm from "@/components/Form/ReusableForm.vue"  // To create form
 import Loader from "@/components/UI/Loader.vue";
+import EditModal from "@/components/UI/Modal/EditModal.vue"; 
+
 import { usePostComposable} from '@/composable/usePostComposable';
 import { useSelectComposable} from '@/composable/useSelectComposable';
+import { useEditComposable } from "@/composable/useEditComposable";
+
 import { formFields } from '@/formfields/formFields';
 
 
@@ -75,12 +80,12 @@ const router = useRouter();
 const url = '/all-product-sub-categories-by-category-id';
 const products = ref();
 const { showModal, showViewModal,loading, allError,forceUpdate,errorMessage,isError,closeModal,closeViewModal,submitForm} = usePostComposable('/products', formFields);
+const {handleEdit, handleDelete, showEditModal, closeEditModal, items} = useEditComposable()
       // fetchDataForSubCategory is emitted
 const { fetchDataForSelect, fetchDataForSubCategory,isOptionLoadingMsg} = useSelectComposable(formFields, url,"Category", "Sub Category", "sub_category_name"); 
 
 
 const openProductDetailModal = (product) => {
-  // console.log(product);
   products.value = product;
   showViewModal.value = true;
 };

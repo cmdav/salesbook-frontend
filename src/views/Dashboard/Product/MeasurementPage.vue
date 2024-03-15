@@ -51,7 +51,7 @@ import { useEditComposable } from "@/composable/useEditComposable";
 
 
 const formTitle = "Add Measurement";
-const modalTitle = "measurement_name"
+
 const productsStore = useProductStore();
 
 const {showModal,isLoadingMsg,loading,allError,forceUpdate,errorMessage,isError,closeModal,submitForm } = usePostComposable("/measurements", measurementFormFields);

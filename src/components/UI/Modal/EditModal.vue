@@ -35,11 +35,10 @@ const title = ref();
 const props = defineProps({
   items: Object,
   formField: Object,
-  modalTitle:String,
   url: String
 });
 
-const { items, formField, modalTitle, url } = toRefs(props); 
+const { items, formField, url } = toRefs(props); 
 
 
 const { editForm, loading} = useEditComposable(formField, url.value, items.value["id"])
@@ -48,9 +47,10 @@ watch(items, (newItems) => {
   if (newItems) {
     formField.value.forEach(field => {
       field.value = newItems[field.databaseField] || ''; 
+      console.log(field.value)
     });
    
-    title.value = "Edit currency name:" + newItems[modalTitle.value]
+    
     
   } 
 }, { immediate: true, deep: true }); 
