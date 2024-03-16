@@ -7,7 +7,7 @@ import { useReadComposable} from '@/composable/useReadComposable';
 const { fetchPage } = useReadComposable();
 
 export function useDeleteComposable(url, ItemObject) {
-  let showDeleteModal = ref(false)
+  const showDeleteModal = ref(false)
   let itemsId = ref('')
   let errorMessage = ref()
   let loading = ref(false)
@@ -26,6 +26,7 @@ export function useDeleteComposable(url, ItemObject) {
       loading.value = true;
       const response = await apiService.delete(`${url}/${ItemObject.id}`)
       await fetchPage(url, 1)
+      showDeleteModal.value = false
       closeDeleteModal()
       return response
     } catch (error) {

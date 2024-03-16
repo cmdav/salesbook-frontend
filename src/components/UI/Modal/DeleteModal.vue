@@ -2,14 +2,12 @@
   <div
     class="modal backdrop-blur z-[100] fixed animate__zoomIn animate__rubberBand animate__fadeOut min-h-screen h-full"
   >
-    <div
-      class="modal__body relative w-full md:max-w-[600px] bg-white m-0 md:px-5 py-4 px-4"
-    >
+    <div class="modal__body relative w-full md:max-w-[600px] bg-white m-0 md:px-5 py-4 px-4">
       <header
         class="flex flex-row items-center justify-between border-b-[#000000] pb-[5px] mb-[35px] border-b-[1px]"
       >
         <h4 class="text-[22px] font-EBGaramond500 text-[#244034]">
-          {{ title || "Delete Detail" }}
+          {{ title || 'Delete Detail' }}
         </h4>
         <button class="close-button" @click="$emit('close')">&#10005;</button>
       </header>
@@ -23,29 +21,29 @@
 </template>
 
 <script setup>
-import { watch, defineProps, toRefs, ref } from "vue";
-import Loader from "@/components/UI/Loader.vue";
-import { useDeleteComposable } from "@/composable/useDeleteComposable";
+import { watch, defineProps, toRefs, ref } from 'vue'
+import Loader from '@/components/UI/Loader.vue'
+import { useDeleteComposable } from '@/composable/useDeleteComposable'
 
-const title = ref();
+const title = ref()
 
 const props = defineProps({
   items: Object,
   modalTitle: String,
-  url: String,
-});
-const { items, modalTitle, url } = toRefs(props);
+  url: String
+})
+const { items, modalTitle, url } = toRefs(props)
 
-const { deleteForm, loading } = useDeleteComposable(url.value, items.value);
+const { deleteForm, loading } = useDeleteComposable(url.value, items.value)
 watch(
   items,
   (newitemsId) => {
     if (newitemsId) {
-      title.value = "Delete currency name:" + newitemsId[modalTitle.value];
+      title.value = 'Delete' + ' ' + newitemsId[modalTitle.value]
     }
   },
   { immediate: true, deep: true }
-);
+)
 </script>
 
 <style lang="scss" scoped>
