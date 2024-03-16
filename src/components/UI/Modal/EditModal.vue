@@ -44,11 +44,34 @@ const { editForm, loading} = useEditComposable(formField, url.value, items.value
 
 watch(items, (newItems) => {
   if (newItems) {
+  
+    console.log(newItems)
+   
+  
     formField.value.forEach(field => {
       field.value = newItems[field.databaseField] || ''; 
-      console.log(field.value)
+     
+        if(field.type == 'select') {
+
+          console.log(field.databaseField)
+  
+          const selectedItem = field.options.find(option => option.label === newItems[field.databaseField]);
+        
+          console.log(selectedItem)
+          
+       
+        } else {
+          
+          field.value = newItems[field.databaseField];
+        }
+      
+     
+      
+    
     });
+    //console.log(formField.value)
    
+  
     
     
   } 

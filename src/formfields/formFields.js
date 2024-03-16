@@ -20,7 +20,7 @@ export const productCategoryFormFields = ref([
 ]);
 
 export const productSubCategoryFormFields = ref([
-  { label: 'Category', type: 'select', value: '', required: true, placeholder: 'Enter category ', options: [], databaseField: "category_id" },
+  { label: 'Category', type: 'select', value: '', required: true, placeholder: 'Enter category ', options: [], databaseField: "category_id"},
   { label: 'Sub Category Name', type: 'text', value: '', required: true, placeholder: 'Enter sub category name', databaseField: "sub_category_name" },
   { label: 'Sub Category Description', type: 'textarea', value: '', required: true, placeholder: 'Enter sub category description', databaseField: "sub_category_description" }
 ]);

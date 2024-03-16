@@ -64,7 +64,6 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-
 import { formFields } from '@/formfields/formFields';
 //handles all component import
 import { useSharedComponent } from "@/composable/useSharedComponent";
@@ -77,11 +76,10 @@ const url = '/all-product-sub-categories-by-category-id';
 const products = ref();
 
 const { showModal, showViewModal,loading, allError,forceUpdate,errorMessage,isError,closeModal,closeViewModal,submitForm} = usePostComposable('/products', formFields);
-
 const {handleEdit, handleDelete, showEditModal, closeEditModal, items} = useEditComposable()
 
       // fetchDataForSubCategory is emitted
-const { fetchDataForSelect, fetchDataForSubCategory,isOptionLoadingMsg} = useSelectComposable(formFields, url,"Category", "Sub Category", "sub_category_name"); 
+const { fetchDataForSelect, fetchDataForSubCategory,isOptionLoadingMsg} = useSelectComposable(formFields, url,"category_id", "sub_category_id", "sub_category_name"); 
 
 
 const openProductDetailModal = (product) => {

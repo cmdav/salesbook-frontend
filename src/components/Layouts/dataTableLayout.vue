@@ -142,6 +142,7 @@
                 <button @click="col.action(product)">
                   {{ formatKey(col.name) }}
                 </button>
+                
               </td>
             </template>
           </tr>
@@ -206,6 +207,7 @@ const props = defineProps({
 const {products,currentPage,itemsPerPage,lastPage,isLoading,hasError,uniqueKeys,formatKey,isMediaKey,fetchPage,paginationArray,
 } = useReadComposable(props);
 
+console.log(products)
 onMounted(async () => {
   await fetchPage(props.endpoint, 1);
 });
