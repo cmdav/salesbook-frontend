@@ -8,6 +8,7 @@ import Loader from "@/components/UI/Loader.vue";
 import { usePostComposable } from '@/composable/usePostComposable';
 import { useSelectComposable } from '@/composable/useSelectComposable';
 import { useEditComposable } from "@/composable/useEditComposable";
+import { useReadComposable } from "@/composable/useReadComposable";
 import EditModal from "@/components/UI/Modal/EditModal.vue"; 
 
 export function useSharedComponent() {
@@ -23,6 +24,7 @@ export function useSharedComponent() {
         usePostComposable,
         useSelectComposable,
         useEditComposable,
+        useReadComposable,
         EditModal
       
     };

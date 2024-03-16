@@ -23,8 +23,7 @@ export function useEditComposable(formFields, url,itemId) {
   const handleEdit = (item='') => {
     items.value =item;
     showEditModal.value = true;
-    console.log('this are the items')
-    //console.log(item)
+    console.log(item)
   };
 
   const handleDelete = (product ='') => {
@@ -37,11 +36,11 @@ export function useEditComposable(formFields, url,itemId) {
      
     try {
       loading.value = true;
-      
+      //populate data to be submitted
       const formData = {};
       formFields.value.forEach(field => {
           formData[field.databaseField]= field.value;
-          console.log(field.value)
+         
       });
     
   

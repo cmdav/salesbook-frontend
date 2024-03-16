@@ -26,9 +26,8 @@
 <script setup>
   
 import { watch, defineProps, toRefs, ref} from 'vue';
-import ReusableForm from "@/components/Form/ReusableForm.vue"; 
-import Loader from "@/components/UI/Loader.vue";
-import { useEditComposable} from '@/composable/useEditComposable';
+import { useSharedComponent } from "@/composable/useSharedComponent";
+const { ReusableForm,Loader, useEditComposable,}= useSharedComponent();
 
 const title = ref();
 
