@@ -26,8 +26,6 @@ export function useDeleteComposable(url, ItemObject) {
       loading.value = true;
       const response = await apiService.delete(`${url}/${ItemObject.id}`)
       await fetchPage(url, 1)
-      console.log(response)
-
       closeDeleteModal()
       return response
     } catch (error) {
