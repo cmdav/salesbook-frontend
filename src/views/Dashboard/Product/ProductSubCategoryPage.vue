@@ -12,13 +12,12 @@
         ]"
       />
     </div>
-    <FormModal v-if="showModal" @close="closeModal" :formTitle="formTitle">
+    <FormModal v-if="showModal" @close="closeModal" :formTitle="'Add Product  Sub Category'">
       <template v-slot:default>
         <form @submit.prevent="submitForm">
           <p v-if="isError" class="text-red-500">{{ errorMessage }}</p>
           <ReusableForm
             :fields="productSubCategoryFormFields"
-            @fetchDataForSubCategory="fetchDataForSubCategory"
             :isLoadingMsg="isLoadingMsg"
             :allError="allError"
           />
@@ -30,53 +29,25 @@
         </form>
       </template>
     </FormModal>
+    <EditModal v-if="showEditModal" @close="closeEditModal" :items="items" :formField="productSubCategoryFormFields" :url="'/product-sub-categories'"/>
   </DashboardLayout>
 </template>
 
 <script setup>
 import { onMounted } from "vue";
-import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
-import DataTableLayout from "@/components/Layouts/dataTableLayout.vue"; // read data
-import FormModal from "@/components/UI/Modal/FormModal.vue"; // show modal
-import ReusableForm from "@/components/Form/ReusableForm.vue"; // To create form
-import apiService from "@/services/apiService";
-import Loader from "@/components/UI/Loader.vue";
-
-import { usePostComposable } from "@/composable/usePostComposable";
 import { productSubCategoryFormFields } from "@/formfields/formFields";
-// import { useEditDeleteComposable } from "@/composable/useEditDeleteComposable";
-// const {handleEdit, handleDelete} = useEditDeleteComposable()
 
-const formTitle = "Add Product  Sub Category";
+//handles all component import
+import { useSharedComponent } from "@/composable/useSharedComponent";
+const {DataTableLayout, FormModal,ReusableForm,Loader, usePostComposable, useEditComposable, EditModal,  useSelectComposable} 
+  = useSharedComponent();
+// define other constant
 
-const {
-  showModal,
-  isLoadingMsg,
-  loading,
-  allError,
-  forceUpdate,
-  errorMessage,
-  isError,
-  closeModal,
-  submitForm,
-} = usePostComposable("/product-sub-categories", productSubCategoryFormFields);
 
-const fetchDataForSelect = async (field, endpoint, valueProp, labelProp) => {
-  try {
-    const response = await apiService.get(endpoint);
-    const fieldObject = productSubCategoryFormFields.value.find((f) => f.label === field);
-    if (fieldObject) {
-      fieldObject.options = [
-        { value: "", label: "Select an option", disabled: true },
-        ...response.map((item) => ({ value: item[valueProp], label: item[labelProp] })),
-      ];
-    } else {
-      console.error(`Field with label '${field}' not found.`);
-    }
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  }
-};
+const { showModal,isLoadingMsg,loading,allError,forceUpdate,errorMessage,isError,closeModal, submitForm} 
+        = usePostComposable("/product-sub-categories", productSubCategoryFormFields);
+const {handleEdit, handleDelete, showEditModal, closeEditModal, items} = useEditComposable()
+const {fetchDataForSelect} = useSelectComposable(productSubCategoryFormFields)
 
 // Fetch data for select options on component mount
 onMounted(async () => {

@@ -11,7 +11,7 @@
         ]"
       />
     </div>
-    <FormModal v-if="showModal" @close="closeModal" :formTitle="formTitle">
+    <FormModal v-if="showModal" @close="closeModal" :formTitle="'Add Product Category'">
       <template v-slot:default>
         <form @submit.prevent="submitForm">
           <p v-if="isError" class="text-red-500">{{ errorMessage }}</p>
@@ -30,24 +30,17 @@
     </FormModal>
 
     <EditModal v-if="showEditModal" @close="closeEditModal" :items="items" :formField="productCategoryFormFields" :url="'/product-categories'"
-              :modalTitle="modalTitle"/>
+              />
   </DashboardLayout>
 </template>
 
 <script setup>
-import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
-import DataTableLayout from "@/components/Layouts/dataTableLayout.vue"; 
-import FormModal from "@/components/UI/Modal/FormModal.vue"; 
-import ReusableForm from "@/components/Form/ReusableForm.vue"; 
-import Loader from "@/components/UI/Loader.vue";
-import EditModal from "@/components/UI/Modal/EditModal.vue"; 
-import { usePostComposable } from "@/composable/usePostComposable";
+
 import { productCategoryFormFields } from "@/formfields/formFields";
-import { useEditComposable } from "@/composable/useEditComposable";
-
-
-const formTitle = "Add  Product Category";
-const modalTitle = "category_name"
+//handles all component import
+import { useSharedComponent } from "@/composable/useSharedComponent";
+const {DataTableLayout, FormModal,ReusableForm,Loader, usePostComposable, useEditComposable, EditModal} = useSharedComponent();
+// define other constant
 
 const {showModal,isLoadingMsg,loading,allError,forceUpdate,errorMessage,isError,closeModal,submitForm,} = usePostComposable("/product-categories", productCategoryFormFields);
 const {handleEdit, handleDelete, showEditModal, closeEditModal, items} = useEditComposable()
