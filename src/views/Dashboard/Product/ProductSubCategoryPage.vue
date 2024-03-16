@@ -30,6 +30,13 @@
         </form>
       </template>
     </FormModal>
+    <DeleteModal
+      v-if="showDeleteModal"
+      @close="closeDeleteModal"
+      :items="itemsId"
+      :url="'/product-sub-categories'"
+      :modalTitle="modalTitle"
+    />
   </DashboardLayout>
 </template>
 
@@ -41,11 +48,12 @@ import FormModal from "@/components/UI/Modal/FormModal.vue"; // show modal
 import ReusableForm from "@/components/Form/ReusableForm.vue"; // To create form
 import apiService from "@/services/apiService";
 import Loader from "@/components/UI/Loader.vue";
-
+import DeleteModal from "@/components/UI/Modal/DeleteModal.vue";
 import { usePostComposable } from "@/composable/usePostComposable";
 import { productSubCategoryFormFields } from "@/formfields/formFields";
 // import { useEditDeleteComposable } from "@/composable/useEditDeleteComposable";
 // const {handleEdit, handleDelete} = useEditDeleteComposable()
+import { useDeleteComposable } from "@/composable/useDeleteComposable";
 
 const formTitle = "Add Product  Sub Category";
 
@@ -60,6 +68,12 @@ const {
   closeModal,
   submitForm,
 } = usePostComposable("/product-sub-categories", productSubCategoryFormFields);
+const {
+  handleDelete,
+  showDeleteModal,
+  itemsId,
+  closeDeleteModal,
+} = useDeleteComposable();
 
 const fetchDataForSelect = async (field, endpoint, valueProp, labelProp) => {
   try {

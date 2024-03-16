@@ -170,7 +170,7 @@
 </template>
 <script setup>
 import { onMounted } from "vue";
-import ChartComponent from "@/components/UI/Chart/ChartComponent.vue";
+// import ChartComponent from "@/components/UI/Chart/ChartComponent.vue";
 import ChartComponentcopy from "@/components/UI/Chart/ChartComponentcopy.vue";
 import { useStore } from "@/stores/user";
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";

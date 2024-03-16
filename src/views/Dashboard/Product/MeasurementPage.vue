@@ -30,32 +30,62 @@
       </template>
     </FormModal>
 
-  <EditModal v-if="showEditModal" @close="closeEditModal" :items="items" :formField="measurementFormFields" :url="'/measurements'"
-              :modalTitle="modalTitle"/>
-
+    <EditModal
+      v-if="showEditModal"
+      @close="closeEditModal"
+      :items="items"
+      :formField="measurementFormFields"
+      :url="'/measurements'"
+      :modalTitle="modalTitle"
+    />
+    <DeleteModal
+      v-if="showDeleteModal"
+      @close="closeDeleteModal"
+      :items="itemsId"
+      :url="'/measurements'"
+      :modalTitle="modalTitle"
+    />
   </DashboardLayout>
 </template>
 
 <script setup>
 import { onMounted } from "vue";
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
-import DataTableLayout from "@/components/Layouts/dataTableLayout.vue"; 
-import FormModal from "@/components/UI/Modal/FormModal.vue"
-import ReusableForm from "@/components/Form/ReusableForm.vue"; 
+import DataTableLayout from "@/components/Layouts/dataTableLayout.vue";
+import FormModal from "@/components/UI/Modal/FormModal.vue";
+import ReusableForm from "@/components/Form/ReusableForm.vue";
 import Loader from "@/components/UI/Loader.vue";
 import { useProductStore } from "@/stores/products";
-import EditModal from "@/components/UI/Modal/EditModal.vue"; 
+import EditModal from "@/components/UI/Modal/EditModal.vue";
+import DeleteModal from "@/components/UI/Modal/DeleteModal.vue";
 import { usePostComposable } from "@/composable/usePostComposable";
 import { measurementFormFields } from "@/formfields/formFields";
 import { useEditComposable } from "@/composable/useEditComposable";
-
+import { useDeleteComposable } from "@/composable/useDeleteComposable";
 
 const formTitle = "Add Measurement";
-const modalTitle = "measurement_name"
+const modalTitle = "measurement_name";
 const productsStore = useProductStore();
 
-const {showModal,isLoadingMsg,loading,allError,forceUpdate,errorMessage,isError,closeModal,submitForm } = usePostComposable("/measurements", measurementFormFields);
-const {handleEdit, handleDelete, showEditModal, closeEditModal, items} = useEditComposable()
+const {
+  showModal,
+  isLoadingMsg,
+  loading,
+  allError,
+  forceUpdate,
+  errorMessage,
+  isError,
+  closeModal,
+  submitForm,
+} = usePostComposable("/measurements", measurementFormFields);
+const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable();
+
+const {
+  handleDelete,
+  showDeleteModal,
+  itemsId,
+  closeDeleteModal,
+} = useDeleteComposable();
 
 onMounted(async () => {
   try {

@@ -40,17 +40,33 @@
       <template v-slot:default>
         <form @submit.prevent="submitForm">
           <p v-if="isError" class="text-red-500">{{ errorMessage }}</p>
-          <ReusableForm :fields="formFields"  @fetchDataForSubCategory="fetchDataForSubCategory" :isLoadingMsg="isOptionLoadingMsg" :allError="allError"/>
-          <input type="submit"  v-if="!loading"  value="Submit" class="btn btn-primary mt-3">
-          
-                    <Loader v-else />
-          
+          <ReusableForm
+            :fields="formFields"
+            @fetchDataForSubCategory="fetchDataForSubCategory"
+            :isLoadingMsg="isOptionLoadingMsg"
+            :allError="allError"
+          />
+          <input
+            type="submit"
+            v-if="!loading"
+            value="Submit"
+            class="btn btn-primary mt-3"
+          />
+
+          <Loader v-else />
         </form>
       </template>
     </FormModal>
     <ViewModal v-if="showViewModal" @close="closeViewModal" :modalTitle="modalTitle">
       <ViewModalDetail :products="products" />
     </ViewModal>
+    <DeleteModal
+      v-if="showDeleteModal"
+      @close="closeDeleteModal"
+      :items="itemsId"
+      :url="'/products'"
+      :modalTitle="modalTitle"
+    />
   </DashboardLayout>
 </template>
 
@@ -61,23 +77,44 @@ import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import DataTableLayout from "@/components/Layouts/dataTableLayout.vue"; // read data
 import FormModal from "@/components/UI/Modal/FormModal.vue"; // show  form modal
 import ViewModal from "@/components/UI/Modal/ViewModal.vue"; // show read modal
-import ViewModalDetail from "@/components/UI/Modal/ViewModalDetail.vue"; 
-import ReusableForm from "@/components/Form/ReusableForm.vue"  // To create form
+import ViewModalDetail from "@/components/UI/Modal/ViewModalDetail.vue";
+import ReusableForm from "@/components/Form/ReusableForm.vue"; // To create form
 import Loader from "@/components/UI/Loader.vue";
-import { usePostComposable} from '@/composable/usePostComposable';
-import { useSelectComposable} from '@/composable/useSelectComposable';
-import { formFields } from '@/formfields/formFields';
-
+import { usePostComposable } from "@/composable/usePostComposable";
+import { useSelectComposable } from "@/composable/useSelectComposable";
+import { formFields } from "@/formfields/formFields";
+import DeleteModal from "@/components/UI/Modal/DeleteModal.vue";
+import { useDeleteComposable } from "@/composable/useDeleteComposable";
 
 const formTitle = "Add Product";
 const modalTitle = "View Product";
 const router = useRouter();
-const url = '/all-product-sub-categories-by-category-id';
+const url = "/all-product-sub-categories-by-category-id";
 const products = ref();
-const { showModal, showViewModal,loading, allError,forceUpdate,errorMessage,isError,closeModal,closeViewModal,submitForm} = usePostComposable('/products', formFields);
-      // fetchDataForSubCategory is emitted
-const { fetchDataForSelect, fetchDataForSubCategory,isOptionLoadingMsg} = useSelectComposable(formFields, url,"Category", "Sub Category", "sub_category_name"); 
-
+const {
+  showModal,
+  showViewModal,
+  loading,
+  allError,
+  forceUpdate,
+  errorMessage,
+  isError,
+  closeModal,
+  closeViewModal,
+  submitForm,
+} = usePostComposable("/products", formFields);
+// fetchDataForSubCategory is emitted
+const {
+  fetchDataForSelect,
+  fetchDataForSubCategory,
+  isOptionLoadingMsg,
+} = useSelectComposable(formFields, url, "Category", "Sub Category", "sub_category_name");
+const {
+  handleDelete,
+  showDeleteModal,
+  itemsId,
+  closeDeleteModal,
+} = useDeleteComposable();
 
 const openProductDetailModal = (product) => {
   // console.log(product);
@@ -94,5 +131,4 @@ onMounted(async () => {
   await fetchDataForSelect("Measurement", "/measurements", "id", "measurement_name");
   await fetchDataForSelect("Category", "/product-categories", "id", "category_name");
 });
-
 </script>

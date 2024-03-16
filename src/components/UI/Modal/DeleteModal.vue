@@ -8,14 +8,13 @@
       <header
         class="flex flex-row items-center justify-between border-b-[#000000] pb-[5px] mb-[35px] border-b-[1px]"
       >
-        <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">
-          {{ title || "Edit Detail" }}
+        <h4 class="text-[22px] font-EBGaramond500 text-[#244034]">
+          {{ title || "Delete Detail" }}
         </h4>
         <button class="close-button" @click="$emit('close')">&#10005;</button>
       </header>
-      <form @submit.prevent="editForm">
-        <ReusableForm :fields="formField" />
-        <input type="submit" v-if="!loading" class="btn-brand" value="Submit" />
+      <form @submit.prevent="deleteForm">
+        <input type="submit" v-if="!loading" class="btn-brand" value="Delete" />
 
         <Loader v-else />
       </form>
@@ -25,32 +24,24 @@
 
 <script setup>
 import { watch, defineProps, toRefs, ref } from "vue";
-import ReusableForm from "@/components/Form/ReusableForm.vue";
 import Loader from "@/components/UI/Loader.vue";
-import { useEditComposable } from "@/composable/useEditComposable";
+import { useDeleteComposable } from "@/composable/useDeleteComposable";
 
 const title = ref();
 
 const props = defineProps({
   items: Object,
-  formField: Object,
   modalTitle: String,
   url: String,
 });
+const { items, modalTitle, url } = toRefs(props);
 
-const { items, formField, modalTitle, url } = toRefs(props);
-
-const { editForm, loading } = useEditComposable(formField, url.value, items.value["id"]);
-
+const { deleteForm, loading } = useDeleteComposable(url.value, items.value);
 watch(
   items,
-  (newItems) => {
-    if (newItems) {
-      formField.value.forEach((field) => {
-        field.value = newItems[field.databaseField] || "";
-      });
-
-      title.value = "Edit currency name:" + newItems[modalTitle.value];
+  (newitemsId) => {
+    if (newitemsId) {
+      title.value = "Delete currency name:" + newitemsId[modalTitle.value];
     }
   },
   { immediate: true, deep: true }

@@ -30,6 +30,13 @@
         </form>
       </template>
     </FormModal>
+    <DeleteModal
+      v-if="showDeleteModal"
+      @close="closeDeleteModal"
+      :items="itemsId"
+      :url="'stores'"
+      :modalTitle="modalTitle"
+    />
   </DashboardLayout>
 </template>
 
@@ -41,9 +48,12 @@ import FormModal from "@/components/UI/Modal/FormModal.vue"; // show modal
 import ReusableForm from "@/components/Form/ReusableForm.vue"; // To create form
 //import apiService from '@/services/apiService';
 import Loader from "@/components/UI/Loader.vue";
+import DeleteModal from "@/components/UI/Modal/DeleteModal.vue";
+import { useDeleteComposable } from "@/composable/useDeleteComposable";
 
 import { usePostComposable } from "@/composable/usePostComposable";
-import { currenciesFormFields } from "@/formfields/formFields";4
+import { currenciesFormFields } from "@/formfields/formFields";
+4;
 // import { useEditDeleteComposable } from "@/composable/useEditDeleteComposable";
 // const {handleEdit, handleDelete} = useEditDeleteComposable()
 
@@ -60,4 +70,10 @@ const {
   closeModal,
   submitForm,
 } = usePostComposable("/stores", currenciesFormFields);
+const {
+  handleDelete,
+  showDeleteModal,
+  itemsId,
+  closeDeleteModal,
+} = useDeleteComposable();
 </script>

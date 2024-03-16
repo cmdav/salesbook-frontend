@@ -15,26 +15,44 @@
       <template v-slot:default>
         <form @submit.prevent="submitForm">
           <p v-if="isError" class="text-red-500">{{ errorMessage }}</p>
-          <ReusableForm :fields="purchaseFormFields"   @fetchDataForSubCategory="fetchDataForSubCategory" :isLoadingMsg="isLoadingMsg" :allError="allError"/>
-          <input type="submit"  v-if="!loading"  value="Submit" class="btn btn-primary mt-3">
-          
-                    <Loader v-else />
-          
+          <ReusableForm
+            :fields="purchaseFormFields"
+            @fetchDataForSubCategory="fetchDataForSubCategory"
+            :isLoadingMsg="isLoadingMsg"
+            :allError="allError"
+          />
+          <input
+            type="submit"
+            v-if="!loading"
+            value="Submit"
+            class="btn btn-primary mt-3"
+          />
+
+          <Loader v-else />
         </form>
       </template>
     </FormModal>
+    <DeleteModal
+      v-if="showDeleteModal"
+      @close="closeDeleteModal"
+      :items="itemsId"
+      :url="'purchases'"
+      :modalTitle="modalTitle"
+    />
   </DashboardLayout>
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted } from "vue";
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import DataTableLayout from "@/components/Layouts/dataTableLayout.vue"; // read data
 import FormModal from "@/components/UI/Modal/FormModal.vue"; // show modal
 import ReusableForm from "@/components/Form/ReusableForm.vue"; // To create form
 //import apiService from '@/services/apiService';
 import Loader from "@/components/UI/Loader.vue";
-import { useSelectComposable } from '@/composable/useSelectComposable';
+import { useSelectComposable } from "@/composable/useSelectComposable";
+import DeleteModal from "@/components/UI/Modal/DeleteModal.vue";
+import { useDeleteComposable } from "@/composable/useDeleteComposable";
 
 import { usePostComposable } from "@/composable/usePostComposable";
 import { purchaseFormFields } from "@/formfields/formFields";
@@ -43,15 +61,38 @@ import { purchaseFormFields } from "@/formfields/formFields";
 
 const formTitle = "Add purchase";
 const url = "/all-price-by-product-type";
-const { fetchDataForSelect, fetchDataForSubCategory} = useSelectComposable(purchaseFormFields, url,"Product Type", "Price", "cost_price"); 
-const { showModal, isLoadingMsg,loading, allError,forceUpdate,errorMessage, isError,  closeModal, submitForm } = usePostComposable('/purchases', purchaseFormFields);
-
+const { fetchDataForSelect, fetchDataForSubCategory } = useSelectComposable(
+  purchaseFormFields,
+  url,
+  "Product Type",
+  "Price",
+  "cost_price"
+);
+const {
+  showModal,
+  isLoadingMsg,
+  loading,
+  allError,
+  forceUpdate,
+  errorMessage,
+  isError,
+  closeModal,
+  submitForm,
+} = usePostComposable("/purchases", purchaseFormFields);
+const {
+  handleDelete,
+  showDeleteModal,
+  itemsId,
+  closeDeleteModal,
+} = useDeleteComposable();
 
 // Fetch data for select options on component mount
 onMounted(async () => {
-
-await fetchDataForSelect('Product Type', '/all-product-type-name', 'id', 'product_type');
-
-
+  await fetchDataForSelect(
+    "Product Type",
+    "/all-product-type-name",
+    "id",
+    "product_type"
+  );
 });
 </script>
