@@ -24,7 +24,7 @@ export function useDeleteComposable(url, ItemObject) {
   const deleteForm = async () => {
     try {
       loading.value = true;
-      const response = await apiService.delete(`${url}/${ItemObject}`)
+      const response = await apiService.delete(`${url}/${ItemObject.id}`)
       await fetchPage(url, 1)
       console.log(response)
 

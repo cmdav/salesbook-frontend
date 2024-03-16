@@ -45,7 +45,6 @@
       :url="'/measurements'"
       :modalTitle="modalTitle"
     />
-    =======
     <EditModal
       v-if="showEditModal"
       @close="closeEditModal"
