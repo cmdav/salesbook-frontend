@@ -13,7 +13,7 @@ export function useDeleteComposable(url, ItemObject) {
   let loading = ref(false)
 
   const closeDeleteModal = () => {
-    showDeleteModal.value = false
+    showDeleteModal.value = !showDeleteModal.value
   }
 
   const handleDelete = (item) => {
