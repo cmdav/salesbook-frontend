@@ -34,18 +34,12 @@
 
 <script setup>
 import { onMounted } from 'vue';
-import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
-import DataTableLayout from "@/components/Layouts/dataTableLayout.vue"; // read data
-import FormModal from "@/components/UI/Modal/FormModal.vue"; // show modal
-import ReusableForm from "@/components/Form/ReusableForm.vue"; // To create form
-import Loader from "@/components/UI/Loader.vue";
-import { useSelectComposable } from '@/composable/useSelectComposable';
-import { usePostComposable} from '@/composable/usePostComposable';
 import { saleFormFields } from '@/formfields/formFields';
-import { useEditComposable } from "@/composable/useEditComposable";
 
-import EditModal from "@/components/UI/Modal/EditModal.vue"; 
-
+import { useSharedComponent } from "@/composable/useSharedComponent";
+const { DataTableLayout, FormModal,ReusableForm,Loader, usePostComposable, useEditComposable, EditModal,useSelectComposable}
+      = useSharedComponent()
+      
 const url = "/all-price-by-product-type";
 const { fetchDataForSelect } = useSelectComposable(saleFormFields, url); 
 const {handleEdit, handleDelete, showEditModal, closeEditModal, items} = useEditComposable()

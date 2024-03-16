@@ -23,7 +23,8 @@ export function useEditComposable(formFields, url,itemId) {
   const handleEdit = (item='') => {
     items.value =item;
     showEditModal.value = true;
-   
+    console.log('this are the items')
+    //console.log(item)
   };
 
   const handleDelete = (product ='') => {

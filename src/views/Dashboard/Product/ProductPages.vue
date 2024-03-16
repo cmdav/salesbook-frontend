@@ -42,7 +42,7 @@
       </DataTableLayout>
   
     </div>
-    <FormModal v-if="showModal" @close="closeModal" :formTitle="formTitle">
+    <FormModal v-if="showModal" @close="closeModal" :formTitle="'Add Product'">
       <template v-slot:default>
         <form @submit.prevent="submitForm">
           <p v-if="isError" class="text-red-500">{{ errorMessage }}</p>
@@ -64,23 +64,14 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
-import DataTableLayout from "@/components/Layouts/dataTableLayout.vue"; // read data
-import FormModal from "@/components/UI/Modal/FormModal.vue"; // show  form modal
-import ViewModal from "@/components/UI/Modal/ViewModal.vue"; // show read modal
-import ViewModalDetail from "@/components/UI/Modal/ViewModalDetail.vue"; 
-import ReusableForm from "@/components/Form/ReusableForm.vue"  // To create form
-import Loader from "@/components/UI/Loader.vue";
-import EditModal from "@/components/UI/Modal/EditModal.vue"; 
-
-import { usePostComposable} from '@/composable/usePostComposable';
-import { useSelectComposable} from '@/composable/useSelectComposable';
-import { useEditComposable } from "@/composable/useEditComposable";
 
 import { formFields } from '@/formfields/formFields';
+//handles all component import
+import { useSharedComponent } from "@/composable/useSharedComponent";
+const { DataTableLayout, FormModal,ReusableForm,Loader, usePostComposable, useEditComposable, EditModal,
+           useSelectComposable,ViewModal,ViewModalDetail}= useSharedComponent();
+// define other constant
 
-
-const formTitle = "Add Product";
 const modalTitle = "View Product";
 const router = useRouter();
 const url = '/all-product-sub-categories-by-category-id';
