@@ -41,16 +41,16 @@ export default {
           curve: "smooth",
           width: 3,
         },
-        fill: {
-          type: "gradient",
-          gradient: {
-            shadeIntensity: 1,
-            inverseColors: false,
-            opacityFrom: 0.5,
-            opacityTo: 0,
-            stops: [0, 90, 100],
-          },
-        },
+        // fill: {
+        //   type: "gradient",
+        //   gradient: {
+        //     shadeIntensity: 1,
+        //     inverseColors: false,
+        //     opacityFrom: 0.5,
+        //     opacityTo: 0,
+        //     stops: [0, 90, 100],
+        //   },
+        // },
         yaxis: {
           min: 1,
           max: 100,

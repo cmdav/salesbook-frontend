@@ -34,9 +34,11 @@
           { name: 'edit', action: handleEdit },
           { name: 'delete', action: handleDelete },
         ]"
-      />
+      >
+        <button @click="$emit('toggleModal')" class="btn-brand">Add Sub Product</button>
+      </DataTableLayout>
     </div>
-    <FormModal v-if="showModal" @close="closeModal" :formTitle="formTitle">
+    <FormModal v-if="showModal" @close="closeModal" :formTitle="'Add Product'">
       <template v-slot:default>
         <form @submit.prevent="submitForm">
           <p v-if="isError" class="text-red-500">{{ errorMessage }}</p>
@@ -67,6 +69,13 @@
       :url="'/products'"
       :modalTitle="modalTitle"
     />
+    <EditModal
+      v-if="showEditModal"
+      @close="closeEditModal"
+      :items="items"
+      :formField="formFields"
+      :url="'/products'"
+    />
   </DashboardLayout>
 </template>
 
@@ -74,23 +83,62 @@
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
-import DataTableLayout from "@/components/Layouts/dataTableLayout.vue"; // read data
-import FormModal from "@/components/UI/Modal/FormModal.vue"; // show  form modal
-import ViewModal from "@/components/UI/Modal/ViewModal.vue"; // show read modal
-import ViewModalDetail from "@/components/UI/Modal/ViewModalDetail.vue";
-import ReusableForm from "@/components/Form/ReusableForm.vue"; // To create form
-import Loader from "@/components/UI/Loader.vue";
-import { usePostComposable } from "@/composable/usePostComposable";
-import { useSelectComposable } from "@/composable/useSelectComposable";
+// import DataTableLayout from "@/components/Layouts/dataTableLayout.vue"; // read data
+// import FormModal from "@/components/UI/Modal/FormModal.vue"; // show  form modal
+// import ViewModal from "@/components/UI/Modal/ViewModal.vue"; // show read modal
+// import ViewModalDetail from "@/components/UI/Modal/ViewModalDetail.vue";
+// import ReusableForm from "@/components/Form/ReusableForm.vue"; // To create form
+// import Loader from "@/components/UI/Loader.vue";
+// import { usePostComposable } from "@/composable/usePostComposable";
+// import { useSelectComposable } from "@/composable/useSelectComposable";
 import { formFields } from "@/formfields/formFields";
 import DeleteModal from "@/components/UI/Modal/DeleteModal.vue";
 import { useDeleteComposable } from "@/composable/useDeleteComposable";
 
-const formTitle = "Add Product";
+//handles all component import
+import { useSharedComponent } from "@/composable/useSharedComponent";
+const {
+  DataTableLayout,
+  FormModal,
+  ReusableForm,
+  Loader,
+  usePostComposable,
+  useEditComposable,
+  EditModal,
+  useSelectComposable,
+  ViewModal,
+  ViewModalDetail,
+} = useSharedComponent();
+
 const modalTitle = "View Product";
 const router = useRouter();
 const url = "/all-product-sub-categories-by-category-id";
 const products = ref();
+// const {
+//   showModal,
+//   showViewModal,
+//   loading,
+//   allError,
+//   forceUpdate,
+//   errorMessage,
+//   isError,
+//   closeModal,
+//   closeViewModal,
+//   submitForm,
+// } = usePostComposable("/products", formFields);
+// fetchDataForSubCategory is emitted
+// const {
+//   fetchDataForSelect,
+//   fetchDataForSubCategory,
+//   isOptionLoadingMsg,
+// } = useSelectComposable(formFields, url, "Category", "Sub Category", "sub_category_name");
+const {
+  handleDelete,
+  showDeleteModal,
+  itemsId,
+  closeDeleteModal,
+} = useDeleteComposable();
+
 const {
   showModal,
   showViewModal,
@@ -103,21 +151,17 @@ const {
   closeViewModal,
   submitForm,
 } = usePostComposable("/products", formFields);
+
+const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable();
+
 // fetchDataForSubCategory is emitted
 const {
   fetchDataForSelect,
   fetchDataForSubCategory,
   isOptionLoadingMsg,
 } = useSelectComposable(formFields, url, "Category", "Sub Category", "sub_category_name");
-const {
-  handleDelete,
-  showDeleteModal,
-  itemsId,
-  closeDeleteModal,
-} = useDeleteComposable();
 
 const openProductDetailModal = (product) => {
-  // console.log(product);
   products.value = product;
   showViewModal.value = true;
 };

@@ -84,7 +84,6 @@ export function useReadComposable(props = {}) {
     lastPage,
     isLoading,
     hasError,
-   // displayKeys,
     formatKey,
     isMediaKey,
     fetchPage,

@@ -89,18 +89,6 @@ const submitForm = async () => {
      closeModal,
      closeViewModal,
      submitForm
-    // products,
-    // uniqueKeys,
-    // currentPage,
-    // itemsPerPage,
-    // totalPage,
-    // lastPage,
-    // isLoading,
-    // hasError,
-    // displayKeys,
-    // formatKey,
-    // isMediaKey,
-    // fetchPage,
-    // paginationArray
+
   };
 }

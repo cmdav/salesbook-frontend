@@ -43,19 +43,28 @@
 <script setup>
 //import { onMounted } from 'vue';
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
-import DataTableLayout from "@/components/Layouts/dataTableLayout.vue"; // read data
-import FormModal from "@/components/UI/Modal/FormModal.vue"; // show modal
-import ReusableForm from "@/components/Form/ReusableForm.vue"; // To create form
+// import DataTableLayout from "@/components/Layouts/dataTableLayout.vue"; // read data
+// import FormModal from "@/components/UI/Modal/FormModal.vue"; // show modal
+// import ReusableForm from "@/components/Form/ReusableForm.vue"; // To create form
 //import apiService from '@/services/apiService';
-import Loader from "@/components/UI/Loader.vue";
+// import Loader from "@/components/UI/Loader.vue";
 import DeleteModal from "@/components/UI/Modal/DeleteModal.vue";
 import { useDeleteComposable } from "@/composable/useDeleteComposable";
 
-import { usePostComposable } from "@/composable/usePostComposable";
+// import { usePostComposable } from "@/composable/usePostComposable";
 import { currenciesFormFields } from "@/formfields/formFields";
-4;
 // import { useEditDeleteComposable } from "@/composable/useEditDeleteComposable";
 // const {handleEdit, handleDelete} = useEditDeleteComposable()
+
+import { useSharedComponent } from "@/composable/useSharedComponent";
+
+const {
+  DataTableLayout,
+  FormModal,
+  ReusableForm,
+  Loader,
+  usePostComposable,
+} = useSharedComponent();
 
 const formTitle = "Add Store";
 

@@ -52,7 +52,7 @@ export function useSelectComposable(formFields, baseSubCategoriesUrl ="", catego
 const fetchDataForSelect = async (useLabelNameToselectFormFieldToPopulate, endpoint, optionValue, formKey) => {
   try {
     const response = await apiService.get(endpoint);
-    //console.log(response);
+    console.log(response);
     const fieldObject = formFields.value.find(f => f.label === useLabelNameToselectFormFieldToPopulate);
     if (fieldObject) {
       fieldObject.options = [

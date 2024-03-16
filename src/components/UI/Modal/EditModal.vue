@@ -25,9 +25,12 @@
 
 <script setup>
 import { watch, defineProps, toRefs, ref } from "vue";
-import ReusableForm from "@/components/Form/ReusableForm.vue";
-import Loader from "@/components/UI/Loader.vue";
-import { useEditComposable } from "@/composable/useEditComposable";
+// import ReusableForm from "@/components/Form/ReusableForm.vue";
+// import Loader from "@/components/UI/Loader.vue";
+// import { useEditComposable } from "@/composable/useEditComposable";
+
+import { useSharedComponent } from "@/composable/useSharedComponent";
+const { ReusableForm, Loader, useEditComposable } = useSharedComponent();
 
 const title = ref();
 
@@ -40,6 +43,8 @@ const props = defineProps({
 
 const { items, formField, modalTitle, url } = toRefs(props);
 
+// const { items, formField, url } = toRefs(props);
+
 const { editForm, loading } = useEditComposable(formField, url.value, items.value["id"]);
 
 watch(
@@ -51,6 +56,18 @@ watch(
       });
 
       title.value = "Edit currency name:" + newItems[modalTitle.value];
+    }
+  },
+  { immediate: true, deep: true }
+);
+watch(
+  items,
+  (newItems) => {
+    if (newItems) {
+      formField.value.forEach((field) => {
+        field.value = newItems[field.databaseField] || "";
+        console.log(field.value);
+      });
     }
   },
   { immediate: true, deep: true }
