@@ -20,7 +20,7 @@
           X
         </button>
       </div>
-
+      <slot></slot>
       <button @click="$emit('toggleModal')" class="btn-brand">
         {{ props?.toggleButtonLabel }}
       </button>

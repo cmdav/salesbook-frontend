@@ -18,9 +18,11 @@
           </div>
         </div>
       </div>
-
+      
       <!-- Button to Open Modal -->
       <DataTableLayout
+       
+     
         :key="forceUpdate"
         endpoint="products"
         @toggleModal="showModal = !showModal"
@@ -33,8 +35,12 @@
         :additionalColumns="[
           { name: 'edit', action: handleEdit },
           { name: 'delete', action: handleDelete },
-        ]"
-      />
+        ]">
+         <button @click="$emit('toggleModal')" class="btn-brand">
+             Add Sub Product
+          </button>
+      </DataTableLayout>
+  
     </div>
     <FormModal v-if="showModal" @close="closeModal" :formTitle="formTitle">
       <template v-slot:default>
