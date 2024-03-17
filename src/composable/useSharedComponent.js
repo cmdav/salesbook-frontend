@@ -10,6 +10,7 @@ import { useSelectComposable } from '@/composable/useSelectComposable';
 import { useEditComposable } from "@/composable/useEditComposable";
 import { useReadComposable } from "@/composable/useReadComposable";
 import { useDeleteComposable } from "@/composable/useDeleteComposable";
+import DeleteModal from "@/components/UI/Modal/DeleteModal.vue";
 import EditModal from "@/components/UI/Modal/EditModal.vue"; 
 
 export function useSharedComponent() {
@@ -27,6 +28,7 @@ export function useSharedComponent() {
         useEditComposable,
         useReadComposable,
         useDeleteComposable,
+        DeleteModal,
         EditModal
       
     };

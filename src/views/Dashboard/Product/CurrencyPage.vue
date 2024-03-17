@@ -54,49 +54,18 @@
 </template>
 
 <script setup>
-import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
-// import DataTableLayout from "@/components/Layouts/dataTableLayout.vue";
-// import FormModal from "@/components/UI/Modal/FormModal.vue";
-// import ReusableForm from "@/components/Form/ReusableForm.vue";
-import DeleteModal from "@/components/UI/Modal/DeleteModal.vue";
-
-// import Loader from "@/components/UI/Loader.vue";
-// import EditModal from "@/components/UI/Modal/EditModal.vue";
-// import { usePostComposable } from "@/composable/usePostComposable";
 import { currenciesFormFields } from "@/formfields/formFields";
-// import { useEditComposable } from "@/composable/useEditComposable";
-import { useDeleteComposable } from "@/composable/useDeleteComposable";
-
 // const formTitle = "Add Currencies";
 const modalTitle = "currency_name";
 
-//handles all component import
 import { useSharedComponent } from "@/composable/useSharedComponent";
-const {
-  DataTableLayout,
-  FormModal,
-  ReusableForm,
-  Loader,
-  usePostComposable,
-  useEditComposable,
-  EditModal,
-} = useSharedComponent();
-// define other constant
 
-// const {showModal,isLoadingMsg,loading,allError,forceUpdate,errorMessage,isError,closeModal,submitForm} = usePostComposable("/currencies", currenciesFormFields);
-// const {handleEdit, handleDelete, showEditModal, closeEditModal, items} = useEditComposable()
+const {DataTableLayout,FormModal,ReusableForm,Loader,usePostComposable, useEditComposable, DeleteModal,EditModal,
+      useDeleteComposable} = useSharedComponent();
 
-const {
-  showModal,
-  isLoadingMsg,
-  loading,
-  allError,
-  forceUpdate,
-  errorMessage,
-  isError,
-  closeModal,
-  submitForm,
-} = usePostComposable("/currencies", currenciesFormFields);
+const {showModal,isLoadingMsg,loading,allError,forceUpdate,errorMessage,isError,closeModal,submitForm,
+        } = usePostComposable("/currencies", currenciesFormFields);
+        
 const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable();
 const {
   handleDelete,

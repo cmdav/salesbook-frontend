@@ -94,6 +94,7 @@ const {
   useEditComposable,
   EditModal,
   useSelectComposable,
+  useDeleteComposable,
   ViewModal,
   ViewModalDetail,
 } = useSharedComponent();
@@ -102,24 +103,6 @@ const modalTitle = "View Product";
 const router = useRouter();
 const url = "/all-product-sub-categories-by-category-id";
 const products = ref();
-// const {
-//   showModal,
-//   showViewModal,
-//   loading,
-//   allError,
-//   forceUpdate,
-//   errorMessage,
-//   isError,
-//   closeModal,
-//   closeViewModal,
-//   submitForm,
-// } = usePostComposable("/products", formFields);
-// fetchDataForSubCategory is emitted
-// const {
-//   fetchDataForSelect,
-//   fetchDataForSubCategory,
-//   isOptionLoadingMsg,
-// } = useSelectComposable(formFields, url, "Category", "Sub Category", "sub_category_name");
 const {
   handleDelete,
   showDeleteModal,
