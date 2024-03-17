@@ -9,38 +9,43 @@
         class="flex flex-row items-center justify-between border-b-[#000000] pb-[5px] mb-[35px] border-b-[1px]"
       >
         <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">
-         {{ title || "Edit Detail" }} 
+          {{ title || "Edit Detail" }}
         </h4>
         <button class="close-button" @click="$emit('close')">&#10005;</button>
       </header>
-         <form @submit.prevent="editForm">
-            <ReusableForm :fields="formField"/>
-            <input type="submit"  v-if="!loading"  value="Submit">
-              
-              <Loader v-else />
-        </form>
+      <form @submit.prevent="editForm">
+        <ReusableForm :fields="formField" />
+        <input type="submit" v-if="!loading" class="btn-brand" value="Submit" />
+
+        <Loader v-else />
+      </form>
     </div>
   </div>
 </template>
 
 <script setup>
-  
-import { watch, defineProps, toRefs, ref} from 'vue';
+import { watch, defineProps, toRefs, ref } from "vue";
+// import ReusableForm from "@/components/Form/ReusableForm.vue";
+// import Loader from "@/components/UI/Loader.vue";
+// import { useEditComposable } from "@/composable/useEditComposable";
+
 import { useSharedComponent } from "@/composable/useSharedComponent";
-const { ReusableForm,Loader, useEditComposable,}= useSharedComponent();
+const { ReusableForm, Loader, useEditComposable } = useSharedComponent();
 
 const title = ref();
 
 const props = defineProps({
   items: Object,
   formField: Object,
-  url: String
+  modalTitle: String,
+  url: String,
 });
 
-const { items, formField, url } = toRefs(props); 
+const { items, formField, modalTitle, url } = toRefs(props);
 
+// const { items, formField, url } = toRefs(props);
 
-const { editForm, loading} = useEditComposable(formField, url.value, items.value["id"])
+const { editForm, loading } = useEditComposable(formField, url.value, items.value["id"]);
 
 watch(items, (newItems) => {
   if (newItems) {
@@ -79,8 +84,6 @@ watch(items, (newItems) => {
   } 
 }, { immediate: true, deep: true }); 
 </script>
-
-
 
 <style lang="scss" scoped>
 .modal {
