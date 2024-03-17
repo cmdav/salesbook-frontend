@@ -101,7 +101,7 @@ const { fields, isLoadingMsg, allError } = defineProps({
   },
   isLoadingMsg: String,
 });
-const emit = defineEmits(["fetchDataForSubCategory"]);
+const emit = defineEmits(["fetchDataForSubCategory","handleEditCategoryChange"]);
 console.log(allError);
 const localFields = ref(fields);
 
@@ -113,10 +113,8 @@ const handleImageChange = (index, event) => {
 // emit an event on change
 const handleCategoryChange = (value, field_name) => {
   // pass the  selected value and field name
-  const selectedField = localFields.value.find((field) => field.databaseField === field_name);
-  if (selectedField) {
-    
-    emit('fetchDataForSubCategory', value, field_name, selectedField);
-  }
+    emit('fetchDataForSubCategory', value, field_name);
+    emit('handleEditCategoryChange', value, field_name)
+  
 };
 </script>

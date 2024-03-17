@@ -28,7 +28,7 @@ export const productSubCategoryFormFields = ref([
 export const formFields = ref([
   { label: 'Product Name', type: 'text', value: '', required: true, placeholder: 'Enter product name', databaseField: "product_name" },
   { label: 'Product Description', type: 'textarea', value: '', required: true, placeholder: 'Enter product description', databaseField: "product_description" },
-  { label: 'Product Image', type: 'image', value: '', required: true, placeholder: 'Enter image URL', databaseField: "product_image" },
+  { label: 'Product Image', type: 'image', value: '', required: false, placeholder: 'Enter image URL', databaseField: "product_image" },
   // // { label: 'Purchasing price', type: 'text', value: '', required: false, placeholder: 'Enter purchasing price', databaseField: "purchasing_price" },
   // // { label: 'Selling Price', type: 'text', value: '', required: false, placeholder: 'Enter selling price', databaseField: "selling_price" },
   // { label: 'Actual Price', type: 'text', value: '', required: false, placeholder: 'Enter actual price', databaseField: "actual_price" },
@@ -40,7 +40,7 @@ export const formFields = ref([
 export const productTypeFormFields = ref([
   { label: '', type: 'hidden', value: '', required: false, placeholder: 'Enter product type', databaseField: "product_id" },
   { label: 'Product Type', type: 'text', value: '', required: true, placeholder: 'Enter product type', databaseField: "product_type" },
-  { label: 'Product Type Image', type: 'image', value: '', required: true, placeholder: 'Enter image URL', databaseField: "product_type_image" },
+  { label: 'Product Type Image', type: 'image', value: '', required: false, placeholder: 'Enter image URL', databaseField: "product_type_image" },
   { label: 'Product Type Description', type: 'textarea', value: '', required: true, placeholder: 'Enter product type description', databaseField: "product_type_description" },
   // { label: 'Organization ID', type: 'text', value: '', required: false, placeholder: 'Enter organization ID', databaseField: "organization_id" },
   { label: 'Supplier', type: 'select', value: '', required: false, placeholder: 'Enter supplier ID', databaseField: "supplier_id" },

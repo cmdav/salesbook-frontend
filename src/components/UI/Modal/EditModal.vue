@@ -14,7 +14,7 @@
         <button class="close-button" @click="$emit('close')">&#10005;</button>
       </header>
       <form @submit.prevent="editForm">
-        <ReusableForm :fields="formField" />
+        <ReusableForm :fields="formField"  @handleEditCategoryChange="handleEditCategoryChange"/>
         <input type="submit" v-if="!loading" class="btn-brand" value="Submit" />
 
         <Loader v-else />
@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { watch, defineProps, toRefs, } from "vue";
+import { watch, defineProps, toRefs, onMounted, defineEmits} from "vue";
 import { useSharedComponent } from "@/composable/useSharedComponent";
 const { ReusableForm, Loader, useEditComposable } = useSharedComponent();
 
@@ -34,12 +34,14 @@ const props = defineProps({
   items: Object,
   formField: Object,
   modalTitle: String,
+  subCategoryIdToPopulate:{
+    type:String,
+    default:""
+  },
   url: String,
 });
-
-const { items, formField, modalTitle, url } = toRefs(props);
-
-
+const emit = defineEmits(["fetchDataForSubCategory", "handleEditCategoryChange"]);
+const { items, formField, modalTitle, url,subCategoryIdToPopulate } = toRefs(props);
 const { editForm, loading } = useEditComposable(formField, url.value, items.value["id"]);
 
 watch(items, (newItems) => {
@@ -60,9 +62,20 @@ watch(items, (newItems) => {
           field.value = newItems[field.databaseField];
         }
     });
-    //console.log(formField.value)  
+    
   } 
 }, { immediate: true, deep: true }); 
+
+const handleEditCategoryChange = (value, field_name) => {
+
+  emit('fetchDataForSubCategory',value, field_name);
+  
+};
+
+onMounted(async () => {
+console.log(items.value)
+  emit('fetchDataForSubCategory', items.value["cat_id"], "category_id",items.value[subCategoryIdToPopulate.value]);
+});
 </script>
 
 <style lang="scss" scoped>

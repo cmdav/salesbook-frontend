@@ -2,9 +2,9 @@
 
 import { ref } from 'vue';
 import apiService from '@/services/apiService';
-import { useReadComposable} from '@/composable/useReadComposable';
+//import { useReadComposable} from '@/composable/useReadComposable';
 
-const { fetchPage } = useReadComposable();
+//const { fetchPage } = useReadComposable();
 
 export function useEditComposable(formFields, url,itemId) {
     
@@ -56,8 +56,9 @@ export function useEditComposable(formFields, url,itemId) {
        
        const Url = `${url}/${itemId}`
        console.log(Url)
+       console.log(formData)
        const response = await apiService.update(Url, formData);
-       await fetchPage(url, 1);
+      // await fetchPage(url, 1);
        console.log(response);
   
        // Clear form fields
