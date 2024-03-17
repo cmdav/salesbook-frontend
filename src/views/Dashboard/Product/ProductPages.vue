@@ -127,35 +127,14 @@ const {
   closeDeleteModal,
 } = useDeleteComposable();
 
-<<<<<<< HEAD
 const { showModal, showViewModal,loading, allError,forceUpdate,errorMessage,isError,closeModal,closeViewModal,submitForm} = usePostComposable('/products', formFields);
-const {handleEdit, handleDelete, showEditModal, closeEditModal, items} = useEditComposable()
+const {handleEdit, showEditModal, closeEditModal, items} = useEditComposable()
 
       // fetchDataForSubCategory is emitted
 const { fetchDataForSelect, fetchDataForSubCategory,isOptionLoadingMsg} = useSelectComposable(formFields, url,"category_id", "sub_category_id", "sub_category_name"); 
-=======
-const {
-  showModal,
-  showViewModal,
-  loading,
-  allError,
-  forceUpdate,
-  errorMessage,
-  isError,
-  closeModal,
-  closeViewModal,
-  submitForm,
-} = usePostComposable("/products", formFields);
-
-const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable();
->>>>>>> main
 
 // fetchDataForSubCategory is emitted
-const {
-  fetchDataForSelect,
-  fetchDataForSubCategory,
-  isOptionLoadingMsg,
-} = useSelectComposable(formFields, url, "Category", "Sub Category", "sub_category_name");
+
 
 const openProductDetailModal = (product) => {
   products.value = product;
