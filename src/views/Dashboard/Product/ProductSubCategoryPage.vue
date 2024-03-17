@@ -52,20 +52,8 @@
 
 <script setup>
 import { onMounted } from "vue";
-import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
-// import DataTableLayout from "@/components/Layouts/dataTableLayout.vue"; // read data
-// import FormModal from "@/components/UI/Modal/FormModal.vue"; // show modal
-// import ReusableForm from "@/components/Form/ReusableForm.vue"; // To create form
-// import apiService from "@/services/apiService";
-// import Loader from "@/components/UI/Loader.vue";
-import DeleteModal from "@/components/UI/Modal/DeleteModal.vue";
-// import { usePostComposable } from "@/composable/usePostComposable";
+
 import { productSubCategoryFormFields } from "@/formfields/formFields";
-// import { useEditDeleteComposable } from "@/composable/useEditDeleteComposable";
-// const {handleEdit, handleDelete} = useEditDeleteComposable()
-import { useDeleteComposable } from "@/composable/useDeleteComposable";
-// import { useSelectComposable } from "@/composable/useSelectComposable";
-//handles all component import
 import { useSharedComponent } from "@/composable/useSharedComponent";
 const {
   DataTableLayout,
@@ -76,20 +64,10 @@ const {
   useEditComposable,
   EditModal,
   useSelectComposable,
+  DeleteModal,
+  useDeleteComposable
 } = useSharedComponent();
-// define other constant
 
-// const {
-//   showModal,
-//   isLoadingMsg,
-//   loading,
-//   allError,
-//   forceUpdate,
-//   errorMessage,
-//   isError,
-//   closeModal,
-//   submitForm,
-// } = usePostComposable("/product-sub-categories", productSubCategoryFormFields);
 const {
   handleDelete,
   showDeleteModal,

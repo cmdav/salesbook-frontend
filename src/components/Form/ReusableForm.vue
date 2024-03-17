@@ -11,6 +11,7 @@
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
         v-model="field.value"
         :required="field.required"
+        :name ="field.databaseField"
         :placeholder="field.placeholder"
       ></textarea>
     </template>
@@ -21,12 +22,13 @@
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
         v-model="field.value"
         :required="field.required"
-        @change="handleCategoryChange(field.value, field.label)"
+        :name ="field.databaseField"
+        @change="handleCategoryChange(field.value, field.databaseField)"
       >
         <option
           v-for="(option, optionIndex) in field.options"
           :key="optionIndex"
-          :value="option['value']"
+          :value="option.value"
         >
           {{ option["label"] }}
         </option>
@@ -40,6 +42,7 @@
       <input
         :id="field.id"
         type="file"
+        :name ="field.databaseField"
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
         @change="handleImageChange(index, $event)"
         :required="field.required"
@@ -53,6 +56,7 @@
         type="number"
         class="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
         v-model.number="field.value"
+        :name ="field.databaseField"
         :required="field.required"
         :placeholder="field.placeholder"
         :min="field.min || 0"  
@@ -66,6 +70,7 @@
         class="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
         v-model="field.value"
         :required="field.required"
+        :name ="field.databaseField"
         :placeholder="field.placeholder"
       />
     </template>
@@ -78,6 +83,7 @@
         v-model="field.value"
         :required="field.required"
         :placeholder="field.placeholder"
+        :name ="field.databaseField"
       />
     </template>
   </div>
@@ -102,10 +108,12 @@ const handleImageChange = (index, event) => {
 };
 
 // emit an event on change
-const handleCategoryChange = (value, label) => {
-  const selectedField = localFields.value.find((field) => field.label === label);
+const handleCategoryChange = (value, field_name) => {
+  // pass the  selected value and field name
+  const selectedField = localFields.value.find((field) => field.databaseField === field_name);
   if (selectedField) {
-    emit('fetchDataForSubCategory', value, label, selectedField);
+    
+    emit('fetchDataForSubCategory', value, field_name, selectedField);
   }
 };
 </script>

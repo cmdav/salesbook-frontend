@@ -3,23 +3,24 @@
 import { ref } from 'vue';
 import apiService from '@/services/apiService';
 
-export function useSelectComposable(formFields, baseSubCategoriesUrl ="", categoryLabel="", subCategoryLabel="", optionValue="") {
+
+export function useSelectComposable(formFields, baseSubCategoriesUrl ="", categoryDatabaseField="", subCategoryDatabaseField="", optionValue="") {
   let isOptionLoadingMsg = ref(" ");
 
-  //accept value of the intend option and it's label
-  const fetchDataForSubCategory = async (value, label) => {
+  //value is emitted from reusable form. it represented the selected category and database field
+  const fetchDataForSubCategory = async (value, field_name) => {
   
     const currentUrl = `${baseSubCategoriesUrl}/${value}`;
    // console.log(currentUrl);
-   //if (label === 'Category') {
-    if (label === categoryLabel) {
+   //if (field_name === 'Category') {
+  
+    if (field_name === categoryDatabaseField) {
       
       isOptionLoadingMsg.value = "Please wait";
       try {
         const response = await apiService.get(currentUrl);
-        console.log(response);
-        //locate the sub category form field
-        const subCategoryField = formFields.value.find(field => field.label === subCategoryLabel);
+        //console.log(response);
+        const subCategoryField = formFields.value.find(field => field.databaseField === subCategoryDatabaseField);
         if (subCategoryField) {
           
           if (response.length === 0) {
@@ -52,7 +53,7 @@ export function useSelectComposable(formFields, baseSubCategoriesUrl ="", catego
 const fetchDataForSelect = async (useLabelNameToselectFormFieldToPopulate, endpoint, optionValue, formKey) => {
   try {
     const response = await apiService.get(endpoint);
-    console.log(response);
+    //console.log(response);
     const fieldObject = formFields.value.find(f => f.label === useLabelNameToselectFormFieldToPopulate);
     if (fieldObject) {
       fieldObject.options = [

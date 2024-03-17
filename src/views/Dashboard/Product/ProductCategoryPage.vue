@@ -55,34 +55,13 @@
 </template>
 
 <script setup>
-import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
-// import DataTableLayout from "@/components/Layouts/dataTableLayout.vue";
-// import FormModal from "@/components/UI/Modal/FormModal.vue";
-// import ReusableForm from "@/components/Form/ReusableForm.vue";
-// import Loader from "@/components/UI/Loader.vue";
-// import EditModal from "@/components/UI/Modal/EditModal.vue";
-// import { usePostComposable } from "@/composable/usePostComposable";
+
 import { productCategoryFormFields } from "@/formfields/formFields";
-// import { useEditComposable } from "@/composable/useEditComposable";
-import DeleteModal from "@/components/UI/Modal/DeleteModal.vue";
-import { useDeleteComposable } from "@/composable/useDeleteComposable";
-
-// const formTitle = "Add  Product Category";
 const modalTitle = "category_name";
-
-// import { productCategoryFormFields } from "@/formfields/formFields";
-//handles all component import
 import { useSharedComponent } from "@/composable/useSharedComponent";
-const {
-  DataTableLayout,
-  FormModal,
-  ReusableForm,
-  Loader,
-  usePostComposable,
-  useEditComposable,
-  EditModal,
-} = useSharedComponent();
-// define other constant
+
+const { DataTableLayout, FormModal,ReusableForm,Loader, usePostComposable, useEditComposable,EditModal,DeleteModal,
+    useDeleteComposable} = useSharedComponent();
 
 const {
   showModal,

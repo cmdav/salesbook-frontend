@@ -51,15 +51,6 @@
 
 <script setup>
 import { onMounted } from "vue";
-import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
-// import DataTableLayout from "@/components/Layouts/dataTableLayout.vue"; // read data
-// import FormModal from "@/components/UI/Modal/FormModal.vue"; // show modal
-// import ReusableForm from "@/components/Form/ReusableForm.vue"; // To create form
-//import apiService from '@/services/apiService';
-// import Loader from "@/components/UI/Loader.vue";
-// import { useSelectComposable } from "@/composable/useSelectComposable";
-import DeleteModal from "@/components/UI/Modal/DeleteModal.vue";
-import { useDeleteComposable } from "@/composable/useDeleteComposable";
 import { purchaseFormFields } from "@/formfields/formFields";
 
 import { useSharedComponent } from "@/composable/useSharedComponent";
@@ -72,28 +63,13 @@ const {
   useEditComposable,
   EditModal,
   useSelectComposable,
+  DeleteModal,
+  useDeleteComposable
 } = useSharedComponent();
 
 const formTitle = "Add purchase";
 const url = "/all-price-by-product-type";
-// const { fetchDataForSelect, fetchDataForSubCategory } = useSelectComposable(
-//   purchaseFormFields,
-//   url,
-//   "Product Type",
-//   "Price",
-//   "cost_price"
-// );
-// const {
-//   showModal,
-//   isLoadingMsg,
-//   loading,
-//   allError,
-//   forceUpdate,
-//   errorMessage,
-//   isError,
-//   closeModal,
-//   submitForm,
-// } = usePostComposable("/purchases", purchaseFormFields);
+
 const {
   handleDelete,
   showDeleteModal,

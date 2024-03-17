@@ -12,8 +12,7 @@ import Toast, { POSITION } from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
 import { VueQueryPlugin } from 'vue-query'
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
-// import 'bootstrap/dist/css/bootstrap.min.css';
-// import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+
 
 const app = createApp(App)
 
