@@ -57,7 +57,9 @@ watch(items, (newItems) => {
   
           const selectedItem = field.options.find(option => option.label === newItems[field.databaseField]);
         
-          console.log(selectedItem)
+          if (selectedItem) {
+             field.value = selectedItem.value; // Ensure this matches the option value
+           }
           
        
         } else {

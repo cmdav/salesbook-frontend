@@ -28,7 +28,7 @@
         <option
           v-for="(option, optionIndex) in field.options"
           :key="optionIndex"
-          :value="option['value']"
+          :value="option.value"
         >
           {{ option["label"] }}
         </option>
