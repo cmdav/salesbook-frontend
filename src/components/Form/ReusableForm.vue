@@ -95,7 +95,10 @@ import { defineEmits, ref } from "vue";
 // Destructure fields from props
 const { fields, isLoadingMsg, allError } = defineProps({
   fields: Array,
-  allError: Object,
+  allError: {
+    type: Object,
+    default: () => ({}) 
+  },
   isLoadingMsg: String,
 });
 const emit = defineEmits(["fetchDataForSubCategory"]);

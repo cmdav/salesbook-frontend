@@ -23,11 +23,11 @@ export function useEditComposable(formFields, url,itemId) {
   const handleEdit = (item='') => {
     items.value =item;
     showEditModal.value = true;
-    console.log(item)
+    
   };
 
   const handleDelete = (product ='') => {
-    // Your delete logic here
+  
     console.log("Deleting product", product);
   };
 
@@ -43,7 +43,7 @@ export function useEditComposable(formFields, url,itemId) {
          
       });
     
-  
+     // console.log(formData)
       // Append file data to FormData
       // const fileField = formFields.value.find(field => field.databaseField === 'product_image');
       // if (fileField && fileField.value instanceof File) {
@@ -55,6 +55,7 @@ export function useEditComposable(formFields, url,itemId) {
      // const editUrl = items.value["id"]
        
        const Url = `${url}/${itemId}`
+       console.log(Url)
        const response = await apiService.update(Url, formData);
        await fetchPage(url, 1);
        console.log(response);

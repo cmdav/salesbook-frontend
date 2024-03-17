@@ -25,10 +25,6 @@
 
 <script setup>
 import { watch, defineProps, toRefs, } from "vue";
-// import ReusableForm from "@/components/Form/ReusableForm.vue";
-// import Loader from "@/components/UI/Loader.vue";
-// import { useEditComposable } from "@/composable/useEditComposable";
-
 import { useSharedComponent } from "@/composable/useSharedComponent";
 const { ReusableForm, Loader, useEditComposable } = useSharedComponent();
 
@@ -43,44 +39,28 @@ const props = defineProps({
 
 const { items, formField, modalTitle, url } = toRefs(props);
 
-// const { items, formField, url } = toRefs(props);
 
 const { editForm, loading } = useEditComposable(formField, url.value, items.value["id"]);
 
 watch(items, (newItems) => {
   if (newItems) {
-  
-    console.log(newItems)
-   
-  
+    //console.log(newItems)
     formField.value.forEach(field => {
       field.value = newItems[field.databaseField] || ''; 
      
         if(field.type == 'select') {
-
-          console.log(field.databaseField)
-  
+          //set the selected item
           const selectedItem = field.options.find(option => option.label === newItems[field.databaseField]);
-        
           if (selectedItem) {
-             field.value = selectedItem.value; // Ensure this matches the option value
+             field.value = selectedItem.value; 
+             
            }
-          
-       
         } else {
           
           field.value = newItems[field.databaseField];
         }
-      
-     
-      
-    
     });
-    //console.log(formField.value)
-   
-  
-    
-    
+    //console.log(formField.value)  
   } 
 }, { immediate: true, deep: true }); 
 </script>
