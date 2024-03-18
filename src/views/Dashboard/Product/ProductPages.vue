@@ -25,7 +25,7 @@
         endpoint="products"
         @toggleModal="showModal = !showModal"
         toggleButtonLabel="Add Product"
-        :excludedKeys="['id', 'product_description']"
+        :excludedKeys="['id', 'product_description','cat_id']"
         :clickableKeys="{
           product_name: openProductDetailModal,
           product_type: navigateToProductType,
@@ -72,8 +72,10 @@
     <EditModal
       v-if="showEditModal"
       @close="closeEditModal"
+      @fetchDataForSubCategory="fetchDataForSubCategory"
       :items="items"
       :formField="formFields"
+      :subCategoryIdToPopulate="product_sub_category_id"
       :url="'/products'"
     />
   </DashboardLayout>
@@ -85,30 +87,14 @@ import { useRouter } from "vue-router";
 import { formFields } from '@/formfields/formFields';
 //handles all component import
 import { useSharedComponent } from "@/composable/useSharedComponent";
-const {
-  DataTableLayout,
-  FormModal,
-  ReusableForm,
-  Loader,
-  usePostComposable,
-  useEditComposable,
-  EditModal,
-  useSelectComposable,
-  useDeleteComposable,
-  ViewModal,
-  ViewModalDetail,
-} = useSharedComponent();
+const {  DataTableLayout,FormModal,ReusableForm,Loader,usePostComposable,useEditComposable,EditModal,useSelectComposable,
+         useDeleteComposable,ViewModal,ViewModalDetail} = useSharedComponent();
 
 const modalTitle = "View Product";
 const router = useRouter();
 const url = "/all-product-sub-categories-by-category-id";
 const products = ref();
-const {
-  handleDelete,
-  showDeleteModal,
-  itemsId,
-  closeDeleteModal,
-} = useDeleteComposable();
+const { handleDelete,showDeleteModal,itemsId,closeDeleteModal} = useDeleteComposable();
 
 const { showModal, showViewModal,loading, allError,forceUpdate,errorMessage,isError,closeModal,closeViewModal,submitForm} = usePostComposable('/products', formFields);
 const {handleEdit, showEditModal, closeEditModal, items} = useEditComposable()
@@ -116,7 +102,6 @@ const {handleEdit, showEditModal, closeEditModal, items} = useEditComposable()
       // fetchDataForSubCategory is emitted
 const { fetchDataForSelect, fetchDataForSubCategory,isOptionLoadingMsg} = useSelectComposable(formFields, url,"category_id", "sub_category_id", "sub_category_name"); 
 
-// fetchDataForSubCategory is emitted
 
 
 const openProductDetailModal = (product) => {

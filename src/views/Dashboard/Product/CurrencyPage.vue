@@ -28,14 +28,6 @@
         </form>
       </template>
     </FormModal>
-    <!-- <EditModal
-      v-if="showEditModal"
-      @close="closeEditModal"
-      :items="items"
-      :formField="currenciesFormFields"
-      :modalTitle="modalTitle"
-      :url="'/currencies'"
-    /> -->
     <DeleteModal
       v-if="showDeleteModal"
       @close="closeDeleteModal"
