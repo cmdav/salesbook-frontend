@@ -38,6 +38,7 @@
     <EditModal
       v-if="showEditModal"
       @close="closeEditModal"
+      @updated="forceRefresh"
       :items="items"
       :formField="currenciesFormFields"
       :url="'/currencies'"
@@ -47,22 +48,27 @@
 
 <script setup>
 import { currenciesFormFields } from "@/formfields/formFields";
-// const formTitle = "Add Currencies";
 const modalTitle = "currency_name";
 
 import { useSharedComponent } from "@/composable/useSharedComponent";
 
+
 const {DataTableLayout,FormModal,ReusableForm,Loader,usePostComposable, useEditComposable, DeleteModal,EditModal,
-      useDeleteComposable} = useSharedComponent();
+      useDeleteComposable, defineEmits} = useSharedComponent();
+
+const emit = defineEmits("forceRefresh")
 
 const {showModal,isLoadingMsg,loading,allError,forceUpdate,errorMessage,isError,closeModal,submitForm,
         } = usePostComposable("/currencies", currenciesFormFields);
         
-const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable();
-const {
-  handleDelete,
-  showDeleteModal,
-  itemsId,
-  closeDeleteModal,
-} = useDeleteComposable();
+const { handleEdit, showEditModal, closeEditModal, items} = useEditComposable(emit);
+const { handleDelete, showDeleteModal,itemsId,closeDeleteModal } = useDeleteComposable(emit);
+
+//This trigger a page refresh
+const forceRefresh = () => {
+
+forceUpdate.value = !forceUpdate.value; 
+
+};
+
 </script>

@@ -12,11 +12,11 @@ export function useReadComposable(props = {}) {
   const lastPage = ref(1);
   const isLoading = ref(false);
   const hasError = ref(false);
-  let showEditModal = ref(false);
+  // let showEditModal = ref(false);
   
-  const closeEditModal = () => {
-    showEditModal.value = false;
-  };
+  // const closeEditModal = () => {
+  //   showEditModal.value = false;
+  // };
   
  
 
@@ -95,6 +95,6 @@ export function useReadComposable(props = {}) {
     isMediaKey,
     fetchPage,
     paginationArray,
-     closeEditModal,
+     //closeEditModal,
   };
 }

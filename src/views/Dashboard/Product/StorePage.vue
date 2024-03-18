@@ -53,7 +53,8 @@ const {
   Loader,
   usePostComposable,
   DeleteModal,
-  useDeleteComposable
+  useDeleteComposable,
+  
 } = useSharedComponent();
 
 const formTitle = "Add Store";

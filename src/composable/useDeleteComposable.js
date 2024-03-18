@@ -26,6 +26,7 @@ let deleteModal=ref(false);
     }
   })
 
+  
   const handleDelete = (item) => {
     itemsId.value = item
     showDeleteModal.value = true
