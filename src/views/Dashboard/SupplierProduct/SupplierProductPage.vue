@@ -129,10 +129,10 @@
                       :key="i"
                       class="border-b text-[14px]"
                     >
-                      <td class="py-4 pl-4">
+                      <td class="py-4 pl-4 border-x">
                         {{ index + 1 }}
                       </td>
-                      <td class="text-left p-4 pr-0 pl-6 capitalize">
+                      <td class="text-left p-4 pr-0 pl-6 border-x capitalize">
                         <button class="flex flex-row items-center gap-3 justify-start">
                           <img
                             :src="i.product_image"

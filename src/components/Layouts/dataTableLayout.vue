@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="px-5 py-2 mt-8 border-b-2 border-gray-200 flex justify-between bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
+      class="px-5 py-2 mt-8 border-2 rounded-t-md border-gray-200 flex justify-between bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
     >
       <div class="flex flex-row relative w-[40%]">
         <AuthInput
@@ -28,11 +28,11 @@
 
     <!-- Section for the  table -->
     <div class="" v-if="!isLoading && !hasError && products.length > 0">
-      <table class="min-w-full leading-normal">
+      <table class="min-w-full rounded-b-md overflow-hidden leading-normal">
         <thead>
           <tr>
             <th
-              class="px-5 py-5 border-b-2 border-gray-200 bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
+              class="px-5 py-5 border-b-2 border-x-2 border-gray-200 bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
             >
               S.No
             </th>
@@ -40,7 +40,7 @@
             <th
               v-for="col in [...uniqueKeys, ...additionalColumns.map((col) => col.name)]"
               :key="col"
-              class="px-5 py-5 border-b-2 border-gray-200 bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
+              class="px-5 py-5 border-b-2 border-r-2 border-gray-200 bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
             >
               {{ formatKey(col) }}
             </th>
@@ -54,7 +54,7 @@
             :key="product.id"
             class="hover:bg-gray-100"
           >
-            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+            <td class="px-5 py-5 border-b border-x-2 border-gray-200 bg-white text-sm">
               {{
                 (parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1
               }}
@@ -62,7 +62,7 @@
             <td
               v-for="key in uniqueKeys"
               :key="key"
-              class="px-5 py-5 border-b border-gray-200 bg-white text-sm"
+              class="px-5 py-5 border-b border-r-2 border-gray-200 bg-white text-sm"
             >
               <!-- Check for columns with onclick event -->
               <template v-if="clickableKeys[key]">
@@ -104,7 +104,7 @@
             :key="product.id"
             class="hover:bg-gray-100"
           >
-            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+            <td class="px-5 py-5 border-b border-x-2 border-gray-200 bg-white text-sm">
               {{
                 (parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1
               }}
@@ -112,7 +112,7 @@
             <td
               v-for="key in uniqueKeys"
               :key="key"
-              class="px-5 py-5 border-b border-gray-200 bg-white text-sm"
+              class="px-5 py-5 border-b border-r-2 border-gray-200 bg-white text-sm"
             >
               <!-- Check for columns with onclick event -->
               <template v-if="clickableKeys[key]">
@@ -138,11 +138,10 @@
             </td>
             <!-- render content for additional code -->
             <template v-for="(col, index) in additionalColumns" :key="`${index}`">
-              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+              <td class="px-5 py-5 border-b border-r-2 border-gray-200 bg-white text-sm">
                 <button @click="col.action(product)">
                   {{ formatKey(col.name) }}
                 </button>
-                
               </td>
             </template>
           </tr>
@@ -204,10 +203,21 @@ const props = defineProps({
   },
 });
 
-const {products,currentPage,itemsPerPage,lastPage,isLoading,hasError,uniqueKeys,formatKey,isMediaKey,fetchPage,paginationArray,
+const {
+  products,
+  currentPage,
+  itemsPerPage,
+  lastPage,
+  isLoading,
+  hasError,
+  uniqueKeys,
+  formatKey,
+  isMediaKey,
+  fetchPage,
+  paginationArray,
 } = useReadComposable(props);
 
-console.log(products)
+console.log(products);
 onMounted(async () => {
   await fetchPage(props.endpoint, 1);
 });

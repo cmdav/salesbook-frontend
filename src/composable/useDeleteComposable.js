@@ -1,36 +1,45 @@
 
 
-import { ref } from 'vue';
+import { ref, computed } from 'vue'
 import apiService from '@/services/apiService';
 import { useReadComposable} from '@/composable/useReadComposable';
 
 const { fetchPage } = useReadComposable();
 
 export function useDeleteComposable(url, ItemObject) {
-  const showDeleteModal = ref(false)
+  let _showDeleteModal = ref(false)
   let itemsId = ref('')
   let errorMessage = ref()
   let loading = ref(false)
-
+let deleteModal=ref(false);
   const closeDeleteModal = () => {
-    showDeleteModal.value = !showDeleteModal.value
+    _showDeleteModal.value = false
+    loading.value = false
+    deleteModal.value = false
   }
+  const showDeleteModal = computed({
+    get() {
+      return _showDeleteModal.value
+    },
+    set(newValue) {
+      _showDeleteModal.value = newValue
+    }
+  })
 
   
   const handleDelete = (item) => {
     itemsId.value = item
     showDeleteModal.value = true
+        deleteModal.value = true
+
   }
 
   const deleteForm = async () => {
     try {
-      loading.value = true;
-      const response = await apiService.delete(`${url}/${ItemObject.id}`)
+      loading.value = true
+      let response = await apiService.delete(`${url}/${ItemObject.id}`)
       await fetchPage(url, 1)
-      showDeleteModal.value = false
-      loading.value = false;
-      
-      //emit("close");
+      closeDeleteModal() // Close the modal after successful deletion
       return response
     } catch (error) {
       //  isError.value = true;
@@ -54,7 +63,9 @@ export function useDeleteComposable(url, ItemObject) {
     closeDeleteModal,
     itemsId,
     deleteForm,
-    loading
+    loading,
+    _showDeleteModal,
+    deleteModal
   }
 }
 
