@@ -2,10 +2,7 @@ import axios from 'axios';
 import { getToken } from './Auth';
 const api = axios.create({
     baseURL: import.meta.env.VITE_BACKEND_BASEURL,
-    headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': '*',
-    }
+
 });
 
 api.interceptors.request.use((config) => {
@@ -36,7 +33,8 @@ export default {
 
     
     update(resource, data) {
-        
+         
+    
         return api.put(resource, data).then(response => response.data);
     },
 

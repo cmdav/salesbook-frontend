@@ -1,33 +1,34 @@
 
 
-import { ref } from 'vue';
+import { ref} from 'vue';
 import apiService from '@/services/apiService';
 import { useReadComposable} from '@/composable/useReadComposable';
-
 const { fetchPage } = useReadComposable();
 
-export function useEditComposable(formFields, url,itemId) {
+export function useEditComposable(formFields, url,itemId,emit) {
     
 
   let showEditModal = ref(false);
   let items = ref();
   let errorMessage = ref();
   let loading = ref(false);
+  const forceUpdate = ref(true);
  
 
 
   const closeEditModal = () => {
     showEditModal.value = false;
+    console.log("closing modal")
   };
   
   const handleEdit = (item='') => {
     items.value =item;
     showEditModal.value = true;
-    console.log(item)
+    
   };
 
   const handleDelete = (product ='') => {
-    // Your delete logic here
+  
     console.log("Deleting product", product);
   };
 
@@ -36,36 +37,40 @@ export function useEditComposable(formFields, url,itemId) {
      
     try {
       loading.value = true;
-      //populate data to be submitted
-      const formData = {};
-      formFields.value.forEach(field => {
-          formData[field.databaseField]= field.value;
-         
-      });
-    
+      
   
-      // Append file data to FormData
-      // const fileField = formFields.value.find(field => field.databaseField === 'product_image');
-      // if (fileField && fileField.value instanceof File) {
-      //   formData.append('product_image', fileField.value);
-      // }
+      const formData = new FormData();
      
-      // Submit FormData to the server
-      //const submitUrl = postUrl || url;
-     // const editUrl = items.value["id"]
+
+      formFields.value.forEach(field => {
+      
+          if (field.databaseField === 'product_image') {
+            
+              formData.append(field.databaseField, field.value);
+              
+          } else {
+              formData.append(field.databaseField, field.value); 
+             // console.log(field.value)
+          }
+      });
+
+
        
        const Url = `${url}/${itemId}`
-       const response = await apiService.update(Url, formData);
-       await fetchPage(url, 1);
+      
+       formData.append('_method', 'PUT')
+       const response = await apiService.post(Url, formData);
+      
        console.log(response);
   
        // Clear form fields
        formFields.value.forEach(field => {
          field.value = ''; 
       });
-      
-      closeEditModal();
-      // forceUpdate.value = !forceUpdate.value;
+       fetchPage(url, 1)
+      forceUpdate.value = !forceUpdate.value;
+      emit("close")
+       
      
     } catch (error) {
       //  isError.value = true;

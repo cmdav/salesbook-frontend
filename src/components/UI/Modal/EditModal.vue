@@ -9,12 +9,16 @@
         class="flex flex-row items-center justify-between border-b-[#000000] pb-[5px] mb-[35px] border-b-[1px]"
       >
         <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">
-          {{ title || "Edit Detail" }}
+          {{ modalTitle || "Edit Detail" }}
         </h4>
         <button class="close-button" @click="$emit('close')">&#10005;</button>
       </header>
       <form @submit.prevent="editForm">
-        <ReusableForm :fields="formField" />
+        <ReusableForm 
+            :fields="formField"  
+            @handleEditCategoryChange="handleEditCategoryChange" 
+            :imagePath="imagePath" 
+            />
         <input type="submit" v-if="!loading" class="btn-brand" value="Submit" />
 
         <Loader v-else />
@@ -24,54 +28,69 @@
 </template>
 
 <script setup>
-import { watch, defineProps, toRefs, ref } from "vue";
-// import ReusableForm from "@/components/Form/ReusableForm.vue";
-// import Loader from "@/components/UI/Loader.vue";
-// import { useEditComposable } from "@/composable/useEditComposable";
-
+import { watch, defineProps, toRefs, onMounted, defineEmits, ref} from "vue";
 import { useSharedComponent } from "@/composable/useSharedComponent";
 const { ReusableForm, Loader, useEditComposable } = useSharedComponent();
 
-const title = ref();
+
 
 const props = defineProps({
   items: Object,
   formField: Object,
   modalTitle: String,
+  subCategoryIdToPopulate:{
+    type:String,
+    default:""
+  },
   url: String,
 });
+const emit = defineEmits(["fetchDataForSubCategory", "handleEditCategoryChange","close"]);
+const { items, formField, modalTitle, url,subCategoryIdToPopulate } = toRefs(props);
+const { editForm, loading } = useEditComposable(formField, url.value, items.value["id"], emit);
+const imagePath = ref();
 
-const { items, formField, modalTitle, url } = toRefs(props);
+watch(items, (newItems) => {
+  if (newItems) {
+    //console.log(newItems)
+    formField.value.forEach(field => {
+      field.value = newItems[field.databaseField] || ''; 
+     
+        if(field.type == 'select') {
+          //set the selected item
+          const selectedItem = field.options.find(option => option.label === newItems[field.databaseField]);
+          if (selectedItem) {
+             field.value = selectedItem.value; 
+             
+           }
+        } else {
+          
+          field.value = newItems[field.databaseField];
+        }
+    });
 
-// const { items, formField, url } = toRefs(props);
+    
+    Object.keys(newItems).forEach(key => {
+       const isImageField = /.*(image|logo|file)$/.test(key); // Check if key ends with 'image', 'logo', or 'file'
+       const field = formField.value.find(f => f.databaseField === key)//
+       if (isImageField) {
+        imagePath.value = field.value;
+        //console.log(field.value)
+        } 
+    });
+    
+  } 
+}, { immediate: true, deep: true }); 
 
-const { editForm, loading } = useEditComposable(formField, url.value, items.value["id"]);
+const handleEditCategoryChange = (value, field_name) => {
 
-watch(
-  items,
-  (newItems) => {
-    if (newItems) {
-      formField.value.forEach((field) => {
-        field.value = newItems[field.databaseField] || "";
-      });
+  emit('fetchDataForSubCategory',value, field_name);
+  
+};
 
-      title.value = "Edit currency name:" + newItems[modalTitle.value];
-    }
-  },
-  { immediate: true, deep: true }
-);
-watch(
-  items,
-  (newItems) => {
-    if (newItems) {
-      formField.value.forEach((field) => {
-        field.value = newItems[field.databaseField] || "";
-        console.log(field.value);
-      });
-    }
-  },
-  { immediate: true, deep: true }
-);
+onMounted(async () => {
+  // console.log(items.value)
+  emit('fetchDataForSubCategory', items.value["cat_id"], "category_id",items.value[subCategoryIdToPopulate.value]);
+});
 </script>
 
 <style lang="scss" scoped>

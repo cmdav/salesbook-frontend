@@ -1,36 +1,53 @@
-// useProductTable.js
+/**fetchdataforsubcategory is a function that populates another field e.g sub category when the category changes.
+ * value is the id e.g baseSubCategoriesUrl /{value} will get all the sub category under the value
+ * field_name is emitted from the child component. it is compared with categoryDatabaseField from the parent component
+ * 
+ * 
+ * 
+ */
 
 import { ref } from 'vue';
 import apiService from '@/services/apiService';
 
-export function useSelectComposable(formFields, baseSubCategoriesUrl ="", categoryLabel="", subCategoryLabel="", optionValue="") {
+
+export function useSelectComposable(formFields, baseSubCategoriesUrl ="", categoryDatabaseField="", subCategoryDatabaseField="", optionValue="") {
   let isOptionLoadingMsg = ref(" ");
 
-  //accept value of the intend option and it's label
-  const fetchDataForSubCategory = async (value, label) => {
-  
+  //value is emitted from reusable form. it represented the selected category and database field
+  const fetchDataForSubCategory = async (value, field_name, setSelectOption=null) => {
+    //value=>id of the category to pull e.g 
+    //field_name is the category field name .e g category_id
+
     const currentUrl = `${baseSubCategoriesUrl}/${value}`;
-   // console.log(currentUrl);
-   //if (label === 'Category') {
-    if (label === categoryLabel) {
+   
+    //check to compare if the emit category is the same with that of the component
+    if (field_name === categoryDatabaseField) {
       
       isOptionLoadingMsg.value = "Please wait";
       try {
         const response = await apiService.get(currentUrl);
-        console.log(response);
-        //locate the sub category form field
-        const subCategoryField = formFields.value.find(field => field.label === subCategoryLabel);
+        //console.log(response);
+        const subCategoryField = formFields.value.find(field => field.databaseField === subCategoryDatabaseField);
         if (subCategoryField) {
           
           if (response.length === 0) {
-            // If response is empty, set options for "Sub Category" dropdown to include just "No Subcategory"
+           
             subCategoryField.options = [{ value: '', label: 'No Subcategory' }];
           } else {
-            // If response is not empty, map response data to options for "Sub Category" dropdown
-            subCategoryField.options = [
-                 { value: '', label: 'Select an option', disabled: true },
-                 ...response.map(item => ({ value: item.id, label: item[optionValue] }))
-             ]
+           
+                let options = [{ value: '', label: 'Select an option', disabled: true }];
+                    
+                response.forEach(item => {
+                    options.push({ value: item.id, label: item[optionValue] });
+                });
+                subCategoryField.options = options;
+                //set the value of the select to match the selected option
+                if (setSelectOption != null) {
+                    const matchingOption = options.find(option => option.label === setSelectOption);
+                    if (matchingOption) {
+                        subCategoryField.value = matchingOption.value;
+                    }
+                }
           }
           isOptionLoadingMsg.value= "";
   
@@ -52,7 +69,7 @@ export function useSelectComposable(formFields, baseSubCategoriesUrl ="", catego
 const fetchDataForSelect = async (useLabelNameToselectFormFieldToPopulate, endpoint, optionValue, formKey) => {
   try {
     const response = await apiService.get(endpoint);
-    console.log(response);
+    //console.log(response);
     const fieldObject = formFields.value.find(f => f.label === useLabelNameToselectFormFieldToPopulate);
     if (fieldObject) {
       fieldObject.options = [

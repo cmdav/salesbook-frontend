@@ -12,6 +12,13 @@ export function useReadComposable(props = {}) {
   const lastPage = ref(1);
   const isLoading = ref(false);
   const hasError = ref(false);
+  let showEditModal = ref(false);
+  
+  const closeEditModal = () => {
+    showEditModal.value = false;
+  };
+  
+ 
 
   // Remove all keys you don't want to render on the table. This key are passed as props
   function extractUniqueKeys(dataArray) {
@@ -87,6 +94,7 @@ export function useReadComposable(props = {}) {
     formatKey,
     isMediaKey,
     fetchPage,
-    paginationArray
+    paginationArray,
+     closeEditModal,
   };
 }
