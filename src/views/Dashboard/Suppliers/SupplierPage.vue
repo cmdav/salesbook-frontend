@@ -101,13 +101,13 @@
               <div class="table-container overflow-x-scroll">
                 <table class="table-auto w-full">
                   <thead class="bg-[#F9FBFF] text-[#A8AABC] text-[14px]">
-                    <tr>
-                      <th class="py-4 pl-4 flex">S/N</th>
-                      <th class="text-left p-4 pr-0 px-6 capitalize">name</th>
-                      <th class="text-left p-4 pr-0 px-6 capitalize">Bank</th>
-                      <th class="text-left p-4 pr-0 px-6 capitalize">Email</th>
-                      <th class="text-left p-4 pr-0 px-6 capitalize">state</th>
-                      <th class="text-left p-4 pr-0 px-6 capitalize">account</th>
+                    <tr class="border-y">
+                      <th class="py-4 pl-4 flex border-x">S/N</th>
+                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">name</th>
+                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">Bank</th>
+                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">Email</th>
+                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">state</th>
+                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">account</th>
                       <!-- <th class="text-left p-4 pr-0 px-6 capitalize">expiring Date</th> -->
                     </tr>
                   </thead>
@@ -115,23 +115,27 @@
                     <tr
                       v-for="(i, index) in filteredSupplier"
                       :key="i"
-                      class="border-b text-[14px]"
+                      class="border-y text-[14px]"
                     >
-                      <td class="py-4 pl-4">
+                      <td class="py-4 border-x pl-4">
                         <!-- <input class="mr-2 outline-none" type="checkbox" value="1" /> -->
                         {{ index + 1 }}
                       </td>
-                      <td class="text-left p-4 pr-0 pl-6 capitalize">
+                      <td class="text-left p-4 border-x pr-0 pl-6 capitalize">
                         <button @click="redirectToSingleSupplierPage(i.user_id)" class="">
                           {{ i.first_name }} {{ i.last_name }}
                         </button>
                       </td>
-                      <td class="text-left p-4 pr-0 pl-6 capitalize">
+                      <td class="text-left p-4 border-x pr-0 pl-6 capitalize">
                         {{ i.bank_name }}
                       </td>
-                      <td class="text-left p-4 pr-0 pl-6 capitalize">{{ i.email }}</td>
-                      <td class="text-left p-4 pr-0 pl-6 capitalize">{{ i.state }}</td>
-                      <td class="text-left p-4 pr-0 pl-6 capitalize">
+                      <td class="text-left p-4 pr-0 pl-6 border-x capitalize">
+                        {{ i.email }}
+                      </td>
+                      <td class="text-left p-4 pr-0 pl-6 border-x capitalize">
+                        {{ i.state }}
+                      </td>
+                      <td class="text-left p-4 pr-0 pl-6 border-x capitalize">
                         {{ i.account_number }}
                       </td>
                       <!-- <td class="text-left p-4 pr-0 pl-6 capitalize">Basic</td> -->

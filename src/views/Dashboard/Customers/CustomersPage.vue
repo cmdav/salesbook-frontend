@@ -89,15 +89,17 @@
 
               <div class="table-container overflow-x-scroll">
                 <table class="table-auto w-full">
-                  <thead class="bg-[#F9FBFF] text-[#A8AABC] text-[14px]">
+                  <thead class="bg-[#F9FBFF] border-y text-[#A8AABC] text-[14px]">
                     <tr>
-                      <th class="py-4 pl-4 flex">S/N</th>
-                      <th class="text-left p-4 pr-0 px-6 capitalize">Company Name</th>
-                      <th class="text-left p-4 pr-0 px-6 capitalize">
+                      <th class="py-4 pl-4 flex border-x">S/N</th>
+                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">
+                        Company Name
+                      </th>
+                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">
                         Company Representative
                       </th>
-                      <th class="text-left p-4 pr-0 px-6 capitalize">Email</th>
-                      <th class="text-left p-4 pr-0 px-6 capitalize">Contact</th>
+                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">Email</th>
+                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">Contact</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -106,17 +108,19 @@
                       :key="i"
                       class="border-b text-[14px]"
                     >
-                      <td class="py-4 pl-4">
+                      <td class="py-4 pl-4 border-x">
                         {{ index + 1 }}
                       </td>
-                      <td class="text-left p-4 pr-0 pl-6 capitalize">
+                      <td class="text-left p-4 pr-0 pl-6 border-x capitalize">
                         <button @click="redirectToSingleCustomerPage(i.id)" class="">
                           {{ i.company_name }}
                         </button>
                       </td>
-                      <td class="text-left p-4 pr-0 pl-6">{{ i.contact_person }}</td>
-                      <td class="text-left p-4 pr-0 pl-6">{{ i.email }}</td>
-                      <td class="text-left p-4 pr-0 pl-6 capitalize">
+                      <td class="text-left p-4 pr-0 pl-6 border-x">
+                        {{ i.contact_person }}
+                      </td>
+                      <td class="text-left p-4 pr-0 pl-6 border-x">{{ i.email }}</td>
+                      <td class="text-left p-4 pr-0 pl-6 capitalize border-x">
                         {{ i.phone_number }}
                       </td>
                     </tr>
@@ -184,11 +188,11 @@
               <div class="table-container overflow-x-scroll">
                 <table class="table-auto w-full">
                   <thead class="bg-[#F9FBFF] text-[#A8AABC] text-[14px]">
-                    <tr>
-                      <th class="py-4 pl-4 flex">S/N</th>
-                      <th class="text-left p-4 pr-0 px-6 capitalize">name</th>
+                    <tr class="border-y">
+                      <th class="py-4 pl-4 border-x flex">S/N</th>
+                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">name</th>
                       <th class="text-left p-4 pr-0 px-6 capitalize">Email</th>
-                      <th class="text-left p-4 pr-0 px-6 capitalize">Contact</th>
+                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">Contact</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -197,16 +201,16 @@
                       :key="i"
                       class="border-b text-[14px]"
                     >
-                      <td class="py-4 pl-4">
+                      <td class="py-4 border-x pl-4">
                         {{ index + 1 }}
                       </td>
-                      <td class="text-left p-4 pr-0 pl-6 capitalize">
+                      <td class="text-left p-4 pr-0 pl-6 border-x capitalize">
                         <button @click="redirectToSingleCustomerPage(i.id)" class="">
                           {{ i.first_name }} {{ i.last_name }}
                         </button>
                       </td>
-                      <td class="text-left p-4 pr-0 pl-6">{{ i.email }}</td>
-                      <td class="text-left p-4 pr-0 pl-6 capitalize">
+                      <td class="text-left p-4 border-x pr-0 pl-6">{{ i.email }}</td>
+                      <td class="text-left p-4 border-x pr-0 pl-6 capitalize">
                         {{ i.phone_number }}
                       </td>
                     </tr>
