@@ -3,6 +3,8 @@
 import { ref} from 'vue';
 import apiService from '@/services/apiService';
 import { useReadComposable} from '@/composable/useReadComposable';
+
+
 const { fetchPage } = useReadComposable();
 
 export function useEditComposable(formFields, url,itemId,emit) {
@@ -12,7 +14,7 @@ export function useEditComposable(formFields, url,itemId,emit) {
   let items = ref();
   let errorMessage = ref();
   let loading = ref(false);
-  const forceUpdate = ref(true);
+  //const forceUpdate = ref(true);
  
 
 
@@ -68,8 +70,9 @@ export function useEditComposable(formFields, url,itemId,emit) {
          field.value = ''; 
       });
        fetchPage(url, 1)
-      forceUpdate.value = !forceUpdate.value;
+    
       emit("close")
+      emit('updated');
        
      
     } catch (error) {
@@ -95,7 +98,8 @@ export function useEditComposable(formFields, url,itemId,emit) {
     closeEditModal,
     items,
     editForm,
-    loading
+    loading,
+    
   
   };
 }

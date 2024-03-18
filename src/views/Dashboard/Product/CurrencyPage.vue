@@ -38,6 +38,7 @@
     <EditModal
       v-if="showEditModal"
       @close="closeEditModal"
+      @updated="forceRefresh"
       :items="items"
       :formField="currenciesFormFields"
       :url="'/currencies'"
@@ -47,22 +48,31 @@
 
 <script setup>
 import { currenciesFormFields } from "@/formfields/formFields";
+import { defineEmits } from "vue";
 // const formTitle = "Add Currencies";
 const modalTitle = "currency_name";
 
 import { useSharedComponent } from "@/composable/useSharedComponent";
 
+const emit = defineEmits("forceRefresh")
 const {DataTableLayout,FormModal,ReusableForm,Loader,usePostComposable, useEditComposable, DeleteModal,EditModal,
       useDeleteComposable} = useSharedComponent();
 
 const {showModal,isLoadingMsg,loading,allError,forceUpdate,errorMessage,isError,closeModal,submitForm,
         } = usePostComposable("/currencies", currenciesFormFields);
         
-const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable();
+const { handleEdit, showEditModal, closeEditModal, items, } = useEditComposable(emit);
 const {
   handleDelete,
   showDeleteModal,
   itemsId,
   closeDeleteModal,
 } = useDeleteComposable();
+
+const forceRefresh = () => {
+ console.log('updating')
+  forceUpdate.value = !forceUpdate.value; 
+ 
+};
+
 </script>
