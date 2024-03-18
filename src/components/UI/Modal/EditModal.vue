@@ -71,9 +71,11 @@ watch(items, (newItems) => {
     
     Object.keys(newItems).forEach(key => {
        const isImageField = /.*(image|logo|file)$/.test(key); // Check if key ends with 'image', 'logo', or 'file'
-       const field = formField.value.find(f => f.databaseField === key)//
-       if (isImageField) {
-        imagePath.value = field.value;
+       const field = formField.value.find(f => f.databaseField === key)
+       
+       if (isImageField && field) {
+        
+         imagePath.value = field.value;
         //console.log(field.value)
         } 
     });

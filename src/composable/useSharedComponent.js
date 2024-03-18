@@ -1,6 +1,7 @@
 
 import DataTableLayout from "@/components/Layouts/dataTableLayout.vue";
 import FormModal from "@/components/UI/Modal/FormModal.vue";
+ import { defineEmits } from "vue";
 import ViewModal from "@/components/UI/Modal/ViewModal.vue";
 import ViewModalDetail from "@/components/UI/Modal/ViewModalDetail.vue";
 import ReusableForm from "@/components/Form/ReusableForm.vue";
@@ -29,7 +30,8 @@ export function useSharedComponent() {
         useReadComposable,
         useDeleteComposable,
         DeleteModal,
-        EditModal
+        EditModal,
+        defineEmits
       
     };
 }

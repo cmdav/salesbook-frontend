@@ -44,6 +44,7 @@
       @close="closeEditModal"
       :items="items"
       :formField="purchaseFormFields"
+      @updated="forceRefresh"
       :url="'/purchases'"
     />
   </DashboardLayout>
@@ -64,11 +65,14 @@ const {
   EditModal,
   useSelectComposable,
   DeleteModal,
-  useDeleteComposable
+  useDeleteComposable,
+  defineEmits
 } = useSharedComponent();
 
 const formTitle = "Add purchase";
 const url = "/all-price-by-product-type";
+const emit = defineEmits("forceRefresh")
+
 
 const {
   handleDelete,
@@ -94,8 +98,13 @@ const {
   closeModal,
   submitForm,
 } = usePostComposable("/purchases", purchaseFormFields);
-const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable();
+const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 
+const forceRefresh = () => {
+
+forceUpdate.value = !forceUpdate.value; 
+
+};
 // Fetch data for select options on component mount
 onMounted(async () => {
   await fetchDataForSelect(

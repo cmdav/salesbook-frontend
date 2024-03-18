@@ -40,6 +40,7 @@
       @close="closeEditModal"
       :items="items"
       :formField="saleFormFields"
+      @updated="forceRefresh"
       :url="'/sales'"
     />
   </DashboardLayout>
@@ -60,12 +61,13 @@ const {
   EditModal,
   useSelectComposable,
   DeleteModal,
-  useDeleteComposable
+  useDeleteComposable,
+  defineEmits
 } = useSharedComponent();
-
+const emit = defineEmits("forceRefresh")
 const url = "/all-price-by-product-type";
 const { fetchDataForSelect } = useSelectComposable(saleFormFields, url);
-const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable();
+const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 
 const formTitle = "Add Sale";
 
@@ -86,6 +88,12 @@ const {
   itemsId,
   closeDeleteModal,
 } = useDeleteComposable();
+
+const forceRefresh = () => {
+
+forceUpdate.value = !forceUpdate.value; 
+
+};
 
 onMounted(async () => {
   await fetchDataForSelect(

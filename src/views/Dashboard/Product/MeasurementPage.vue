@@ -42,6 +42,7 @@
       @close="closeEditModal"
       :items="items"
       :formField="measurementFormFields"
+      @updated="forceRefresh"
       :url="'/measurements'"
     />
   </DashboardLayout>
@@ -59,17 +60,22 @@ const modalTitle = "measurement_name";
 import { useSharedComponent } from "@/composable/useSharedComponent";
 
 const { DataTableLayout,FormModal,ReusableForm,Loader,usePostComposable, useEditComposable, EditModal,DeleteModal,
-          useDeleteComposable} = useSharedComponent();
+          useDeleteComposable,defineEmits} = useSharedComponent();
 
 const { handleDelete,showDeleteModal,itemsId,closeDeleteModal,} = useDeleteComposable();
 // define other constant
 const productsStore = useProductStore();
-
+const emit = defineEmits("forceRefresh")
 const {showModal,isLoadingMsg,loading,allError,forceUpdate,errorMessage,isError,closeModal,submitForm,} 
   = usePostComposable("/measurements", measurementFormFields);
 
-const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable();
+const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 
+const forceRefresh = () => {
+
+forceUpdate.value = !forceUpdate.value; 
+
+};
 onMounted(async () => {
   try {
     await productsStore.handleGetMeasurements();

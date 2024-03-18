@@ -48,6 +48,7 @@
       v-if="showEditModal"
       @close="closeEditModal"
       :items="items"
+      @updated="forceRefresh"
       :formField="productCategoryFormFields"
       :url="'/product-categories'"
     />
@@ -61,7 +62,7 @@ const modalTitle = "category_name";
 import { useSharedComponent } from "@/composable/useSharedComponent";
 
 const { DataTableLayout, FormModal,ReusableForm,Loader, usePostComposable, useEditComposable,EditModal,DeleteModal,
-    useDeleteComposable} = useSharedComponent();
+    useDeleteComposable,defineEmits} = useSharedComponent();
 
 const {
   showModal,
@@ -74,7 +75,13 @@ const {
   closeModal,
   submitForm,
 } = usePostComposable("/product-categories", productCategoryFormFields);
-const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable();
+const emit = defineEmits("forceRefresh")
+const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
+const forceRefresh = () => {
+
+forceUpdate.value = !forceUpdate.value; 
+
+};
 const {
   handleDelete,
   showDeleteModal,
