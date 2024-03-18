@@ -44,7 +44,7 @@ const submitForm = async () => {
     // Append file data to FormData
     const fileField = formFields.value.find(field => field.databaseField === 'product_image');
     if (fileField && fileField.value instanceof File) {
-      console.log(fileField.value)
+      //console.log(fileField.value)
       formData.append('product_image', fileField.value);
     }
 

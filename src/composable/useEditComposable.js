@@ -2,7 +2,8 @@
 
 import { ref} from 'vue';
 import apiService from '@/services/apiService';
-
+import { useReadComposable} from '@/composable/useReadComposable';
+const { fetchPage } = useReadComposable();
 
 export function useEditComposable(formFields, url,itemId,emit) {
     
@@ -11,11 +12,13 @@ export function useEditComposable(formFields, url,itemId,emit) {
   let items = ref();
   let errorMessage = ref();
   let loading = ref(false);
+  const forceUpdate = ref(true);
  
 
 
   const closeEditModal = () => {
     showEditModal.value = false;
+    console.log("closing modal")
   };
   
   const handleEdit = (item='') => {
@@ -64,10 +67,10 @@ export function useEditComposable(formFields, url,itemId,emit) {
        formFields.value.forEach(field => {
          field.value = ''; 
       });
-      
-     
+       fetchPage(url, 1)
+      forceUpdate.value = !forceUpdate.value;
       emit("close")
-      // forceUpdate.value = !forceUpdate.value;
+       
      
     } catch (error) {
       //  isError.value = true;

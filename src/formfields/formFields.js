@@ -55,7 +55,7 @@ export const purchaseFormFields = ref([
   { label: 'Batch Number', type: 'text', value: '', required: true, placeholder: 'Enter batch number', databaseField: "batch_no" },
   { label: 'Quantity', type: 'number', value: 0, required: true, placeholder: 'Enter quantity', databaseField: "quantity" },
   //{ label: 'Product Identifier', type: 'text', value: '', required: false, placeholder: 'Enter product identifier', databaseField: "product_identifier" },
-  { label: 'Expired Date', type: 'date', value: null, required: false, placeholder: 'Select expired date', databaseField: "expired_date" },
+  { label: 'Expiry Date', type: 'date', value: null, required: false, placeholder: 'Select expired date', databaseField: "expired_date" },
   // { label: 'Organization ID', type: 'text', value: '', required: false, placeholder: 'Enter organization ID', databaseField: "organization_id" },
   // { label: 'Purchase By', type: 'text', value: '0', required: true, placeholder: 'Enter purchase by', databaseField: "purchase_by" },
   // { label: 'Status', type: 'number', value: 0, required: false, placeholder: 'Enter status', databaseField: "status" },
