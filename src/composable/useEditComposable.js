@@ -70,6 +70,7 @@ export function useEditComposable(formFields, url,itemId,emit) {
          field.value = ''; 
       });
        fetchPage(url, 1)
+       
     
       emit("close")
       emit('updated');

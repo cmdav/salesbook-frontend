@@ -61,14 +61,14 @@ const emit = defineEmits("forceRefresh")
 const {showModal,isLoadingMsg,loading,allError,forceUpdate,errorMessage,isError,closeModal,submitForm,
         } = usePostComposable("/currencies", currenciesFormFields);
         
-const { handleEdit, showEditModal, closeEditModal, items, } = useEditComposable(emit);
-const { handleDelete, showDeleteModal,itemsId,closeDeleteModal } = useDeleteComposable();
+const { handleEdit, showEditModal, closeEditModal, items} = useEditComposable(emit);
+const { handleDelete, showDeleteModal,itemsId,closeDeleteModal } = useDeleteComposable(emit);
 
 //This trigger a page refresh
 const forceRefresh = () => {
 
-  forceUpdate.value = !forceUpdate.value; 
- 
+forceUpdate.value = !forceUpdate.value; 
+
 };
 
 </script>
