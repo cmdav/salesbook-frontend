@@ -75,7 +75,7 @@
       @fetchDataForSubCategory="fetchDataForSubCategory"
       :items="items"
       :formField="formFields"
-      :subCategoryIdToPopulate="'product_sub_category_id'"
+      :subCategoryIdToPopulate="product_sub_category_id"
       :url="'/products'"
     />
   </DashboardLayout>

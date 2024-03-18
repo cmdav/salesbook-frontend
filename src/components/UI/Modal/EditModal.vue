@@ -44,9 +44,9 @@ const props = defineProps({
   },
   url: String,
 });
-const emit = defineEmits(["fetchDataForSubCategory", "handleEditCategoryChange"]);
+const emit = defineEmits(["fetchDataForSubCategory", "handleEditCategoryChange","close"]);
 const { items, formField, modalTitle, url,subCategoryIdToPopulate } = toRefs(props);
-const { editForm, loading } = useEditComposable(formField, url.value, items.value["id"]);
+const { editForm, loading } = useEditComposable(formField, url.value, items.value["id"], emit);
 const imagePath = ref();
 
 watch(items, (newItems) => {
@@ -80,15 +80,6 @@ watch(items, (newItems) => {
     
   } 
 }, { immediate: true, deep: true }); 
-// const handleImageUpdate = ({ index, file }) => {
-//     index=2
-//     // const newFields = [...formField.value];
-//     // newFields[index].value = file;
-//     // formField.value = newFields; 
-//      console.log(file)
-//      console.log(index)
-//     // console.log(formField.value)
-// };
 
 const handleEditCategoryChange = (value, field_name) => {
 

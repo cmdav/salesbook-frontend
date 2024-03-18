@@ -150,9 +150,8 @@ const handleImageChange = (index, event) => {
     reader.readAsDataURL(file);
     //changes the value of the selected index
     localFields.value[index].value = file;
-   // console.log(localFields.value[index].value)
-   // console.log(localFields.value)
-    //emit('updateImage', { index, file });
+ 
+   
   }
 };
 

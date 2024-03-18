@@ -1,12 +1,10 @@
 
 
-import { ref } from 'vue';
+import { ref} from 'vue';
 import apiService from '@/services/apiService';
-//import { useReadComposable} from '@/composable/useReadComposable';
 
-//const { fetchPage } = useReadComposable();
 
-export function useEditComposable(formFields, url,itemId) {
+export function useEditComposable(formFields, url,itemId,emit) {
     
 
   let showEditModal = ref(false);
@@ -37,22 +35,15 @@ export function useEditComposable(formFields, url,itemId) {
     try {
       loading.value = true;
       
-      //populate data to be submitted
-      // const formData = {};
-      // formFields.value.forEach(field => {
-      //     formData[field.databaseField]= field.value;
-      //     console.log(field.value)
-         
-      // });
-      const formData = new FormData(); // Use FormData to handle file uploads 
+  
+      const formData = new FormData();
      
 
       formFields.value.forEach(field => {
       
           if (field.databaseField === 'product_image') {
-            console.log("set to append image")
-            // console.log(field.value)
-              formData.append(field.databaseField, field.value); // Append file data
+            
+              formData.append(field.databaseField, field.value);
               
           } else {
               formData.append(field.databaseField, field.value); 
@@ -61,23 +52,12 @@ export function useEditComposable(formFields, url,itemId) {
       });
 
 
-    
-      // Append file data to FormData
-      // const fileField = formFields.value.find(field => field.databaseField === 'product_image');
-      // if (fileField && fileField.value instanceof File) {
-      //   formData.append('product_image', fileField.value);
-      // }
-     
-      // Submit FormData to the server
-      //const submitUrl = postUrl || url;
-     // const editUrl = items.value["id"]
        
        const Url = `${url}/${itemId}`
-       console.log(Url)
-       console.log(formData)
+      
        formData.append('_method', 'PUT')
        const response = await apiService.post(Url, formData);
-      // await fetchPage(url, 1);
+      
        console.log(response);
   
        // Clear form fields
@@ -85,7 +65,8 @@ export function useEditComposable(formFields, url,itemId) {
          field.value = ''; 
       });
       
-      closeEditModal();
+     
+      emit("close")
       // forceUpdate.value = !forceUpdate.value;
      
     } catch (error) {
