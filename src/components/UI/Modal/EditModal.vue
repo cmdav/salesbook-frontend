@@ -14,7 +14,11 @@
         <button class="close-button" @click="$emit('close')">&#10005;</button>
       </header>
       <form @submit.prevent="editForm">
-        <ReusableForm :fields="formField"  @handleEditCategoryChange="handleEditCategoryChange"/>
+        <ReusableForm 
+            :fields="formField"  
+            @handleEditCategoryChange="handleEditCategoryChange" 
+            :imagePath="imagePath" 
+            />
         <input type="submit" v-if="!loading" class="btn-brand" value="Submit" />
 
         <Loader v-else />
@@ -24,7 +28,7 @@
 </template>
 
 <script setup>
-import { watch, defineProps, toRefs, onMounted, defineEmits} from "vue";
+import { watch, defineProps, toRefs, onMounted, defineEmits, ref} from "vue";
 import { useSharedComponent } from "@/composable/useSharedComponent";
 const { ReusableForm, Loader, useEditComposable } = useSharedComponent();
 
@@ -43,6 +47,7 @@ const props = defineProps({
 const emit = defineEmits(["fetchDataForSubCategory", "handleEditCategoryChange"]);
 const { items, formField, modalTitle, url,subCategoryIdToPopulate } = toRefs(props);
 const { editForm, loading } = useEditComposable(formField, url.value, items.value["id"]);
+const imagePath = ref();
 
 watch(items, (newItems) => {
   if (newItems) {
@@ -62,9 +67,28 @@ watch(items, (newItems) => {
           field.value = newItems[field.databaseField];
         }
     });
+
+    
+    Object.keys(newItems).forEach(key => {
+       const isImageField = /.*(image|logo|file)$/.test(key); // Check if key ends with 'image', 'logo', or 'file'
+       const field = formField.value.find(f => f.databaseField === key)//
+       if (isImageField) {
+        imagePath.value = field.value;
+        //console.log(field.value)
+        } 
+    });
     
   } 
 }, { immediate: true, deep: true }); 
+// const handleImageUpdate = ({ index, file }) => {
+//     index=2
+//     // const newFields = [...formField.value];
+//     // newFields[index].value = file;
+//     // formField.value = newFields; 
+//      console.log(file)
+//      console.log(index)
+//     // console.log(formField.value)
+// };
 
 const handleEditCategoryChange = (value, field_name) => {
 
@@ -73,7 +97,7 @@ const handleEditCategoryChange = (value, field_name) => {
 };
 
 onMounted(async () => {
-console.log(items.value)
+  // console.log(items.value)
   emit('fetchDataForSubCategory', items.value["cat_id"], "category_id",items.value[subCategoryIdToPopulate.value]);
 });
 </script>

@@ -36,14 +36,32 @@ export function useEditComposable(formFields, url,itemId) {
      
     try {
       loading.value = true;
+      
       //populate data to be submitted
-      const formData = {};
-      formFields.value.forEach(field => {
-          formData[field.databaseField]= field.value;
+      // const formData = {};
+      // formFields.value.forEach(field => {
+      //     formData[field.databaseField]= field.value;
+      //     console.log(field.value)
          
+      // });
+      const formData = new FormData(); // Use FormData to handle file uploads 
+     
+
+      formFields.value.forEach(field => {
+      
+          if (field.databaseField === 'product_image') {
+            console.log("set to append image")
+            // console.log(field.value)
+              formData.append(field.databaseField, field.value); // Append file data
+              
+          } else {
+              formData.append(field.databaseField, field.value); 
+             // console.log(field.value)
+          }
       });
+
+
     
-     // console.log(formData)
       // Append file data to FormData
       // const fileField = formFields.value.find(field => field.databaseField === 'product_image');
       // if (fileField && fileField.value instanceof File) {
@@ -57,7 +75,8 @@ export function useEditComposable(formFields, url,itemId) {
        const Url = `${url}/${itemId}`
        console.log(Url)
        console.log(formData)
-       const response = await apiService.update(Url, formData);
+       formData.append('_method', 'PUT')
+       const response = await apiService.post(Url, formData);
       // await fetchPage(url, 1);
        console.log(response);
   
