@@ -2,7 +2,12 @@
   <DashboardLayout pageTitle="Product type page">
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
       <!-- Back Button -->
-      <button @click="goBack" class="btn btn-secondary mb-3">Back to Products |</button>
+      <button
+        @click="goBack"
+        class="btn btn-secondary flex flex-row items-center gap-2 mb-3"
+      >
+        <BackIcon />
+      </button>
 
       <!-- Button to Open Modal -->
       <!-- <button @click="showModal = true" class="btn btn-primary">Add Product Type</button> -->
@@ -43,7 +48,7 @@ import ReusableForm from "@/components/Form/ReusableForm.vue";
 import Loader from "@/components/UI/Loader.vue";
 import { usePostComposable } from "@/composable/usePostComposable";
 import { productTypeFormFields } from "@/formfields/formFields";
-
+import BackIcon from "@/components/icons/BackIcon.vue";
 // import { useEditDeleteComposable } from "@/composable/useEditDeleteComposable";
 // const {handleEdit, handleDelete} = useEditDeleteComposable()
 const router = useRouter();
@@ -54,7 +59,6 @@ const productTypeId = ref(route.params.id);
 const fieldOverrides = {
   product_id: productTypeId.value,
 };
-
 
 const navigateToPrice = (product) => {
   router.push({ name: "price", params: { id: product.id } });
@@ -85,7 +89,10 @@ const computedEndpoint = computed(() => {
     : "product-type-by-id";
 });
 
+// const goBack = () => {
+//   router.push({ name: "products" });
+// };
 const goBack = () => {
-  router.push({ name: "products" });
+  router.go(-1);
 };
 </script>

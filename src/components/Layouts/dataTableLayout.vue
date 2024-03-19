@@ -54,7 +54,9 @@
             :key="product.id"
             class="hover:bg-gray-100"
           >
-            <td class="px-5 py-5 border-b border-x-2 border-gray-200 bg-white text-sm">
+            <td
+              class="px-5 py-5 border-b border-x-2 border-gray-200 flex items-center bg-white text-sm"
+            >
               {{
                 (parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1
               }}
@@ -78,7 +80,7 @@
                 <img
                   :src="product[key]"
                   alt="Media"
-                  class="w-10 h-10 bg-slate-500/[30%] rounded-lg object-cover"
+                  class="w-10 h-10 bg-slate-500/[30%] rounded-lg mx-auto object-cover"
                 />
               </template>
 
