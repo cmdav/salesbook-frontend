@@ -180,7 +180,8 @@ const navigateToProductType = (product) => {
 };
 
 const toggleProductTypeModal = () => {
-  showProductTypeModal.value = false;
+  //showProductTypeModal.value = !showProductTypeModal.value;
+  //showProductTypeModal.value = false;
 };
  
 // Fetch data for select options on component mount

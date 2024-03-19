@@ -24,33 +24,18 @@
 </template>
 
 <script setup>
-<<<<<<< HEAD
-import { watch, defineProps, toRefs, ref} from 'vue'
-import Loader from '@/components/UI/Loader.vue'
-import { useDeleteComposable } from '@/composable/useDeleteComposable'
-
-const title = ref()
-=======
 import { watch, defineProps, toRefs, ref } from "vue";
 import Loader from "@/components/UI/Loader.vue";
 import { useDeleteComposable } from "@/composable/useDeleteComposable";
 const emit = defineEmits(["close"]);
 const title = ref();
->>>>>>> main
 
 const props = defineProps({
   items: Object,
   modalTitle: String,
-<<<<<<< HEAD
-  url: String
-})
-const { items, modalTitle, url } = toRefs(props)
-//const emit = defineEmits(["close"]);
-=======
   url: String,
 });
-const { items, modalTitle, url } = toRefs(props);
->>>>>>> main
+const { items, url } = toRefs(props);
 
 const { deleteForm, loading, showDeleteModal } = useDeleteComposable(
   url.value,
