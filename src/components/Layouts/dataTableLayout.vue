@@ -78,7 +78,7 @@
                 <img
                   :src="product[key]"
                   alt="Media"
-                  class="w-10 h-10 bg-slate-500/[30%] rounded-lg object-cover"
+                  class="w-10 h-10 bg-slate-500/[30%] rounded-lg mx-auto object-cover"
                 />
               </template>
 
@@ -138,7 +138,7 @@
             </td>
             <!-- render content for additional code -->
             <template v-for="(col, index) in additionalColumns" :key="`${index}`">
-              <td class="px-5 py-5 border-b border-r-2 border-gray-200 bg-white text-sm">
+              <td class="px-5 py-5 border-b border-x-2 border-gray-200 bg-white text-sm">
                 <button @click="col.action(product)">
                   {{ formatKey(col.name) }}
                 </button>
@@ -232,6 +232,9 @@ const search = () => {
 };
 watch(searchQuery, () => {
   search();
+});
+watch(async () => {
+  await fetchPage(props.endpoint, 1);
 });
 function clear() {
   searchQuery.value = "";

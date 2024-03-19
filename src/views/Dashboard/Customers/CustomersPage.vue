@@ -130,10 +130,10 @@
               </div>
               <div class="mx-auto w-fit my-5">
                 <Pagination
-                  @changePage="(page) => (Customers.current_page = page)"
-                  :currentPage="Customers?.current_page"
-                  :pageSize="Customers?.per_page"
-                  :totalPages="Customers?.last_page"
+                  @changePage="(page) => (companiesCustomers.current_page = page)"
+                  :currentPage="companiesCustomers?.current_page"
+                  :pageSize="companiesCustomers?.per_page"
+                  :totalPages="companiesCustomers?.last_page"
                   :alwaysShowNextAndPrevious="true"
                 />
               </div>
@@ -220,7 +220,7 @@
               </div>
               <div class="mx-auto w-fit my-5">
                 <Pagination
-                  @changePage="(page) => (Customers.current_page = page)"
+                  @changePage="setCurrentCustomersPage"
                   :currentPage="Customers?.current_page"
                   :pageSize="Customers?.per_page"
                   :totalPages="Customers?.last_page"
@@ -647,8 +647,35 @@ const handleCompanyCustomerRegisteration = async () => {
   }
 };
 // xcrops@example.net
+const fetchProducts = async (page) => {
+  try {
+    let res = await CustomerStore.allCustomer(page);
+    return res;
+  } catch (error) {
+    console.error("Error fetching products:", error);
+  }
+};
+const setCurrentCustomersPage = (page) => {
+  Customers.value.current_page = page;
+  fetchProducts(page);
+};
+// function clearSearch() {
+//   sortInput.name = "";
+//   fetchProducts(1);
+// }
+
 onMounted(async () => {
-  await CustomerStore.allCustomer();
-  await CustomerStore.allCompanyCustomers();
+  try {
+    await CustomerStore.allCustomer(
+      Customers?.value?.current_page ? Customers?.value?.current_page : 1
+    );
+    await CustomerStore.allCompanyCustomers(
+      companiesCustomers?.value?.current_page
+        ? companiesCustomers?.value?.current_page
+        : 1
+    );
+  } catch (error) {
+    console.error(error);
+  }
 });
 </script>

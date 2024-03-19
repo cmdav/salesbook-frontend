@@ -66,6 +66,7 @@ export function useReadComposable(props = {}) {
       } else {
         products.value = [];
       }
+      return data;
     } catch (error) {
       console.log('Error fetching page:', error);
       hasError.value = true;

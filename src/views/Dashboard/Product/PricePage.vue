@@ -2,12 +2,27 @@
   <DashboardLayout pageTitle="Price Page">
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
       <!-- Back Button -->
-      <button @click="goBack" class="btn btn-secondary mb-3">Back to Products |</button>
+      <!-- <button class="btn btn-secondary flex flex-row items-center gap-2 mb-3">
+        <router-link to="/products" class="hover:underline">Products</router-link>
+        <AngleRight />
+        <router-link to="/price" class="hover:underline">Product Type</router-link>
+        <AngleRight />
+        <router-link to="/price" class="hover:underline">Price</router-link>
+      </button> -->
+      <button
+        @click="goBack"
+        class="btn btn-secondary flex flex-row items-center gap-2 mb-3"
+      >
+        <BackIcon />
+      </button>
+
+      <!-- <button @click="goBack" class="btn btn-secondary mb-3">Back to Products |</button> -->
 
       <!-- Button to Open Modal -->
-      <button @click="showModal = true" class="btn btn-primary">Add Price</button>
+      <!-- <button @click="showModal = true" class="btn btn-primary">Add Price</button> -->
 
       <DataTableLayout
+        @toggleModal="showModal = !showModal"
         :key="forceUpdate"
         :endpoint="computedEndpoint"
         :excludedKeys="['id', 'product_type_id']"
@@ -59,6 +74,7 @@ import { useSelectComposable } from "@/composable/useSelectComposable";
 import { priceFormFields } from "@/formfields/formFields";
 import DeleteModal from "@/components/UI/Modal/DeleteModal.vue";
 import { useDeleteComposable } from "@/composable/useDeleteComposable";
+import BackIcon from "@/components/icons/BackIcon.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -101,8 +117,10 @@ const computedEndpoint = computed(() => {
 });
 
 const goBack = () => {
-  router.push({ name: "products" });
+  router.go(-1);
 };
+
+// router.go(-1);
 // Fetch data for select options on component mount
 onMounted(async () => {
   await fetchDataForSelect("Currency Name", "/currencies", "id", "currency_name");
