@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import { watch, defineProps, toRefs, ref } from 'vue'
+import { watch, defineProps, toRefs, ref} from 'vue'
 import Loader from '@/components/UI/Loader.vue'
 import { useDeleteComposable } from '@/composable/useDeleteComposable'
 
@@ -33,6 +33,7 @@ const props = defineProps({
   url: String
 })
 const { items, modalTitle, url } = toRefs(props)
+//const emit = defineEmits(["close"]);
 
 const { deleteForm, loading } = useDeleteComposable(url.value, items.value)
 watch(

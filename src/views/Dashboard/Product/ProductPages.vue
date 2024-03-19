@@ -18,7 +18,7 @@
           </div>
         </div>
       </div>
-
+      
       <!-- Button to Open Modal -->
       <DataTableLayout
         :key="forceUpdate"
@@ -35,7 +35,8 @@
           { name: 'delete', action: handleDelete },
         ]"
       >
-        <button @click="$emit('toggleModal')" class="btn-brand">Add Sub Product</button>
+      <button @click="toggleProductTypeModal" class="btn-brand">Price</button>
+      <button @click="toggleProductTypeModal" class="btn-brand">Add Product Type</button>
       </DataTableLayout>
     </div>
     <FormModal v-if="showModal" @close="closeModal" :formTitle="'Add Product'">
@@ -61,6 +62,28 @@
     </FormModal>
     <ViewModal v-if="showViewModal" @close="closeViewModal" :modalTitle="modalTitle">
       <ViewModalDetail :products="products" />
+    </ViewModal>
+
+    <ViewModal v-if="showProductTypeModal" @close="toggleProductTypeModal">
+     
+        <form @submit.prevent="submitForm">
+          <p v-if="isError" class="text-red-500">{{ errorMessage }}</p>
+          <ReusableForm
+            :fields="formFields"
+            @fetchDataForSubCategory="fetchDataForSubCategory"
+            :isLoadingMsg="isOptionLoadingMsg"
+            :allError="allError"
+          />
+          <input
+            type="submit"
+            v-if="!loading"
+            value="Submit"
+            class="btn btn-primary mt-3"
+          />
+
+          <Loader v-else />
+        </form>
+     
     </ViewModal>
     <DeleteModal
       v-if="showDeleteModal"
@@ -88,13 +111,16 @@ import { useRouter } from "vue-router";
 import { formFields } from '@/formfields/formFields';
 //handles all component import
 import { useSharedComponent } from "@/composable/useSharedComponent";
-const {  DataTableLayout,FormModal,ReusableForm,Loader,usePostComposable,useEditComposable,EditModal,useSelectComposable,
-         useDeleteComposable,ViewModal,ViewModalDetail,defineEmits} = useSharedComponent();
+const {  DataTableLayout,FormModal,ReusableForm,Loader,usePostComposable,useEditComposable,EditModal,useSelectComposable,useDeleteComposable,
+      ViewModal,ViewModalDetail,defineEmits} = useSharedComponent();
 
 const modalTitle = "View Product";
 const router = useRouter();
 const url = "/all-product-sub-categories-by-category-id";
 const products = ref();
+const showProductTypeModal = ref(true);
+// const showPriceModal = ref(true);
+
 const { handleDelete,showDeleteModal,itemsId,closeDeleteModal} = useDeleteComposable();
 const emit = defineEmits("forceRefresh")
 const { showModal, showViewModal,loading, allError,forceUpdate,errorMessage,isError,closeModal,closeViewModal,submitForm} = usePostComposable('/products', formFields);
@@ -103,11 +129,9 @@ const {handleEdit, showEditModal, closeEditModal, items} = useEditComposable(emi
       // fetchDataForSubCategory is emitted
 const { fetchDataForSelect, fetchDataForSubCategory,isOptionLoadingMsg} = useSelectComposable(formFields, url,"category_id", "sub_category_id", "sub_category_name"); 
 
-
 const forceRefresh = () => {
 
-forceUpdate.value = !forceUpdate.value; 
-
+    forceUpdate.value = !forceUpdate.value; 
 }; 
 const openProductDetailModal = (product) => {
   products.value = product;
@@ -118,6 +142,10 @@ const navigateToProductType = (product) => {
   router.push({ name: "product-type", params: { id: product.id } });
 };
 
+const toggleProductTypeModal = () => {
+  showProductTypeModal.value = false;
+};
+ 
 // Fetch data for select options on component mount
 onMounted(async () => {
   await fetchDataForSelect("Measurement", "/measurements", "id", "measurement_name");
