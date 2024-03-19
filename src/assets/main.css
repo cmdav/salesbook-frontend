@@ -39,8 +39,8 @@ h6 {
 select {
   @apply bg-transparent;
 }
-th{
-  @apply text-black
+th {
+  @apply text-black;
 }
 @layer base {
   body {
@@ -49,8 +49,8 @@ th{
 }
 .container {
   /* max-width: 1359px; */
-  padding-right: 15px;
-  padding-left: 15px;
+  padding-right: 5px !important;
+  padding-left: 5px !important;
   margin-right: auto;
   margin-left: auto;
 }
@@ -374,7 +374,7 @@ textarea {
 .tabs a.active {
   cursor: default;
   font-weight: 500;
-  border: 0.521px solid #C35214;
+  border: 0.521px solid #c35214;
   @apply text-brand bg-white rounded-full text-center;
 }
 
@@ -386,7 +386,7 @@ input::-webkit-inner-spin-button {
 }
 
 /* Firefox */
-input[type=number] {
+input[type='number'] {
   -moz-appearance: textfield;
 }
 .vue-apexcharts {

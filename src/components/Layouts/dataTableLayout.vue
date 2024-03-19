@@ -54,9 +54,7 @@
             :key="product.id"
             class="hover:bg-gray-100"
           >
-            <td
-              class="px-5 py-5 border-b border-x-2 border-gray-200 flex items-center bg-white text-sm"
-            >
+            <td class="px-5 py-5 border-b border-x-2 border-gray-200 bg-white text-sm">
               {{
                 (parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1
               }}
@@ -140,7 +138,7 @@
             </td>
             <!-- render content for additional code -->
             <template v-for="(col, index) in additionalColumns" :key="`${index}`">
-              <td class="px-5 py-5 border-b border-r-2 border-gray-200 bg-white text-sm">
+              <td class="px-5 py-5 border-b border-x-2 border-gray-200 bg-white text-sm">
                 <button @click="col.action(product)">
                   {{ formatKey(col.name) }}
                 </button>
