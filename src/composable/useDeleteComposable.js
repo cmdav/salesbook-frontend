@@ -7,31 +7,18 @@ import { useReadComposable} from '@/composable/useReadComposable';
 const { fetchPage } = useReadComposable();
 
 export function useDeleteComposable(url, ItemObject) {
-  let _showDeleteModal = ref(false)
+  let showDeleteModal = ref(false)
   let itemsId = ref('')
   let errorMessage = ref()
   let loading = ref(false)
-let deleteModal=ref(false);
-  const closeDeleteModal = () => {
-    _showDeleteModal.value = false
-    loading.value = false
-    deleteModal.value = false
-  }
-  const showDeleteModal = computed({
-    get() {
-      return _showDeleteModal.value
-    },
-    set(newValue) {
-      _showDeleteModal.value = newValue
-    }
-  })
 
-  
+  const closeDeleteModal = () => {
+    showDeleteModal.value = false
+    loading.value = false
+  }
   const handleDelete = (item) => {
     itemsId.value = item
     showDeleteModal.value = true
-        deleteModal.value = true
-
   }
 
   const deleteForm = async () => {
@@ -39,9 +26,10 @@ let deleteModal=ref(false);
       loading.value = true
       let response = await apiService.delete(`${url}/${ItemObject.id}`)
       await fetchPage(url, 1)
-      closeDeleteModal() // Close the modal after successful deletion
+      loading.value = false
       return response
     } catch (error) {
+      loading.value = false
       //  isError.value = true;
       if (error.response && error.response.data) {
         // //   //list all message
@@ -55,7 +43,6 @@ let deleteModal=ref(false);
         errorMessage.value = error.message
       }
     }
-    loading.value = false
   }
   return {
     handleDelete,
@@ -64,8 +51,6 @@ let deleteModal=ref(false);
     itemsId,
     deleteForm,
     loading,
-    _showDeleteModal,
-    deleteModal
   }
 }
 

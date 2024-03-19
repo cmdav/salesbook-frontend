@@ -61,8 +61,11 @@ const submitForm = async () => {
     });
     showModal.value = false;
     forceUpdate.value = !forceUpdate.value;
+      loading.value = false
+    return response;
    
   } catch (error) {
+     loading.value = false
      isError.value = true;
     if (error.response && error.response.data) {
       //list all message
@@ -76,7 +79,6 @@ const submitForm = async () => {
       errorMessage.value = error.message; 
     }
   }
-  loading.value = false;
 };
 
   return {

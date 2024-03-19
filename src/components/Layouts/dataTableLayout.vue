@@ -233,6 +233,9 @@ const search = () => {
 watch(searchQuery, () => {
   search();
 });
+watch(async () => {
+  await fetchPage(props.endpoint, 1);
+});
 function clear() {
   searchQuery.value = "";
 }
