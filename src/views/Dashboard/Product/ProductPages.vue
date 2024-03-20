@@ -124,6 +124,7 @@ const {
   ViewModal,
   ViewModalDetail,
   defineEmits,
+  DeleteModal,
 } = useSharedComponent();
 
 const modalTitle = "View Product";
