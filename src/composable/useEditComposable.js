@@ -3,6 +3,7 @@
 import { ref} from 'vue';
 import apiService from '@/services/apiService';
 import { useReadComposable} from '@/composable/useReadComposable';
+import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
 
 
 const { fetchPage } = useReadComposable();
@@ -74,9 +75,12 @@ export function useEditComposable(formFields, url,itemId,emit) {
     
       emit("close")
       emit('updated');
-       
+        catchAxiosSuccess(response)
+        return response;
      
     } catch (error) {
+              catchAxiosError(error)
+
       //  isError.value = true;
       if (error.response && error.response.data) {
       // //   //list all message

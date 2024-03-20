@@ -3,6 +3,7 @@
 import { ref} from 'vue'
 import apiService from '@/services/apiService';
 import { useReadComposable} from '@/composable/useReadComposable';
+import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
 
 const { fetchPage } = useReadComposable();
 
@@ -29,8 +30,12 @@ export function useDeleteComposable(url, ItemObject) {
       await fetchPage(url, 1)
       
       loading.value = false
+              catchAxiosSuccess(response)
+
       return response
     } catch (error) {
+              catchAxiosError(error)
+
       loading.value = false
       //  isError.value = true;
       if (error.response && error.response.data) {
