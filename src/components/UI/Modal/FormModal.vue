@@ -20,7 +20,7 @@
           :isLoadingMsg="isLoadingMsg"
         />
         <div class="flex justify-center">
-          <input type="submit" v-if="!loading" class="btn-brand" value="Delete" />
+          <input type="submit" v-if="!loading" class="btn-brand" :value="buttonLable" />
           <Loader v-else />
         </div>
 
@@ -45,6 +45,7 @@ const { formTitle, fields, url } = defineProps({
   fields: Object,
   isLoadingMsg: String,
   url: String,
+  buttonLable: { type: String, default: "Submit"},
 });
 const { usePostComposable, Loader } = useSharedComponent();
 
