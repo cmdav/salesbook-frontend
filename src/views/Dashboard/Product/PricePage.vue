@@ -1,14 +1,7 @@
 <template>
   <DashboardLayout pageTitle="Price Page">
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
-      <!-- Back Button -->
-      <!-- <button class="btn btn-secondary flex flex-row items-center gap-2 mb-3">
-        <router-link to="/products" class="hover:underline">Products</router-link>
-        <AngleRight />
-        <router-link to="/price" class="hover:underline">Product Type</router-link>
-        <AngleRight />
-        <router-link to="/price" class="hover:underline">Price</router-link>
-      </button> -->
+     
       <button
         @click="goBack"
         class="btn btn-secondary flex flex-row items-center gap-2 mb-3"
@@ -16,10 +9,7 @@
         <BackIcon />
       </button>
 
-      <!-- <button @click="goBack" class="btn btn-secondary mb-3">Back to Products |</button> -->
-
-      <!-- Button to Open Modal -->
-      <!-- <button @click="showModal = true" class="btn btn-primary">Add Price</button> -->
+    
 
       <DataTableLayout
         @toggleModal="showModal = !showModal"

@@ -22,13 +22,13 @@
       <!-- Button to Open Modal -->
       <DataTableLayout
         :key="forceUpdate"
-        endpoint="products"
+        endpoint="product-types"
         @toggleModal="showModal = !showModal"
         toggleButtonLabel="Add Product"
         :excludedKeys="['id', 'product_description','cat_id']"
         :clickableKeys="{
           product_name: openProductDetailModal,
-          product_type: navigateToProductType,
+          view_price: navigateToProductTypePrice,
         }"
         :additionalColumns="[
           { name: 'edit', action: handleEdit },
@@ -126,8 +126,9 @@ const openProductDetailModal = (product) => {
   showViewModal.value = true;
 };
 
-const navigateToProductType = (product) => {
-  router.push({ name: "product-type", params: { id: product.id } });
+const navigateToProductTypePrice = (product) => {
+  router.push({ name: "price", params: { id: product.id } });
+  // router.push({ name: "product-type", params: { id: product.id } });
 };
 
 const toggleProductTypeModal = () => {
@@ -148,7 +149,7 @@ onMounted(async () => {
  await fetchDataForSelect("Measurement", "/measurements", "id", "measurement_name");
   await fetchDataForSelect("Category", "/product-categories", "id", "category_name");
   await fetchDataForSelect("Product Name", "/all-products", "id", "product_name",productTypeFormFields.value);
-  await fetchDataForSelect("Product Type","/all-product-type-name","id","product_type",priceFormFields.value);
+  await fetchDataForSelect("Product Type","/all-product-type-name","id","product_type_name",priceFormFields.value);
   await fetchDataForSelect("Currency Name", "/currencies", "id", "currency_name",priceFormFields.value);
 });
 </script>
