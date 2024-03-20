@@ -11,8 +11,8 @@ import apiService from '@/services/apiService';
 
 
 export function useSelectComposable(formFields, baseSubCategoriesUrl ="", categoryDatabaseField="", subCategoryDatabaseField="", optionValue="") {
-  let isOptionLoadingMsg = ref(" ");
-
+    const isOptionLoadingMsg = ref("");
+  console.log(isOptionLoadingMsg.value)
   //value is emitted from reusable form. it represented the selected category and database field
   const fetchDataForSubCategory = async (value, field_name, setSelectOption=null) => {
     //value=>id of the category to pull e.g 
@@ -63,6 +63,7 @@ export function useSelectComposable(formFields, baseSubCategoriesUrl ="", catego
         isOptionLoadingMsg.value= "Some went wrong. Try again";
       }
     }
+    console.log(isOptionLoadingMsg.value)
   };
  
   

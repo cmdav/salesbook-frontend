@@ -54,15 +54,14 @@ import { useSharedComponent } from "@/composable/useSharedComponent";
 
 
 const {DataTableLayout,FormModal,ReusableForm,Loader,usePostComposable, useEditComposable, DeleteModal,EditModal,
-      useDeleteComposable, defineEmits} = useSharedComponent();
+      useDeleteComposable} = useSharedComponent();
 
-const emit = defineEmits("forceRefresh")
 
 const {showModal,isLoadingMsg,loading,allError,forceUpdate,errorMessage,isError,closeModal,submitForm,
         } = usePostComposable("/currencies", currenciesFormFields);
         
-const { handleEdit, showEditModal, closeEditModal, items} = useEditComposable(emit);
-const { handleDelete, showDeleteModal,itemsId,closeDeleteModal } = useDeleteComposable(emit);
+const { handleEdit, showEditModal, closeEditModal, items} = useEditComposable();
+const { handleDelete, showDeleteModal,itemsId,closeDeleteModal } = useDeleteComposable();
 
 //This trigger a page refresh
 const forceRefresh = () => {

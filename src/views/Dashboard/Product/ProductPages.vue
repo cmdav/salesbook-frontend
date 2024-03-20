@@ -25,7 +25,7 @@
         endpoint="products"
         @toggleModal="showModal = !showModal"
         toggleButtonLabel="Add Product"
-        :excludedKeys="['id', 'product_description', 'cat_id']"
+        :excludedKeys="['id', 'product_description','cat_id']"
         :clickableKeys="{
           product_name: openProductDetailModal,
           product_type: navigateToProductType,
@@ -35,15 +35,47 @@
           { name: 'delete', action: handleDelete },
         ]"
       >
-        <!-- <button @click="$emit('toggleModal')" class="btn-brand">Add Sub Product</button> -->
+      <button @click="toggleProductPriceModal" class="btn-brand">Price</button>
+      <button @click="toggleProductTypeModal" class="btn-brand">Add Product Type</button>
       </DataTableLayout>
     </div>
-    <FormModal v-if="showModal" @close="closeModal" :formTitle="'Add Product'">
+    <FormModal v-if="showModal" @close="closeModal" :formTitle="'Add Product'" 
+              :fields="formFields"  
+               @fetchDataForSubCategory="fetchDataForSubCategory"
+               :isLoadingMsg="isOptionLoadingMsg"
+               :url ="'/products'"
+               >
+    </FormModal>
+    <!-- Modal to add sub product-->
+    <FormModal  v-if="showProductTypeModal" @close="toggleProductTypeModal" :formTitle="'Add Product Type'">
       <template v-slot:default>
         <form @submit.prevent="submitForm">
           <p v-if="isError" class="text-red-500">{{ errorMessage }}</p>
           <ReusableForm
-            :fields="formFields"
+            :fields="productTypeFormFields"
+            @fetchDataForSubCategory="fetchDataForSubCategory"
+            :isLoadingMsg="isOptionLoadingMsg"
+            :allError="allError"
+            :url=url
+          />
+          <input
+            type="submit"
+            v-if="!loading"
+            value="Submit"
+            class="btn btn-primary mt-3"
+          />
+
+          <Loader v-else />
+        </form>
+      </template>
+    </FormModal>
+    <!-- Add modal to add price-->
+    <!-- <FormModal  v-if="showProductPriceModal" @close="toggleProductPriceModal" :formTitle="'Add Price'">
+      <template v-slot:default>
+        <form @submit.prevent="submitForm">
+          <p v-if="isError" class="text-red-500">{{ errorMessage }}</p>
+          <ReusableForm
+            :fields="priceFormFields "
             @fetchDataForSubCategory="fetchDataForSubCategory"
             :isLoadingMsg="isOptionLoadingMsg"
             :allError="allError"
@@ -58,32 +90,13 @@
           <Loader v-else />
         </form>
       </template>
-    </FormModal>
+    </FormModal> -->
+
+    
     <ViewModal v-if="showViewModal" @close="closeViewModal" :modalTitle="modalTitle">
       <ViewModalDetail :products="products" />
     </ViewModal>
 
-    <ViewModal v-if="showProductTypeModal" @close="toggleProductTypeModal">
-     
-        <form @submit.prevent="submitForm">
-          <p v-if="isError" class="text-red-500">{{ errorMessage }}</p>
-          <ReusableForm
-            :fields="formFields"
-            @fetchDataForSubCategory="fetchDataForSubCategory"
-            :isLoadingMsg="isOptionLoadingMsg"
-            :allError="allError"
-          />
-          <input
-            type="submit"
-            v-if="!loading"
-            value="Submit"
-            class="btn btn-primary mt-3"
-          />
-
-          <Loader v-else />
-        </form>
-     
-    </ViewModal>
     <DeleteModal
       v-if="showDeleteModal"
       @close="closeDeleteModal"
@@ -107,69 +120,37 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import { formFields } from "@/formfields/formFields";
-import { useProductStore } from "@/stores/products";
-const productsStore = useProductStore();
-// const { products } = storeToRefs(productsStore);
-
+//import { formFields, priceFormFields, productTypeFormFields} from '@/formfields/formFields';
+import { formFields} from '@/formfields/formFields';
 //handles all component import
 import { useSharedComponent } from "@/composable/useSharedComponent";
-const {
-  DataTableLayout,
-  FormModal,
-  ReusableForm,
-  Loader,
-  usePostComposable,
-  useEditComposable,
-  EditModal,
-  useSelectComposable,
-  useDeleteComposable,
-  ViewModal,
-  ViewModalDetail,
-  defineEmits,
-} = useSharedComponent();
+const {  DataTableLayout,FormModal, usePostComposable,useEditComposable,EditModal,useSelectComposable,
+      useDeleteComposable,
+      ViewModal,ViewModalDetail,defineEmits} = useSharedComponent();
 
 const modalTitle = "View Product";
 const router = useRouter();
 const url = "/all-product-sub-categories-by-category-id";
 const products = ref();
-const {
-  handleDelete,
-  showDeleteModal,
-  itemsId,
-  closeDeleteModal,
-} = useDeleteComposable();
-const emit = defineEmits("forceRefresh");
-const {
-  showModal,
-  showViewModal,
-  loading,
-  allError,
-  forceUpdate,
-  errorMessage,
-  isError,
-  closeModal,
-  closeViewModal,
-  submitForm,
-} = usePostComposable("/products", formFields);
-const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
+//const postUrl = ref('/products')
+const showProductTypeModal = ref(false);
+const showProductPriceModal = ref(false);
+
+// const showPriceModal = ref(true);
+
+const { handleDelete,showDeleteModal,itemsId,closeDeleteModal} = useDeleteComposable();
+const emit = defineEmits("forceRefresh")
+//const { showModal, showViewModal,**loading, **allError,forceUpdate,**errorMessage,isError,closeModal,closeViewModal,} = usePostComposable('/products', formFields);
+const { showModal, showViewModal,forceUpdate,closeModal,closeViewModal} = usePostComposable('/products', formFields);
+const {handleEdit, showEditModal, closeEditModal, items} = useEditComposable(emit)
 
 // fetchDataForSubCategory is emitted
-const {
-  fetchDataForSelect,
-  fetchDataForSubCategory,
-  isOptionLoadingMsg,
-} = useSelectComposable(
-  formFields,
-  url,
-  "category_id",
-  "sub_category_id",
-  "sub_category_name"
-);
-
+const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg} = useSelectComposable(formFields, url,"category_id", "sub_category_id", "sub_category_name");
+ 
 const forceRefresh = () => {
-  forceUpdate.value = !forceUpdate.value;
-};
+
+    forceUpdate.value ++; 
+}; 
 const openProductDetailModal = (product) => {
   products.value = product;
   showViewModal.value = true;
@@ -180,14 +161,15 @@ const navigateToProductType = (product) => {
 };
 
 const toggleProductTypeModal = () => {
-  //showProductTypeModal.value = !showProductTypeModal.value;
-  //showProductTypeModal.value = false;
+  showProductTypeModal.value = !showProductTypeModal.value;
+};
+const toggleProductPriceModal = () => {
+  showProductPriceModal.value = !showProductPriceModal.value;
 };
  
 // Fetch data for select options on component mount
 onMounted(async () => {
   await fetchDataForSelect("Measurement", "/measurements", "id", "measurement_name");
   await fetchDataForSelect("Category", "/product-categories", "id", "category_name");
-  await productsStore.handleGetProducts(1);
 });
 </script>
