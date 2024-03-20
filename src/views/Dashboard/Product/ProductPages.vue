@@ -18,14 +18,14 @@
           </div>
         </div>
       </div>
-      
+
       <!-- Button to Open Modal -->
       <DataTableLayout
         :key="forceUpdate"
         endpoint="product-types"
         @toggleModal="showModal = !showModal"
         toggleButtonLabel="Add Product"
-        :excludedKeys="['id', 'product_description','cat_id']"
+        :excludedKeys="['id', 'product_description', 'cat_id']"
         :clickableKeys="{
           product_name: openProductDetailModal,
           view_price: navigateToProductTypePrice,
@@ -35,37 +35,45 @@
           { name: 'delete', action: handleDelete },
         ]"
       >
-      <button @click="togglePriceModal" class="btn-brand">Price</button>
-      <button @click="toggleProductTypeModal" class="btn-brand">Add Product Type</button>
+        <button @click="togglePriceModal" class="btn-brand">Price</button>
+        <button @click="toggleProductTypeModal" class="btn-brand">
+          Add Product Type
+        </button>
       </DataTableLayout>
     </div>
-    <FormModal v-if="showModal" @close="closeModal" :formTitle="'Add Product'" 
-              :fields="formFields"  
-               @fetchDataForSubCategory="fetchDataForSubCategory"
-               :isLoadingMsg="isOptionLoadingMsg"
-               :url ="'/products'"
-               >
+    <FormModal
+      v-if="showModal"
+      @close="closeModal"
+      :formTitle="'Add Product'"
+      :fields="formFields"
+      @fetchDataForSubCategory="fetchDataForSubCategory"
+      :isLoadingMsg="isOptionLoadingMsg"
+      :url="'/products'"
+    >
     </FormModal>
     <!-- Modal to add sub product-->
-    <FormModal v-if="showProductTypeModal" @close="toggleProductTypeModal" :formTitle="'Add Product Type'" 
-              :fields="productTypeFormFields"  
-               @fetchDataForSubCategory="fetchDataForSubCategory"
-               :isLoadingMsg="isOptionLoadingMsg"
-               :url ="'/product-types'"
-               >
+    <FormModal
+      v-if="showProductTypeModal"
+      @close="toggleProductTypeModal"
+      :formTitle="'Add Product Type'"
+      :fields="productTypeFormFields"
+      @fetchDataForSubCategory="fetchDataForSubCategory"
+      :isLoadingMsg="isOptionLoadingMsg"
+      :url="'/product-types'"
+    >
     </FormModal>
     <!-- Modal for Price Type-->
-    <FormModal v-if="showPriceModal"  @close="togglePriceModal" :formTitle="'Add Price'" 
-              :fields="priceFormFields"  
-               @fetchDataForSubCategory="fetchDataForSubCategory"
-               :isLoadingMsg="isOptionLoadingMsg"
-               :url ="'/prices'"
-               >
+    <FormModal
+      v-if="showPriceModal"
+      @close="togglePriceModal"
+      :formTitle="'Add Price'"
+      :fields="priceFormFields"
+      @fetchDataForSubCategory="fetchDataForSubCategory"
+      :isLoadingMsg="isOptionLoadingMsg"
+      :url="'/prices'"
+    >
     </FormModal>
-    
-   
 
-    
     <ViewModal v-if="showViewModal" @close="closeViewModal" :modalTitle="modalTitle">
       <ViewModalDetail :products="products" />
     </ViewModal>
@@ -94,13 +102,29 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import { useProductStore } from "@/stores/products";
+const productsStore = useProductStore();
+
 //import { formFields, priceFormFields, productTypeFormFields} from '@/formfields/formFields';
-import { formFields,priceFormFields, productTypeFormFields,} from '@/formfields/formFields';
+import {
+  formFields,
+  priceFormFields,
+  productTypeFormFields,
+} from "@/formfields/formFields";
 //handles all component import
 import { useSharedComponent } from "@/composable/useSharedComponent";
-const {  DataTableLayout,FormModal, usePostComposable,useEditComposable,EditModal,useSelectComposable,
-      useDeleteComposable,
-      ViewModal,ViewModalDetail,defineEmits} = useSharedComponent();
+const {
+  DataTableLayout,
+  FormModal,
+  usePostComposable,
+  useEditComposable,
+  EditModal,
+  useSelectComposable,
+  useDeleteComposable,
+  ViewModal,
+  ViewModalDetail,
+  defineEmits,
+} = useSharedComponent();
 
 const modalTitle = "View Product";
 const router = useRouter();
@@ -110,17 +134,36 @@ const products = ref();
 const showProductTypeModal = ref(false);
 const showPriceModal = ref(false);
 
-
-const { handleDelete,showDeleteModal,itemsId,closeDeleteModal} = useDeleteComposable();
-const emit = defineEmits("forceRefresh")
+const {
+  handleDelete,
+  showDeleteModal,
+  itemsId,
+  closeDeleteModal,
+} = useDeleteComposable();
+const emit = defineEmits("forceRefresh");
 //const { showModal, showViewModal,**loading, **allError,forceUpdate,**errorMessage,isError,closeModal,closeViewModal,} = usePostComposable('/products', formFields);
-const { showModal, showViewModal,forceUpdate,closeModal,closeViewModal} = usePostComposable('/products', formFields);
-const {handleEdit, showEditModal, closeEditModal, items} = useEditComposable(emit)
+const {
+  showModal,
+  showViewModal,
+  forceUpdate,
+  closeModal,
+  closeViewModal,
+} = usePostComposable("/products", formFields);
+const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 
 // fetchDataForSubCategory is emitted
-const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg} = useSelectComposable(formFields, url,"category_id", "sub_category_id", "sub_category_name");
- 
- 
+const {
+  fetchDataForSelect,
+  fetchDataForSubCategory,
+  isOptionLoadingMsg,
+} = useSelectComposable(
+  formFields,
+  url,
+  "category_id",
+  "sub_category_id",
+  "sub_category_name"
+);
+
 const openProductDetailModal = (product) => {
   products.value = product;
   showViewModal.value = true;
@@ -139,17 +182,40 @@ const togglePriceModal = () => {
 };
 
 const forceRefresh = () => {
-
-forceUpdate.value++; 
-
+  forceUpdate.value++;
 };
- 
+
 //useLabelNameToselectFormFieldToPopulate, endpoint, optionValue, formKey:is the name from endpoint
 onMounted(async () => {
- await fetchDataForSelect("Measurement", "/measurements", "id", "measurement_name");
+  await fetchDataForSelect("Measurement", "/measurements", "id", "measurement_name");
   await fetchDataForSelect("Category", "/product-categories", "id", "category_name");
-  await fetchDataForSelect("Product Name", "/all-products", "id", "product_name",productTypeFormFields.value);
-  await fetchDataForSelect("Product Type","/all-product-type-name","id","product_type_name",priceFormFields.value);
-  await fetchDataForSelect("Currency Name", "/currencies", "id", "currency_name",priceFormFields.value);
+  await fetchDataForSelect(
+    "Product Name",
+    "/all-products",
+    "id",
+    "product_name",
+    productTypeFormFields.value
+  );
+  await fetchDataForSelect(
+    "Product Type",
+    "/all-product-type-name",
+    "id",
+    "product_type_name",
+    priceFormFields.value
+  );
+  await fetchDataForSelect(
+    "Currency Name",
+    "/currencies",
+    "id",
+    "currency_name",
+    priceFormFields.value
+  );
+});
+onMounted(async () => {
+  try {
+    await productsStore.handleGetProducts(1);
+  } catch (error) {
+    console.error(error);
+  }
 });
 </script>
