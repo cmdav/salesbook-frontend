@@ -7,7 +7,7 @@
         @input="$emit('update:modelValue', $event.target.value)"
         :placeholder="placeholder"
         :value="modelValue"
-        :class="error ? 'border-[#ef4b4b]' : 'border-[#254035]'"
+        :class="error ? 'border-[#ef4b4b]' : 'border-neutral-900/[40%]'"
         class="w-full font-light font-Satoshi400 text-[14px] !p-[14px] outline-none border-[1px] opacity-[0.8029] rounded-[4.074px] text-sm"
       />
       <div class="absolute right-3 top-3 text-[#D1D1D6]">

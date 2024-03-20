@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="px-5 py-2 mt-8 border-2 rounded-t-md border-gray-200 flex justify-between bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
+      class="px-5 py-2 mt-8 border-[1px] rounded-t-md items-center border-brand/[50%] flex justify-between bg-secondary-800/[20%] text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
     >
       <div class="flex flex-row relative w-[40%]">
         <AuthInput
@@ -9,7 +9,7 @@
           type="text"
           v-model="searchQuery"
           placeholder="Search..."
-          class="w-full"
+          class="w-full !py-1"
           @input="search"
         />
         <button
@@ -21,9 +21,11 @@
         </button>
       </div>
       <slot></slot>
-      <button @click="$emit('toggleModal')" class="btn-brand">
-        {{ props?.toggleButtonLabel }}
-      </button>
+      <div>
+        <button @click="$emit('toggleModal')" class="btn-brand">
+          {{ props?.toggleButtonLabel }}
+        </button>
+      </div>
     </div>
 
     <!-- Section for the  table -->
@@ -176,7 +178,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watchEffect, watch} from "vue";
+import { onMounted, ref, watchEffect, watch } from "vue";
 import { useReadComposable } from "@/composable/useReadComposable";
 import AuthInput from "@/components/UI/Input/AuthInput.vue";
 
@@ -251,10 +253,25 @@ th,
 td {
   padding: 8px;
   text-align: left;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #fff;
+  @apply bg-secondary-800/[20%];
+}
+
+tbody,
+tr,
+td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #fff;
+  @apply bg-secondary-800/[20%];
 }
 tr:hover {
-  background-color: #f5f5f5;
+  @apply bg-brand/[70%] text-white;
+}
+thead,
+tr,
+th {
+  @apply bg-brand/[50%] text-white;
 }
 .flex {
   display: flex;
