@@ -38,8 +38,8 @@ export const formFields = ref([
 ]);
 
 export const productTypeFormFields = ref([
-  { label: '', type: 'hidden', value: '', required: false, placeholder: 'Enter product type', databaseField: "product_id" },
-  { label: 'Product Type', type: 'text', value: '', required: true, placeholder: 'Enter product type', databaseField: "product_type" },
+  { label: 'Product Name', type: 'select', value: '', required: false, placeholder: 'Enter product type', options: [], databaseField: "product_id" },
+  { label: 'Product Type', type: 'text', value: '', required: true, placeholder: 'Enter product type', databaseField: "product_type_name" },
   { label: 'Product Type Image', type: 'image', value: '', required: false, placeholder: 'Enter image URL', databaseField: "product_type_image" },
   { label: 'Product Type Description', type: 'textarea', value: '', required: true, placeholder: 'Enter product type description', databaseField: "product_type_description" },
   // { label: 'Organization ID', type: 'text', value: '', required: false, placeholder: 'Enter organization ID', databaseField: "organization_id" },
@@ -63,7 +63,7 @@ export const purchaseFormFields = ref([
 ]);
 
 export const priceFormFields = ref([
-  { label: ' ', type: 'hidden', value: '', required: false, placeholder: 'Enter product type ID', databaseField: "product_type_id" },
+  { label: 'Product Type', type: 'select', value: '', required: false, placeholder: 'Enter product type ID',options: [], databaseField: "product_type_id" },
   // { label: 'Supplier ID', type: 'text', value: '', required: false, placeholder: 'Enter supplier ID', databaseField: "supplier_id" },
   { label: 'Cost Price', type: 'number', value: null, required: true, placeholder: 'Enter cost price', databaseField: "cost_price" },
   { label: 'Selling Price', type: 'number', value: 0, required: false, placeholder: 'Enter selling price', databaseField: "selling_price",min:0 },

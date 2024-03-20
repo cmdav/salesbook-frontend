@@ -1,6 +1,6 @@
 
 
-import { ref, computed } from 'vue'
+import { ref} from 'vue'
 import apiService from '@/services/apiService';
 import { useReadComposable} from '@/composable/useReadComposable';
 
@@ -15,6 +15,7 @@ export function useDeleteComposable(url, ItemObject) {
   const closeDeleteModal = () => {
     showDeleteModal.value = false
     loading.value = false
+    
   }
   const handleDelete = (item) => {
     itemsId.value = item
@@ -26,6 +27,7 @@ export function useDeleteComposable(url, ItemObject) {
       loading.value = true
       let response = await apiService.delete(`${url}/${ItemObject.id}`)
       await fetchPage(url, 1)
+      
       loading.value = false
       return response
     } catch (error) {

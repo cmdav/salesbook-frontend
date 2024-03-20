@@ -12,27 +12,19 @@
         ]"
       />
     </div>
-    <FormModal v-if="showModal" @close="closeModal" :formTitle="'Add measurement'">
-      <template v-slot:default>
-        <form @submit.prevent="submitForm">
-          <p v-if="isError" class="text-red-500">{{ errorMessage }}</p>
-          <ReusableForm
-            :fields="measurementFormFields"
-            :isLoadingMsg="isLoadingMsg"
-            :allError="allError"
-          />
-          <div class="flex justify-center items-center">
-            <input type="submit" v-if="!loading" value="Submit" class="btn-brand mt-3" />
-
-            <Loader v-else />
-          </div>
-        </form>
-      </template>
+    <FormModal v-if="showModal" @close="closeModal" :formTitle="'Add Measurement'" 
+              :fields="measurementFormFields"  
+              
+               :isLoadingMsg="isOptionLoadingMsg"
+               :url ="'/measurements'"
+               >
     </FormModal>
+    
 
     <DeleteModal
       v-if="showDeleteModal"
       @close="closeDeleteModal"
+      @updated="forceRefresh"
       :items="itemsId"
       :url="'/measurements'"
       :modalTitle="modalTitle"
@@ -59,21 +51,20 @@ const modalTitle = "measurement_name";
 //handles all component import
 import { useSharedComponent } from "@/composable/useSharedComponent";
 
-const { DataTableLayout,FormModal,ReusableForm,Loader,usePostComposable, useEditComposable, EditModal,DeleteModal,
+const { DataTableLayout,FormModal,usePostComposable, useEditComposable, EditModal,DeleteModal,
           useDeleteComposable,defineEmits} = useSharedComponent();
 
 const { handleDelete,showDeleteModal,itemsId,closeDeleteModal,} = useDeleteComposable();
 // define other constant
 const productsStore = useProductStore();
 const emit = defineEmits("forceRefresh")
-const {showModal,isLoadingMsg,loading,allError,forceUpdate,errorMessage,isError,closeModal,submitForm,} 
-  = usePostComposable("/measurements", measurementFormFields);
+const {showModal,forceUpdate,closeModal}  = usePostComposable("/measurements", measurementFormFields);
 
 const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 
 const forceRefresh = () => {
 
-forceUpdate.value = !forceUpdate.value; 
+forceUpdate.value++; 
 
 };
 onMounted(async () => {

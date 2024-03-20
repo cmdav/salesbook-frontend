@@ -176,7 +176,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref, watchEffect, watch} from "vue";
 import { useReadComposable } from "@/composable/useReadComposable";
 import AuthInput from "@/components/UI/Input/AuthInput.vue";
 
@@ -233,7 +233,7 @@ const search = () => {
 watch(searchQuery, () => {
   search();
 });
-watch(async () => {
+watchEffect(async () => {
   await fetchPage(props.endpoint, 1);
 });
 function clear() {

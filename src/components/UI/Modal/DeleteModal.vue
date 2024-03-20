@@ -27,6 +27,7 @@
 import { watch, defineProps, toRefs, ref } from "vue";
 import Loader from "@/components/UI/Loader.vue";
 import { useDeleteComposable } from "@/composable/useDeleteComposable";
+
 const emit = defineEmits(["close"]);
 const title = ref();
 
@@ -35,7 +36,7 @@ const props = defineProps({
   modalTitle: String,
   url: String,
 });
-const { items, modalTitle, url } = toRefs(props);
+const { items, url } = toRefs(props);
 
 const { deleteForm, loading, showDeleteModal } = useDeleteComposable(
   url.value,
@@ -44,6 +45,7 @@ const { deleteForm, loading, showDeleteModal } = useDeleteComposable(
 const handleDelete = () => {
   deleteForm();
   if (showDeleteModal.value === false) {
+    emit("updated");
     emit("close");
   }
   // emit("close");

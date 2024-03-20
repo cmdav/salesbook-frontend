@@ -13,17 +13,48 @@
         </h4>
         <button class="close-button" @click="$emit('close')">&#10005;</button>
       </header>
-
-      <slot></slot>
+      <form @submit.prevent="submitForm">
+        <ReusableForm :fields="fields" @fetchDataForSubCategory="handleFetchDataForSubCategory"  :isLoadingMsg="isLoadingMsg"/>
+          <input type="submit"  v-if="!loading" value="Submit" class="btn btn-primary mt-3"/>
+        <Loader v-else /> 
+      </form>
     </div>
   </div>
 </template>
 
 <script setup>
-const { formTitle } = defineProps({
+import { defineEmits, onMounted } from 'vue';
+import { useSharedComponent} from "@/composable/useSharedComponent";
+
+const { formTitle, fields,url}= defineProps({
   formTitle: String,
+  fields: Object,
+  isLoadingMsg:String,
+  url:String
 });
+const { usePostComposable, Loader} = useSharedComponent();
+
+const emits = defineEmits(['fetchDataForSubCategory', 'close']);
+
+const { submitForm, loading} = usePostComposable(url, fields,"","", emits);
+
+const { ReusableForm } = useSharedComponent();
+
+const handleFetchDataForSubCategory = (value, FieldName) => {
+  // console.log(value)
+  // console.log(FieldName)
+  emits('fetchDataForSubCategory', value, FieldName);
+};
+
+onMounted( async() => {
+  fields.forEach(field => {
+    field.value = ''; // Reset value, adjust for different types as necessary
+  });
+ 
+});
+
 </script>
+
 
 <style lang="scss" scoped>
 .modal {
