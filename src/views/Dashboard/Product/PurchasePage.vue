@@ -77,6 +77,6 @@ forceUpdate.value++;
 };
 // Fetch data for select options on component mount
 onMounted(async () => {
-  await fetchDataForSelect("Product Type","/all-product-type-name","id","product_type");
+  await fetchDataForSelect("Product Type","/all-product-type-name","id","product_type_name");
 });
 </script>

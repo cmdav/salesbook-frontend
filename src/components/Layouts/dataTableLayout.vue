@@ -169,7 +169,7 @@
     </div>
     <div v-else-if="isLoading" class="text-center">Loading...</div>
     <div v-else-if="hasError" class="text-center">
-      Network error, please try again later.
+        The server is not responding.
     </div>
     <div v-else class="text-center">No records found.</div>
   </div>
