@@ -3,6 +3,7 @@
 import { ref } from 'vue';
 import apiService from '@/services/apiService';
 import { useReadComposable} from '@/composable/useReadComposable';
+import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
 
 const { fetchPage } = useReadComposable();
 
@@ -70,8 +71,12 @@ export function usePostComposable(url, formFields, postUrl = null,  fieldsOverri
         loading.value = false;
         emit('close');
         console.log(response)
+        catchAxiosSuccess(response)
+        return response;
     
       } catch (error) {
+        catchAxiosError(error)
+        console.error(error);
         loading.value = false;
         isError.value = true;
         if (error.response && error.response.data) {
