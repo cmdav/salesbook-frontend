@@ -30,11 +30,11 @@
 
     <!-- Section for the  table -->
     <div class="" v-if="!isLoading && !hasError && products.length > 0">
-      <table class="min-w-full rounded-b-md overflow-hidden leading-normal">
+      <table class="min-w-full leading-normal">
         <thead>
           <tr>
             <th
-              class="px-5 py-5 border-b-2 border-x-2 border-gray-200 bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
+              class="px-5 py-5 border-b-2 border-x-[1px] border-r-gray-200 border-l-brand bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
             >
               S.No
             </th>
@@ -42,7 +42,13 @@
             <th
               v-for="col in [...uniqueKeys, ...additionalColumns.map((col) => col.name)]"
               :key="col"
-              class="px-5 py-5 border-b-2 border-r-2 border-gray-200 bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
+              class="px-5 py-5 border-b-[1px] border-r-[1px] border-gray-200 bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
+              :class="
+                index ===
+                [...uniqueKeys, ...additionalColumns.map((col) => col.name)].length - 1
+                  ? '!border-r-brand'
+                  : ''
+              "
             >
               {{ formatKey(col) }}
             </th>
@@ -51,12 +57,8 @@
 
         <tbody v-if="filteredProducts?.length">
           <!-- Loop through products for each row -->
-          <tr
-            v-for="(product, index) in filteredProducts"
-            :key="product.id"
-            class="hover:bg-gray-100"
-          >
-            <td class="px-5 py-5 border-b border-x-2 border-gray-200 bg-white text-sm">
+          <tr v-for="(product, index) in filteredProducts" :key="product.id">
+            <td class="px-5 py-5 border-b border-x-[1px] bg-white text-sm">
               {{
                 (parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1
               }}
@@ -64,7 +66,7 @@
             <td
               v-for="key in uniqueKeys"
               :key="key"
-              class="px-5 py-5 border-b border-r-2 border-gray-200 bg-white text-sm"
+              class="px-5 py-5 border-b border-r-[1px] border-brand bg-white text-sm"
             >
               <!-- Check for columns with onclick event -->
               <template v-if="clickableKeys[key]">
@@ -90,7 +92,7 @@
             </td>
             <!-- template for additional code -->
             <template v-for="(col, index) in additionalColumns" :key="`${index}`">
-              <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+              <td class="px-5 py-5 border-b border-brand bg-white text-sm">
                 <!--call the function define form the parent. It is passed as a props-->
                 <button @click="col.action(product)">
                   {{ formatKey(col.name) }}
@@ -101,12 +103,8 @@
         </tbody>
         <tbody v-else>
           <!-- Loop through product which represents Items for each row -->
-          <tr
-            v-for="(product, index) in products"
-            :key="product.id"
-            class="hover:bg-gray-100"
-          >
-            <td class="px-5 py-5 border-b border-x-2 border-gray-200 bg-white text-sm">
+          <tr v-for="(product, index) in products" :key="product.id">
+            <td class="px-5 py-5 border-brand border-x-[1px] bg-white text-sm">
               {{
                 (parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1
               }}
@@ -114,7 +112,7 @@
             <td
               v-for="key in uniqueKeys"
               :key="key"
-              class="px-5 py-5 border-b border-r-2 border-gray-200 bg-white text-sm"
+              class="px-5 py-5 border-brand border-r-[1px] bg-white text-sm"
             >
               <!-- Check for columns with onclick event -->
               <template v-if="clickableKeys[key]">
@@ -140,7 +138,7 @@
             </td>
             <!-- render content for additional code -->
             <template v-for="(col, index) in additionalColumns" :key="`${index}`">
-              <td class="px-5 py-5 border-b border-x-2 border-gray-200 bg-white text-sm">
+              <td class="px-5 py-5 border-b border-x-[1px] border-brand bg-white text-sm">
                 <button @click="col.action(product)">
                   {{ formatKey(col.name) }}
                 </button>
@@ -254,19 +252,21 @@ td {
   padding: 8px;
   text-align: left;
   border-bottom: 1px solid #fff;
-  @apply bg-secondary-800/[20%];
+  @apply border-b-[1px] border-b-brand;
 }
-
+tbody,
+tr {
+  @apply border-x-brand hover:bg-brand/[70%] hover:text-white;
+}
 tbody,
 tr,
 td {
   padding: 8px;
   text-align: left;
-  border-bottom: 1px solid #fff;
-  @apply bg-secondary-800/[20%];
+  @apply bg-white text-brand border-b-[1px] border-b-brand;
 }
-tr:hover {
-  @apply bg-brand/[70%] text-white;
+tr {
+  @apply hover:bg-brand/[70%] hover:text-white;
 }
 thead,
 tr,
