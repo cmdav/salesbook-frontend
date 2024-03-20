@@ -37,12 +37,14 @@
         <thead>
           <tr>
             <th
+              scope="col"
               class="px-5 py-5 border-b-2 border-x-[1px] border-r-gray-200 border-l-brand bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
             >
               S.No
             </th>
             <!-- Merge the additional columns with keys from the api -->
             <th
+              scope="col"
               v-for="col in [...uniqueKeys, ...additionalColumns.map((col) => col.name)]"
               :key="col"
               class="px-5 py-5 border-b-[1px] border-r-[1px] border-gray-200 bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
