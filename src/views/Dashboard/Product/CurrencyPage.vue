@@ -11,26 +11,17 @@
         ]"
       />
     </div>
-    <FormModal v-if="showModal" @close="closeModal" :formTitle="'Add Currency'">
-      <template v-slot:default>
-        <form @submit.prevent="submitForm">
-          <p v-if="isError" class="text-red-500">{{ errorMessage }}</p>
-          <ReusableForm
-            :fields="currenciesFormFields"
-            :isLoadingMsg="isLoadingMsg"
-            :allError="allError"
-          />
-          <div class="flex justify-center items-center">
-            <input type="submit" v-if="!loading" value="Submit" class="btn-brand mt-3" />
-
-            <Loader v-else />
-          </div>
-        </form>
-      </template>
+    <FormModal v-if="showModal" @close="closeModal" :formTitle="'Add Currency'" 
+              :fields="currenciesFormFields"  
+          
+               :isLoadingMsg="isOptionLoadingMsg"
+               :url ="'/currencies'"
+               >
     </FormModal>
     <DeleteModal
       v-if="showDeleteModal"
       @close="closeDeleteModal"
+      @updated="forceRefresh"
       :items="itemsId"
       :url="'/currencies'"
       :modalTitle="modalTitle"
@@ -53,11 +44,11 @@ const modalTitle = "currency_name";
 import { useSharedComponent } from "@/composable/useSharedComponent";
 
 
-const {DataTableLayout,FormModal,ReusableForm,Loader,usePostComposable, useEditComposable, DeleteModal,EditModal,
+const {DataTableLayout,FormModal,usePostComposable, useEditComposable, DeleteModal,EditModal,
       useDeleteComposable} = useSharedComponent();
 
 
-const {showModal,isLoadingMsg,loading,allError,forceUpdate,errorMessage,isError,closeModal,submitForm,
+const {showModal,forceUpdate,closeModal
         } = usePostComposable("/currencies", currenciesFormFields);
         
 const { handleEdit, showEditModal, closeEditModal, items} = useEditComposable();
@@ -66,7 +57,7 @@ const { handleDelete, showDeleteModal,itemsId,closeDeleteModal } = useDeleteComp
 //This trigger a page refresh
 const forceRefresh = () => {
 
-forceUpdate.value = !forceUpdate.value; 
+forceUpdate.value ++; 
 
 };
 

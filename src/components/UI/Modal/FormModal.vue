@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { defineEmits } from 'vue';
+import { defineEmits, onMounted } from 'vue';
 import { useSharedComponent} from "@/composable/useSharedComponent";
 
 const { formTitle, fields,url}= defineProps({
@@ -46,6 +46,12 @@ const handleFetchDataForSubCategory = (value, FieldName) => {
   emits('fetchDataForSubCategory', value, FieldName);
 };
 
+onMounted( async() => {
+  fields.forEach(field => {
+    field.value = ''; // Reset value, adjust for different types as necessary
+  });
+ 
+});
 
 </script>
 

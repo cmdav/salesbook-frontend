@@ -12,7 +12,7 @@ import apiService from '@/services/apiService';
 
 export function useSelectComposable(formFields, baseSubCategoriesUrl ="", categoryDatabaseField="", subCategoryDatabaseField="", optionValue="") {
     const isOptionLoadingMsg = ref("");
-  console.log(isOptionLoadingMsg.value)
+  
   //value is emitted from reusable form. it represented the selected category and database field
   const fetchDataForSubCategory = async (value, field_name, setSelectOption=null) => {
     //value=>id of the category to pull e.g 
@@ -66,19 +66,26 @@ export function useSelectComposable(formFields, baseSubCategoriesUrl ="", catego
     console.log(isOptionLoadingMsg.value)
   };
  
-  
-const fetchDataForSelect = async (useLabelNameToselectFormFieldToPopulate, endpoint, optionValue, formKey) => {
+  //useLabelNameToselectFormFieldToPopulate, endpoint, optionValue, formKeyToUse
+const fetchDataForSelect = async (useLabelNameToselectFormFieldToPopulate, endpoint, optionValue, formKey,defaultFormField=formFields.value,) => {
   try {
     const response = await apiService.get(endpoint);
     //console.log(response);
-    const fieldObject = formFields.value.find(f => f.label === useLabelNameToselectFormFieldToPopulate);
+    const fieldObject = defaultFormField.find(f => f.label === useLabelNameToselectFormFieldToPopulate);
     if (fieldObject) {
+      console.log(fieldObject)
+    //  console.log(response)
+   
+    //   console.log(optionValue)
+    //   console.log(formKey)
       fieldObject.options = [
                                  { value: '', label: 'Select an option', disabled: true },
         ...response.map(item => ({ value: item[optionValue], label: item[formKey] }))
       ];
 
     } else {
+     
+      console.log(formFields.value)
       console.error(`Field with label not found.`);
     }
   } catch (error) {

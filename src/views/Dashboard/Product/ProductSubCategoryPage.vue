@@ -12,26 +12,12 @@
         ]"
       />
     </div>
-    <FormModal
-      v-if="showModal"
-      @close="closeModal"
-      :formTitle="'Add Product  Sub Category'"
-    >
-      <template v-slot:default>
-        <form @submit.prevent="submitForm">
-          <p v-if="isError" class="text-red-500">{{ errorMessage }}</p>
-          <ReusableForm
-            :fields="productSubCategoryFormFields"
-            :isLoadingMsg="isLoadingMsg"
-            :allError="allError"
-          />
-          <div class="flex justify-center items-center">
-            <input type="submit" v-if="!loading" value="Submit" class="btn-brand mt-3" />
-
-            <Loader v-else />
-          </div>
-        </form>
-      </template>
+    <FormModal v-if="showModal" @close="closeModal" :formTitle="'Product Sub Category'" 
+              :fields="productSubCategoryFormFields"
+               @fetchDataForSubCategory="fetchDataForSubCategory"
+               :isLoadingMsg="isOptionLoadingMsg"
+               :url ="'/product-sub-categories'"
+               >
     </FormModal>
     <DeleteModal
       v-if="showDeleteModal"
@@ -56,21 +42,21 @@ import { onMounted } from "vue";
 
 import { productSubCategoryFormFields } from "@/formfields/formFields";
 import { useSharedComponent } from "@/composable/useSharedComponent";
-const {DataTableLayout,FormModal,ReusableForm,Loader, usePostComposable,useEditComposable,EditModal,
+const {DataTableLayout,FormModal, usePostComposable,useEditComposable,EditModal,
   useSelectComposable,DeleteModal,useDeleteComposable} = useSharedComponent();
 
 const emit = defineEmits("forceRefresh")
 const {handleDelete,showDeleteModal,itemsId,closeDeleteModal,} = useDeleteComposable();
 
 
-const {showModal,isLoadingMsg,loading,allError,forceUpdate,errorMessage,isError,closeModal,submitForm,
+const {showModal,forceUpdate,closeModal,
 } = usePostComposable("/product-sub-categories", productSubCategoryFormFields);
 const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 const { fetchDataForSelect } = useSelectComposable(productSubCategoryFormFields);
 
 const forceRefresh = () => {
 
-forceUpdate.value = !forceUpdate.value; 
+forceUpdate.value++; 
 
 };
 // Fetch data for select options on component mount

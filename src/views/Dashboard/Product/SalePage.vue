@@ -11,26 +11,17 @@
         ]"
       />
     </div>
-    <FormModal v-if="showModal" @close="closeModal" :formTitle="formTitle">
-      <template v-slot:default>
-        <form @submit.prevent="submitForm">
-          <p v-if="isError" class="text-red-500">{{ errorMessage }}</p>
-          <ReusableForm
-            :fields="saleFormFields"
-            :isLoadingMsg="isLoadingMsg"
-            :allError="allError"
-          />
-          <div class="flex justify-center items-center">
-            <input type="submit" v-if="!loading" value="Submit" class="btn-brand mt-3" />
-
-            <Loader v-else />
-          </div>
-        </form>
-      </template>
+    <FormModal v-if="showModal" @close="closeModal" :formTitle="'Add Sale'" 
+              :fields="saleFormFields"  
+               @fetchDataForSubCategory="fetchDataForSubCategory"
+               :isLoadingMsg="isOptionLoadingMsg"
+               :url ="'/sales'"
+               >
     </FormModal>
     <DeleteModal
       v-if="showDeleteModal"
       @close="closeDeleteModal"
+      @updated="forceRefresh"
       :items="itemsId"
       :url="'/sales'"
       :modalTitle="modalTitle"
@@ -54,8 +45,6 @@ import { useSharedComponent } from "@/composable/useSharedComponent";
 const {
   DataTableLayout,
   FormModal,
-  ReusableForm,
-  Loader,
   usePostComposable,
   useEditComposable,
   EditModal,
@@ -66,32 +55,17 @@ const {
 } = useSharedComponent();
 const emit = defineEmits("forceRefresh")
 const url = "/all-price-by-product-type";
-const { fetchDataForSelect } = useSelectComposable(saleFormFields, url);
+const { fetchDataForSelect,fetchDataForSubCategory,isOptionLoadingMsg } = useSelectComposable(saleFormFields, url);
 const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 
-const formTitle = "Add Sale";
 
-const {
-  showModal,
-  isLoadingMsg,
-  loading,
-  allError,
-  forceUpdate,
-  errorMessage,
-  isError,
-  closeModal,
-  submitForm,
-} = usePostComposable("/sales", saleFormFields);
-const {
-  handleDelete,
-  showDeleteModal,
-  itemsId,
-  closeDeleteModal,
-} = useDeleteComposable();
+
+const {showModal,forceUpdate,closeModal,} = usePostComposable("/sales", saleFormFields);
+const { handleDelete, showDeleteModal,itemsId,closeDeleteModal,} = useDeleteComposable();
 
 const forceRefresh = () => {
 
-forceUpdate.value = !forceUpdate.value; 
+forceUpdate.value ++; 
 
 };
 

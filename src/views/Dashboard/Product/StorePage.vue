@@ -13,23 +13,7 @@
         ]"
       />
     </div>
-    <FormModal v-if="showModal" @close="closeModal" :formTitle="formTitle">
-      <template v-slot:default>
-        <form @submit.prevent="submitForm">
-          <p v-if="isError" class="text-red-500">{{ errorMessage }}</p>
-          <ReusableForm
-            :fields="currenciesFormFields"
-            :isLoadingMsg="isLoadingMsg"
-            :allError="allError"
-          />
-          <div class="flex justify-center items-center">
-            <input type="submit" v-if="!loading" value="Submit" class="btn-brand mt-3" />
-
-            <Loader v-else />
-          </div>
-        </form>
-      </template>
-    </FormModal>
+   
     <DeleteModal
       v-if="showDeleteModal"
       @close="closeDeleteModal"
@@ -43,33 +27,22 @@
 <script setup>
 //import { onMounted } from 'vue';
 
-import { currenciesFormFields } from "@/formfields/formFields";
 import { useSharedComponent } from "@/composable/useSharedComponent";
 
 const {
   DataTableLayout,
-  FormModal,
-  ReusableForm,
-  Loader,
-  usePostComposable,
+  //usePostComposable,
   DeleteModal,
   useDeleteComposable,
   
 } = useSharedComponent();
 
-const formTitle = "Add Store";
+//const formTitle = "Add Store";
 
-const {
-  showModal,
-  isLoadingMsg,
-  loading,
-  allError,
-  forceUpdate,
-  errorMessage,
-  isError,
-  closeModal,
-  submitForm,
-} = usePostComposable("/stores", currenciesFormFields);
+// const {
+//   showModal,
+ 
+// } = usePostComposable("/stores", cu);
 const {
   handleDelete,
   showDeleteModal,

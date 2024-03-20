@@ -11,30 +11,17 @@
         ]"
       />
     </div>
-    <FormModal v-if="showModal" @close="closeModal" :formTitle="formTitle">
-      <template v-slot:default>
-        <form @submit.prevent="submitForm">
-          <p v-if="isError" class="text-red-500">{{ errorMessage }}</p>
-          <ReusableForm
-            :fields="purchaseFormFields"
-            @fetchDataForSubCategory="fetchDataForSubCategory"
-            :isLoadingMsg="isLoadingMsg"
-            :allError="allError"
-          />
-          <input
-            type="submit"
-            v-if="!loading"
-            value="Submit"
-            class="btn btn-primary mt-3"
-          />
-
-          <Loader v-else />
-        </form>
-      </template>
+    <FormModal v-if="showModal" @close="closeModal" :formTitle="'Add Purchase'" 
+              :fields="purchaseFormFields"  
+               @fetchDataForSubCategory="fetchDataForSubCategory"
+               :isLoadingMsg="isOptionLoadingMsg"
+               :url ="'/purchases'"
+               >
     </FormModal>
     <DeleteModal
       v-if="showDeleteModal"
       @close="closeDeleteModal"
+      @updated="forceRefresh"
       :items="itemsId"
       :url="'purchases'"
       :modalTitle="modalTitle"
@@ -58,8 +45,6 @@ import { useSharedComponent } from "@/composable/useSharedComponent";
 const {
   DataTableLayout,
   FormModal,
-  ReusableForm,
-  Loader,
   usePostComposable,
   useEditComposable,
   EditModal,
@@ -69,49 +54,29 @@ const {
   defineEmits
 } = useSharedComponent();
 
-const formTitle = "Add purchase";
+
 const url = "/all-price-by-product-type";
 const emit = defineEmits("forceRefresh")
 
 
-const {
-  handleDelete,
-  showDeleteModal,
-  itemsId,
-  closeDeleteModal,
-} = useDeleteComposable();
-const { fetchDataForSelect, fetchDataForSubCategory } = useSelectComposable(
+const {handleDelete,showDeleteModal,itemsId,closeDeleteModal,} = useDeleteComposable();
+const { fetchDataForSelect, fetchDataForSubCategory ,isOptionLoadingMsg} = useSelectComposable(
   purchaseFormFields,
   url,
   "Product Type",
   "Price",
   "cost_price"
 );
-const {
-  showModal,
-  isLoadingMsg,
-  loading,
-  allError,
-  forceUpdate,
-  errorMessage,
-  isError,
-  closeModal,
-  submitForm,
-} = usePostComposable("/purchases", purchaseFormFields);
+const {showModal,forceUpdate,closeModal} = usePostComposable("/purchases", purchaseFormFields);
 const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 
 const forceRefresh = () => {
 
-forceUpdate.value = !forceUpdate.value; 
+forceUpdate.value++; 
 
 };
 // Fetch data for select options on component mount
 onMounted(async () => {
-  await fetchDataForSelect(
-    "Product Type",
-    "/all-product-type-name",
-    "id",
-    "product_type"
-  );
+  await fetchDataForSelect("Product Type","/all-product-type-name","id","product_type");
 });
 </script>
