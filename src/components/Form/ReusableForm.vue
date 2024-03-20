@@ -1,45 +1,57 @@
 <template>
-    <!-- Display existing image-->
-  
-      <div v-if="newImage">
-        <img :src="newImage" class="mb-4 max-h-40" alt="Current Image">
-        <button type="button" @click="triggerFileInput" class="btn-change">Change Image</button>
-        <input
-          ref="fileInput"
-          type="file"
-          class="hidden"
-          @change="handleImageChange(0, $event)"
-          
-        />
-    </div>
-  
-  <div v-for="(field, index) in localFields" :key="index" class="mb-4">
+  <!-- Display existing image-->
 
-    
-    <label :for="field.id" class="block text-sm font-medium text-gray-700" v-if="!(field.type === 'image' && newImage)">
+  <div class="relative w-full rounded-md object-contain" v-if="newImage">
+    <img
+      :src="newImage"
+      class="mb-4 max-h-40 w-full rounded-md object-cover"
+      alt="Current Image"
+    />
+    <button
+      type="button"
+      @click="triggerFileInput"
+      class="btn-change text-red-600 font-bold absolute border-red-700 border-[1px] flex items-center rounded-full p-2 py-1 bg-white top-1 right-2"
+    >
+      X
+    </button>
+    <input
+      ref="fileInput"
+      type="file"
+      class="hidden"
+      hidden
+      @change="handleImageChange(0, $event)"
+    />
+  </div>
+
+  <div v-for="(field, index) in localFields" :key="index" class="mb-4">
+    <label
+      :for="field.id"
+      class="block text-sm font-medium text-gray-700"
+      v-if="!(field.type === 'image' && newImage)"
+    >
       {{ field.label }}
       <span v-if="field.required" class="text-red-500">*</span>
     </label>
-   
-     <!-- Textarea field -->
+
+    <!-- Textarea field -->
     <template v-if="field.type === 'textarea'">
       <textarea
         :id="field.id"
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
         v-model="field.value"
         :required="field.required"
-        :name ="field.databaseField"
+        :name="field.databaseField"
         :placeholder="field.placeholder"
       ></textarea>
     </template>
-     <!-- Select field -->
+    <!-- Select field -->
     <template v-else-if="field.type === 'select'">
       <select
         :id="field.id"
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
         v-model="field.value"
         :required="field.required"
-        :name ="field.databaseField"
+        :name="field.databaseField"
         @change="handleCategoryChange(field.value, field.databaseField)"
       >
         <option
@@ -54,13 +66,13 @@
         {{ isLoadingMsg }}</span
       >
     </template>
-     <!-- Image field -->
+    <!-- Image field -->
     <template v-else-if="field.type === 'image'">
-    
-      <input v-if="!newImage"
+      <input
+        v-if="!newImage"
         :id="field.id"
         type="file"
-        :name ="field.databaseField"
+        :name="field.databaseField"
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
         @change="handleImageChange(index, $event)"
         :required="field.required"
@@ -68,27 +80,29 @@
       />
     </template>
 
-      <!-- Number field -->
-      <template v-else-if="field.type === 'number'">
-      <input :id="field.id"
+    <!-- Number field -->
+    <template v-else-if="field.type === 'number'">
+      <input
+        :id="field.id"
         type="number"
         class="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
         v-model.number="field.value"
-        :name ="field.databaseField"
+        :name="field.databaseField"
         :required="field.required"
         :placeholder="field.placeholder"
-        :min="field.min || 0"  
+        :min="field.min || 0"
       />
     </template>
 
     <!-- Date field -->
     <template v-else-if="field.type === 'date'">
-      <input :id="field.id"
+      <input
+        :id="field.id"
         type="date"
         class="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
         v-model="field.value"
         :required="field.required"
-        :name ="field.databaseField"
+        :name="field.databaseField"
         :placeholder="field.placeholder"
       />
     </template>
@@ -101,42 +115,40 @@
         v-model="field.value"
         :required="field.required"
         :placeholder="field.placeholder"
-        :name ="field.databaseField"
+        :name="field.databaseField"
       />
     </template>
   </div>
 </template>
 
 <script setup>
-import { defineEmits, ref, } from "vue";
+import { defineEmits, ref } from "vue";
 
 // Destructure fields from props
 const { fields, isLoadingMsg, allError, imagePath } = defineProps({
   fields: Array,
   allError: {
     type: Object,
-    default: () => ({}) 
+    default: () => ({}),
   },
   imagePath: {
     type: String,
-    default:'' 
+    default: "",
   },
   isLoadingMsg: String,
 });
-const emit = defineEmits(["fetchDataForSubCategory","handleEditCategoryChange"]);
+const emit = defineEmits(["fetchDataForSubCategory", "handleEditCategoryChange"]);
 console.log(allError);
 const localFields = ref(fields);
-const fileInput = ref(null); 
+const fileInput = ref(null);
 const newImage = ref(imagePath);
 
 // emit an event on change
 const handleCategoryChange = (value, field_name) => {
   // pass the  selected value and field name
-    emit('fetchDataForSubCategory', value, field_name);
-    emit('handleEditCategoryChange', value, field_name)
-  
+  emit("fetchDataForSubCategory", value, field_name);
+  emit("handleEditCategoryChange", value, field_name);
 };
-
 
 const handleImageChange = (index, event) => {
   index = 2;
@@ -145,23 +157,19 @@ const handleImageChange = (index, event) => {
     // Preview the image
     const reader = new FileReader();
     reader.onload = (e) => {
-      newImage.value = e.target.result;  
+      newImage.value = e.target.result;
     };
     reader.readAsDataURL(file);
     //changes the value of the selected index
     localFields.value[index].value = file;
- 
-   
   }
 };
-
 
 const triggerFileInput = () => {
-  if (fileInput.value) { 
-    fileInput.value.click(); 
+  if (fileInput.value) {
+    fileInput.value.click();
   } else {
-    console.error('File input is not correctly referenced.');
+    console.error("File input is not correctly referenced.");
   }
 };
-
 </script>

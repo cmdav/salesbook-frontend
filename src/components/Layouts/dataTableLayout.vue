@@ -21,7 +21,7 @@
         </button>
       </div>
       <slot></slot>
-      <div>
+      <div v-if="hideToggleButtonLabel">
         <button @click="$emit('toggleModal')" class="btn-brand">
           {{ props?.toggleButtonLabel }}
         </button>
@@ -200,6 +200,10 @@ const props = defineProps({
   toggleButtonLabel: {
     type: String,
     default: "Add",
+  },
+  hideToggleButtonLabel: {
+    type: Boolean,
+    default: true,
   },
 });
 

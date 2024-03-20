@@ -1,7 +1,6 @@
 <template>
   <DashboardLayout pageTitle="Price Page">
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
-     
       <button
         @click="goBack"
         class="btn btn-secondary flex flex-row items-center gap-2 mb-3"
@@ -9,9 +8,8 @@
         <BackIcon />
       </button>
 
-    
-
       <DataTableLayout
+        :hideToggleButtonLabel="false"
         @toggleModal="showModal = !showModal"
         :key="forceUpdate"
         :endpoint="computedEndpoint"
