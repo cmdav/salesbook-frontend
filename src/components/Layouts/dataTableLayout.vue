@@ -29,8 +29,11 @@
     </div>
 
     <!-- Section for the  table -->
-    <div class="" v-if="!isLoading && !hasError && products.length > 0">
-      <table class="min-w-full leading-normal">
+    <div
+      class="relative overflow-x-auto"
+      v-if="!isLoading && !hasError && products.length > 0"
+    >
+      <table class="w-full">
         <thead>
           <tr>
             <th
@@ -168,9 +171,7 @@
       </div>
     </div>
     <div v-else-if="isLoading" class="text-center">Loading...</div>
-    <div v-else-if="hasError" class="text-center">
-        The server is not responding.
-    </div>
+    <div v-else-if="hasError" class="text-center">The server is not responding.</div>
     <div v-else class="text-center">No records found.</div>
   </div>
 </template>
