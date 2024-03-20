@@ -74,7 +74,7 @@ onMounted(async () => {
     "Product Type",
     "/all-product-type-name",
     "id",
-    "product_type"
+    "product_type_name"
   );
   await fetchDataForSelect("Customer", "/user-detail", "id", "customer_id");
 });
