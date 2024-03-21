@@ -26,7 +26,7 @@
         @toggleModal="showModal = !showModal"
         toggleButtonLabel="Add Product"
         :excludedKeys="['id', 'product_description', 'cat_id']"
-        :clickableKeys="{
+        :clickableKeys="{//this will be render as a closure 
           product_name: openProductDetailModal,
           view_price: navigateToProductTypePrice,
         }"
@@ -41,6 +41,7 @@
         </button>
       </DataTableLayout>
     </div>
+    <!--Modal to add product-->
     <FormModal
       v-if="showModal"
       @close="closeModal"
@@ -83,7 +84,7 @@
       @close="closeDeleteModal"
       @updated="forceRefresh"
       :items="itemsId"
-      :url="'/products'"
+      :url="'/product-types'"
       :modalTitle="modalTitle"
     />
     <EditModal

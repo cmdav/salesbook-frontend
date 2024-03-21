@@ -45,8 +45,7 @@
             <!-- Merge the additional columns with keys from the api -->
             <th
               scope="col"
-              v-for="col in [...uniqueKeys, ...additionalColumns.map((col) => col.name)]"
-              :key="col"
+              v-for="(col, index) in [...uniqueKeys, ...additionalColumns.map((col) => col.name)]" :key="index"
               class="px-5 py-5 border-b-[1px] border-r-[1px] border-gray-200 bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
               :class="
                 index ===
@@ -224,7 +223,7 @@ const {
   paginationArray,
 } = useReadComposable(props);
 
-console.log(products);
+//console.log(products.value)
 onMounted(async () => {
   await fetchPage(props.endpoint, 1);
 });

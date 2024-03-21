@@ -19,13 +19,17 @@ export function useDeleteComposable(url, ItemObject) {
     
   }
   const handleDelete = (item) => {
+    
     itemsId.value = item
     showDeleteModal.value = true
   }
 
   const deleteForm = async () => {
+    
     try {
       loading.value = true
+      console.log(ItemObject.id)
+     
       let response = await apiService.delete(`${url}/${ItemObject.id}`)
       await fetchPage(url, 1)
       
