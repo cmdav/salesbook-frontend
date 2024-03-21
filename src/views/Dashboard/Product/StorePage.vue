@@ -5,6 +5,7 @@
       <!-- <button @click="showModal = true" class="btn btn-primary">Add Store</button> -->
       <DataTableLayout
         @toggleModal="showModal = !showModal"
+        :hideToggleButtonLabel="false"
         :key="forceUpdate"
         endpoint="stores"
         :additionalColumns="[
@@ -13,7 +14,7 @@
         ]"
       />
     </div>
-   
+
     <DeleteModal
       v-if="showDeleteModal"
       @close="closeDeleteModal"
@@ -34,14 +35,13 @@ const {
   //usePostComposable,
   DeleteModal,
   useDeleteComposable,
-  
 } = useSharedComponent();
 
 //const formTitle = "Add Store";
 
 // const {
 //   showModal,
- 
+
 // } = usePostComposable("/stores", cu);
 const {
   handleDelete,

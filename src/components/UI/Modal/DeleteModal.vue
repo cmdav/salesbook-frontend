@@ -13,9 +13,15 @@
         </h4>
         <button class="close-button" @click="$emit('close')">&#10005;</button>
       </header>
+      <p class="text-center py-4">Are you sure you want to delete this item ?</p>
       <form @submit.prevent="handleDelete()">
         <div class="flex justify-center">
-          <input type="submit" v-if="!loading" class="btn-brand" value="Delete" />
+          <input
+            type="submit"
+            v-if="!loading"
+            class="btn-brand !bg-red-600"
+            value="Delete"
+          />
           <Loader v-else />
         </div>
       </form>

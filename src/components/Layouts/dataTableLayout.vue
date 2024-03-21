@@ -29,7 +29,10 @@
     </div>
 
     <!-- Section for the  table -->
-    <div class="relative overflow-x-auto" v-if="!isLoading && !hasError && products.length > 0">
+    <div
+      class="relative overflow-x-auto"
+      v-if="!isLoading && !hasError && products.length > 0"
+    >
       <table class="w-full">
         <thead>
           <tr>
@@ -45,7 +48,8 @@
               v-for="(col, index) in [...uniqueKeys, ...additionalColumns.map((col) => col.name)]" :key="index"
               class="px-5 py-5 border-b-[1px] border-r-[1px] border-gray-200 bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
               :class="
-                index === [...uniqueKeys, ...additionalColumns.map((col) => col.name)].length - 1
+                index ===
+                [...uniqueKeys, ...additionalColumns.map((col) => col.name)].length - 1
                   ? '!border-r-brand'
                   : ''
               "
@@ -58,8 +62,10 @@
         <tbody v-if="filteredProducts?.length">
           <!-- Loop through products for each row -->
           <tr v-for="(product, index) in filteredProducts" :key="product.id">
-            <td class="px-5 py-5 border-b border-x-[1px] bg-white text-sm">
-              {{ (parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1 }}
+            <td class="px-5 py-5 border-brand border-x-[1px] bg-white text-sm">
+              {{
+                (parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1
+              }}
             </td>
             <td
               v-for="key in uniqueKeys"
@@ -90,7 +96,7 @@
             </td>
             <!-- template for additional code -->
             <template v-for="(col, index) in additionalColumns" :key="`${index}`">
-              <td class="px-5 py-5 border-b border-brand bg-white text-sm">
+              <td class="px-5 py-5 border-b border-x-[1px] border-brand bg-white text-sm">
                 <!--call the function define form the parent. It is passed as a props-->
                 <button @click="col.action(product)">
                   {{ formatKey(col.name) }}
@@ -103,7 +109,9 @@
           <!-- Loop through product which represents Items for each row -->
           <tr v-for="(product, index) in products" :key="product.id">
             <td class="px-5 py-5 border-brand border-x-[1px] bg-white text-sm">
-              {{ (parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1 }}
+              {{
+                (parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1
+              }}
             </td>
             <td
               v-for="key in uniqueKeys"
@@ -152,7 +160,7 @@
             :key="index"
             :class="{
               'bg-blue-500': currentPage === link,
-              'bg-gray-200': currentPage !== link
+              'bg-gray-200': currentPage !== link,
             }"
             class="flex items-center justify-center min-w-[32px] h-[32px] rounded-full cursor-pointer text-white"
           >
@@ -170,36 +178,36 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watchEffect, watch } from 'vue'
-import { useReadComposable } from '@/composable/useReadComposable'
-import AuthInput from '@/components/UI/Input/AuthInput.vue'
+import { onMounted, ref, watchEffect, watch } from "vue";
+import { useReadComposable } from "@/composable/useReadComposable";
+import AuthInput from "@/components/UI/Input/AuthInput.vue";
 
 //import PaginationComponent from '@/components/UI/Pagination/DataTablePagination.vue';
-const searchQuery = ref('')
+const searchQuery = ref("");
 
 const props = defineProps({
   endpoint: String,
   excludedKeys: {
     type: Array,
-    default: () => ['id']
+    default: () => ["id"],
   },
   clickableKeys: {
     type: Object,
-    default: () => ({})
+    default: () => ({}),
   },
   additionalColumns: {
     type: Array,
-    default: () => []
+    default: () => [],
   },
   toggleButtonLabel: {
     type: String,
-    default: 'Add'
+    default: "Add",
   },
   hideToggleButtonLabel: {
     type: Boolean,
-    default: true
-  }
-})
+    default: true,
+  },
+});
 
 const {
   products,
@@ -212,30 +220,30 @@ const {
   formatKey,
   isMediaKey,
   fetchPage,
-  paginationArray
-} = useReadComposable(props)
+  paginationArray,
+} = useReadComposable(props);
 
 //console.log(products.value)
 onMounted(async () => {
-  await fetchPage(props.endpoint, 1)
-})
-const filteredProducts = ref([])
+  await fetchPage(props.endpoint, 1);
+});
+const filteredProducts = ref([]);
 
 const search = () => {
   filteredProducts.value = products?.value?.filter((product) => {
     return Object.values(product).some((value) =>
       value.toString().toLowerCase().includes(searchQuery.value.toLowerCase())
-    )
-  })
-}
+    );
+  });
+};
 watch(searchQuery, () => {
-  search()
-})
+  search();
+});
 watchEffect(async () => {
-  await fetchPage(props.endpoint, 1)
-})
+  await fetchPage(props.endpoint, 1);
+});
 function clear() {
-  searchQuery.value = ''
+  searchQuery.value = "";
 }
 </script>
 
