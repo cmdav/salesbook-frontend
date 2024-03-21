@@ -37,7 +37,7 @@ const props = defineProps({
   url: String,
 });
 const { items, url } = toRefs(props);
-
+//console.log(items.value)
 const { deleteForm, loading, showDeleteModal } = useDeleteComposable(
   url.value,
   items.value
