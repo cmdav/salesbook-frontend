@@ -97,7 +97,7 @@
             </td>
             <!-- template for additional code -->
             <template v-for="(col, index) in additionalColumns" :key="`${index}`">
-              <td class="px-5 py-5 border-b border-brand bg-white text-sm">
+              <td class="px-5 py-5 border-b border-x-[1px] border-brand bg-white text-sm">
                 <!--call the function define form the parent. It is passed as a props-->
                 <button @click="col.action(product)">
                   {{ formatKey(col.name) }}
