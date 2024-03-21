@@ -241,3 +241,19 @@ export const getMeasurements = async () => {
     throw error
   }
 }
+export const getProductType = async () => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.get(`product-types`, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res)
+    return res.data
+  } catch (error) {
+    catchAxiosError(error)
+    throw error
+  }
+}
