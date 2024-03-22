@@ -70,6 +70,7 @@
       @close="togglePriceModal"
       :formTitle="'Add Price'"
       :fields="priceFormFields"
+      @fieldChanged ="updateSellingPrice"
       @fetchDataForSubCategory="fetchDataForSubCategory"
       :isLoadingMsg="isOptionLoadingMsg"
       :url="'/prices'"
@@ -102,7 +103,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch} from "vue";
 import { useRouter } from "vue-router";
 import { useProductStore } from "@/stores/products";
 const productsStore = useProductStore();
@@ -211,4 +212,22 @@ onMounted(async () => {
     console.error(error);
   }
 });
+
+const updateSellingPrice = (fieldDatabase, value) => {
+   console.log(value)
+
+  if (fieldDatabase === 'auto_generated_selling_price' || fieldDatabase === 'cost_price') {
+    const costPrice = parseFloat(priceFormFields.value.find(field => field.databaseField === 'cost_price')?.value) || 0;
+    const auto_generated_selling_price = parseFloat(priceFormFields.value.find(field => field.databaseField === 'auto_generated_selling_price')?.value) || 0;
+    const totalPriceField = priceFormFields.value.find(field => field.databaseField === 'selling_price');
+    if (totalPriceField) {
+      totalPriceField.value = costPrice + costPrice * (auto_generated_selling_price/100); 
+    }
+  }
+};
+
+
+// Call this function whenever the related fields change.
+watch(() => priceFormFields.value.find(field => field.databaseField === 'auto_generated_selling_price')?.value, updateSellingPrice);
+watch(() => priceFormFields.value.find(field => field.databaseField === 'cost_price')?.value, updateSellingPrice);
 </script>

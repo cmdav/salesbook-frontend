@@ -99,7 +99,7 @@ const forceRefresh = () => {
 
 onMounted(async () => {
   await fetchDataForSelect("Product Type","/all-product-type-name","id","product_type_name");
-  //await fetchDataForSelect("Customer", "/user-detail", "id", "customer_id");
+  await fetchDataForSelect("Customer", "/user-detail", "id", "customer_id");
   await productsStore.handleGetSales();
 });
 
