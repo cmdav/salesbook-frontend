@@ -203,7 +203,7 @@
           </div>
           <div class="chart bg-white rounded-[8px] min-h-[100vh] p-4">
             <DataTableLayout
-              :hideToggleButtonLabel="false"
+              :hideToggleButtonLabel="true"
               :key="forceUpdate"
               endpoint="sales"
             />
