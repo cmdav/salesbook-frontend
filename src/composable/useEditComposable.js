@@ -25,6 +25,7 @@ export function useEditComposable(formFields, url,itemId,emit) {
   };
   
   const handleEdit = (item='') => {
+    console.log(item)
     items.value =item;
     showEditModal.value = true;
     

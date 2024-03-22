@@ -66,8 +66,9 @@ export const priceFormFields = ref([
   { label: 'Product Type', type: 'select', value: '', required: false, placeholder: 'Enter product type ID',options: [], databaseField: "product_type_id" },
   // { label: 'Supplier ID', type: 'text', value: '', required: false, placeholder: 'Enter supplier ID', databaseField: "supplier_id" },
   { label: 'Cost Price', type: 'number', value: null, required: true, placeholder: 'Enter cost price', databaseField: "cost_price" },
+  { label: 'Allow system to generate price', type: 'number', value: 0, required: false, placeholder: 'Enter percentage increase', databaseField: "system_price", min:0},
   { label: 'Selling Price', type: 'number', value: 0, required: false, placeholder: 'Enter selling price', databaseField: "selling_price",min:0 },
-  { label: 'System Price', type: 'number', value: 0, required: false, placeholder: 'Enter system price', databaseField: "system_price", min:0},
+ 
   { label: 'Currency Name', type: 'select', value: '', required: true, placeholder: 'Enter currency ID', databaseField: "currency_id" },
   { label: 'Discount', type: 'number', value: 0, required: false, placeholder: 'Enter discount', databaseField: "discount" },
   { label: 'Status', type: 'select', value: false, required: false, placeholder: 'Enter status', databaseField: "status" ,options:[
@@ -80,12 +81,19 @@ export const priceFormFields = ref([
 
 export const saleFormFields = ref([
   { label: 'Product Type', type: 'select', value: '', required: true, placeholder: 'Enter product type ID', databaseField: "product_type_id" },
-  { label: 'Customer', type: 'select', value: '', required: true, placeholder: 'Enter customer ID', databaseField: "customer_id" },
+  //{ label: 'Customer', type: 'select', value: '', required: true, placeholder: 'Enter customer ID', databaseField: "customer_id" },
+  { label: 'Selling Price', type: 'select', value: null, required: true, placeholder: 'Selling', databaseField: "price_id" },
   { label: 'Price Sold At', type: 'number', value: null, required: true, placeholder: 'Enter price sold at', databaseField: "price_sold_at" },
-  { label: 'Quantity', type: 'number', value: null, required: true, placeholder: 'Enter quantity', databaseField: "quantity"},
-  // { label: 'Sales Owner', type: 'text', value: '', required: true, placeholder: 'Enter sales owner', databaseField: "sales_owner" },
-  // { label: 'Created By', type: 'text', value: '', required: false, placeholder: 'Enter created by', databaseField: "created_by" },
-  // { label: 'Updated By', type: 'text', value: '', required: false, placeholder: 'Enter updated by', databaseField: "updated_by" }
+  { label: 'Quantity', type: 'number', value: 3, required: true, placeholder: 'Enter quantity', databaseField: "quantity"},
+  { label: 'Total Price', type: 'readonly', value: null, required: true, placeholder: 'Total price', databaseField: "total_price"},
+  { label: 'Payment Method', type: 'select', value: null, required: true, placeholder: 'select payment', databaseField: "payment_method" ,options:[
+                                                                                                                      {value:"Cash",label:"Cash"},
+                                                                                                                      {value:"Pos",label:"Pos"},
+                                                                                                                      {value:"Bank Transfer",label:"Bank Transfer"}
+                                                                                                                      ]},
+  { label: 'Customer Fullname', type: 'text', value: '', required: false, placeholder: 'Enter sales owner', databaseField: "sales_owner" },
+  { label: 'Customer Phone Number', type: 'text', value: '', required: false, placeholder: 'Enter created by', databaseField: "created_by" },
+  { label: 'Customer Address', type: 'text', value: '', required: false, placeholder: 'Enter updated by', databaseField: "updated_by" }
 ]);
 
 export const storeFormFields = ref([

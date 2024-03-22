@@ -26,21 +26,32 @@ export function useSelectComposable(formFields, baseSubCategoriesUrl ="", catego
       isOptionLoadingMsg.value = "Please wait";
       try {
         const response = await apiService.get(currentUrl);
-        //console.log(response);
+       
         const subCategoryField = formFields.value.find(field => field.databaseField === subCategoryDatabaseField);
+        console.log(subCategoryField);
         if (subCategoryField) {
           
           if (response.length === 0) {
            
-            subCategoryField.options = [{ value: '', label: 'No Subcategory' }];
+            subCategoryField.options = [{ value: '', label: 'Nothing found' }];
           } else {
            
                 let options = [{ value: '', label: 'Select an option', disabled: true }];
-                    
-                response.forEach(item => {
-                    options.push({ value: item.id, label: item[optionValue] });
-                });
-                subCategoryField.options = options;
+                    console.log(response)
+                    if (Array.isArray(response)) {
+                      response.forEach(item => {
+                          options.push({ value: item.id, label: item[optionValue] });
+                      });
+                  } else if (response && response.id) {
+                    // Handle single object response
+                    options = [{ value: response.id, label: response[optionValue] }];
+                    subCategoryField.options = options;
+                    subCategoryField.value = response.id; // Set the value of the select to the id of the response
+                  } else {
+                    // Handle empty or invalid response
+                    subCategoryField.options = [{ value: '', label: 'Nothing found' }];
+                  }
+            
                 //set the value of the select to match the selected option
                 if (setSelectOption != null) {
                     const matchingOption = options.find(option => option.label === setSelectOption);
@@ -48,6 +59,7 @@ export function useSelectComposable(formFields, baseSubCategoriesUrl ="", catego
                         subCategoryField.value = matchingOption.value;
                     }
                 }
+               
           }
           isOptionLoadingMsg.value= "";
   

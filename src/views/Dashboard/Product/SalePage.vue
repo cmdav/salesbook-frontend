@@ -14,6 +14,7 @@
     <FormModal v-if="showModal" @close="closeModal" :formTitle="'Add Sale'" 
               :fields="saleFormFields"  
                @fetchDataForSubCategory="fetchDataForSubCategory"
+               @fieldChanged="updateTotalPrice"
                :isLoadingMsg="isOptionLoadingMsg"
                :url ="'/sales'"
                >
@@ -38,7 +39,7 @@
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, watch } from "vue";
 import { saleFormFields } from "@/formfields/formFields";
 
 import { useSharedComponent } from "@/composable/useSharedComponent";
@@ -54,8 +55,8 @@ const {
   defineEmits
 } = useSharedComponent();
 const emit = defineEmits("forceRefresh")
-const url = "/all-price-by-product-type";
-const { fetchDataForSelect,fetchDataForSubCategory,isOptionLoadingMsg } = useSelectComposable(saleFormFields, url);
+const url = "/latest-product-type-price";
+const { fetchDataForSelect,fetchDataForSubCategory,isOptionLoadingMsg } = useSelectComposable(saleFormFields, url, "product_type_id","price_id","selling_price");
 const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 
 
@@ -70,12 +71,28 @@ forceUpdate.value ++;
 };
 
 onMounted(async () => {
-  await fetchDataForSelect(
-    "Product Type",
-    "/all-product-type-name",
-    "id",
-    "product_type_name"
-  );
-  await fetchDataForSelect("Customer", "/user-detail", "id", "customer_id");
+  await fetchDataForSelect("Product Type","/all-product-type-name","id","product_type_name");
+  //await fetchDataForSelect("Customer", "/user-detail", "id", "customer_id");
 });
+
+// Method to update the total price
+
+const updateTotalPrice = (fieldDatabase, value) => {
+   console.log(value)
+
+  if (fieldDatabase === 'price_sold_at' || fieldDatabase === 'quantity') {
+    const sellingPrice = parseFloat(saleFormFields.value.find(field => field.databaseField === 'price_sold_at')?.value) || 0;
+    const quantity = parseFloat(saleFormFields.value.find(field => field.databaseField === 'quantity')?.value) || 0;
+    const totalPriceField = saleFormFields.value.find(field => field.databaseField === 'total_price');
+    if (totalPriceField) {
+      totalPriceField.value = sellingPrice * quantity; 
+    }
+  }
+};
+
+
+// Call this function whenever the related fields change.
+watch(() => saleFormFields.value.find(field => field.databaseField === 'price_sold_at')?.value, updateTotalPrice);
+watch(() => saleFormFields.value.find(field => field.databaseField === 'quantity')?.value, updateTotalPrice);
+
 </script>

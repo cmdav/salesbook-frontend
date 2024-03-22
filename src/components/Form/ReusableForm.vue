@@ -87,6 +87,7 @@
         type="number"
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
         v-model.number="field.value"
+        @input="$emit('fieldChanged', field.databaseField, parseFloat(field.value) || 0)"
         :name="field.databaseField"
         :required="field.required"
         :placeholder="field.placeholder"
@@ -137,7 +138,7 @@ const { fields, isLoadingMsg, allError, imagePath } = defineProps({
   },
   isLoadingMsg: String,
 });
-const emit = defineEmits(["fetchDataForSubCategory", "handleEditCategoryChange"]);
+const emit = defineEmits(["fetchDataForSubCategory", "handleEditCategoryChange",'fieldChanged']);
 console.log(allError);
 const localFields = ref(fields);
 const fileInput = ref(null);

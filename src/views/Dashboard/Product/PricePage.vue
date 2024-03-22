@@ -43,7 +43,7 @@
       v-if="showDeleteModal"
       @close="closeDeleteModal"
       :items="itemsId"
-      :url="computedEndpoint"
+      :url="prices"
       :modalTitle="modalTitle"
     />
   </DashboardLayout>

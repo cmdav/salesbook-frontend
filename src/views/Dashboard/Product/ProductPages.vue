@@ -154,17 +154,7 @@ const {
 const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 
 // fetchDataForSubCategory is emitted
-const {
-  fetchDataForSelect,
-  fetchDataForSubCategory,
-  isOptionLoadingMsg,
-} = useSelectComposable(
-  formFields,
-  url,
-  "category_id",
-  "sub_category_id",
-  "sub_category_name"
-);
+const {fetchDataForSelect,fetchDataForSubCategory,isOptionLoadingMsg}= useSelectComposable(formFields,url,"category_id","sub_category_id","sub_category_name");
 
 const openProductDetailModal = (product) => {
   products.value = product;
