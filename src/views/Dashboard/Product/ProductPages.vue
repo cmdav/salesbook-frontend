@@ -13,7 +13,7 @@
               <span>Total Products</span>
             </div>
             <div class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]">
-              {{ productsStore?.products?.total }}
+              {{ productsStore?.productType?.total }}
             </div>
           </div>
         </div>
@@ -26,7 +26,8 @@
         @toggleModal="showModal = !showModal"
         toggleButtonLabel="Add Product"
         :excludedKeys="['id', 'product_description', 'cat_id']"
-        :clickableKeys="{//this will be render as a closure 
+        :clickableKeys="{
+          //this will be render as a closure
           product_name: openProductDetailModal,
           view_price: navigateToProductTypePrice,
         }"
@@ -205,7 +206,7 @@ onMounted(async () => {
 });
 onMounted(async () => {
   try {
-    await productsStore.handleGetProducts(1);
+    await productsStore.handleGetProductType();
   } catch (error) {
     console.error(error);
   }

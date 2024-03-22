@@ -63,7 +63,15 @@ export const purchaseFormFields = ref([
 ]);
 
 export const priceFormFields = ref([
-  { label: 'Product Type', type: 'select', value: '', required: false, placeholder: 'Enter product type ID',options: [], databaseField: "product_type_id" },
+  {
+    label: 'Product Type',
+    type: 'select',
+    value: '',
+    required: false,
+    placeholder: 'Enter product type ID',
+    options: [],
+    databaseField: 'product_type_id'
+  },
   // { label: 'Supplier ID', type: 'text', value: '', required: false, placeholder: 'Enter supplier ID', databaseField: "supplier_id" },
   { label: 'Cost Price', type: 'number', value: null, required: true, placeholder: 'Enter cost price', databaseField: "cost_price" },
   { label: 'Allow system to generate price', type: 'number', value: 0, required: false, placeholder: 'Enter percentage increase', databaseField: "system_price", min:0},
@@ -76,8 +84,7 @@ export const priceFormFields = ref([
                                                                                                                       {value:"0",label:"Inactive Price"}
                                                                                                                       ]},
   //{ label: 'Organization ID', type: 'text', value: '', required: false, placeholder: 'Enter organization ID', databaseField: "organization_id" },
-
-]);
+])
 
 export const saleFormFields = ref([
   { label: 'Product Type', type: 'select', value: '', required: true, placeholder: 'Enter product type ID', databaseField: "product_type_id" },
@@ -95,6 +102,9 @@ export const saleFormFields = ref([
   { label: 'Customer Phone Number', type: 'text', value: '', required: false, placeholder: 'Enter created by', databaseField: "created_by" },
   { label: 'Customer Address', type: 'text', value: '', required: false, placeholder: 'Enter updated by', databaseField: "updated_by" }
 ]);
+ 
+  
+
 
 export const storeFormFields = ref([
   { label: 'Product Type ID', type: 'text', value: '', required: true, placeholder: 'Enter product type ID', databaseField: "product_type_id" },

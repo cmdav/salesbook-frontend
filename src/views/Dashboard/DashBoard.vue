@@ -39,7 +39,7 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  0
+                  {{ productsStore?.sales?.total }}
                 </div>
               </div>
               <!-- <div class="flex flex-col justify-between">
@@ -172,7 +172,7 @@
               </div>
             </div>
           </div>
-          <div class="chart hidden bg-white rounded-[8px] min-h-[100vh] p-4"></div>
+
           <div class="flex flex-row gap-4">
             <div
               class="bg-white border-secondary-400 border-[1px] pt-6 mt-12 w-full rounded-lg"
@@ -201,6 +201,13 @@
               </div>
             </div>
           </div>
+          <div class="chart bg-white rounded-[8px] min-h-[100vh] p-4">
+            <DataTableLayout
+              :hideToggleButtonLabel="false"
+              :key="forceUpdate"
+              endpoint="sales"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -217,9 +224,37 @@ import { useCustomerstore } from "@/stores/customers";
 import { useProductStore } from "@/stores/products";
 const productsStore = useProductStore();
 const { products } = storeToRefs(productsStore);
-
 import { storeToRefs } from "pinia";
 import { computed } from "vue";
+import { saleFormFields } from "@/formfields/formFields";
+
+import { useSharedComponent } from "@/composable/useSharedComponent";
+
+const {
+  DataTableLayout,
+  usePostComposable,
+  useSelectComposable,
+  defineEmits,
+} = useSharedComponent();
+const emit = defineEmits("forceRefresh");
+const url = "/all-price-by-product-type";
+const { fetchDataForSelect } = useSelectComposable(saleFormFields, url);
+
+const { forceUpdate } = usePostComposable("/sales", saleFormFields);
+
+const forceRefresh = () => {
+  forceUpdate.value++;
+};
+
+onMounted(async () => {
+  await fetchDataForSelect(
+    "Product Type",
+    "/all-product-type-name",
+    "id",
+    "product_type_name"
+  );
+  await fetchDataForSelect("Customer", "/user-detail", "id", "customer_id");
+});
 const store = useStore();
 const feature = computed(() => {
   return Array.isArray(store.features) ? store.features : [];
@@ -234,6 +269,7 @@ onMounted(async () => {
     await supplierStore.allSupplier();
     await CustomerStore.allCustomer();
     await productsStore.handleGetProducts(products?.value?.current_page);
+    await productsStore.handleGetSales();
 
     // await CustomerStore.allCompanyCustomers();
   } catch (error) {
