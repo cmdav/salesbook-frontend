@@ -45,7 +45,11 @@
             <!-- Merge the additional columns with keys from the api -->
             <th
               scope="col"
-              v-for="(col, index) in [...uniqueKeys, ...additionalColumns.map((col) => col.name)]" :key="index"
+              v-for="(col, index) in [
+                ...uniqueKeys,
+                ...additionalColumns.map((col) => col.name),
+              ]"
+              :key="index"
               class="px-5 py-5 border-b-[1px] border-r-[1px] border-gray-200 bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
               :class="
                 index ===
@@ -231,8 +235,15 @@ const filteredProducts = ref([]);
 
 const search = () => {
   filteredProducts.value = products?.value?.filter((product) => {
-    return Object.values(product).some((value) =>
-      value.toString().toLowerCase().includes(searchQuery.value.toLowerCase())
+    return (
+      Object.values(product).some((value) =>
+        value.toString().toLowerCase().includes(searchQuery.value.toLowerCase())
+      ) ||
+      (product.product_type_id &&
+        product.product_type_id
+          .toString()
+          .toLowerCase()
+          .includes(searchQuery.value.toLowerCase()))
     );
   });
 };
