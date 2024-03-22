@@ -58,6 +58,7 @@
           v-for="(option, optionIndex) in field.options"
           :key="optionIndex"
           :value="option.value"
+          :selected="option.value === '0' ? true : false"
         >
           {{ option["label"] }}
         </option>
@@ -66,6 +67,33 @@
         {{ isLoadingMsg }}</span
       >
     </template>
+    <!-- search select -->
+    <!-- <template v-else-if="field.type === 'select'">
+      <div
+        class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[0px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+      >
+        <a-select
+          :id="field.id"
+          class="!w-full"
+          :bordered="false"
+          show-search
+          v-model:value="field.value"
+          @change="handleCategoryChange(selectInput, field.databaseField)"
+          :required="field.required"
+          :name="field.databaseField"
+        >
+          <a-select-option
+            v-for="(option, optionIndex) in field.options"
+            :key="optionIndex"
+            :value="option.value"
+            :selected="option.value === '0' ? true : false"
+            class="w-full"
+          >
+            {{ option["label"] }}
+          </a-select-option>
+        </a-select>
+      </div>
+    </template> -->
     <!-- Image field -->
     <template v-else-if="field.type === 'image'">
       <input
@@ -142,17 +170,55 @@ console.log(allError);
 const localFields = ref(fields);
 const fileInput = ref(null);
 const newImage = ref(imagePath);
-
+// const selectInput = ref(null);
 // emit an event on change
 const handleCategoryChange = (value, field_name) => {
+  // const foundItemId = findItemById(value);
+
   // pass the  selected value and field name
+  // let foundItemId = null;
+  // localFields.value.forEach((field) => {
+  //   const foundItem = field?.options?.find((option) => option.label === value);
+  //   if (foundItem) {
+  //     foundItemId = foundItem.value;
+  //   }
+  // });
+  // console.log(foundItemId, field_name);
+  // if (foundItemId) {
+  //   emit("fetchDataForSubCategory", foundItemId, field_name);
+  //   emit("handleEditCategoryChange", foundItemId, field_name);
+  //   console.log(foundItemId, field_name);
+  // } else {
+  //   console.error(`Item with label '${value}' not found.`);
+  // }
   emit("fetchDataForSubCategory", value, field_name);
   emit("handleEditCategoryChange", value, field_name);
+  // console.log(selectInput.value);
 };
+// Function to find item ID based on label
+// const findItemById = (label) => {
+//   let foundItemId = null;
+//   localFields.value.forEach((field) => {
+//     const foundItem = field?.options?.find((option) => option.label === label);
+//     if (foundItem) {
+//       foundItemId = foundItem.value;
+//     }
+//   });
+//   return foundItemId;
+// };
 
 const handleImageChange = (index, event) => {
   index = 2;
   const file = event.target.files[0];
+  const maxSizeInBytes = 5 * 1024 * 1024; // 5MB max size (adjust as needed)
+
+  if (file && file.size > maxSizeInBytes) {
+    // Handle error for image too big
+    alert("Error: Image size is too big. Please choose an image smaller than 5MB.");
+    newImage.value = null;
+    localFields.value[index].value = null;
+    return;
+  }
   if (file) {
     // Preview the image
     const reader = new FileReader();
