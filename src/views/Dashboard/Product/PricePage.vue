@@ -27,6 +27,7 @@
           <ReusableForm
             :fields="priceFormFields"
             :isLoadingMsg="isLoadingMsg"
+           
             :allError="allError"
           />
           <input
@@ -43,7 +44,7 @@
       v-if="showDeleteModal"
       @close="closeDeleteModal"
       :items="itemsId"
-      :url="computedEndpoint"
+      :url="prices"
       :modalTitle="modalTitle"
     />
   </DashboardLayout>
@@ -113,4 +114,21 @@ const goBack = () => {
 onMounted(async () => {
   await fetchDataForSelect("Currency Name", "/currencies", "id", "currency_name");
 });
+
+// const updateSellingPrice = (fieldDatabase, value) => {
+//    console.log(value)
+
+//   if (fieldDatabase === 'cost_price') {
+//     const costPrice = parseFloat(priceFormFields.value.find(field => field.databaseField === 'cost_price')?.value) || 0;
+//     const auto_generated_selling_price = parseFloat(priceFormFields.value.find(field => field.databaseField === 'auto_generated_selling_price')?.value) || 0;
+//     const totalPriceField = priceFormFields.value.find(field => field.databaseField === 'selling_price');
+//     if (totalPriceField) {
+//       totalPriceField.value = costPrice + costPrice * (auto_generated_selling_price/100); 
+//     }
+//   }
+// };
+
+
+// // Call this function whenever the related fields change.
+// watch(() => priceFormFields.value.find(field => field.databaseField === 'cost_price')?.value, updateSellingPrice);
 </script>

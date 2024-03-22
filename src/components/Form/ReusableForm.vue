@@ -58,7 +58,7 @@
           v-for="(option, optionIndex) in field.options"
           :key="optionIndex"
           :value="option.value"
-          :selected="option.value === '0' ? true : false"
+         
         >
           {{ option["label"] }}
         </option>
@@ -114,6 +114,7 @@
         :id="field.id"
         type="number"
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+        @input="$emit('fieldChanged', field.databaseField, parseFloat(field.value) || 0)"
         v-model.number="field.value"
         :name="field.databaseField"
         :required="field.required"
@@ -165,7 +166,7 @@ const { fields, isLoadingMsg, allError, imagePath } = defineProps({
   },
   isLoadingMsg: String,
 });
-const emit = defineEmits(["fetchDataForSubCategory", "handleEditCategoryChange"]);
+const emit = defineEmits(["fetchDataForSubCategory", "handleEditCategoryChange","fieldChanged"]);
 console.log(allError);
 const localFields = ref(fields);
 const fileInput = ref(null);

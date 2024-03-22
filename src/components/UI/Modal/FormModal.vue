@@ -17,6 +17,7 @@
         <ReusableForm
           :fields="fields"
           @fetchDataForSubCategory="handleFetchDataForSubCategory"
+          @fieldChanged="handleFieldChanged"
           :isLoadingMsg="isLoadingMsg"
         />
         <div class="flex justify-center">
@@ -49,7 +50,7 @@ const { formTitle, fields, url } = defineProps({
 });
 const { usePostComposable, Loader } = useSharedComponent();
 
-const emits = defineEmits(["fetchDataForSubCategory", "close"]);
+const emits = defineEmits(["fetchDataForSubCategory", "close","fieldChanged"]);
 
 const { submitForm, loading } = usePostComposable(url, fields, "", "", emits);
 
@@ -59,6 +60,10 @@ const handleFetchDataForSubCategory = (value, FieldName) => {
   // console.log(value)
   // console.log(FieldName)
   emits("fetchDataForSubCategory", value, FieldName);
+};
+
+const handleFieldChanged = (fieldDatabase, value) => {
+  emits('fieldChanged', fieldDatabase, value); // Re-emit upwards
 };
 
 onMounted(async () => {
