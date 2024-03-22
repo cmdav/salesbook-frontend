@@ -37,7 +37,7 @@
         ]"
       >
         <button @click="togglePriceModal" class="btn-brand">Price</button>
-        <button @click="toggleProductTypeModal" class="btn-brand">
+        <button @click="toggleProductTypeModal" class="btn-brand !px-1.5">
           Add Product Type
         </button>
         <button class="btn-brand">Upload</button>

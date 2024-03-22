@@ -22,7 +22,7 @@
       </div>
       <slot></slot>
       <div v-if="hideToggleButtonLabel">
-        <button @click="$emit('toggleModal')" class="btn-brand">
+        <button @click="$emit('toggleModal')" class="btn-brand !px-2">
           {{ props?.toggleButtonLabel }}
         </button>
       </div>
