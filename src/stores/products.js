@@ -16,7 +16,8 @@ import {
   addMeasurements,
   addProducts,
   getMeasurements,
-  getProductType
+  getProductType,
+  getSales
 } from '@/services/Products'
 
 export const useProductStore = defineStore('Products', () => {
@@ -30,7 +31,16 @@ export const useProductStore = defineStore('Products', () => {
   const stores = ref({})
   const measurements = ref({})
   const productType = ref({})
+ const sales = ref({})
 
+ const handleGetSales = async () => {
+      try {
+        sales.value = await getSales()
+        return sales.value
+      } catch (error) {
+        console.error(error)
+      }
+    }
     const handleGetProductType = async () => {
       try {
         productType.value = await getProductType()
@@ -188,6 +198,8 @@ export const useProductStore = defineStore('Products', () => {
     handleAddProductsSubCategory,
     handleAddMeasurements,
     handleGetProductType,
-    productType
+    productType,
+    handleGetSales,
+    sales
   }
 })
