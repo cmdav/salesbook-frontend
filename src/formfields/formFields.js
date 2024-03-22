@@ -78,7 +78,7 @@ export const priceFormFields = ref([
   { label: 'Selling Price', type: 'number', value: 0, required: false, placeholder: 'Enter selling price', databaseField: "selling_price",min:0 },
  
   { label: 'Currency Name', type: 'select', value: '', required: true, placeholder: 'Enter currency ID', databaseField: "currency_id" },
-  { label: 'Discount', type: 'number', value: 0, required: false, placeholder: 'Enter discount', databaseField: "discount" },
+  // { label: 'Discount', type: 'number', value: 0, required: false, placeholder: 'Enter discount', databaseField: "discount" },
   { label: 'Status', type: 'select', value: '1', required: false, placeholder: 'Enter status', databaseField: "status" ,options:[
                                                                                                                       {value:"1",label:"Active Price"},
                                                                                                                       {value:"0",label:"Inactive Price"}
