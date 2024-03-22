@@ -40,6 +40,7 @@
         <button @click="toggleProductTypeModal" class="btn-brand">
           Add Product Type
         </button>
+        <button class="btn-brand">Upload</button>
       </DataTableLayout>
     </div>
     <!--Modal to add product-->
