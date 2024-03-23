@@ -16,7 +16,7 @@
               :fields="measurementFormFields"  
               
                :isLoadingMsg="isOptionLoadingMsg"
-               :url ="'/measurements'"
+               :url ="'measurements'"
                >
     </FormModal>
     
@@ -35,7 +35,7 @@
       :items="items"
       :formField="measurementFormFields"
       @updated="forceRefresh"
-      :url="'/measurements'"
+      :url="'measurements'"
     />
   </DashboardLayout>
 </template>

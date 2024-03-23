@@ -2,10 +2,10 @@
 
 import { ref } from 'vue';
 import apiService from '@/services/apiService';
-import { useReadComposable} from '@/composable/useReadComposable';
+//import { useReadComposable} from '@/composable/useReadComposable';
 import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
 
-const { fetchPage } = useReadComposable();
+//const { fetchPage } = useReadComposable();
 
 export function usePostComposable(
   url,
@@ -63,10 +63,12 @@ export function usePostComposable(
 
       // Submit FormData to the server
       const submitUrl = postUrl || url
+      
       const response = await apiService.post(submitUrl, formData)
 
       // Assume fetchPage updates some data relevant to the page where form is used
-      await fetchPage(submitUrl, 1)
+      console.log(submitUrl);
+      //await fetchPage(submitUrl, 1)
 
       // Clear form fields
       formFields.forEach((field) => {

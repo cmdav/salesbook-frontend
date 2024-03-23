@@ -29,6 +29,7 @@ export function useSelectComposable(formFields, baseSubCategoriesUrl ="", catego
        
         const subCategoryField = formFields.value.find(field => field.databaseField === subCategoryDatabaseField);
         console.log(subCategoryField);
+        // console.log(response);
         if (subCategoryField) {
           
           if (response.length === 0) {
@@ -37,11 +38,14 @@ export function useSelectComposable(formFields, baseSubCategoriesUrl ="", catego
           } else {
            
                 let options = [{ value: '', label: 'Select an option', disabled: true }];
-                    console.log(response)
+                  
                     if (Array.isArray(response)) {
+                   
                       response.forEach(item => {
                           options.push({ value: item.id, label: item[optionValue] });
                       });
+                      subCategoryField.options = options;
+                     
                   } else if (response && response.id) {
                     // Handle single object response
                     options = [{ value: response.id, label: response[optionValue] }];
@@ -51,7 +55,7 @@ export function useSelectComposable(formFields, baseSubCategoriesUrl ="", catego
                     // Handle empty or invalid response
                     subCategoryField.options = [{ value: '', label: 'Nothing found' }];
                   }
-            
+                
                 //set the value of the select to match the selected option
                 if (setSelectOption != null) {
                     const matchingOption = options.find(option => option.label === setSelectOption);
@@ -85,7 +89,7 @@ const fetchDataForSelect = async (useLabelNameToselectFormFieldToPopulate, endpo
     //console.log(response);
     const fieldObject = defaultFormField.find(f => f.label === useLabelNameToselectFormFieldToPopulate);
     if (fieldObject) {
-      console.log(fieldObject)
+     // console.log(fieldObject)
     //  console.log(response)
    
     //   console.log(optionValue)
