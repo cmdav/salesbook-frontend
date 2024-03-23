@@ -7,24 +7,30 @@ export const catchAxiosError = (error) => {
     const responseData = error.response.data
 
     // Display the main error message
-    if (responseData.message) {
-      toast.error(responseData.message, {
-        timeout: 4000
-      })
-    }
+    // if (responseData.message) {
+    //   toast.error(responseData.message, {
+    //     timeout: 4000
+    //   })
+    // }
 
     // Display individual error messages
-    // if (responseData.errors) {
-    //   for (const key in responseData.errors) {
-    //     if (responseData.errors.hasOwnProperty(key)) {
-    //       responseData.errors[key].forEach((errorMessage) => {
-    //         toast.error(errorMessage, {
-    //           timeout: 6000
-    //         })
-    //       })
-    //     }
-    //   }
-    // }
+    if (responseData.errors) {
+      let errorMessages = ''; // Initialize an empty string to hold all error messages
+      for (const key in responseData.errors) {
+          if (responseData.errors.hasOwnProperty(key)) {
+              responseData.errors[key].forEach((errorMessage) => {
+                  errorMessages += errorMessage + '\n\n'; // Append each error message with a newline character
+              });
+          }
+      }
+      if (errorMessages) {
+          // Display the concatenated error messages in a toast notification
+          toast.error(errorMessages.trim(), { // Trim to remove any trailing newlines
+              timeout: 7000
+          });
+      }
+  }
+  
   } else {
     // Handle generic error when no specific message is available
     toast.error('', {
