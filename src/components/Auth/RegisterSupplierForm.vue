@@ -378,7 +378,7 @@ const handleSupplierSignup = async () => {
     dob: dob.value,
     email: formData.email,
     password: formData.password,
-    password_confirmation: confirmPassword.value,
+    password_confirmation: formData.confirmPassword,
     type_id: 1,
     organization_id: VerificationRespData.value?.data.organization_id,
     role_id: 0,

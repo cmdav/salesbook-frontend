@@ -1,5 +1,5 @@
 <template>
-  <DashboardLayout pageTitle="Produc Category Page">
+  <DashboardLayout pageTitle="Product Category Page">
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
       <DataTableLayout
         @toggleModal="showModal = !showModal"
@@ -11,12 +11,14 @@
         ]"
       />
     </div>
-    <FormModal v-if="showModal" @close="closeModal" :formTitle="'Product Category'" 
-              :fields="productCategoryFormFields"
-             
-               :isLoadingMsg="isOptionLoadingMsg"
-               :url ="'/product-categories'"
-               >
+    <FormModal
+      v-if="showModal"
+      @close="closeModal"
+      :formTitle="'Product Category'"
+      :fields="productCategoryFormFields"
+      :isLoadingMsg="isOptionLoadingMsg"
+      :url="'/product-categories'"
+    >
     </FormModal>
 
     <!-- <EditModal
@@ -47,21 +49,29 @@
 </template>
 
 <script setup>
-
 import { productCategoryFormFields } from "@/formfields/formFields";
 import { useSharedComponent } from "@/composable/useSharedComponent";
 
-console.log(productCategoryFormFields)
-const { DataTableLayout, FormModal, usePostComposable, useEditComposable,EditModal,DeleteModal,
-    useDeleteComposable,defineEmits} = useSharedComponent();
+console.log(productCategoryFormFields);
+const {
+  DataTableLayout,
+  FormModal,
+  usePostComposable,
+  useEditComposable,
+  EditModal,
+  DeleteModal,
+  useDeleteComposable,
+  defineEmits,
+} = useSharedComponent();
 
-const {showModal,forceUpdate,closeModal} = usePostComposable("/product-categories", productCategoryFormFields);
-const emit = defineEmits("forceRefresh")
+const { showModal, forceUpdate, closeModal } = usePostComposable(
+  "/product-categories",
+  productCategoryFormFields
+);
+const emit = defineEmits("forceRefresh");
 const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 const forceRefresh = () => {
-
-forceUpdate.value++; 
-
+  forceUpdate.value++;
 };
 const {
   handleDelete,
