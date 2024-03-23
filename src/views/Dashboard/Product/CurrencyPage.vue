@@ -32,7 +32,7 @@
       @updated="forceRefresh"
       :items="items"
       :formField="currenciesFormFields"
-      :url="'/currencies'"
+      :url="'currencies'"
     />
   </DashboardLayout>
 </template>

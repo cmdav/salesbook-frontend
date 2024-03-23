@@ -192,6 +192,8 @@ const handleCategoryChange = (value, field_name) => {
   // } else {
   //   console.error(`Item with label '${value}' not found.`);
   // }
+  console.log(value)
+  console.log(field_name)
   emit("fetchDataForSubCategory", value, field_name);
   emit("handleEditCategoryChange", value, field_name);
   // console.log(selectInput.value);

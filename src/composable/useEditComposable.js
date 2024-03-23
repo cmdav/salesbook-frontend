@@ -2,11 +2,11 @@
 
 import { ref} from 'vue';
 import apiService from '@/services/apiService';
-import { useReadComposable} from '@/composable/useReadComposable';
+//import { useReadComposable} from '@/composable/useReadComposable';
 import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
 
 
-const { fetchPage } = useReadComposable();
+//const { fetchPage } = useReadComposable();
 
 export function useEditComposable(formFields, url,itemId,emit) {
     
@@ -65,13 +65,14 @@ export function useEditComposable(formFields, url,itemId,emit) {
        formData.append('_method', 'PUT')
        const response = await apiService.post(Url, formData);
       
-       console.log(response);
+      // console.log(response);
   
        // Clear form fields
        formFields.value.forEach(field => {
          field.value = ''; 
       });
-       fetchPage(url, 1)
+      // console.log(url);
+      //  fetchPage(url, 1)
        
     
       emit("close")
