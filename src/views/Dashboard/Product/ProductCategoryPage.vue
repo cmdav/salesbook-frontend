@@ -5,6 +5,7 @@
         @toggleModal="showModal = !showModal"
         :key="forceUpdate"
         endpoint="product-categories"
+        searchEndpoint="search-product-categories"
         :additionalColumns="[
           { name: 'edit', action: handleEdit },
           { name: 'delete', action: handleDelete },

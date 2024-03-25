@@ -22,6 +22,7 @@
         @toggleModal="showModal = !showModal"
         :key="forceUpdate"
         endpoint="sales"
+        searchEndpoint="search-sales"
         :additionalColumns="[
           { name: 'edit', action: handleEdit },
           { name: 'delete', action: handleDelete },

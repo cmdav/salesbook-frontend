@@ -17,21 +17,19 @@ import EditModal from "@/components/UI/Modal/EditModal.vue";
 export function useSharedComponent() {
   
     return {
-      
-        DataTableLayout,
-        FormModal,
-        ViewModal,
-        ViewModalDetail,
-        ReusableForm,
-        Loader,
-        usePostComposable,
-        useSelectComposable,
-        useEditComposable,
-        useReadComposable,
-        useDeleteComposable,
-        DeleteModal,
-        EditModal,
-        defineEmits
-      
-    };
+      DataTableLayout,
+      FormModal,
+      ViewModal,
+      ViewModalDetail,
+      ReusableForm,
+      Loader,
+      usePostComposable,
+      useSelectComposable,
+      useEditComposable,
+      useReadComposable,
+      useDeleteComposable,
+      DeleteModal,
+      EditModal,
+      defineEmits
+    }
 }

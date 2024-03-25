@@ -8,9 +8,10 @@
         :hideToggleButtonLabel="false"
         :key="forceUpdate"
         endpoint="stores"
+        searchEndpoint="search-stores"
         :additionalColumns="[
           { name: 'edit', action: handleEdit },
-          { name: 'delete', action: handleDelete },
+          { name: 'delete', action: handleDelete }
         ]"
       />
     </div>
@@ -28,14 +29,14 @@
 <script setup>
 //import { onMounted } from 'vue';
 
-import { useSharedComponent } from "@/composable/useSharedComponent";
+import { useSharedComponent } from '@/composable/useSharedComponent'
 
 const {
   DataTableLayout,
   //usePostComposable,
   DeleteModal,
-  useDeleteComposable,
-} = useSharedComponent();
+  useDeleteComposable
+} = useSharedComponent()
 
 //const formTitle = "Add Store";
 
@@ -43,10 +44,5 @@ const {
 //   showModal,
 
 // } = usePostComposable("/stores", cu);
-const {
-  handleDelete,
-  showDeleteModal,
-  itemsId,
-  closeDeleteModal,
-} = useDeleteComposable();
+const { handleDelete, showDeleteModal, itemsId, closeDeleteModal } = useDeleteComposable()
 </script>

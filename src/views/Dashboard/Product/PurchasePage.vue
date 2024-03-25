@@ -5,18 +5,22 @@
         @toggleModal="showModal = !showModal"
         :key="forceUpdate"
         endpoint="purchases"
+        searchEndpoint="search-purchases"
         :additionalColumns="[
           { name: 'edit', action: handleEdit },
           { name: 'delete', action: handleDelete },
         ]"
       />
     </div>
-    <FormModal v-if="showModal" @close="closeModal" :formTitle="'Add Purchase'" 
-              :fields="purchaseFormFields"  
-               @fetchDataForSubCategory="fetchDataForSubCategory"
-               :isLoadingMsg="isOptionLoadingMsg"
-               :url ="'/purchases'"
-               >
+    <FormModal
+      v-if="showModal"
+      @close="closeModal"
+      :formTitle="'Add Purchase'"
+      :fields="purchaseFormFields"
+      @fetchDataForSubCategory="fetchDataForSubCategory"
+      :isLoadingMsg="isOptionLoadingMsg"
+      :url="'/purchases'"
+    >
     </FormModal>
     <DeleteModal
       v-if="showDeleteModal"
@@ -51,32 +55,39 @@ const {
   useSelectComposable,
   DeleteModal,
   useDeleteComposable,
-  defineEmits
+  defineEmits,
 } = useSharedComponent();
 
-
 const url = "/all-price-by-product-type";
-const emit = defineEmits("forceRefresh")
+const emit = defineEmits("forceRefresh");
 
-
-const {handleDelete,showDeleteModal,itemsId,closeDeleteModal,} = useDeleteComposable();
-const { fetchDataForSelect, fetchDataForSubCategory ,isOptionLoadingMsg} = useSelectComposable(
-  purchaseFormFields,
-  url,
-  "Product Type",
-  "Price",
-  "cost_price"
+const {
+  handleDelete,
+  showDeleteModal,
+  itemsId,
+  closeDeleteModal,
+} = useDeleteComposable();
+const {
+  fetchDataForSelect,
+  fetchDataForSubCategory,
+  isOptionLoadingMsg,
+} = useSelectComposable(purchaseFormFields, url, "Product Type", "Price", "cost_price");
+const { showModal, forceUpdate, closeModal } = usePostComposable(
+  "/purchases",
+  purchaseFormFields
 );
-const {showModal,forceUpdate,closeModal} = usePostComposable("/purchases", purchaseFormFields);
 const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 
 const forceRefresh = () => {
-
-forceUpdate.value++; 
-
+  forceUpdate.value++;
 };
 // Fetch data for select options on component mount
 onMounted(async () => {
-  await fetchDataForSelect("Product Type","/all-product-type-name","id","product_type_name");
+  await fetchDataForSelect(
+    "Product Type",
+    "/all-product-type-name",
+    "id",
+    "product_type_name"
+  );
 });
 </script>

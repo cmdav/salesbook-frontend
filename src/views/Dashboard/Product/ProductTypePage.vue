@@ -16,6 +16,7 @@
         @toggleModal="showModal = !showModal"
         :key="forceUpdate"
         :endpoint="computedEndpoint"
+        searchEndpoint="search-product-types"
         :clickableKeys="{ view_price: navigateToPrice }"
       />
     </div>
