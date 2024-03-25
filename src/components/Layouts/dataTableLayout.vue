@@ -108,7 +108,7 @@
               </template>
             </tr>
           </tbody>
-          <tbody v-else>
+          <tbody v-if="searchQuery === ''">
             <!-- Loop through product which represents Items for each row -->
             <tr v-for="(product, index) in products" :key="product.id">
               <td class="px-5 py-5 border-brand border-x-[1px] bg-white text-sm">
@@ -156,6 +156,12 @@
             </tr>
           </tbody>
         </table>
+        <div
+          v-if="searchResults?.length === 0 && searchQuery"
+          class="flex justify-center py-10 text-lg"
+        >
+          <p class="font-light italic">Record not found</p>
+        </div>
       </div>
       <!--- Pagination link -->
       <div
