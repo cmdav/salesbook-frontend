@@ -158,7 +158,11 @@
         </table>
       </div>
       <!--- Pagination link -->
-      <div class="flex overflow-x-auto mt-4" v-if="lastPage > 1">
+      <div
+        :class="searchResults?.length ? '!hidden' : 'flex'"
+        class="overflow-x-auto mt-4"
+        v-if="lastPage > 1"
+      >
         <ul class="flex space-x-2">
           <li
             v-for="(link, index) in paginationArray"
