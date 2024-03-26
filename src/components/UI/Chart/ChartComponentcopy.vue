@@ -3,7 +3,7 @@
     <apexchart
       class="pl-[10px] h-auto pr-[18px]"
       type="line"
-      height="350"
+      height="300"
       :options="chartOptions"
       :series="series"
     />
@@ -127,11 +127,11 @@ export default {
   methods: {},
   beforeUnmount() {},
   mounted() {
-    const chartDatas = this.chartData;
+    const Data = this.chartData;
 
-    const dataValues = chartDatas.map((item) => item.daily_profit);
+    const dataValues = Data?.map((item) => item.daily_profit);
 
-    console.log(dataValues, chartDatas);
+    console.log(dataValues, this.chartData);
     this.series[0].data = dataValues;
 
     // this.setChatContainerHeight();

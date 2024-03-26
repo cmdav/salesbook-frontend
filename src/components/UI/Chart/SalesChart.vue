@@ -3,18 +3,18 @@
     <apexchart
       class="pl-[10px] h-auto pr-[18px]"
       type="line"
-      height="350"
+      height="300"
       :options="chartOptions"
       :series="series"
     />
   </div>
 </template>
 <script>
-import VueApexCharts from "vue3-apexcharts";
-import dayjs from "dayjs";
+import VueApexCharts from 'vue3-apexcharts'
+import dayjs from 'dayjs'
 export default {
   components: {
-    Apexchart: VueApexCharts,
+    Apexchart: VueApexCharts
   },
   props: { title: String, chartData: Object },
   data() {
@@ -23,23 +23,23 @@ export default {
         {
           name: `${this.title}`,
           data: [],
-          color: "#7A4504",
-        },
+          color: '#7A4504'
+        }
       ],
       chartOptions: {
         chart: {
           height: 350,
-          type: "line",
+          type: 'line',
           zoom: {
-            enabled: false,
-          },
+            enabled: false
+          }
         },
         dataLabels: {
-          enabled: false,
+          enabled: false
         },
         stroke: {
-          curve: "smooth",
-          width: 3,
+          curve: 'smooth',
+          width: 3
         },
         // fill: {
         //   type: "gradient",
@@ -57,17 +57,16 @@ export default {
           tickAmount: 7,
           labels: {
             formatter: function (value) {
-              return value.toFixed(0) + "k"; // Replace 'Prefix' with your desired prefix
+              return value.toFixed(0) + 'k' // Replace 'Prefix' with your desired prefix
             },
             style: {
-              cssClass:
-                "!font-primary font-bold !text-[#97A6A899] !text-[12px] opacity-40", // Add your custom font class name here
-            },
-          },
+              cssClass: '!font-primary font-bold !text-[#97A6A899] !text-[12px] opacity-40' // Add your custom font class name here
+            }
+          }
         },
         title: {
           text: `${this.title} Trends by Weekly`,
-          align: "left",
+          align: 'left'
         },
         grid: {
           // row: {
@@ -75,63 +74,63 @@ export default {
           //   opacity: 0.5,
           // },
           show: true,
-          borderColor: "#C35214",
+          borderColor: '#C35214',
           strokeDashArray: 2,
-          position: "back",
+          position: 'back',
           xaxis: {
             lines: {
-              show: true,
-            },
+              show: true
+            }
           },
           yaxis: {
             lines: {
-              show: false,
-            },
+              show: false
+            }
           },
           row: {
             colors: undefined,
-            opacity: 0.5,
+            opacity: 0.5
           },
           column: {
             colors: undefined,
-            opacity: 0.5,
+            opacity: 0.5
           },
           padding: {
             top: 0,
             right: 0,
             bottom: 0,
-            left: 0,
-          },
+            left: 0
+          }
         },
         xaxis: {
-          categories: ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"],
+          categories: ['Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'],
           tickAmount: 8,
           labels: {
             style: {
-              cssClass:
-                "!font-primary font-bold !text-[#97A6A899] !text-[12px] opacity-40", // Add your custom font class name here
-            },
-          },
+              cssClass: '!font-primary font-bold !text-[#97A6A899] !text-[12px] opacity-40' // Add your custom font class name here
+            }
+          }
         },
-      },
-    };
+        monthNumber: dayjs().format('M')
+      }
+    }
   },
   computed: {
     getMonth() {
       return {
-        number: dayjs().format("M"),
-        month: dayjs().format("MMM"),
-      };
-    },
+        number: dayjs().format('M'),
+        month: dayjs().format('MMM')
+      }
+    }
   },
   methods: {},
   beforeUnmount() {},
   mounted() {
-    const chartDatas = this.chartData;
-    const dataValues = chartDatas.map((item) => item.daily_sales);
+    // const chartDatas = this.chartData;
+    const dataValues = this.chartData?.map((item) => item.daily_sales)
 
-    console.log(dataValues, chartDatas);
-    this.series[0].data = dataValues;
-  },
-};
+    console.log(dataValues, this.chartData)
+    this.series[0].data = dataValues
+  }
+}
 </script>
