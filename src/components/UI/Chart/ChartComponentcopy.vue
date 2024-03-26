@@ -52,9 +52,8 @@ export default {
         //   },
         // },
         yaxis: {
-          min: 1,
-          max: 100,
-          tickAmount: 7,
+          min: 0,
+          // tickAmount: 5,
           labels: {
             formatter: function (value) {
               return value.toFixed(0) + "k"; // Replace 'Prefix' with your desired prefix
