@@ -13,12 +13,12 @@
                 <div
                   class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
                 >
-                  <span>Total Transactions</span>
+                  <span>Total Product Type</span>
                 </div>
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  0
+                  {{ dashboardSataus?.total_product_type }}
                 </div>
               </div>
             </div>
@@ -72,7 +72,7 @@
             <div
               v-if="feature.includes('SUPPLIER')"
               class="flex flex-row justify-between rounded-[8px] p-4"
-              style="background-color: rgb(6, 194, 112)"
+              style="background-color: rgb(44, 43, 108)"
             >
               <div>
                 <!-- <div class="icon">
@@ -86,7 +86,7 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  {{ Supplier?.total }}
+                  {{ dashboardSataus?.suppliers }}
                 </div>
               </div>
             </div>
@@ -94,7 +94,7 @@
             <div
               v-if="feature.includes('CUSTOMERS')"
               class="flex flex-row justify-between rounded-[8px] p-4"
-              style="background-color: rgb(0, 175, 239)"
+              style="background-color: rgb(123, 97, 255)"
             >
               <div>
                 <!-- <div class="icon"><img src="/assets/active-c00dd557.svg" alt="" /></div> -->
@@ -117,7 +117,7 @@
             <div
               v-if="feature.includes('CUSTOMERS')"
               class="flex flex-row justify-between rounded-[8px] p-4"
-              style="background-color: rgb(0, 175, 239)"
+              style="background-color: rgb(123, 97, 255)"
             >
               <div>
                 <!-- <div class="icon"><img src="/assets/active-c00dd557.svg" alt="" /></div> -->
@@ -129,7 +129,7 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  {{ products?.total }}
+                  {{ dashboardSataus?.total_product }}
                 </div>
               </div>
             </div>
@@ -143,12 +143,12 @@
                 <div
                   class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
                 >
-                  <span>Total inactive uses</span>
+                  <span>Total Profits Sold Today</span>
                 </div>
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  0
+                  {{ dashboardSataus?.total_product_type_daily_profits }}
                 </div>
               </div>
             </div>
@@ -162,12 +162,31 @@
                 <div
                   class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
                 >
-                  <span>Total active uses</span>
+                  <span>Total active users</span>
                 </div>
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  0
+                  {{ dashboardSataus?.active_users }}
+                </div>
+              </div>
+            </div>
+            <div
+              v-if="feature.includes('CUSTOMERS')"
+              class="flex flex-row justify-between rounded-[8px] p-4"
+              style="background-color: rgb(44, 43, 108)"
+            >
+              <div>
+                <!-- <div class="icon"><img src="/assets/active-c00dd557.svg" alt="" /></div> -->
+                <div
+                  class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
+                >
+                  <span> Quantity Sold Today</span>
+                </div>
+                <div
+                  class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
+                >
+                  {{ dashboardSataus?.daily_product_type_quantity_sold }}
                 </div>
               </div>
             </div>
@@ -185,7 +204,10 @@
                 </div>
               </div>
               <div class="overflow-x-scroll hide-scrollbar">
-                <ChartComponentcopy title="Sales" />
+                <SalesChart
+                  :chartData="dashboardSataus?.weekly_product_type_quantity_sales"
+                  title="Sales"
+                />
               </div>
             </div>
             <div
@@ -197,7 +219,10 @@
                 </div>
               </div>
               <div class="overflow-x-scroll hide-scrollbar">
-                <ChartComponentcopy title="Profit" />
+                <ChartComponentcopy
+                  :chartData="dashboardSataus?.weekly_product_type_profit_made_per_day"
+                  title="Profit"
+                />
               </div>
             </div>
           </div>
@@ -214,16 +239,21 @@
   </DashboardLayout>
 </template>
 <script setup>
-import { onMounted } from "vue";
-// import ChartComponent from "@/components/UI/Chart/ChartComponent.vue";
+import { onMounted, ref, watch } from "vue";
+import { startOfWeek, format } from "date-fns";
+
+import SalesChart from "@/components/UI/Chart/SalesChart.vue";
 import ChartComponentcopy from "@/components/UI/Chart/ChartComponentcopy.vue";
 import { useStore } from "@/stores/user";
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import { useSupplierStore } from "@/stores/suppliers";
 import { useCustomerstore } from "@/stores/customers";
 import { useProductStore } from "@/stores/products";
+import { useDashboardStore } from "@/stores/dashboardStatus";
+const dashboardStore = useDashboardStore();
 const productsStore = useProductStore();
 const { products } = storeToRefs(productsStore);
+const { dashboardSataus } = storeToRefs(dashboardStore);
 import { storeToRefs } from "pinia";
 import { computed } from "vue";
 import { saleFormFields } from "@/formfields/formFields";
@@ -264,13 +294,38 @@ const supplierStore = useSupplierStore();
 const { Supplier } = storeToRefs(supplierStore);
 const CustomerStore = useCustomerstore();
 const { Customers, companiesCustomers } = storeToRefs(CustomerStore);
+
+const firstDayOfWeek = ref(getFirstDayOfWeek());
+const currentDate = ref(new Date());
+
+function getFirstDayOfWeek() {
+  const today = new Date();
+  return startOfWeek(today, { weekStartsOn: 1 }); // Assuming week starts on Monday (1)
+}
+
+watch(currentDate, () => {
+  const today = new Date();
+  if (today.getDay() === 0) {
+    // If today is Sunday, update firstDayOfWeek
+    firstDayOfWeek.value = getFirstDayOfWeek();
+  }
+});
+
+setInterval(() => {
+  currentDate.value = new Date(); // Update current date every second (for demonstration)
+}, 1000);
+
+console.log(format(firstDayOfWeek.value.toISOString(), "yyyy-MM-dd"));
+console.log(format(currentDate.value.toISOString(), "yyyy-MM-dd"));
 onMounted(async () => {
   try {
     await supplierStore.allSupplier();
     await CustomerStore.allCustomer();
     await productsStore.handleGetProducts(products?.value?.current_page);
     await productsStore.handleGetSales();
-
+    await dashboardStore.handleDashboardSataus(
+      format(firstDayOfWeek.value.toISOString(), "yyyy-MM-dd")
+    );
     // await CustomerStore.allCompanyCustomers();
   } catch (error) {
     console.log(error);
