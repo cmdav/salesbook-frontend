@@ -11,7 +11,9 @@
           { name: 'edit', action: handleEdit },
           { name: 'delete', action: handleDelete },
         ]"
-      />
+      >
+        <button class="btn-brand" @click="closeUploadModal">Upload</button>
+      </DataTableLayout>
     </div>
     <FormModal
       v-if="showModal"
@@ -39,6 +41,12 @@
       @updated="forceRefresh"
       :url="'measurements'"
     />
+    <UploadModal
+      v-if="showUploadModal"
+      @close="closeUploadModal"
+      :url="'measurements'"
+      type="Measurement"
+    />
   </DashboardLayout>
 </template>
 
@@ -61,6 +69,8 @@ const {
   DeleteModal,
   useDeleteComposable,
   defineEmits,
+  UploadModal,
+  useUploadComposable,
 } = useSharedComponent();
 
 const {
@@ -78,6 +88,7 @@ const { showModal, forceUpdate, closeModal } = usePostComposable(
 );
 
 const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
+const { showUploadModal, closeUploadModal } = useUploadComposable(emit);
 
 const forceRefresh = () => {
   forceUpdate.value++;
