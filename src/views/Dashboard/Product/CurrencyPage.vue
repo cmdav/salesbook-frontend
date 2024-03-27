@@ -10,7 +10,9 @@
           { name: 'edit', action: handleEdit },
           { name: 'delete', action: handleDelete },
         ]"
-      />
+      >
+        <button class="btn-brand" @click="closeUploadModal">Upload</button>
+      </DataTableLayout>
     </div>
     <FormModal
       v-if="showModal"
@@ -37,6 +39,12 @@
       :formField="currenciesFormFields"
       :url="'currencies'"
     />
+    <UploadModal
+      v-if="showUploadModal"
+      @close="closeUploadModal"
+      :url="'/currencies'"
+      type="Currency"
+    />
   </DashboardLayout>
 </template>
 
@@ -54,7 +62,10 @@ const {
   DeleteModal,
   EditModal,
   useDeleteComposable,
+  UploadModal,
+  useUploadComposable,
 } = useSharedComponent();
+const { showUploadModal, closeUploadModal } = useUploadComposable();
 
 const { showModal, forceUpdate, closeModal } = usePostComposable(
   "/currencies",

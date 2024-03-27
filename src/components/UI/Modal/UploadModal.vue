@@ -4,7 +4,9 @@
       <header
         class="flex flex-row items-center justify-between border-b-[#000000] pb-[35px] mb-[35px] border-b-[1px]"
       >
-        <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">Upload Suppliers</h4>
+        <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">
+          Upload {{ props.type }}
+        </h4>
         <button @click="$emit('close')" class="text-[30px]">X</button>
       </header>
       <div>

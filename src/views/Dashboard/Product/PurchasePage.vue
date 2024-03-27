@@ -10,7 +10,9 @@
           { name: 'edit', action: handleEdit },
           { name: 'delete', action: handleDelete },
         ]"
-      />
+      >
+        <button class="btn-brand" @click="closeUploadModal">Upload</button>
+      </DataTableLayout>
     </div>
     <FormModal
       v-if="showModal"
@@ -38,6 +40,12 @@
       @updated="forceRefresh"
       :url="'/purchases'"
     />
+    <UploadModal
+      v-if="showUploadModal"
+      @close="closeUploadModal"
+      :url="'/product-sub-categories'"
+      type="ProductSubCategory"
+    />
   </DashboardLayout>
 </template>
 
@@ -56,7 +64,10 @@ const {
   DeleteModal,
   useDeleteComposable,
   defineEmits,
+  UploadModal,
+  useUploadComposable,
 } = useSharedComponent();
+const { showUploadModal, closeUploadModal } = useUploadComposable();
 
 const url = "/all-price-by-product-type";
 const emit = defineEmits("forceRefresh");

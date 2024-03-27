@@ -44,7 +44,7 @@
     <UploadModal
       v-if="showUploadModal"
       @close="closeUploadModal"
-      :url="'measurements'"
+      :url="'/measurements'"
       type="Measurement"
     />
   </DashboardLayout>

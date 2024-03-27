@@ -40,7 +40,7 @@
         <button @click="toggleProductTypeModal" class="btn-brand !px-1.5">
           Add Product Type
         </button>
-        <button class="btn-brand">Upload</button>
+        <button class="btn-brand" @click="closeUploadModal">Upload</button>
       </DataTableLayout>
     </div>
     <!--Modal to add product-->
@@ -71,7 +71,7 @@
       @close="togglePriceModal"
       :formTitle="'Add Price'"
       :fields="priceFormFields"
-      @fieldChanged ="updateSellingPrice"
+      @fieldChanged="updateSellingPrice"
       @fetchDataForSubCategory="fetchDataForSubCategory"
       :isLoadingMsg="isOptionLoadingMsg"
       :url="'/prices'"
@@ -100,11 +100,17 @@
       :subCategoryIdToPopulate="product_sub_category_id"
       :url="'/products'"
     />
+    <UploadModal
+      v-if="showUploadModal"
+      @close="closeUploadModal"
+      :url="'/products'"
+      type="Product"
+    />
   </DashboardLayout>
 </template>
 
 <script setup>
-import { onMounted, ref, watch} from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useProductStore } from "@/stores/products";
 const productsStore = useProductStore();
@@ -129,7 +135,10 @@ const {
   ViewModalDetail,
   defineEmits,
   DeleteModal,
+  UploadModal,
+  useUploadComposable,
 } = useSharedComponent();
+const { showUploadModal, closeUploadModal } = useUploadComposable();
 
 const modalTitle = "View Product";
 const router = useRouter();
@@ -157,7 +166,17 @@ const {
 const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 
 // fetchDataForSubCategory is emitted
-const {fetchDataForSelect,fetchDataForSubCategory,isOptionLoadingMsg}= useSelectComposable(formFields,url,"category_id","sub_category_id","sub_category_name");
+const {
+  fetchDataForSelect,
+  fetchDataForSubCategory,
+  isOptionLoadingMsg,
+} = useSelectComposable(
+  formFields,
+  url,
+  "category_id",
+  "sub_category_id",
+  "sub_category_name"
+);
 
 const openProductDetailModal = (product) => {
   products.value = product;
@@ -215,20 +234,43 @@ onMounted(async () => {
 });
 
 const updateSellingPrice = (fieldDatabase, value) => {
-   console.log(value)
+  console.log(value);
 
-  if (fieldDatabase === 'auto_generated_selling_price' || fieldDatabase === 'cost_price') {
-    const costPrice = parseFloat(priceFormFields.value.find(field => field.databaseField === 'cost_price')?.value) || 0;
-    const auto_generated_selling_price = parseFloat(priceFormFields.value.find(field => field.databaseField === 'auto_generated_selling_price')?.value) || 0;
-    const totalPriceField = priceFormFields.value.find(field => field.databaseField === 'selling_price');
+  if (
+    fieldDatabase === "auto_generated_selling_price" ||
+    fieldDatabase === "cost_price"
+  ) {
+    const costPrice =
+      parseFloat(
+        priceFormFields.value.find((field) => field.databaseField === "cost_price")?.value
+      ) || 0;
+    const auto_generated_selling_price =
+      parseFloat(
+        priceFormFields.value.find(
+          (field) => field.databaseField === "auto_generated_selling_price"
+        )?.value
+      ) || 0;
+    const totalPriceField = priceFormFields.value.find(
+      (field) => field.databaseField === "selling_price"
+    );
     if (totalPriceField) {
-      totalPriceField.value = costPrice + costPrice * (auto_generated_selling_price/100); 
+      totalPriceField.value =
+        costPrice + costPrice * (auto_generated_selling_price / 100);
     }
   }
 };
 
-
 // Call this function whenever the related fields change.
-watch(() => priceFormFields.value.find(field => field.databaseField === 'auto_generated_selling_price')?.value, updateSellingPrice);
-watch(() => priceFormFields.value.find(field => field.databaseField === 'cost_price')?.value, updateSellingPrice);
+watch(
+  () =>
+    priceFormFields.value.find(
+      (field) => field.databaseField === "auto_generated_selling_price"
+    )?.value,
+  updateSellingPrice
+);
+watch(
+  () =>
+    priceFormFields.value.find((field) => field.databaseField === "cost_price")?.value,
+  updateSellingPrice
+);
 </script>
