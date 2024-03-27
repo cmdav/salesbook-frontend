@@ -3,7 +3,7 @@
     <apexchart
       class="pl-[10px] h-auto pr-[18px]"
       type="line"
-      height="300"
+      height="400"
       :options="chartOptions"
       :series="series"
     />
@@ -22,7 +22,7 @@ export default {
       series: [
         {
           name: `${this.title}`,
-          data: [],
+          data: null,
           color: "#7A4504",
         },
       ],
@@ -56,7 +56,24 @@ export default {
           // tickAmount: 5,
           labels: {
             formatter: function (value) {
-              return value.toFixed(0) + "k"; // Replace 'Prefix' with your desired prefix
+              let si = [
+                { value: 1, symbol: "" },
+                { value: 1e3, symbol: "K" },
+                { value: 1e6, symbol: "M" },
+                { value: 1e9, symbol: "G" },
+                { value: 1e12, symbol: "T" },
+                { value: 1e15, symbol: "P" },
+                { value: 1e18, symbol: "E" },
+              ];
+              let rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+              let i;
+              for (i = si.length - 1; i > 0; i--) {
+                if (value >= si[i].value) {
+                  break;
+                }
+              }
+              return (value / si[i].value).toFixed(0).replace(rx, "$1") + si[i].symbol;
+              // return value.toFixed(0) + "k"; // Replace 'Prefix' with your desired prefix
             },
             style: {
               cssClass:
@@ -103,7 +120,7 @@ export default {
           },
         },
         xaxis: {
-          categories: ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"],
+          categories: null,
           tickAmount: 8,
           labels: {
             style: {
@@ -127,11 +144,20 @@ export default {
   methods: {},
   beforeUnmount() {},
   mounted() {
-    // const chartDatas = this.chartData;
-    const dataValues = this.chartData?.map((item) => item.daily_sales);
+    const Data = this.chartData;
+    const dataValues = Data?.map((item) => item?.daily_sales);
+    // const dateValues = Data?.map((item) => item?.day);
+    const dateValues = Data?.map((item) => {
+      const date = new Date(item.day);
+      const options = { day: "2-digit", month: "short", weekday: "short" };
+      const dayOfWeek = new Intl.DateTimeFormat("en-US", options).format(date);
+      return `${dayOfWeek}`;
+    });
+    console.log(dateValues, this.chartData);
 
     console.log(dataValues, this.chartData);
     this.series[0].data = dataValues;
+    this.chartOptions.xaxis.categories = dateValues;
   },
 };
 </script>

@@ -18,7 +18,7 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  {{ dashboardSataus?.total_product_type }}
+                  {{ dashboardAutoSataus?.total_product_type }}
                 </div>
               </div>
             </div>
@@ -86,7 +86,7 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  {{ dashboardSataus?.suppliers }}
+                  {{ dashboardAutoSataus?.suppliers }}
                 </div>
               </div>
             </div>
@@ -106,7 +106,7 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  {{ dashboardSataus?.customers }}
+                  {{ dashboardAutoSataus?.customers }}
 
                   <!-- {{
                     Customers?.total + companiesCustomers?.total
@@ -131,7 +131,7 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  {{ dashboardSataus?.total_product }}
+                  {{ dashboardAutoSataus?.total_product }}
                 </div>
               </div>
             </div>
@@ -150,7 +150,7 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  {{ dashboardSataus?.total_product_type_daily_profits }}
+                  {{ dashboardAutoSataus?.total_product_type_daily_profits }}
                 </div>
               </div>
             </div>
@@ -169,7 +169,7 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  {{ dashboardSataus?.active_users }}
+                  {{ dashboardAutoSataus?.active_users }}
                 </div>
               </div>
             </div>
@@ -188,7 +188,7 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  {{ dashboardSataus?.daily_product_type_quantity_sold }}
+                  {{ dashboardAutoSataus?.daily_product_type_quantity_sold }}
                 </div>
               </div>
             </div>
@@ -207,14 +207,26 @@
             >
               <div class="flex lg:flex-row flex-col gap-3 px-4 justify-between mb-4">
                 <div class="flex lg:flex-row flex-col justify-between w-full gap-3">
-                  <div class="flex lg:flex-row flex-col gap-3">
+                  <div
+                    class="flex lg:flex-row flex-col w-full justify-between items-center gap-3"
+                  >
                     <h4>Quantity of sales</h4>
+                    <!-- <div
+                      class="w-[40%] font-light hidden font-Satoshi400 border-neutral-900/[60%] text-[14px] outline-none !p-[0px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+                    >
+                      <a-date-picker
+                        class="!w-full !p-1"
+                        :bordered="false"
+                        v-model:value="salesSelectedDate"
+                        @change="handleSalesChange(salesSelectedDate)"
+                      />
+                    </div> -->
                   </div>
                 </div>
               </div>
               <div class="overflow-x-scroll hide-scrollbar">
                 <SalesChart
-                  :chartData="dashboardSataus?.weekly_product_type_quantity_sales"
+                  :chartData="dashboardAutoSataus?.weekly_product_type_quantity_sales"
                   title="Sales"
                 />
               </div>
@@ -224,12 +236,28 @@
             >
               <div class="flex lg:flex-row flex-col gap-3 px-4 justify-between mb-4">
                 <div class="flex lg:flex-row flex-col justify-between w-full gap-3">
-                  <div class="flex lg:flex-row flex-col gap-3"><h4>Profit</h4></div>
+                  <div
+                    class="flex lg:flex-row flex-col w-full justify-between items-center gap-3"
+                  >
+                    <h4>Profit</h4>
+                    <!-- <div
+                      class="w-[40%] font-light hidden font-Satoshi400 border-neutral-900/[60%] text-[14px] outline-none !p-[0px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+                    >
+                      <a-date-picker
+                        class="!w-full !p-1"
+                        :bordered="false"
+                        v-model:value="ProfitSelectedDate"
+                        @change="handleProfitChange(ProfitSelectedDate)"
+                      />
+                    </div> -->
+                  </div>
                 </div>
               </div>
               <div class="overflow-x-scroll hide-scrollbar">
                 <ChartComponentcopy
-                  :chartData="dashboardSataus?.weekly_product_type_profit_made_per_day"
+                  :chartData="
+                    dashboardAutoSataus?.weekly_product_type_profit_made_per_day
+                  "
                   title="Profit"
                 />
               </div>
@@ -256,7 +284,7 @@ import { useDashboardStore } from "@/stores/dashboardStatus";
 const dashboardStore = useDashboardStore();
 const productsStore = useProductStore();
 const { products } = storeToRefs(productsStore);
-const { dashboardSataus } = storeToRefs(dashboardStore);
+const { dashboardSataus, dashboardAutoSataus } = storeToRefs(dashboardStore);
 import { storeToRefs } from "pinia";
 import { computed } from "vue";
 import { saleFormFields } from "@/formfields/formFields";
@@ -305,6 +333,14 @@ function getFirstDayOfWeek() {
   const today = new Date();
   return startOfWeek(today, { weekStartsOn: 1 }); // Assuming week starts on Monday (1)
 }
+// const ProfitSelectedDate = ref('')
+// const salesSelectedDate = ref('')
+// const handleProfitChange = async (value) => {
+//   await dashboardStore.handleDashboardSataus(format(value.toISOString(), 'yyyy-MM-dd'))
+// }
+// const handleSalesChange = async (value) => {
+//   await dashboardStore.handleDashboardSataus(format(value.toISOString(), 'yyyy-MM-dd'))
+// }
 
 watch(currentDate, () => {
   const today = new Date();
@@ -326,9 +362,11 @@ onMounted(async () => {
     await CustomerStore.allCustomer();
     await productsStore.handleGetProducts(products?.value?.current_page);
     await productsStore.handleGetSales();
-    await dashboardStore.handleDashboardSataus(
-      format(firstDayOfWeek.value.toISOString(), "yyyy-MM-dd")
-    );
+    // await dashboardStore.handleDashboardSataus(
+    //   format(firstDayOfWeek.value.toISOString(), "yyyy-MM-dd")
+    // );
+    await dashboardStore.handleGetDashboardAutoStatus();
+
     // await CustomerStore.allCompanyCustomers();
   } catch (error) {
     console.log(error);
