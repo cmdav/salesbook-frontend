@@ -44,8 +44,8 @@
       v-if="showUploadModal"
       @close="closeUploadModal"
       @updated="forceRefresh"
-      :url="'/product-sub-categories'"
-      type="ProductSubCategory"
+      :url="'/purchases'"
+      type="Purchase"
     />
   </DashboardLayout>
 </template>
