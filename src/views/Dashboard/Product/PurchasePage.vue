@@ -43,6 +43,7 @@
     <UploadModal
       v-if="showUploadModal"
       @close="closeUploadModal"
+      @updated="forceRefresh"
       :url="'/product-sub-categories'"
       type="ProductSubCategory"
     />

@@ -9,10 +9,12 @@ export function useUploadComposable(url, file, type) {
   let showUploadModal = ref(false)
   let errorMessage = ref()
   let loading = ref(false)
+  const forceUpdate = ref(0)
 
   const closeUploadModal = () => {
     showUploadModal.value = !showUploadModal.value
     loading.value = false
+    forceUpdate.value++
   }
   const uploadForm = async () => {
     let formData = new FormData() // Create FormData object to append the file
@@ -24,6 +26,7 @@ export function useUploadComposable(url, file, type) {
       await fetchPage(url.value, 1)
       loading.value = false
       catchAxiosSuccess(response)
+      forceUpdate.value++
       return response
     } catch (error) {
       catchAxiosError(error)
@@ -45,6 +48,7 @@ export function useUploadComposable(url, file, type) {
     closeUploadModal,
     // itemsId,
     uploadForm,
-    loading
+    loading,
+    forceUpdate
   }
 }

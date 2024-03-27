@@ -13,7 +13,7 @@
         <form
           class="flex flex-col gap-[17px]"
           action="POST"
-          @submit.prevent="uploadForm()"
+          @submit.prevent="handleUpload()"
         >
           <div class="flex flex-col gap-[17px]">
             <div class="flex flex-col w-full gap-[10px]">
@@ -69,6 +69,7 @@ import { ref, toRefs } from "vue";
 
 // const { useUploadComposable } = useSharedComponent();
 import { useUploadComposable } from "@/composable/useUploadComposable";
+const emit = defineEmits(["close", "updated"]);
 
 const fileInput = ref(null);
 const fileName = ref("");
@@ -88,7 +89,19 @@ const handleFileChange = () => {
   }
 };
 const { type, url } = toRefs(props);
-const { uploadForm, loading } = useUploadComposable(url, uploadedFile, type);
+const { uploadForm, loading, showUploadModal } = useUploadComposable(
+  url,
+  uploadedFile,
+  type
+);
+const handleUpload = () => {
+  uploadForm();
+  if (showUploadModal.value === false) {
+    emit("updated");
+    emit("close");
+  }
+  // emit("close");
+};
 
 // const handleUploadFile = () => {
 //   try {

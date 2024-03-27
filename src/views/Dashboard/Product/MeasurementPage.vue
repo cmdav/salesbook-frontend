@@ -44,6 +44,7 @@
     <UploadModal
       v-if="showUploadModal"
       @close="closeUploadModal"
+      @updated="forceRefresh"
       :url="'/measurements'"
       type="Measurement"
     />

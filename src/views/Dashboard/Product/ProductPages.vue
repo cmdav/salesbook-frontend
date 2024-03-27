@@ -105,6 +105,7 @@
       @close="closeUploadModal"
       :url="'/products'"
       type="Product"
+      @updated="forceRefresh"
     />
   </DashboardLayout>
 </template>

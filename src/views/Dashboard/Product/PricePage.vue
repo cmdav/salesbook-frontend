@@ -51,6 +51,7 @@
     <UploadModal
       v-if="showUploadModal"
       @close="closeUploadModal"
+      @updated="forceRefresh"
       :url="'/prices'"
       type="Price"
     />
