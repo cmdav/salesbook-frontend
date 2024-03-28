@@ -48,7 +48,7 @@ export function useReadComposable(props = {}) {
     isLoading.value = true;
     hasError.value = false;
     try {
-        console.log(apiUrl);
+      //  console.log(apiUrl);
       const data = await apiService.get(`${apiUrl}?page=${page}`);
       //console.log(data);
       // process paginated endpoint

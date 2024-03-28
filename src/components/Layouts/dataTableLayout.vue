@@ -176,7 +176,7 @@
       </div>
     </div>
     <div v-else-if="isLoading" class="text-center">Loading...</div>
-    <div v-else-if="hasError" class="text-center">The server is not responding.</div>
+    <div v-else-if="hasError" class="text-center">An error occur.</div>
     <div v-else class="text-center">No records found.</div>
   </div>
 </template>

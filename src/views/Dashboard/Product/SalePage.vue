@@ -36,7 +36,7 @@
       @fieldChanged ="updateTotalPrice"
       @fetchDataForSubCategory="fetchDataForSubCategory"
       :isLoadingMsg="isOptionLoadingMsg"
-      :url="'/sales'"
+      :url="'sales'"
     >
     </FormModal>
     <DeleteModal
@@ -53,7 +53,7 @@
       :items="items"
       :formField="saleFormFields"
       @updated="forceRefresh"
-      :url="'/sales'"
+      :url="'sales'"
     />
   </DashboardLayout>
 </template>

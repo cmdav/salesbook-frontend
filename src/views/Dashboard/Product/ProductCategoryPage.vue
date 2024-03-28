@@ -17,7 +17,7 @@
       :formTitle="'Product Category'"
       :fields="productCategoryFormFields"
       :isLoadingMsg="isOptionLoadingMsg"
-      :url="'/product-categories'"
+      :url="'product-categories'"
     >
     </FormModal>
 
@@ -43,7 +43,7 @@
       :items="items"
       @updated="forceRefresh"
       :formField="productCategoryFormFields"
-      :url="'/product-categories'"
+      :url="'product-categories'"
     />
   </DashboardLayout>
 </template>

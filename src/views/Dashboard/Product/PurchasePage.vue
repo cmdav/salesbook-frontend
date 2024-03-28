@@ -15,7 +15,7 @@
               :fields="purchaseFormFields"  
                @fetchDataForSubCategory="fetchDataForSubCategory"
                :isLoadingMsg="isOptionLoadingMsg"
-               :url ="'/purchases'"
+               :url ="'purchases'"
                >
     </FormModal>
     <DeleteModal
@@ -32,7 +32,7 @@
       :items="items"
       :formField="purchaseFormFields"
       @updated="forceRefresh"
-      :url="'/purchases'"
+      :url="'purchases'"
     />
   </DashboardLayout>
 </template>

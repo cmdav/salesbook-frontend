@@ -25,7 +25,7 @@
         endpoint="product-types"
         @toggleModal="showModal = !showModal"
         toggleButtonLabel="Add Product"
-        :excludedKeys="['id', 'product_description', 'cat_id']"
+        :excludedKeys="['id', 'product_description', 'cat_id','product_image','product_type_description']"
         :clickableKeys="{
           //this will be render as a closure
           product_name: openProductDetailModal,
@@ -90,6 +90,7 @@
       :url="'/product-types'"
       :modalTitle="modalTitle"
     />
+    <!--Modal to edit product and product types-->
     <EditModal
       v-if="showEditModal"
       @close="closeEditModal"
@@ -97,7 +98,6 @@
       :items="items"
       @updated="forceRefresh"
       :formField="formFields"
-      :subCategoryIdToPopulate="product_sub_category_id"
       :url="'/products'"
     />
   </DashboardLayout>
@@ -108,8 +108,6 @@ import { onMounted, ref, watch} from "vue";
 import { useRouter } from "vue-router";
 import { useProductStore } from "@/stores/products";
 const productsStore = useProductStore();
-
-//import { formFields, priceFormFields, productTypeFormFields} from '@/formfields/formFields';
 import {
   formFields,
   priceFormFields,
@@ -184,34 +182,10 @@ const forceRefresh = () => {
 onMounted(async () => {
   await fetchDataForSelect("Measurement", "/measurements", "id", "measurement_name");
   await fetchDataForSelect("Category", "/product-categories", "id", "category_name");
-  await fetchDataForSelect(
-    "Product Name",
-    "/all-products",
-    "id",
-    "product_name",
-    productTypeFormFields.value
-  );
-  await fetchDataForSelect(
-    "Product Type",
-    "/all-product-type-name",
-    "id",
-    "product_type_name",
-    priceFormFields.value
-  );
-  await fetchDataForSelect(
-    "Currency Name",
-    "/currencies",
-    "id",
-    "currency_name",
-    priceFormFields.value
-  );
-});
-onMounted(async () => {
-  try {
-    await productsStore.handleGetProductType();
-  } catch (error) {
-    console.error(error);
-  }
+  await fetchDataForSelect( "Product Name", "/all-products","id", "product_name", productTypeFormFields.value);
+  await fetchDataForSelect( "Product Type", "/all-product-type-name","id","product_type_name", priceFormFields.value);
+  await fetchDataForSelect( "Currency Name", "/currencies","id", "currency_name", priceFormFields.value);
+  await productsStore.handleGetProductType();
 });
 
 const updateSellingPrice = (fieldDatabase, value) => {
@@ -222,7 +196,7 @@ const updateSellingPrice = (fieldDatabase, value) => {
     const auto_generated_selling_price = parseFloat(priceFormFields.value.find(field => field.databaseField === 'auto_generated_selling_price')?.value) || 0;
     const totalPriceField = priceFormFields.value.find(field => field.databaseField === 'selling_price');
     if (totalPriceField) {
-      totalPriceField.value = costPrice + costPrice * (auto_generated_selling_price/100); 
+      totalPriceField.value = Math.round(costPrice + costPrice * (auto_generated_selling_price/100)); 
     }
   }
 };

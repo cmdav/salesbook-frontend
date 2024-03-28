@@ -194,9 +194,9 @@ const router = createRouter({
     }
   ],
   scrollBehavior(to, from, savedPosition) {
-    console.log(to);
-    console.log(from);
-    console.log(savedPosition);
+    // console.log(to);
+    // console.log(from);
+    // console.log(savedPosition);
     return { top: 0 
       
     }

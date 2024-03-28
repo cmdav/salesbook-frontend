@@ -15,7 +15,7 @@
               :fields="currenciesFormFields"  
           
                :isLoadingMsg="isOptionLoadingMsg"
-               :url ="'/currencies'"
+               :url ="'currencies'"
                >
     </FormModal>
     <DeleteModal

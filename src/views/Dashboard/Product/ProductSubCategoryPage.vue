@@ -16,7 +16,7 @@
               :fields="productSubCategoryFormFields"
                @fetchDataForSubCategory="fetchDataForSubCategory"
                :isLoadingMsg="isOptionLoadingMsg"
-               :url ="'/product-sub-categories'"
+               :url ="'product-sub-categories'"
                >
     </FormModal>
     <DeleteModal
@@ -32,7 +32,7 @@
       :items="items"
       @updated="forceRefresh"
       :formField="productSubCategoryFormFields"
-      :url="'/product-sub-categories'"
+      :url="'product-sub-categories'"
     />
   </DashboardLayout>
 </template>
