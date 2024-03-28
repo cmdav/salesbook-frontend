@@ -24,7 +24,7 @@
                 >
                   <div class="flex flex-col">
                     <p class="text-[#000000] text-[12.516px] font-Satoshi500">
-                      Uploadfiles, max 10MB each.
+                      Uploadfile, max 10MB each.
                     </p>
                     <CloudUploadIcon class="mx-auto text-primary-900 mt-4" />
                   </div>

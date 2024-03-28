@@ -174,10 +174,10 @@
             v-for="(link, index) in paginationArray"
             :key="index"
             :class="{
-              'bg-blue-500': currentPage === link,
-              'bg-gray-200': currentPage !== link,
+              'bg-blue-500 text-white': currentPage === link,
+              'bg-gray-200 text-blue-500': currentPage !== link,
             }"
-            class="flex items-center justify-center min-w-[32px] h-[32px] rounded-full cursor-pointer text-white"
+            class="flex items-center justify-center min-w-[32px] h-[32px] rounded-full cursor-pointer"
           >
             <a @click.prevent="fetchPage(props.endpoint, link)" class="block">
               {{ link }}

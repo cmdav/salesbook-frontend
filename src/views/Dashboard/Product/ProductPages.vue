@@ -36,11 +36,18 @@
           { name: 'delete', action: handleDelete },
         ]"
       >
-        <button @click="togglePriceModal" class="btn-brand">Price</button>
-        <button @click="toggleProductTypeModal" class="btn-brand !px-1.5">
+        <button @click="togglePriceModal" class="btn-brand !text-sm !px-1.5">
+          Add Price
+        </button>
+        <button @click="toggleProductTypeModal" class="btn-brand !px-1.5 !text-[14px]">
           Add Product Type
         </button>
-        <button class="btn-brand" @click="closeUploadModal">Upload</button>
+        <button class="btn-brand !px-1.5 !text-[14px]" @click="closeUploadModal">
+          Upload Product
+        </button>
+        <!-- <button class="btn-brand !px-1.5 !text-[14px]" @click="closeUploadModal">
+          Upload Product Type
+        </button> -->
       </DataTableLayout>
     </div>
     <!--Modal to add product-->
