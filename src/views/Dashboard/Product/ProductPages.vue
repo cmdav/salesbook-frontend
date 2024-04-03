@@ -194,10 +194,12 @@ const navigateToProductTypePrice = (product) => {
   // router.push({ name: "product-type", params: { id: product.id } });
 };
 
-const toggleProductTypeModal = () => {
+const toggleProductTypeModal = async() => {
+  await fetchDataForSelect( "Product Name", "/all-products","id", "product_name", productTypeFormFields.value);
   showProductTypeModal.value = !showProductTypeModal.value;
 };
-const togglePriceModal = () => {
+const togglePriceModal = async() => {
+  await fetchDataForSelect( "Product Type", "/all-product-type-name","id","product_type_name", priceFormFields.value);
   showPriceModal.value = !showPriceModal.value;
 };
 
@@ -209,8 +211,8 @@ const forceRefresh = () => {
 onMounted(async () => {
   await fetchDataForSelect("Measurement", "/measurements", "id", "measurement_name");
   await fetchDataForSelect("Category", "/product-categories", "id", "category_name");
-  await fetchDataForSelect( "Product Name", "/all-products","id", "product_name", productTypeFormFields.value);
-  await fetchDataForSelect( "Product Type", "/all-product-type-name","id","product_type_name", priceFormFields.value);
+  //await fetchDataForSelect( "Product Name", "/all-products","id", "product_name", productTypeFormFields.value);
+  //await fetchDataForSelect( "Product Type", "/all-product-type-name","id","product_type_name", priceFormFields.value);
   await fetchDataForSelect( "Currency Name", "/currencies","id", "currency_name", priceFormFields.value);
   await productsStore.handleGetProductType();
 });
