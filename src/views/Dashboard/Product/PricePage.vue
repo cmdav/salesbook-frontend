@@ -18,7 +18,9 @@
           { name: 'edit', action: handleEdit },
           { name: 'delete', action: handleDelete },
         ]"
-      />
+      >
+        <button class="btn-brand" @click="closeUploadModal">Upload</button>
+      </DataTableLayout>
     </div>
     <FormModal v-if="showModal" @close="closeModal" :formTitle="formTitle">
       <template v-slot:default>
@@ -27,7 +29,6 @@
           <ReusableForm
             :fields="priceFormFields"
             :isLoadingMsg="isLoadingMsg"
-           
             :allError="allError"
           />
           <input
@@ -47,6 +48,13 @@
       :url="prices"
       :modalTitle="modalTitle"
     />
+    <UploadModal
+      v-if="showUploadModal"
+      @close="closeUploadModal"
+      @updated="forceRefresh"
+      :url="'/prices'"
+      type="Price"
+    />
   </DashboardLayout>
 </template>
 
@@ -64,6 +72,10 @@ import { priceFormFields } from "@/formfields/formFields";
 import DeleteModal from "@/components/UI/Modal/DeleteModal.vue";
 import { useDeleteComposable } from "@/composable/useDeleteComposable";
 import BackIcon from "@/components/icons/BackIcon.vue";
+import { useSharedComponent } from "@/composable/useSharedComponent";
+
+const { UploadModal, useUploadComposable } = useSharedComponent();
+const { showUploadModal, closeUploadModal } = useUploadComposable();
 
 const router = useRouter();
 const route = useRoute();
@@ -123,11 +135,10 @@ onMounted(async () => {
 //     const auto_generated_selling_price = parseFloat(priceFormFields.value.find(field => field.databaseField === 'auto_generated_selling_price')?.value) || 0;
 //     const totalPriceField = priceFormFields.value.find(field => field.databaseField === 'selling_price');
 //     if (totalPriceField) {
-//       totalPriceField.value = costPrice + costPrice * (auto_generated_selling_price/100); 
+//       totalPriceField.value = costPrice + costPrice * (auto_generated_selling_price/100);
 //     }
 //   }
 // };
-
 
 // // Call this function whenever the related fields change.
 // watch(() => priceFormFields.value.find(field => field.databaseField === 'cost_price')?.value, updateSellingPrice);

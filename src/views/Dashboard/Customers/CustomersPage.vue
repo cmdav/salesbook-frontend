@@ -305,10 +305,12 @@
                     <AuthInput
                       label="Date of Birth (optional)"
                       optional
-                      :error="false"
+                      :error="dobError"
                       type="date"
                       placeholder="Enter Date of Birth"
                       v-model="dob"
+                      :max="minDate"
+                      :errorsMsg="dobErrorMsg"
                     />
                   </div>
                   <div class="flex flex-col w-full">
@@ -421,6 +423,19 @@ import { useStore } from "@/stores/user";
 const store = useStore();
 const { userProfileDetails } = storeToRefs(store);
 
+const dobError = ref(false);
+const dobErrorMsg = ref("date of birth is lower than 18");
+
+// Define the minimum date for the Date of Birth field
+const minDate = ref(getMinDate());
+
+function getMinDate() {
+  const today = new Date();
+  const minDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+  // Return the minimum date in the format required by the input[type=date] field
+  return minDate.toISOString().split("T")[0];
+}
+
 const redirectToSingleCustomerPage = (id) => {
   router.push({ name: "view-customers", params: { id } });
 };
@@ -527,6 +542,13 @@ const validateForm = () => {
       isValid = false;
     }
   });
+  const minDOB = new Date(minDate.value);
+  const selectedDOB = new Date(dob.value);
+  if (selectedDOB > minDOB) {
+    // DOB is less than 5 years from today
+    dobError.value = true;
+    isValid = false;
+  }
 
   return isValid;
 };

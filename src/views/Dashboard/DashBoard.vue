@@ -13,12 +13,12 @@
                 <div
                   class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
                 >
-                  <span>Total Transactions</span>
+                  <span>Total Product Type</span>
                 </div>
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  0
+                  {{ dashboardAutoSataus?.total_product_type }}
                 </div>
               </div>
             </div>
@@ -72,7 +72,7 @@
             <div
               v-if="feature.includes('SUPPLIER')"
               class="flex flex-row justify-between rounded-[8px] p-4"
-              style="background-color: rgb(6, 194, 112)"
+              style="background-color: rgb(44, 43, 108)"
             >
               <div>
                 <!-- <div class="icon">
@@ -86,7 +86,7 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  {{ Supplier?.total }}
+                  {{ dashboardAutoSataus?.suppliers }}
                 </div>
               </div>
             </div>
@@ -94,7 +94,7 @@
             <div
               v-if="feature.includes('CUSTOMERS')"
               class="flex flex-row justify-between rounded-[8px] p-4"
-              style="background-color: rgb(0, 175, 239)"
+              style="background-color: rgb(123, 97, 255)"
             >
               <div>
                 <!-- <div class="icon"><img src="/assets/active-c00dd557.svg" alt="" /></div> -->
@@ -106,49 +106,13 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  {{
+                  {{ dashboardAutoSataus?.customers }}
+
+                  <!-- {{
                     Customers?.total + companiesCustomers?.total
                       ? Customers?.total + companiesCustomers?.total
                       : 0
-                  }}
-                </div>
-              </div>
-            </div>
-            <div
-              v-if="feature.includes('CUSTOMERS')"
-              class="flex flex-row justify-between rounded-[8px] p-4"
-              style="background-color: rgb(0, 175, 239)"
-            >
-              <div>
-                <!-- <div class="icon"><img src="/assets/active-c00dd557.svg" alt="" /></div> -->
-                <div
-                  class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
-                >
-                  <span>Total products </span>
-                </div>
-                <div
-                  class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
-                >
-                  {{ products?.total }}
-                </div>
-              </div>
-            </div>
-            <div
-              v-if="feature.includes('CUSTOMERS')"
-              class="flex flex-row justify-between rounded-[8px] p-4"
-              style="background-color: rgb(44, 43, 108)"
-            >
-              <div>
-                <!-- <div class="icon"><img src="/assets/active-c00dd557.svg" alt="" /></div> -->
-                <div
-                  class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
-                >
-                  <span>Total inactive uses</span>
-                </div>
-                <div
-                  class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
-                >
-                  0
+                  }} -->
                 </div>
               </div>
             </div>
@@ -162,68 +126,165 @@
                 <div
                   class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
                 >
-                  <span>Total active uses</span>
+                  <span>Total products </span>
                 </div>
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  0
+                  {{ dashboardAutoSataus?.total_product }}
+                </div>
+              </div>
+            </div>
+            <div
+              v-if="feature.includes('CUSTOMERS')"
+              class="flex flex-row justify-between rounded-[8px] p-4"
+              style="background-color: rgb(44, 43, 108)"
+            >
+              <div>
+                <!-- <div class="icon"><img src="/assets/active-c00dd557.svg" alt="" /></div> -->
+                <div
+                  class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
+                >
+                  <span>Total Profits Sold Today</span>
+                </div>
+                <div
+                  class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
+                >
+                  {{ dashboardAutoSataus?.total_product_type_daily_profits }}
+                </div>
+              </div>
+            </div>
+            <div
+              v-if="feature.includes('CUSTOMERS')"
+              class="flex flex-row justify-between rounded-[8px] p-4"
+              style="background-color: rgb(123, 97, 255)"
+            >
+              <div>
+                <!-- <div class="icon"><img src="/assets/active-c00dd557.svg" alt="" /></div> -->
+                <div
+                  class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
+                >
+                  <span>Total active users</span>
+                </div>
+                <div
+                  class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
+                >
+                  {{ dashboardAutoSataus?.active_users }}
+                </div>
+              </div>
+            </div>
+            <div
+              v-if="feature.includes('CUSTOMERS')"
+              class="flex flex-row justify-between rounded-[8px] p-4"
+              style="background-color: rgb(44, 43, 108)"
+            >
+              <div>
+                <!-- <div class="icon"><img src="/assets/active-c00dd557.svg" alt="" /></div> -->
+                <div
+                  class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
+                >
+                  <span> Quantity Sold Today</span>
+                </div>
+                <div
+                  class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
+                >
+                  {{ dashboardAutoSataus?.daily_product_type_quantity_sold }}
                 </div>
               </div>
             </div>
           </div>
-
-          <div class="flex flex-row gap-4">
+          <!-- <div class="grid lg:grid-rows-2 grid-cols-1 gap-4"> -->
+          <div class="">
+            <DataTableLayout
+              :hideToggleButtonLabel="false"
+              :key="forceRefresh"
+              endpoint="daily-sales"
+            />
+          </div>
+          <div class="flex flex-row gap-4 mt-8">
             <div
-              class="bg-white border-secondary-400 border-[1px] pt-6 mt-12 w-full rounded-lg"
+              class="bg-white border-secondary-400 border-[1px] pt-6 w-full rounded-lg"
             >
               <div class="flex lg:flex-row flex-col gap-3 px-4 justify-between mb-4">
                 <div class="flex lg:flex-row flex-col justify-between w-full gap-3">
-                  <div class="flex lg:flex-row flex-col gap-3">
+                  <div
+                    class="flex lg:flex-row flex-col w-full justify-between items-center gap-3"
+                  >
                     <h4>Quantity of sales</h4>
+                    <!-- <div
+                      class="w-[40%] font-light hidden font-Satoshi400 border-neutral-900/[60%] text-[14px] outline-none !p-[0px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+                    >
+                      <a-date-picker
+                        class="!w-full !p-1"
+                        :bordered="false"
+                        v-model:value="salesSelectedDate"
+                        @change="handleSalesChange(salesSelectedDate)"
+                      />
+                    </div> -->
                   </div>
                 </div>
               </div>
               <div class="overflow-x-scroll hide-scrollbar">
-                <ChartComponentcopy title="Sales" />
+                <SalesChart
+                  :chartData="dashboardAutoSataus?.weekly_product_type_quantity_sales"
+                  title="Sales"
+                />
               </div>
             </div>
             <div
-              class="bg-white border-secondary-400 border-[1px] pt-6 mt-12 w-full rounded-lg"
+              class="bg-white border-secondary-400 border-[1px] pt-6 w-full rounded-lg"
             >
               <div class="flex lg:flex-row flex-col gap-3 px-4 justify-between mb-4">
                 <div class="flex lg:flex-row flex-col justify-between w-full gap-3">
-                  <div class="flex lg:flex-row flex-col gap-3"><h4>Profit</h4></div>
+                  <div
+                    class="flex lg:flex-row flex-col w-full justify-between items-center gap-3"
+                  >
+                    <h4>Profit</h4>
+                    <!-- <div
+                      class="w-[40%] font-light hidden font-Satoshi400 border-neutral-900/[60%] text-[14px] outline-none !p-[0px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+                    >
+                      <a-date-picker
+                        class="!w-full !p-1"
+                        :bordered="false"
+                        v-model:value="ProfitSelectedDate"
+                        @change="handleProfitChange(ProfitSelectedDate)"
+                      />
+                    </div> -->
+                  </div>
                 </div>
               </div>
               <div class="overflow-x-scroll hide-scrollbar">
-                <ChartComponentcopy title="Profit" />
+                <ChartComponentcopy
+                  :chartData="
+                    dashboardAutoSataus?.weekly_product_type_profit_made_per_day
+                  "
+                  title="Profit"
+                />
               </div>
             </div>
           </div>
-          <div class="chart bg-white rounded-[8px] min-h-[100vh] p-4">
-            <DataTableLayout
-              :hideToggleButtonLabel="false"
-              :key="forceUpdate"
-              endpoint="sales"
-            />
-          </div>
+          <!-- </div> -->
         </div>
       </div>
     </div>
   </DashboardLayout>
 </template>
 <script setup>
-import { onMounted } from "vue";
-// import ChartComponent from "@/components/UI/Chart/ChartComponent.vue";
+import { onMounted, ref, watch } from "vue";
+import { startOfWeek, format } from "date-fns";
+
+import SalesChart from "@/components/UI/Chart/SalesChart.vue";
 import ChartComponentcopy from "@/components/UI/Chart/ChartComponentcopy.vue";
 import { useStore } from "@/stores/user";
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import { useSupplierStore } from "@/stores/suppliers";
 import { useCustomerstore } from "@/stores/customers";
 import { useProductStore } from "@/stores/products";
+import { useDashboardStore } from "@/stores/dashboardStatus";
+const dashboardStore = useDashboardStore();
 const productsStore = useProductStore();
 const { products } = storeToRefs(productsStore);
+const { dashboardSataus, dashboardAutoSataus } = storeToRefs(dashboardStore);
 import { storeToRefs } from "pinia";
 import { computed } from "vue";
 import { saleFormFields } from "@/formfields/formFields";
@@ -264,12 +325,47 @@ const supplierStore = useSupplierStore();
 const { Supplier } = storeToRefs(supplierStore);
 const CustomerStore = useCustomerstore();
 const { Customers, companiesCustomers } = storeToRefs(CustomerStore);
+
+const firstDayOfWeek = ref(getFirstDayOfWeek());
+const currentDate = ref(new Date());
+
+function getFirstDayOfWeek() {
+  const today = new Date();
+  return startOfWeek(today, { weekStartsOn: 1 }); // Assuming week starts on Monday (1)
+}
+// const ProfitSelectedDate = ref('')
+// const salesSelectedDate = ref('')
+// const handleProfitChange = async (value) => {
+//   await dashboardStore.handleDashboardSataus(format(value.toISOString(), 'yyyy-MM-dd'))
+// }
+// const handleSalesChange = async (value) => {
+//   await dashboardStore.handleDashboardSataus(format(value.toISOString(), 'yyyy-MM-dd'))
+// }
+
+watch(currentDate, () => {
+  const today = new Date();
+  if (today.getDay() === 0) {
+    // If today is Sunday, update firstDayOfWeek
+    firstDayOfWeek.value = getFirstDayOfWeek();
+  }
+});
+
+setInterval(() => {
+  currentDate.value = new Date(); // Update current date every second (for demonstration)
+}, 1000);
+
+console.log(format(firstDayOfWeek.value.toISOString(), "yyyy-MM-dd"));
+console.log(format(currentDate.value.toISOString(), "yyyy-MM-dd"));
 onMounted(async () => {
   try {
     await supplierStore.allSupplier();
     await CustomerStore.allCustomer();
     await productsStore.handleGetProducts(products?.value?.current_page);
     await productsStore.handleGetSales();
+    // await dashboardStore.handleDashboardSataus(
+    //   format(firstDayOfWeek.value.toISOString(), "yyyy-MM-dd")
+    // );
+    await dashboardStore.handleGetDashboardAutoStatus();
 
     // await CustomerStore.allCompanyCustomers();
   } catch (error) {

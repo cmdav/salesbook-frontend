@@ -22,7 +22,7 @@ export default {
       series: [
         {
           name: `${this.title}`,
-          data: [],
+          data: null,
           color: "#7A4504",
         },
       ],
@@ -129,6 +129,7 @@ export default {
             },
           },
         },
+        monthNumber: dayjs().format("M"),
       },
     };
   },
@@ -144,42 +145,19 @@ export default {
   beforeUnmount() {},
   mounted() {
     const Data = this.chartData;
-
-    // const dataValues = Data?.map((item) => item.daily_profit);
-
+    const dataValues = Data?.map((item) => item?.daily_sales);
+    // const dateValues = Data?.map((item) => item?.day);
     const dateValues = Data?.map((item) => {
       const date = new Date(item.day);
       const options = { day: "2-digit", month: "short", weekday: "short" };
       const dayOfWeek = new Intl.DateTimeFormat("en-US", options).format(date);
       return `${dayOfWeek}`;
     });
-    console.log(this.chartData);
+    console.log(dateValues, this.chartData);
 
-    this.series[0].data = Data?.map((item) => item.daily_profit);
-
+    console.log(dataValues, this.chartData);
+    this.series[0].data = dataValues;
     this.chartOptions.xaxis.categories = dateValues;
-    // this.setChatContainerHeight();
-    // window.addEventListener("resize", this.setChatContainerHeight);
-    // const Incomedata = [25, 32, 98, 85, 10, 93, 50];
-    // // const Widthdrawaldata = [62, 99, 53, 2, 28, 95, 100];
-    // const getFormattedDate = (day) => {
-    //   const date = new Date(2023, 0, day); // Assuming the year is 2023
-    //   const options = { day: "2-digit", month: "short" };
-    //   return date.toLocaleDateString("en-US", options);
-    // };
-    // // Extract x-axis categories and y-axis values from chart data
-    // // const values = Widthdrawaldata.map((item) => item);
-    // const Incomevalues = Incomedata.map((item) => item);
-    // const DateValues = Array.from({ length: 31 }, (_, index) =>
-    //   getFormattedDate(index + 1)
-    // );
-    // // Update chart options and series
-    // this.chartOptions.xaxis.categories = DateValues;
-    // // this.chartSeries[0].data = values;
-    // this.chartSeries[1].data = Incomevalues;
-    // this.renderChart = true;
-    // //Refresh the chart to reflect the updated data
-    // //this.$refs.chart.refresh();
   },
 };
 </script>

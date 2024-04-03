@@ -9,6 +9,7 @@
       :value="modelValue"
       @input="$emit('update:modelValue', $event.target.value)"
       :min="min"
+      :max="max"
     />
     <errorInputIcon v-if="error" class="absolute top-8 right-2" />
     <span v-if="error" class="text-red-600 font-Satoshi400 text-sm">{{ errorsMsg }}</span>
@@ -29,6 +30,7 @@ defineProps({
   label: String,
   labelClasses: String,
   min: String,
+  max: String,
 });
 
 const emit = defineEmits(["update:modelValue"]);

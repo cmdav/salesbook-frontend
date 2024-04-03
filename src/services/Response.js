@@ -38,6 +38,20 @@ export const catchAxiosError = (error) => {
     })
   }
 }
+
+
+export const catchAxiosSuccess = (res) => {
+  if (res?.data?.message) {
+    toast.success(res.data.message, {
+      timeout: 4000
+    })
+  }
+   else if (res?.message) {
+      toast.success(res.message, {
+        timeout: 4000
+      })
+    }
+}
 // export const catchAxiosError = (error) => {
 //       console.log(error.response?.data?.message)
 
@@ -81,13 +95,3 @@ export const catchAxiosError = (error) => {
 //     }
 
 // }
-
-export const catchAxiosSuccess = (res) => {
-
-    if(res?.data?.message){
-        toast.success(res.data.message, {
-            timeout: 4000,
-        });
-    }
-
-}

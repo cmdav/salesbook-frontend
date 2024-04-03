@@ -5,19 +5,34 @@
         @toggleModal="showModal = !showModal"
         :key="forceUpdate"
         endpoint="product-sub-categories"
+        searchEndpoint="search-product-sub-categories"
         :excludedKeys="['id', 'sub_category_id']"
         :additionalColumns="[
           { name: 'edit', action: handleEdit },
           { name: 'delete', action: handleDelete },
         ]"
-      />
+      >
+        <button class="btn-brand" @click="closeUploadModal">Upload</button>
+      </DataTableLayout>
     </div>
+<<<<<<< HEAD
     <FormModal v-if="showModal" @close="closeModal" :formTitle="'Product Sub Category'" 
               :fields="productSubCategoryFormFields"
                @fetchDataForSubCategory="fetchDataForSubCategory"
                :isLoadingMsg="isOptionLoadingMsg"
                :url ="'product-sub-categories'"
                >
+=======
+    <FormModal
+      v-if="showModal"
+      @close="closeModal"
+      :formTitle="'Product Sub Category'"
+      :fields="productSubCategoryFormFields"
+      @fetchDataForSubCategory="fetchDataForSubCategory"
+      :isLoadingMsg="isOptionLoadingMsg"
+      :url="'/product-sub-categories'"
+    >
+>>>>>>> main
     </FormModal>
     <DeleteModal
       v-if="showDeleteModal"
@@ -34,6 +49,13 @@
       :formField="productSubCategoryFormFields"
       :url="'product-sub-categories'"
     />
+    <UploadModal
+      v-if="showUploadModal"
+      @close="closeUploadModal"
+      @updated="forceRefresh"
+      :url="'/product-sub-categories'"
+      type="ProductSubCategory"
+    />
   </DashboardLayout>
 </template>
 
@@ -42,22 +64,37 @@ import { onMounted } from "vue";
 
 import { productSubCategoryFormFields } from "@/formfields/formFields";
 import { useSharedComponent } from "@/composable/useSharedComponent";
-const {DataTableLayout,FormModal, usePostComposable,useEditComposable,EditModal,
-  useSelectComposable,DeleteModal,useDeleteComposable} = useSharedComponent();
+const {
+  DataTableLayout,
+  FormModal,
+  usePostComposable,
+  useEditComposable,
+  EditModal,
+  useSelectComposable,
+  DeleteModal,
+  useDeleteComposable,
+  UploadModal,
+  useUploadComposable,
+} = useSharedComponent();
+const { showUploadModal, closeUploadModal } = useUploadComposable();
 
-const emit = defineEmits("forceRefresh")
-const {handleDelete,showDeleteModal,itemsId,closeDeleteModal,} = useDeleteComposable();
+const emit = defineEmits("forceRefresh");
+const {
+  handleDelete,
+  showDeleteModal,
+  itemsId,
+  closeDeleteModal,
+} = useDeleteComposable();
 
-
-const {showModal,forceUpdate,closeModal,
-} = usePostComposable("/product-sub-categories", productSubCategoryFormFields);
+const { showModal, forceUpdate, closeModal } = usePostComposable(
+  "/product-sub-categories",
+  productSubCategoryFormFields
+);
 const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 const { fetchDataForSelect } = useSelectComposable(productSubCategoryFormFields);
 
 const forceRefresh = () => {
-
-forceUpdate.value++; 
-
+  forceUpdate.value++;
 };
 // Fetch data for select options on component mount
 onMounted(async () => {

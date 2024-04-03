@@ -22,18 +22,21 @@
         @toggleModal="showModal = !showModal"
         :key="forceUpdate"
         endpoint="sales"
+        searchEndpoint="search-sales"
         :additionalColumns="[
           { name: 'edit', action: handleEdit },
           { name: 'delete', action: handleDelete },
         ]"
-      />
+      >
+        <button class="btn-brand" @click="closeUploadModal">Upload</button>
+      </DataTableLayout>
     </div>
     <FormModal
       v-if="showModal"
       @close="closeModal"
       :formTitle="'Add Sale'"
       :fields="saleFormFields"
-      @fieldChanged ="updateTotalPrice"
+      @fieldChanged="updateTotalPrice"
       @fetchDataForSubCategory="fetchDataForSubCategory"
       :isLoadingMsg="isOptionLoadingMsg"
       :url="'sales'"
@@ -54,6 +57,13 @@
       :formField="saleFormFields"
       @updated="forceRefresh"
       :url="'sales'"
+    />
+    <UploadModal
+      v-if="showUploadModal"
+      @close="closeUploadModal"
+      @updated="forceRefresh"
+      :url="'/sales'"
+      type="Sale"
     />
   </DashboardLayout>
 </template>
@@ -76,10 +86,23 @@ const {
   DeleteModal,
   useDeleteComposable,
   defineEmits,
+  UploadModal,
+  useUploadComposable,
 } = useSharedComponent();
-const emit = defineEmits("forceRefresh")
+const { showUploadModal, closeUploadModal } = useUploadComposable();
+const emit = defineEmits("forceRefresh");
 const url = "/latest-product-type-price";
-const { fetchDataForSelect,fetchDataForSubCategory,isOptionLoadingMsg } = useSelectComposable(saleFormFields, url, "product_type_id","price_id","selling_price");
+const {
+  fetchDataForSelect,
+  fetchDataForSubCategory,
+  isOptionLoadingMsg,
+} = useSelectComposable(
+  saleFormFields,
+  url,
+  "product_type_id",
+  "price_id",
+  "selling_price"
+);
 const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 
 const { showModal, forceUpdate, closeModal } = usePostComposable(
@@ -98,7 +121,12 @@ const forceRefresh = () => {
 };
 
 onMounted(async () => {
-  await fetchDataForSelect("Product Type","/all-product-type-name","id","product_type_name");
+  await fetchDataForSelect(
+    "Product Type",
+    "/all-product-type-name",
+    "id",
+    "product_type_name"
+  );
   await fetchDataForSelect("Customer", "/user-detail", "id", "customer_id");
   await productsStore.handleGetSales();
 });
@@ -106,22 +134,35 @@ onMounted(async () => {
 // Method to update the total price
 
 const updateTotalPrice = (fieldDatabase, value) => {
-   console.log(value)
+  console.log(value);
 
-  if (fieldDatabase === 'price_sold_at' || fieldDatabase === 'quantity') {
-    const sellingPrice = parseFloat(saleFormFields.value.find(field => field.databaseField === 'price_sold_at')?.value) || 0;
-    const quantity = parseFloat(saleFormFields.value.find(field => field.databaseField === 'quantity')?.value) || 0;
-    const totalPriceField = saleFormFields.value.find(field => field.databaseField === 'total_price');
+  if (fieldDatabase === "price_sold_at" || fieldDatabase === "quantity") {
+    const sellingPrice =
+      parseFloat(
+        saleFormFields.value.find((field) => field.databaseField === "price_sold_at")
+          ?.value
+      ) || 0;
+    const quantity =
+      parseFloat(
+        saleFormFields.value.find((field) => field.databaseField === "quantity")?.value
+      ) || 0;
+    const totalPriceField = saleFormFields.value.find(
+      (field) => field.databaseField === "total_price"
+    );
     if (totalPriceField) {
-      totalPriceField.value = sellingPrice * quantity; 
+      totalPriceField.value = sellingPrice * quantity;
     }
   }
 };
 
-
 // Call this function whenever the related fields change.
-watch(() => saleFormFields.value.find(field => field.databaseField === 'price_sold_at')?.value, updateTotalPrice);
-watch(() => saleFormFields.value.find(field => field.databaseField === 'quantity')?.value, updateTotalPrice);
-
-
+watch(
+  () =>
+    saleFormFields.value.find((field) => field.databaseField === "price_sold_at")?.value,
+  updateTotalPrice
+);
+watch(
+  () => saleFormFields.value.find((field) => field.databaseField === "quantity")?.value,
+  updateTotalPrice
+);
 </script>

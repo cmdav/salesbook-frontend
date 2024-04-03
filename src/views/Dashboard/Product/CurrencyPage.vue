@@ -5,18 +5,32 @@
         @toggleModal="showModal = !showModal"
         :key="forceUpdate"
         endpoint="currencies"
+        searchEndpoint="search-currency"
         :additionalColumns="[
           { name: 'edit', action: handleEdit },
           { name: 'delete', action: handleDelete },
         ]"
-      />
+      >
+        <button class="btn-brand" @click="closeUploadModal">Upload</button>
+      </DataTableLayout>
     </div>
+<<<<<<< HEAD
     <FormModal v-if="showModal" @close="closeModal" :formTitle="'Add Currency'" 
               :fields="currenciesFormFields"  
           
                :isLoadingMsg="isOptionLoadingMsg"
                :url ="'currencies'"
                >
+=======
+    <FormModal
+      v-if="showModal"
+      @close="closeModal"
+      :formTitle="'Add Currency'"
+      :fields="currenciesFormFields"
+      :isLoadingMsg="isOptionLoadingMsg"
+      :url="'/currencies'"
+    >
+>>>>>>> main
     </FormModal>
     <DeleteModal
       v-if="showDeleteModal"
@@ -34,6 +48,13 @@
       :formField="currenciesFormFields"
       :url="'currencies'"
     />
+    <UploadModal
+      v-if="showUploadModal"
+      @close="closeUploadModal"
+      @updated="forceRefresh"
+      :url="'/currencies'"
+      type="Currency"
+    />
   </DashboardLayout>
 </template>
 
@@ -43,22 +64,34 @@ const modalTitle = "currency_name";
 
 import { useSharedComponent } from "@/composable/useSharedComponent";
 
+const {
+  DataTableLayout,
+  FormModal,
+  usePostComposable,
+  useEditComposable,
+  DeleteModal,
+  EditModal,
+  useDeleteComposable,
+  UploadModal,
+  useUploadComposable,
+} = useSharedComponent();
+const { showUploadModal, closeUploadModal } = useUploadComposable();
 
-const {DataTableLayout,FormModal,usePostComposable, useEditComposable, DeleteModal,EditModal,
-      useDeleteComposable} = useSharedComponent();
+const { showModal, forceUpdate, closeModal } = usePostComposable(
+  "/currencies",
+  currenciesFormFields
+);
 
-
-const {showModal,forceUpdate,closeModal
-        } = usePostComposable("/currencies", currenciesFormFields);
-        
-const { handleEdit, showEditModal, closeEditModal, items} = useEditComposable();
-const { handleDelete, showDeleteModal,itemsId,closeDeleteModal } = useDeleteComposable();
+const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable();
+const {
+  handleDelete,
+  showDeleteModal,
+  itemsId,
+  closeDeleteModal,
+} = useDeleteComposable();
 
 //This trigger a page refresh
 const forceRefresh = () => {
-
-forceUpdate.value ++; 
-
+  forceUpdate.value++;
 };
-
 </script>
