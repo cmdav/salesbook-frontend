@@ -14,14 +14,6 @@
         <button class="btn-brand" @click="closeUploadModal">Upload</button>
       </DataTableLayout>
     </div>
-<<<<<<< HEAD
-    <FormModal v-if="showModal" @close="closeModal" :formTitle="'Add Currency'" 
-              :fields="currenciesFormFields"  
-          
-               :isLoadingMsg="isOptionLoadingMsg"
-               :url ="'currencies'"
-               >
-=======
     <FormModal
       v-if="showModal"
       @close="closeModal"
@@ -30,7 +22,6 @@
       :isLoadingMsg="isOptionLoadingMsg"
       :url="'/currencies'"
     >
->>>>>>> main
     </FormModal>
     <DeleteModal
       v-if="showDeleteModal"

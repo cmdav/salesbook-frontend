@@ -15,14 +15,6 @@
         <button class="btn-brand" @click="closeUploadModal">Upload</button>
       </DataTableLayout>
     </div>
-<<<<<<< HEAD
-    <FormModal v-if="showModal" @close="closeModal" :formTitle="'Product Sub Category'" 
-              :fields="productSubCategoryFormFields"
-               @fetchDataForSubCategory="fetchDataForSubCategory"
-               :isLoadingMsg="isOptionLoadingMsg"
-               :url ="'product-sub-categories'"
-               >
-=======
     <FormModal
       v-if="showModal"
       @close="closeModal"
@@ -32,7 +24,6 @@
       :isLoadingMsg="isOptionLoadingMsg"
       :url="'/product-sub-categories'"
     >
->>>>>>> main
     </FormModal>
     <DeleteModal
       v-if="showDeleteModal"
