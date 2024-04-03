@@ -8,28 +8,33 @@
     </div>
     <!-- The nav -->
     <div class="flex flex-col justify-between h-full w-[90%] !px-0">
-        <nav class="nav !font-light">
-          <template v-for="item in menuItems" :key="item.name">
-            <router-link
-              v-if="!item.feature || feature.includes(item.feature)"
-              :to="item.route"
-              class="p-[10px] flex justify-start hover:bg-brand/[50%] hover:text-white rounded-[5px]"
-              :class="{ 'text-white bg-brand': route.name === item.route.substring(1), 'text-brand': route.name !== item.route.substring(1) }"
+      <nav class="nav !font-light">
+        <template v-for="item in menuItems" :key="item.name">
+          <router-link
+            v-if="!item.feature || feature.includes(item.feature)"
+            :to="item.route"
+            class="p-[10px] flex justify-start hover:bg-brand/[50%] hover:text-white rounded-[5px]"
+            :class="{
+              'text-white bg-brand': route.name === item.route.substring(1),
+              'text-brand': route.name !== item.route.substring(1),
+            }"
+          >
+            <div
+              :class="{
+                'text-white': route.name === item.route.substring(1),
+                'text-brand': route.name !== item.route.substring(1),
+              }"
+              class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
             >
-              <div
-                :class="{ 'text-white': route.name === item.route.substring(1), 'text-brand': route.name !== item.route.substring(1) }"
-                class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
-              >
-                <component :is="item.icon" />
-              </div>
-              <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]">
-                {{ item.name }}
-              </span>
-            </router-link>
-          </template>
-        </nav>
-     </div>
-
+              <component :is="item.icon" />
+            </div>
+            <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]">
+              {{ item.name }}
+            </span>
+          </router-link>
+        </template>
+      </nav>
+    </div>
   </header>
 </template>
 <script setup>
@@ -51,31 +56,49 @@ const feature = computed(() => {
   return Array.isArray(store.features) ? store.features : [];
 });
 
-
-
 const menuItems = [
-  { name: 'Dashboard',                 route: '/dashboard',            icon: homeIcon,       feature: '' },
+  { name: "Dashboard", route: "/dashboard", icon: homeIcon, feature: "" },
   //{ name: 'Store',                     route: '/',                     icon: StoreIcon,      feature: '' },
   // { name: 'Product',             route: '/product', icon: ProductIcon, feature: 'PRODUCT' },
-  { name: 'Measurement',               route: '/measurement',          icon: ProductIcon,     feature: 'MEASUREMENT'},
-  { name: 'Currency',                  route: '/currency',             icon: StoreIcon,     feature: 'CURRENCY'},
-  { name: 'Product Category',          route: '/product-category',     icon: ProductIcon,     feature: 'PRODUCTCATEGORY'},
-  { name: 'Product Sub Category',      route: '/product-sub-category', icon: StoreIcon,       feature: 'PRODUCTSUBCATEGORY'},
-  { name: 'Products',                  route: '/products',             icon: recordsIcon,     feature: 'PRODUCTS' },
+  {
+    name: "Measurement",
+    route: "/measurement",
+    icon: ProductIcon,
+    feature: "MEASUREMENT",
+  },
+  { name: "Currency", route: "/currency", icon: StoreIcon, feature: "CURRENCY" },
+  {
+    name: "Product Category",
+    route: "/product-category",
+    icon: ProductIcon,
+    feature: "PRODUCTCATEGORY",
+  },
+  {
+    name: "Product Sub Category",
+    route: "/product-sub-category",
+    icon: StoreIcon,
+    feature: "PRODUCTSUBCATEGORY",
+  },
+  { name: "Products", route: "/products", icon: recordsIcon, feature: "PRODUCTS" },
   //
   //{ name: 'Product Type',             route: '/product-type',          icon: ProductIcon,     feature: 'PRODUCTTYPE' },
-  //{ name: 'Price',                    route: '/price',                 icon: StoreIcon,     feature: 'PRICE' }, 
-  { name: 'Sale',                     route: '/sale',                  icon: ProductIcon,     feature: 'SALE' },
-  { name: 'Purchase',                 route: '/purchase',              icon: ProductIcon,     feature: 'PURCHASE' },
-  { name: 'Store',                    route: '/store',                 icon: ProductIcon,     feature: 'STORE' },
+  //{ name: 'Price',                    route: '/price',                 icon: StoreIcon,     feature: 'PRICE' },
+  { name: "Sale", route: "/sale", icon: ProductIcon, feature: "SALE" },
+  { name: "Purchase", route: "/purchase", icon: ProductIcon, feature: "PURCHASE" },
+  { name: "Store", route: "/store", icon: ProductIcon, feature: "STORE" },
 
-
-  { name: 'Supplier Product',       route: '/supplier-product',        icon: ProductIcon,      feature: 'SUPPLIER_PRODUCT' },
-  { name: 'Customers',              route: '/customers',               icon: CustomerIcon,     feature: 'CUSTOMERS' },
-  { name: 'Suppliers',              route: '/supplier',                icon: SuppliersIcon,    feature: 'SUPPLIER' },
-  { name: 'Records',                route: '/',                        icon: recordsIcon,      feature: '' },
-  { name: 'Reports',                route: '/',                       icon: reportsIcon,       feature: '' },
-  { name: 'Log Out',                route: '/logout',                 icon: logoutIcon,        feature: '' }
+  {
+    name: "Supplier Product",
+    route: "/supplier-product",
+    icon: ProductIcon,
+    feature: "SUPPLIER_PRODUCT",
+  },
+  { name: "Customers", route: "/customers", icon: CustomerIcon, feature: "CUSTOMERS" },
+  { name: "Suppliers", route: "/supplier", icon: SuppliersIcon, feature: "SUPPLIER" },
+  { name: "Records", route: "/", icon: recordsIcon, feature: "" },
+  { name: "Reports", route: "/", icon: reportsIcon, feature: "" },
+  { name: "settings", route: "/settings", icon: reportsIcon, feature: "" },
+  { name: "Log Out", route: "/logout", icon: logoutIcon, feature: "" },
 ];
 </script>
 
