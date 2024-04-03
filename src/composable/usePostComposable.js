@@ -67,7 +67,7 @@ export function usePostComposable(
       const response = await apiService.post(submitUrl, formData)
 
       // Assume fetchPage updates some data relevant to the page where form is used
-      console.log(submitUrl);
+     // console.log(submitUrl);
       //await fetchPage(submitUrl, 1)
 
       // Clear form fields
@@ -77,10 +77,10 @@ export function usePostComposable(
       })
 
       showModal.value = false
-      forceUpdate.value++
+      //forceUpdate.value++
       loading.value = false
       emit('close')
-      console.log(response)
+      //console.log(response)
       catchAxiosSuccess(response)
       return response
     } catch (error) {

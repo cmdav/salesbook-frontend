@@ -50,7 +50,7 @@ export function useReadComposable(props = {}) {
     try {
       //  console.log(apiUrl);
       const data = await apiService.get(`${apiUrl}?page=${page}`);
-      //console.log(data);
+      console.log('success');
       // process paginated endpoint
       if (data.data && Array.isArray(data.data)) {
         products.value = data.data;

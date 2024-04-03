@@ -302,7 +302,7 @@ watch(searchQuery, () => {
   }
 });
 watchEffect(async () => {
-  await fetchPage(props.endpoint, 1);
+  //await fetchPage(props.endpoint, 1);
 });
 function clear() {
   searchQuery.value = "";
