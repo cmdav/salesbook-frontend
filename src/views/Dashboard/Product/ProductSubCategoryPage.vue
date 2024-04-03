@@ -38,7 +38,7 @@
       :items="items"
       @updated="forceRefresh"
       :formField="productSubCategoryFormFields"
-      :url="'/product-sub-categories'"
+      :url="'product-sub-categories'"
     />
     <UploadModal
       v-if="showUploadModal"

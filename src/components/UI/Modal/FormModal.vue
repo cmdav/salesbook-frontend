@@ -67,9 +67,9 @@ const handleFieldChanged = (fieldDatabase, value) => {
 };
 
 onMounted(async () => {
-  fields.forEach((field) => {
-    field.value = ""; // Reset value, adjust for different types as necessary
-  });
+  // fields.forEach((field) => {
+  //   field.value = ""; // Reset value, adjust for different types as necessary
+  // });
 });
 </script>
 

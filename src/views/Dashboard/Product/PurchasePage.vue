@@ -38,7 +38,7 @@
       :items="items"
       :formField="purchaseFormFields"
       @updated="forceRefresh"
-      :url="'/purchases'"
+      :url="'purchases'"
     />
     <UploadModal
       v-if="showUploadModal"
