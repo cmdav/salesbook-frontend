@@ -23,6 +23,9 @@ export function usePostComposable(
   let errorMessage = ref('')
   let isError = ref(false)
   const closeModal = () => {
+     formFields.value.forEach((field) => {
+        field.value = ""; // Reset value, adjust for different types as necessary
+     });
     showModal.value = false
     forceUpdate.value++
   }
