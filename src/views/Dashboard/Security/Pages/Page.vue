@@ -8,10 +8,14 @@
       :hideToggleButtonLabel="false"
       :key="forceUpdate"
       endpoint="pages"
-      :additionalColumns="[
-        { name: 'edit', action: handleEdit },
-        { name: 'delete', action: handleDelete },
-      ]"
+      :additionalColumns="[{ name: 'delete', action: handleDelete }]"
+    />
+    <DeleteModal
+      v-if="showDeleteModal"
+      @close="closeDeleteModal"
+      :items="itemsId"
+      :url="'/pages'"
+      :modalTitle="modalTitle"
     />
   </div>
 
