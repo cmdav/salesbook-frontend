@@ -3,25 +3,13 @@
     <div
       class="my_applications_tabs lg:flex hidden py-[25.3px] px-[51.65px] justify-between bg-secondary-800/[40%] rounded-[13.076px] border-[0.872px] border-[#F6F6F6] gap-12 mt-6"
     >
-      <a
-        class=""
-        @click="activateTab('tab1')"
-        :class="[activetab === 'tab1' ? 'active' : '']"
-      >
+      <a class="" @click="activateTab('tab1')" :class="[activetab === 'tab1' ? 'active' : '']">
         <slot name="tab1"></slot>
       </a>
-      <a
-        class=""
-        @click="activateTab('tab2')"
-        :class="[activetab === 'tab2' ? 'active' : '']"
-      >
+      <a class="" @click="activateTab('tab2')" :class="[activetab === 'tab2' ? 'active' : '']">
         <slot name="tab2"></slot>
       </a>
-      <a
-        class=""
-        @click="activateTab('tab3')"
-        :class="[activetab === 'tab3' ? 'active' : '']"
-      >
+      <a class="" @click="activateTab('tab3')" :class="[activetab === 'tab3' ? 'active' : '']">
         <slot name="tab3"></slot>
       </a>
     </div>
@@ -58,12 +46,12 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref } from 'vue'
 
-const activetab = ref("tab1");
+const activetab = ref('tab1')
 
 function activateTab(tab) {
-  activetab.value = tab;
+  activetab.value = tab
 }
 </script>
 <style scoped>
@@ -82,7 +70,7 @@ function activateTab(tab) {
 .my_applications_tabs a {
   cursor: pointer;
   transition: color 0.2s;
-  @apply p-0 py-2 text-center text-[15.076px] text-black font-normal;
+  @apply p-4 py-2 text-center text-[15.076px] rounded-lg text-black font-normal;
 }
 
 .my_applications_tabs a:last-child {
@@ -97,7 +85,7 @@ function activateTab(tab) {
 /* Styling for active tab */
 .my_applications_tabs a.active {
   cursor: default;
-  @apply text-black font-semibold;
+  @apply text-white font-semibold bg-secondary-200;
 }
 
 /* Style the tab content */
