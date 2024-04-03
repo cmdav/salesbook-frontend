@@ -32,7 +32,7 @@
       {{ field.label }}
       <span v-if="field.required" class="text-red-500">*</span>
     </label>
-
+    
     <!-- Textarea field -->
     <template v-if="field.type === 'textarea'">
       <textarea

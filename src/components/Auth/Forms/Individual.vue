@@ -53,7 +53,7 @@
             type="date"
             placeholder="Enter Date of Birth"
             v-model="dob"
-            :min="minDate"
+            :max="minDate"
             :errorsMsg="dobErrorMsg"
           />
         </div>
@@ -241,7 +241,7 @@ const minDate = ref(getMinDate());
 
 function getMinDate() {
   const today = new Date();
-  const minDate = new Date(today.getFullYear() - 5, today.getMonth(), today.getDate());
+  const minDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
   // Return the minimum date in the format required by the input[type=date] field
   return minDate.toISOString().split("T")[0];
 }

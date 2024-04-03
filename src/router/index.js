@@ -25,6 +25,8 @@ import PricePage from '@/views/Dashboard/Product/PricePage.vue'
 import PurchasePage from '@/views/Dashboard/Product/PurchasePage.vue'
 import MeasurementPage from '@/views/Dashboard/Product/MeasurementPage.vue'
 import SupplierProductsPage from '@/views/Dashboard/SupplierProduct/SupplierProductPage.vue'
+import RolesPage from '@/views/Dashboard/Security/Pages/RolesPage.vue'
+import DefultPage from '@/views/Dashboard/Security/DefultPage.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -83,6 +85,19 @@ const router = createRouter({
       component: SupplierPage,
       beforeEnter: [middleware.redirectLogin]
     },
+    {
+      path: '/roles',
+      name: 'roles',
+      component: RolesPage,
+      beforeEnter: [middleware.redirectLogin]
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: DefultPage,
+      beforeEnter: [middleware.redirectLogin]
+    },
+
     {
       path: '/supplier/:id',
       name: 'view-supplier',
@@ -194,13 +209,10 @@ const router = createRouter({
     }
   ],
   scrollBehavior(to, from, savedPosition) {
-    // console.log(to);
-    // console.log(from);
-    // console.log(savedPosition);
-    return { top: 0 
-      
-    }
-    
+    console.log(to)
+    console.log(from)
+    console.log(savedPosition)
+    return { top: 0 }
   }
 })
 
