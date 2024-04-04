@@ -239,7 +239,7 @@ const updateSellingPrice = (fieldDatabase, value) => {
     );
     if (totalPriceField) {
       totalPriceField.value =
-        costPrice + costPrice * (auto_generated_selling_price / 100);
+        Math.floor(costPrice + costPrice * (auto_generated_selling_price / 100));
     }
   }
 };

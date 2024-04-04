@@ -74,8 +74,8 @@ export const priceFormFields = ref([
   },
   // { label: 'Supplier ID', type: 'text', value: '', required: false, placeholder: 'Enter supplier ID', databaseField: "supplier_id" },
   { label: 'Cost Price', type: 'number', value: null, required: true, placeholder: 'Enter cost price', databaseField: "cost_price" },
-  { label: 'Allow system to generate price', type: 'number', value:0, required: false, placeholder: 'Enter percentage increase', databaseField: "auto_generated_selling_price", min:0},
-  { label: 'Selling Price', type: 'number', value: 0, required: false, placeholder: 'Enter selling price', databaseField: "selling_price",min:0 },
+  { label: 'Allow system to generate price', type: 'number', value:null, required: false, placeholder: 'Enter percentage increase', databaseField: "auto_generated_selling_price", min:0},
+  { label: 'Selling Price', type: 'number', value: null, required: false, placeholder: 'Enter selling price', databaseField: "selling_price",min:0 },
  
   { label: 'Currency Name', type: 'select', value: '', required: true, placeholder: 'Enter currency ID', databaseField: "currency_id" },
   // { label: 'Discount', type: 'number', value: 0, required: false, placeholder: 'Enter discount', databaseField: "discount" },
@@ -88,11 +88,11 @@ export const priceFormFields = ref([
 
 export const saleFormFields = ref([
   { label: 'Product Type', type: 'select', value: '', required: true, placeholder: 'Enter product type ID', databaseField: "product_type_id" },
-
-  { label: 'Selling Price', type: 'select', value: null, required: true, placeholder: 'Selling', databaseField: "price_id" },
+  { label: 'Selling Price', type: 'select', value: null, required: true, placeholder: 'Selling', databaseField: "price_id"},
   { label: 'Price Sold At', type: 'number', value: null, required: true, placeholder: 'Enter price sold at', databaseField: "price_sold_at" },
   { label: 'Quantity', type: 'number', value:null, required: true, placeholder: 'Enter quantity', databaseField: "quantity"},
-  { label: 'Total Price', type: 'readonly', value: null, required: true, placeholder: 'Total price', databaseField: "total_price"},
+  { label: 'Total Price', type: 'number', value: null, required: true, placeholder: 'Total price', databaseField: "total_price", "readonly":true},
+  
   { label: 'Customer', type: 'select', value: '', required: true, placeholder: 'Enter customer ID', databaseField: "customer_id" },
   { label: 'Payment Method', type: 'select', value: 'Cash', required: true, placeholder: 'select payment', databaseField: "payment_method" ,options:[
                                                                                                                       {value:"Cash",label:"Cash"},
