@@ -20,6 +20,7 @@
       :formTitle="'Add Purchase'"
       :fields="purchaseFormFields"
       @fetchDataForSubCategory="fetchDataForSubCategory"
+      @fieldChanged="checkDate"
       :isLoadingMsg="isOptionLoadingMsg"
       :url="'/purchases'"
     >
@@ -51,7 +52,7 @@
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, watch } from "vue";
 import { purchaseFormFields } from "@/formfields/formFields";
 
 import { useSharedComponent } from "@/composable/useSharedComponent";
@@ -93,6 +94,29 @@ const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(e
 const forceRefresh = () => {
   forceUpdate.value++;
 };
+const checkDate = (fieldDatabase, value) => {
+  if (fieldDatabase === "expired_date") {
+    const selectedDate = new Date(value);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time part to compare only date parts
+
+    if (selectedDate < today) {
+      alert("Invalid date: Date cannot be in the past.");
+      // Find the field and reset its value
+      const expiredDateField = purchaseFormFields.value.find(field => field.databaseField === "expired_date");
+      if (expiredDateField) {
+        expiredDateField.value = ''; // Clear the input field
+      }
+    }
+  }
+  
+
+}
+// Call this function whenever the related fields change.
+watch(() =>
+ purchaseFormFields.value.find((field) => field.databaseField === "expired_at")?.value,
+  checkDate
+);
 // Fetch data for select options on component mount
 onMounted(async () => {
   await fetchDataForSelect(

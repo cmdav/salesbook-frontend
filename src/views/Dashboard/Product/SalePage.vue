@@ -69,7 +69,7 @@
 </template>
 
 <script setup>
-import { onMounted, watch } from "vue";
+import { onMounted, watch, ref } from "vue";
 import { saleFormFields } from "@/formfields/formFields";
 
 import { useSharedComponent } from "@/composable/useSharedComponent";
@@ -92,6 +92,7 @@ const {
 const { showUploadModal, closeUploadModal } = useUploadComposable();
 const emit = defineEmits("forceRefresh");
 const url = "/latest-product-type-price";
+const priceSoldAt= ref();
 const {
   fetchDataForSelect,
   fetchDataForSubCategory,
@@ -137,32 +138,45 @@ const updateTotalPrice = (fieldDatabase, value) => {
   console.log(value);
 
   if (fieldDatabase === "price_sold_at" || fieldDatabase === "quantity") {
-    const sellingPrice =
-      parseFloat(
-        saleFormFields.value.find((field) => field.databaseField === "price_sold_at")
-          ?.value
-      ) || 0;
-    const quantity =
-      parseFloat(
-        saleFormFields.value.find((field) => field.databaseField === "quantity")?.value
-      ) || 0;
-    const totalPriceField = saleFormFields.value.find(
-      (field) => field.databaseField === "total_price"
-    );
+   
+
+    
+    
+    priceSoldAt.value =parseFloat( saleFormFields.value.find((field) => field.databaseField === "price_sold_at") ?.value) || 0;
+    const quantity = parseFloat(saleFormFields.value.find((field) => field.databaseField === "quantity")?.value) || 0;
+    const totalPriceField = saleFormFields.value.find((field) => field.databaseField === "total_price");
     if (totalPriceField) {
-      totalPriceField.value = sellingPrice * quantity;
+      totalPriceField.value = Math.round(priceSoldAt.value * quantity);
     }
+
+   
   }
 };
 
+const confirmPrice = () => {
+    const priceIdField = saleFormFields.value.find((field) => field.databaseField === "price_id");
+    const sellingPriceOption = priceIdField.options.find(option => option.value === priceIdField.value);
+    const priceSoldAtField = saleFormFields.value.find((field) => field.databaseField === "price_sold_at");
+    const quantityField = saleFormFields.value.find((field) => field.databaseField === "quantity");
+
+    // Ensure that we found the fields and sellingPriceOption before proceeding
+    if (sellingPriceOption && priceSoldAtField && quantityField && parseFloat(priceSoldAtField.value) < parseFloat(sellingPriceOption.label)) {
+        alert("Invalid Price: Price Sold At Cannot be less than the selling price.");
+        
+        // Reset the values directly in the saleFormFields
+        priceSoldAtField.value = ''; // Clear the price sold at field
+        quantityField.value = ''; // Clear the quantity field
+    }
+};
 // Call this function whenever the related fields change.
 watch(
   () =>
     saleFormFields.value.find((field) => field.databaseField === "price_sold_at")?.value,
   updateTotalPrice
 );
-watch(
-  () => saleFormFields.value.find((field) => field.databaseField === "quantity")?.value,
-  updateTotalPrice
-);
+watch(() => saleFormFields.value.find(field => field.databaseField === "quantity")?.value, () => {
+  updateTotalPrice();
+  confirmPrice();
+});
+
 </script>

@@ -268,7 +268,7 @@ export const priceFormFields = ref([
   {
     label: 'Allow system to generate price',
     type: 'number',
-    value: 0,
+    value: null,
     required: false,
     placeholder: 'Enter percentage increase',
     databaseField: 'auto_generated_selling_price',
@@ -277,7 +277,7 @@ export const priceFormFields = ref([
   {
     label: 'Selling Price',
     type: 'number',
-    value: 0,
+    value: null,
     required: false,
     placeholder: 'Enter selling price',
     databaseField: 'selling_price',
@@ -317,7 +317,6 @@ export const saleFormFields = ref([
     placeholder: 'Enter product type ID',
     databaseField: 'product_type_id'
   },
-
   {
     label: 'Selling Price',
     type: 'select',
@@ -344,12 +343,14 @@ export const saleFormFields = ref([
   },
   {
     label: 'Total Price',
-    type: 'readonly',
+    type: 'number',
     value: null,
     required: true,
     placeholder: 'Total price',
-    databaseField: 'total_price'
+    databaseField: 'total_price',
+    readonly: true
   },
+
   {
     label: 'Customer',
     type: 'select',
@@ -375,7 +376,8 @@ export const saleFormFields = ref([
   // { label: 'Customer Phone Number', type: 'text', value: '', required: false, placeholder: 'Enter created by', databaseField: "created_by" },
   // { label: 'Customer Address', type: 'text', value: '', required: false, placeholder: 'Enter updated by', databaseField: "updated_by" }
 ])
-
+ 
+  
 export const storeFormFields = ref([
   {
     label: 'Product Type ID',
