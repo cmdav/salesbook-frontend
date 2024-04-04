@@ -89,10 +89,10 @@ export const priceFormFields = ref([
 export const saleFormFields = ref([
   { label: 'Product Type', type: 'select', value: '', required: true, placeholder: 'Enter product type ID', databaseField: "product_type_id" },
   { label: 'Selling Price', type: 'select', value: null, required: true, placeholder: 'Selling', databaseField: "price_id"},
-  { label: 'Total Price', type: 'number', value: null, required: true, placeholder: 'Total price', databaseField: "total_price", "readonly":true},
   { label: 'Price Sold At', type: 'number', value: null, required: true, placeholder: 'Enter price sold at', databaseField: "price_sold_at" },
   { label: 'Quantity', type: 'number', value:null, required: true, placeholder: 'Enter quantity', databaseField: "quantity"},
- 
+  { label: 'Total Price', type: 'number', value: null, required: true, placeholder: 'Total price', databaseField: "total_price", "readonly":true},
+  
   { label: 'Customer', type: 'select', value: '', required: true, placeholder: 'Enter customer ID', databaseField: "customer_id" },
   { label: 'Payment Method', type: 'select', value: 'Cash', required: true, placeholder: 'select payment', databaseField: "payment_method" ,options:[
                                                                                                                       {value:"Cash",label:"Cash"},
