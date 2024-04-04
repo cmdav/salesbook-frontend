@@ -150,7 +150,7 @@ const updateTotalPrice = (fieldDatabase, value) => {
       (field) => field.databaseField === "total_price"
     );
     if (totalPriceField) {
-      totalPriceField.value = sellingPrice * quantity;
+      totalPriceField.value = Math.round(sellingPrice * quantity);
     }
   }
 };

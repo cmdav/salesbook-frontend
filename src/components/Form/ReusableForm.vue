@@ -52,6 +52,7 @@
         v-model="field.value"
         :required="field.required"
         :name="field.databaseField"
+        :readonly="field.readonly"
         @change="handleCategoryChange(field.value, field.databaseField)"
       >
         <option
@@ -114,12 +115,14 @@
         :id="field.id"
         type="number"
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+        :class="{ 'readonly-background': field.readonly }" 
         @input="$emit('fieldChanged', field.databaseField, parseFloat(field.value) || 0)"
         v-model.number="field.value"
         :name="field.databaseField"
         :required="field.required"
         :placeholder="field.placeholder"
         :min="field.min || 0"
+        :readonly="field.readonly"
       />
     </template>
 
@@ -129,6 +132,8 @@
         :id="field.id"
         type="date"
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+        :class="{ 'readonly-background': field.readonly }" 
+        @input="$emit('fieldChanged', field.databaseField, field.value )"
         v-model="field.value"
         :required="field.required"
         :name="field.databaseField"
@@ -141,6 +146,7 @@
         :id="field.id"
         :type="field.type"
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+        :class="{ 'readonly-background': field.readonly }" 
         v-model="field.value"
         :required="field.required"
         :placeholder="field.placeholder"
@@ -242,3 +248,8 @@ const triggerFileInput = () => {
   }
 };
 </script>
+<style scoped>
+.readonly-background {
+  background-color: #f0f0f0;
+}
+</style>
