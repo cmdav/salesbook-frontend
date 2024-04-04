@@ -1,12 +1,16 @@
 
 import DataTableLayout from "@/components/Layouts/dataTableLayout.vue";
+import SettingsLayout from "@/components/Layouts/settingsLayout.vue";
 import FormModal from "@/components/UI/Modal/FormModal.vue";
+import PermissionFormModal from "@/components/UI/Modal/PermissionFormModal.vue";
  import { defineEmits } from "vue";
 import ViewModal from "@/components/UI/Modal/ViewModal.vue";
 import ViewModalDetail from "@/components/UI/Modal/ViewModalDetail.vue";
 import ReusableForm from "@/components/Form/ReusableForm.vue";
+import ReusablePermissionForm from "@/components/Form/ReusablePermissionForm.vue";
 import Loader from "@/components/UI/Loader.vue";
 import { usePostComposable } from '@/composable/usePostComposable';
+import {usePermissionPostComposable} from '@/composable/usePermissionPostComposable'
 import { useSelectComposable } from '@/composable/useSelectComposable'
 import { useUploadComposable } from '@/composable/useUploadComposable'
 import { useEditComposable } from "@/composable/useEditComposable";
@@ -30,9 +34,13 @@ export function useSharedComponent() {
       useReadComposable,
       useDeleteComposable,
       useUploadComposable,
+      usePermissionPostComposable,
       DeleteModal,
       EditModal,
       defineEmits,
-      UploadModal
+      UploadModal,
+      ReusablePermissionForm,
+      PermissionFormModal,
+      SettingsLayout
     }
 }

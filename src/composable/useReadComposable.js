@@ -36,9 +36,9 @@ export function useReadComposable(props = {}) {
 }
  
  function formatKey(key) {
-  // First replace '_id' with '' to remove it, then replace all remaining underscores with spaces
-  return key.replace(/_id/g, '').replace(/_/g, ' ');
-}
+   // First replace '_id' with '' to remove it, then replace all remaining underscores with spaces
+   return key.replace(/_id/g, '').replace(/_/g, ' ')
+ }
   //check for image
   function isMediaKey(key) {
     return ['image', 'logo', 'file'].some(suffix => key.toLowerCase().endsWith(suffix));
