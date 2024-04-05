@@ -158,6 +158,7 @@
 <script setup>
 import { defineEmits, ref } from "vue";
 
+
 // Destructure fields from props
 const { fields, isLoadingMsg, allError, imagePath } = defineProps({
   fields: Array,
