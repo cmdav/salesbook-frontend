@@ -66,11 +66,11 @@ export const getAllPages = async () => {
 
   }
 }
-export const getPermissions = async (page = 1) => {
+export const getPermissions = async (id,page = 1) => {
   const token = await getToken()
 
   try {
-    let res = await axios.get(`permissions?page=${page}`, {
+    let res = await axios.get(`permissions?role=${id}?page=${page}`, {
       headers: {
         Authorization: 'Bearer ' + token
       }
