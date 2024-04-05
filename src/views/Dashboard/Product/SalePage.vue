@@ -138,10 +138,7 @@ const updateTotalPrice = (fieldDatabase, value) => {
   console.log(value);
 
   if (fieldDatabase === "price_sold_at" || fieldDatabase === "quantity") {
-   
-
-    
-    
+       
     priceSoldAt.value =parseFloat( saleFormFields.value.find((field) => field.databaseField === "price_sold_at") ?.value) || 0;
     const quantity = parseFloat(saleFormFields.value.find((field) => field.databaseField === "quantity")?.value) || 0;
     const totalPriceField = saleFormFields.value.find((field) => field.databaseField === "total_price");

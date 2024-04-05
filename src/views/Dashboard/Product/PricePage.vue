@@ -41,11 +41,21 @@
         </form>
       </template>
     </FormModal>
+    <EditModal
+      v-if="showEditModal"
+      @close="closeEditModal"
+      :items="items"
+      @updated="forceRefresh"
+      :formField="priceFormFields"
+      :url="'/prices'"
+    />
+
     <DeleteModal
       v-if="showDeleteModal"
       @close="closeDeleteModal"
+      @updated="forceRefresh"
       :items="itemsId"
-      :url="prices"
+      :url="'/prices'"
       :modalTitle="modalTitle"
     />
     <UploadModal
@@ -59,34 +69,42 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from "vue";
+import { computed, ref, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
-import DataTableLayout from "@/components/Layouts/dataTableLayout.vue";
-import FormModal from "@/components/UI/Modal/FormModal.vue";
+import { useSharedComponent } from "@/composable/useSharedComponent";
 import ReusableForm from "@/components/Form/ReusableForm.vue";
 import Loader from "@/components/UI/Loader.vue";
-import { usePostComposable } from "@/composable/usePostComposable";
-import { useSelectComposable } from "@/composable/useSelectComposable";
 import { priceFormFields } from "@/formfields/formFields";
-import DeleteModal from "@/components/UI/Modal/DeleteModal.vue";
-import { useDeleteComposable } from "@/composable/useDeleteComposable";
 import BackIcon from "@/components/icons/BackIcon.vue";
-import { useSharedComponent } from "@/composable/useSharedComponent";
 
-const { UploadModal, useUploadComposable } = useSharedComponent();
+const {
+  UploadModal, useUploadComposable,
+  DataTableLayout,
+  FormModal,
+  usePostComposable,
+  useEditComposable,
+  EditModal,
+  useSelectComposable,
+  DeleteModal,
+  useDeleteComposable,
+  defineEmits,
+} = useSharedComponent();
+
+//const { } = useSharedComponent();
 const { showUploadModal, closeUploadModal } = useUploadComposable();
 
 const router = useRouter();
 const route = useRoute();
 const formTitle = "Add Price";
 const productTypeId = ref(route.params.id);
+const emit = defineEmits("forceRefresh");
 
 const fieldOverrides = {
   product_type_id: productTypeId.value,
 };
 
-const { fetchDataForSelect } = useSelectComposable(priceFormFields);
+const { fetchDataForSelect} = useSelectComposable(priceFormFields);
+const { handleEdit, showEditModal, closeEditModal, items  } = useEditComposable(emit);
 
 const {
   showModal,
@@ -121,25 +139,33 @@ const goBack = () => {
   router.go(-1);
 };
 
+const forceRefresh = () => {
+  forceUpdate.value++;
+};
 // router.go(-1);
 // Fetch data for select options on component mount
 onMounted(async () => {
+  await fetchDataForSelect("Product Type","/all-product-type-name","id","product_type_name");
   await fetchDataForSelect("Currency Name", "/currencies", "id", "currency_name");
 });
 
-// const updateSellingPrice = (fieldDatabase, value) => {
-//    console.log(value)
+const updateSellingPrice = (fieldDatabase, value) => {
+   console.log(value)
 
-//   if (fieldDatabase === 'cost_price') {
-//     const costPrice = parseFloat(priceFormFields.value.find(field => field.databaseField === 'cost_price')?.value) || 0;
-//     const auto_generated_selling_price = parseFloat(priceFormFields.value.find(field => field.databaseField === 'auto_generated_selling_price')?.value) || 0;
-//     const totalPriceField = priceFormFields.value.find(field => field.databaseField === 'selling_price');
-//     if (totalPriceField) {
-//       totalPriceField.value = costPrice + costPrice * (auto_generated_selling_price/100);
-//     }
-//   }
-// };
+  if (fieldDatabase === 'cost_price') {
+    const costPrice = parseFloat(priceFormFields.value.find(field => field.databaseField === 'cost_price')?.value) || 0;
+    const auto_generated_selling_price = parseFloat(priceFormFields.value.find(field => field.databaseField === 'auto_generated_selling_price')?.value) || 0;
+    const totalPriceField = priceFormFields.value.find(field => field.databaseField === 'selling_price');
+    if (totalPriceField) {
+      totalPriceField.value = costPrice + costPrice * (auto_generated_selling_price/100);
+    }
+  }
+};
 
 // // Call this function whenever the related fields change.
-// watch(() => priceFormFields.value.find(field => field.databaseField === 'cost_price')?.value, updateSellingPrice);
+watch(
+  () =>
+  priceFormFields.value.find((field) => field.databaseField === "price_sold_at")?.value,
+  updateSellingPrice
+);
 </script>

@@ -2,10 +2,10 @@
 
 import { ref} from 'vue'
 import apiService from '@/services/apiService';
-import { useReadComposable} from '@/composable/useReadComposable';
+//import { useReadComposable} from '@/composable/useReadComposable';
 import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
 
-const { fetchPage } = useReadComposable();
+//const { fetchPage } = useReadComposable();
 
 export function useDeleteComposable(url, ItemObject) {
   let showDeleteModal = ref(false)
@@ -31,7 +31,8 @@ export function useDeleteComposable(url, ItemObject) {
       console.log(ItemObject.id)
      
       let response = await apiService.delete(`${url}/${ItemObject.id}`)
-      await fetchPage(url, 1)
+      
+      //await fetchPage(url, 1)
       
       loading.value = false
               catchAxiosSuccess(response)

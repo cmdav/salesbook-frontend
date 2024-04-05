@@ -28,7 +28,7 @@
         :excludedKeys="['id', 'product_description', 'cat_id','product_image','product_type_description']"
         :clickableKeys="{
           //this will be render as a closure
-          product_name: openProductDetailModal,
+         // product_name: openProductDetailModal,
           view_price: navigateToProductTypePrice,
         }"
         :additionalColumns="[
@@ -61,10 +61,10 @@
       :url="'/products'"
     >
     </FormModal>
-    <!-- Modal to add sub product-->
+    <!-- Modal to add product type-->
     <FormModal
       v-if="showProductTypeModal"
-      @close="toggleProductTypeModal"
+      @close="toggleProductTypeModal('close')"
       :formTitle="'Add Product Type'"
       :fields="productTypeFormFields"
       @fetchDataForSubCategory="fetchDataForSubCategory"
@@ -75,7 +75,7 @@
     <!-- Modal for Price Type-->
     <FormModal
       v-if="showPriceModal"
-      @close="togglePriceModal"
+      @close="togglePriceModal('close')"
       :formTitle="'Add Price'"
       :fields="priceFormFields"
       @fieldChanged="updateSellingPrice"
@@ -184,21 +184,34 @@ const {
   "sub_category_name"
 );
 
-const openProductDetailModal = (product) => {
-  products.value = product;
-  showViewModal.value = true;
-};
+// const openProductDetailModal = (product) => {
+//   products.value = product;
+//   showViewModal.value = true;
+// };
 
 const navigateToProductTypePrice = (product) => {
   router.push({ name: "price", params: { id: product.id } });
   // router.push({ name: "product-type", params: { id: product.id } });
 };
 
-const toggleProductTypeModal = async() => {
+const toggleProductTypeModal = async(action = null) => {
+  if(action == 'close'){
+    productTypeFormFields.value.forEach((field) => {
+        field.value = ""; 
+     });
+
+  }
   await fetchDataForSelect( "Product Name", "/all-products","id", "product_name", productTypeFormFields.value);
   showProductTypeModal.value = !showProductTypeModal.value;
 };
-const togglePriceModal = async() => {
+const togglePriceModal = async(action =null) => {
+  if(action == 'close'){
+    priceFormFields.value.forEach((field) => {
+        field.value = ""; 
+     });
+
+  }
+  
   await fetchDataForSelect( "Product Type", "/all-product-type-name","id","product_type_name", priceFormFields.value);
   showPriceModal.value = !showPriceModal.value;
 };
