@@ -81,7 +81,7 @@ const store = useStore();
 const formState = reactive({
   email: "",
   password: "",
-  code: "",
+  code: "yes",
 });
 const errors = reactive({
   email: false,
@@ -91,6 +91,7 @@ const errors = reactive({
 const errorsMsg = {
   email: "",
   password: "",
+code: "",
 };
 const isValidEmail = computed(() => {
   return formState.email.trim() !== "";
