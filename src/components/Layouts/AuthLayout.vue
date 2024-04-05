@@ -1,8 +1,8 @@
 <template>
-  <main class="bg-[#F0F2F5] h-full">
+  <main class="bg-[#F0F2F5] min-h-screen">
     <AuthPageNavbar />
     <div
-      class="w-full h-full flex justify-center py-12 !pb-20 mb-20 items-center lg:px-[16px] hide-scrollbar overflow-auto"
+      class="w-full min-h-screen flex justify-center py-12 !pb-20 mb-20 items-center lg:px-[16px] hide-scrollbar overflow-auto"
     >
       <slot></slot>
     </div>
@@ -12,4 +12,3 @@
 <script setup>
 import AuthPageNavbar from "@/components/Header/AuthPageNavbar.vue";
 </script>
-

@@ -116,7 +116,7 @@
                       <th class="text-left p-4 pr-0 px-6 capitalize">name</th>
                       <th class="text-left p-4 pr-0 px-6 capitalize">Code</th>
                       <th class="text-left p-4 pr-0 px-6 capitalize">Url</th>
-                      <!-- <th class="text-left p-4 pr-0 px-6 capitalize">expiring Date</th> -->
+                      <th class="text-left p-4 pr-0 px-6 capitalize">Email</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -141,8 +141,11 @@
                       <td class="text-left p-4 pr-0 pl-6 capitalize">
                         {{ i.organization_code }}
                       </td>
-                      <td class="text-left p-4 pr-0 pl-6 capitalize">
+                      <td class="text-left p-4 pr-0 pl-6">
                         {{ i.organization_url }}
+                      </td>
+                      <td class="text-left p-4 pr-0 pl-6">
+                        {{ i.organization_email }}
                       </td>
                     </tr>
                   </tbody>
@@ -198,7 +201,15 @@
                     />
                   </div>
                 </div>
-
+                <div class="flex flex-col w-full">
+                  <AuthInput
+                    label="Organization email"
+                    :error="errors.organization_email"
+                    type="text"
+                    placeholder="Enter organization code"
+                    v-model="formData.organization_email"
+                  />
+                </div>
                 <div class="flex lg:flex-row flex-col w-full gap-[20px]">
                   <div class="flex flex-col w-full">
                     <AuthInput
@@ -302,6 +313,7 @@ const formData = reactive({
   organization_url: "",
   organization_code: "",
   organization_logo: null,
+  organization_email: "",
 });
 let loading = ref(false);
 
@@ -309,7 +321,7 @@ const errors = reactive({
   organization_name: false,
   organization_url: false,
   organization_code: false,
-  organization_logo: false,
+  organization_email: false,
 });
 const validateForm = () => {
   // Reset errorsMsg
@@ -347,6 +359,7 @@ const clearInputs = () => {
     (formData.organization_url = ""),
     (formData.organization_code = ""),
     (formData.organization_logo = null);
+  formData.organization_email = "";
 };
 watch(formData, () => {
   clearInputErrors();
@@ -397,6 +410,7 @@ const handleorganisationInvite = async () => {
       organization_name: formData.organization_name,
       organization_url: formData.organization_url,
       organization_code: formData.organization_code,
+      organization_email: formData.organization_email,
       organization_type: 0,
     };
 
