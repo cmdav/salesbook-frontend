@@ -18,16 +18,16 @@
             v-model="formState.email"
           />
         </div>
-        <div class="mb-6 flex flex-col">
+        <!-- <div class="mb-6 flex flex-col">
           <AuthInput
             label="Organizational Code"
             :error="errors.code"
-            type="number"
+            type="text"
             placeholder=""
             v-model="formState.code"
           />
         </div>
-
+ -->
         <div class="mb-3 flex flex-col">
           <PasswordInput
             label="Password"

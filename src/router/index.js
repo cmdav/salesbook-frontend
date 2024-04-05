@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import middleware from './Middleware/index.js'
 import Login from '@/views/Auth/Login.vue'
+import LoginSuppliers from '@/views/Auth/LoginSuppliers.vue'
 import DashBoardVue from '@/views/Dashboard/DashBoard.vue'
 import Register from '@/views/Auth/Register.vue'
 import ForgottenPasswordVue from '@/views/Auth/ForgottenPassword.vue'
@@ -38,6 +39,12 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: Login,
+      beforeEnter: [middleware.redirectDashboard]
+    },
+    {
+      path: '/supplier/login',
+      name: 'supplier-login',
+      component: LoginSuppliers,
       beforeEnter: [middleware.redirectDashboard]
     },
     {
