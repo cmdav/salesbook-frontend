@@ -2,10 +2,11 @@ import axios from "../axios";
 import { catchAxiosError, catchAxiosSuccess }  from "./Response"
 import { encrypt,decrypt } from "./Encrypt"
 
-export const login = async (email, password) => {
+export const login = async (email, password,code) => {
   let data = {
     email,
     password,
+    code
   }
   try {
     let res = await axios.post('login', data)
