@@ -97,15 +97,15 @@
       :url="'/product-types'"
       :modalTitle="modalTitle"
     />
-    <!--Modal to edit product and product types-->
+    <!--Modal to edit  product types-->
     <EditModal
       v-if="showEditModal"
       @close="closeEditModal"
       @fetchDataForSubCategory="fetchDataForSubCategory"
       :items="items"
       @updated="forceRefresh"
-      :formField="formFields"
-      :url="'/products'"
+      :formField="productTypeFormFields"
+      :url="'product-types'"
     />
     <UploadModal
       v-if="showUploadModal"
