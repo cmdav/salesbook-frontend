@@ -13,6 +13,7 @@
         </h4>
         <button class="close-button" @click="$emit('close')">&#10005;</button>
       </header>
+      <!--Pass the formField and  value(value is gotten onclick from the datatable) as props from the parent to this modal-->
       <form @submit.prevent="editForm">
         <ReusableForm 
             :fields="formField"  
@@ -90,7 +91,7 @@ const handleEditCategoryChange = (value, field_name) => {
 };
 
 onMounted(async () => {
-  // console.log(items.value)
+  console.log(items.value)
   emit('fetchDataForSubCategory', items.value["cat_id"], "category_id",items.value[subCategoryIdToPopulate.value]);
 });
 </script>

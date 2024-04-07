@@ -21,10 +21,10 @@
         <div class="mb-6 flex flex-col">
           <AuthInput
             label="Organizational Code"
-            :error="errors.organization_code"
             type="number"
+            :error="errors.code"
             placeholder=""
-            v-model="formState.code"
+            v-model="formState.organization_code"
           />
         </div>
 
@@ -92,6 +92,7 @@ const errors = reactive({
 const errorsMsg = {
   email: "",
   password: "",
+  code: "",
 };
 const isValidEmail = computed(() => {
   return formState.email.trim() !== "";
