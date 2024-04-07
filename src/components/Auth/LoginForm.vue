@@ -149,7 +149,12 @@ const onFinish = async () => {
     return;
   }
   try {
-    let res = await login(formState.email, formState.password, formState.code);
+    let res = await login(
+      formState.email,
+      formState.password,
+      formState.organization_code,
+      formState.code
+    );
     store.saveUser(res.data);
     router.push({ name: "dashboard" });
     loading.value = false;
