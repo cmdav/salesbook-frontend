@@ -21,7 +21,7 @@
         <div class="mb-6 flex flex-col">
           <AuthInput
             label="Organizational Code"
-            :error="errors.code"
+            :error="errors.organization_code"
             type="number"
             placeholder=""
             v-model="formState.code"
@@ -81,7 +81,8 @@ const store = useStore();
 const formState = reactive({
   email: "",
   password: "",
-  code: "",
+  organization_code: "",
+  code: "yes",
 });
 const errors = reactive({
   email: false,
