@@ -3,82 +3,49 @@
   <div class="">
     <!-- Button to Open Modal -->
     <!-- <button @click="showModal = true" class="btn btn-primary">Add Store</button> -->
-    <DataTableLayout
-      @toggleModal="showModal = !showModal"
-      :hideToggleButtonLabel="false"
-      :key="forceUpdate"
-      endpoint="job-roles"
-      :additionalColumns="[{ name: 'delete', action: handleDelete }]"
-    >
-    </DataTableLayout>
-    <FormModal
-      v-if="showModal"
-      @close="closeModal"
-      :formTitle="'Add Purchase'"
-      :fields="purchaseFormFields"
-      @fetchDataForSubCategory="fetchDataForSubCategory"
-      :url="'/job-roles'"
-    ></FormModal>
-
-    <DeleteModal
-      v-if="showDeleteModal"
-      @close="closeDeleteModal"
-      @updated="forceRefresh"
-      :items="itemsId"
-      :url="'/job-roles'"
-      :modalTitle="modalTitle"
-    />
-    <EditModal
-      v-if="showEditModal"
-      @close="closeEditModal"
-      :items="items"
-      :formField="purchaseFormFields"
-      @updated="forceRefresh"
-      :url="'/job-roles'"
-    />
+    <SettingsLayoutcopy @changePage="changePage" :products="roles">
+      <button class="btn-brand !px-2 !text-[14px]" @click="toggleAddPermissionModal">
+        Add Role
+      </button>
+    </SettingsLayoutcopy>
+    <!-- <PermissionFormModalcopy v-if="showModal" @close="toggleAddPermissionModal" /> -->
   </div>
-
-  <!-- </DashboardLayout> -->
 </template>
 
 <script setup>
-//import { onMounted } from 'vue';
-
-import { useSharedComponent } from "@/composable/useSharedComponent";
-const emit = defineEmits("forceRefresh");
-import { purchaseFormFields } from "@/formfields/formFields";
-
-const {
-  DataTableLayout,
-  FormModal,
-  usePostComposable,
-  useEditComposable,
-  EditModal,
-  DeleteModal,
-  useDeleteComposable,
-  defineEmits,
-} = useSharedComponent();
-const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
-const { showModal, forceUpdate, closeModal } = usePostComposable(
-  "/purchases",
-  purchaseFormFields
-);
-
-const forceRefresh = () => {
-  forceUpdate.value++;
+import { ref, reactive, watch, onMounted, computed } from "vue";
+import { storeToRefs } from "pinia";
+import { useSecurityStore } from "@/stores/security";
+import { useStore } from "@/stores/user";
+const store = useStore();
+const securityStore = useSecurityStore();
+const { allRoles, allPages, roles, pages, permissions } = storeToRefs(securityStore);
+import SettingsLayoutcopy from "@/components/Layouts/RolesTable.vue";
+import PermissionFormModalcopy from "@/components/UI/Modal/PermissionFormModalcopy.vue";
+const changePage = async (link) => {
+  try {
+    await securityStore.handleGetPermissions(
+      `9bb79eae-a64f-4eaa-b8d5-8990eb02205d`,
+      link
+    );
+  } catch (error) {
+    //
+  }
 };
-// Fetch data for select options on component mount
-
-//const formTitle = "Add Store";
-
-// const {
-//   showModal,
-
-// } = usePostComposable("/stores", cu);
-const {
-  handleDelete,
-  showDeleteModal,
-  itemsId,
-  closeDeleteModal,
-} = useDeleteComposable();
+const showModal = ref(false);
+const toggleAddPermissionModal = async () => {
+  showModal.value = !showModal.value;
+};
+onMounted(async () => {
+  try {
+    await securityStore.handleGetAllRole();
+    await securityStore.handleGetRole();
+    await securityStore.handleGetPages();
+    await securityStore.handleGetAllPages();
+    // await securityStore.handleGetPermissions(store.getUser.user.role_id);
+    // await securityStore.handleAddPermissions();
+  } catch (error) {
+    console.error(error);
+  }
+});
 </script>

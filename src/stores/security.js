@@ -49,17 +49,17 @@ export const useSecurityStore = defineStore('Security', () => {
     }
   }
 
-  const handleGetPermissions = async (page) => {
+  const handleGetPermissions = async (id,page) => {
     try {
-      permissions.value = await getPermissions(page)
+      permissions.value = await getPermissions(id,page)
       return permissions.value
     } catch (error) {
       console.error(error)
     }
   }
-  const handleAddPermissions = async (payload) => {
+  const handleAddPermissions = async (id,payload) => {
     try {
-      let res = await addPermissions(payload)
+      let res = await addPermissions(id,payload)
       return res
     } catch (error) {
       console.error(error)

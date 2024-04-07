@@ -21,10 +21,10 @@
         <div class="mb-6 flex flex-col">
           <AuthInput
             label="Organizational Code"
-            :error="errors.code"
             type="number"
+            :error="errors.code"
             placeholder=""
-            v-model="formState.code"
+            v-model="formState.organization_code"
           />
         </div>
 
@@ -81,7 +81,8 @@ const store = useStore();
 const formState = reactive({
   email: "",
   password: "",
-  code: "",
+  organization_code: "",
+  code: "yes",
 });
 const errors = reactive({
   email: false,
@@ -91,6 +92,7 @@ const errors = reactive({
 const errorsMsg = {
   email: "",
   password: "",
+  code: "",
 };
 const isValidEmail = computed(() => {
   return formState.email.trim() !== "";
@@ -147,7 +149,12 @@ const onFinish = async () => {
     return;
   }
   try {
-    let res = await login(formState.email, formState.password, formState.code);
+    let res = await login(
+      formState.email,
+      formState.password,
+      formState.organization_code,
+      formState.code
+    );
     store.saveUser(res.data);
     router.push({ name: "dashboard" });
     loading.value = false;

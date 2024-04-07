@@ -1,15 +1,14 @@
 <template>
   <DashboardLayout pageTitle="Settings Page">
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
-      <!-- <Tab>
+      <Tab>
         <template #tab1> Roles </template>
         <template #tab2> Pages </template>
         <template #tab3> Permissions </template>
         <template #view1><RolesPage /></template>
         <template #view2><Page /></template>
         <template #view3><Permissions /></template>
-      </Tab> -->
-      <Permissions />
+      </Tab>
     </div>
   </DashboardLayout>
 </template>
