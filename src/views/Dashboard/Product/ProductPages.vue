@@ -65,6 +65,7 @@
     <FormModal
       v-if="showProductTypeModal"
       @close="toggleProductTypeModal('close')"
+      @updated="forceRefresh"
       :formTitle="'Add Product Type'"
       :fields="productTypeFormFields"
       @fetchDataForSubCategory="fetchDataForSubCategory"
