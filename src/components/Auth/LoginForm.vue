@@ -22,7 +22,7 @@
           <AuthInput
             label="Organizational Code"
             type="number"
-            :error="errors.code"
+            :error="false"
             placeholder=""
             v-model="formState.organization_code"
           />

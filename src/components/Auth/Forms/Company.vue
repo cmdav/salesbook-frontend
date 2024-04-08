@@ -57,7 +57,7 @@
             v-model="CompanyformData.phone_number"
           />
         </div>
-        <div class="mb-3 flex flex-col w-full">
+        <!-- <div class="mb-3 flex flex-col w-full">
           <AuthInput
             label="Organizational Code*"
             :error="CompanyErrors.code"
@@ -66,7 +66,7 @@
             placeholder="Enter Organizational Code"
             v-model="CompanyformData.code"
           />
-        </div>
+        </div> -->
       </div>
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
         <div class="mb-3 flex flex-col w-full">
@@ -196,7 +196,7 @@ const CompanyformData = reactive({
   contact_person: "",
   company_address: "",
   phone_number: "",
-  code: "",
+  // code: "",
   email: "",
   password: "",
   confirmPassword: "",
@@ -208,7 +208,7 @@ const CompanyErrors = reactive({
   contact_person: false,
   company_address: false,
   phone_number: false,
-  code: false,
+  // code: false,
   email: false,
   password: false,
   confirmPassword: false,
@@ -219,7 +219,7 @@ const CompanyErrorsMsg = {
   contact_person: "contact person is required",
   company_address: "company address is required",
   phone_number: "contact number is required",
-  code: "Organisation code is required",
+  // code: "Organisation code is required",
   email: "Email is required",
   password: "Password is required",
   confirmPassword: "Password does not match",
@@ -318,7 +318,7 @@ const isFormValid = computed(() => {
     CompanyformData.contact_person.trim() !== "" &&
     CompanyformData.company_address.trim() !== "" &&
     CompanyformData.phone_number.trim() !== "" &&
-    CompanyformData.code.trim() !== "" &&
+    // CompanyformData.code.trim() !== "" &&
     CompanyformData.email.trim() !== "" &&
     CompanyformData.password.trim() !== "" &&
     CompanyformData.confirmPassword.trim() !== ""
@@ -330,7 +330,7 @@ const clearInputs = () => {
     (CompanyformData.contact_person = ""),
     (CompanyformData.company_address = ""),
     (CompanyformData.phone_number = "");
-  CompanyformData.code = "";
+  // CompanyformData.code = "";
   CompanyformData.email = "";
   CompanyformData.password = "";
   CompanyformData.confirmPassword = "";
@@ -350,13 +350,13 @@ const handleCompanySignup = async () => {
     company_address: CompanyformData.company_address,
     contact_person: CompanyformData.contact_person,
     phone_number: CompanyformData.phone_number,
-    organization_code: CompanyformData.code,
+    // organization_code: CompanyformData.code,
     email: CompanyformData.email,
     password: CompanyformData.password,
     password_confirmation: CompanyformData.confirmPassword,
-    type_id: 2,
-    role_id: 0,
-    organization_type: 1,
+    // type_id: 2,
+    // role_id: 0,
+    organization_type: "company",
   };
   try {
     let res = await register(payload);
