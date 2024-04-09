@@ -26,6 +26,15 @@
                 v-model="formData.email"
               />
             </div>
+            <div class="mb-4 w-full flex lg:flex-row flex-col justify-end">
+              <p class="text-[14px]">
+                Back to
+                <router-link to="/login" class="font-medium text-brand text-[14px]"
+                  >login</router-link
+                >
+              </p>
+            </div>
+
             <div class="mb-8 w-full">
               <button
                 :disabled="loading"
@@ -122,6 +131,8 @@ const handleForgotPassword = async () => {
   };
   try {
     let res = await resendEmail(payload);
+    localStorage.setItem("email", formData.email);
+    router.push({ name: "login" });
     if (res.data.status === true) {
       router.push({ name: "login" });
     } else {

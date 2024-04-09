@@ -2,7 +2,7 @@
   <main class="bg-[#F0F2F5] min-h-screen">
     <AuthPageNavbar />
     <div
-      class="w-full min-h-screen flex justify-center py-12 !pb-20 mb-20 items-center lg:px-[16px] hide-scrollbar overflow-auto"
+      class="w-full max-h-screen flex justify-center py-12 !pb-10 mb-20 items-center lg:px-[16px] hide-scrollbar overflow-auto"
     >
       <slot></slot>
     </div>
