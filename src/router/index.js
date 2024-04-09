@@ -29,6 +29,7 @@ import SupplierProductsPage from '@/views/Dashboard/SupplierProduct/SupplierProd
 import RolesPage from '@/views/Dashboard/Security/Pages/RolesPage.vue'
 import DefultPage from '@/views/Dashboard/Security/DefultPage.vue'
 import ResetPassword from '@/views/Auth/ResetPassword.vue'
+import ProfilePage from '@/views/Dashboard/Profile/ProfilePage.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -90,6 +91,12 @@ const router = createRouter({
       path: '/dashboard',
       name: 'dashboard',
       component: DashBoardVue,
+      beforeEnter: [middleware.redirectLogin]
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: ProfilePage,
       beforeEnter: [middleware.redirectLogin]
     },
     {

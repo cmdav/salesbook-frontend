@@ -1,41 +1,53 @@
 <script setup>
-import BaseSidebar from '@/components/SideBar/indexPage.vue'
-import { ref, onMounted } from 'vue'
-import 'animate.css'
-const closeNav = ref(false)
-const closeBackdrop = ref(false)
-const showDropdown = ref(false)
-const showNotificationDropdown = ref(false)
-import { useStore } from '@/stores/user'
-import { storeToRefs } from 'pinia'
-
-const store = useStore()
-const { userProfileDetails } = storeToRefs(store)
+import BaseSidebar from "@/components/SideBar/indexPage.vue";
+import { ref, onMounted } from "vue";
+import "animate.css";
+const closeNav = ref(false);
+const closeBackdrop = ref(false);
+const showDropdown = ref(false);
+const showNotificationDropdown = ref(false);
+import { useStore } from "@/stores/user";
+import { storeToRefs } from "pinia";
+import NavDropDown from "@/components/UI/Dropdown/NavDropDown.vue";
+import CaretDown from "@/components/icons/CaretDown.vue";
+const store = useStore();
+const { userProfileDetails } = storeToRefs(store);
 
 onMounted(() => {
-  store.handleUserProfile()
-})
+  store.handleUserProfile();
+});
 
 const toggle = () => {
-  closeNav.value = !closeNav.value
+  closeNav.value = !closeNav.value;
 
   if (closeNav.value) {
-    closeBackdrop.value = !closeBackdrop.value
+    closeBackdrop.value = !closeBackdrop.value;
   }
 
   if (!closeNav.value) {
     setTimeout(() => {
-      closeBackdrop.value = !closeBackdrop.value
-    }, 1000)
+      closeBackdrop.value = !closeBackdrop.value;
+    }, 1000);
   }
-}
+};
 const toogleDropdown = () => {
-  showDropdown.value = !showDropdown.value
-  if (showNotificationDropdown.value === true) {
-    showNotificationDropdown.value = false
-  }
-}
-defineProps({ pageTitle: String })
+  showDropdown.value = !showDropdown.value;
+};
+const items = [
+  {
+    id: 0,
+    name: "profile",
+    context: "profile",
+    // icon: UserIcon,
+  },
+  {
+    id: 1,
+    name: "logout",
+    context: "Logout",
+    // icon: SignOutIcon,
+  },
+];
+defineProps({ pageTitle: String });
 </script>
 
 <template>
@@ -62,7 +74,10 @@ defineProps({ pageTitle: String })
         <nav
           class="flex bg-[#FDFDF6] items-center gap-[3rem] justify-between px-3 min-[370px]:px-6 sticky top-0 py-3 min-[370px]:pt-5 z-50"
         >
-          <h4 class="text-[20px]">Welcome {{ userProfileDetails?.first_name }},</h4>
+          <h4 class="text-[20px]">
+            Welcome
+            {{ userProfileDetails?.first_name ?? userProfileDetails?.company_name }},
+          </h4>
 
           <div class="lg:hidden">
             <div class="logo">
@@ -98,24 +113,42 @@ defineProps({ pageTitle: String })
                   <div
                     @click="toogleDropdown()"
                     role="button"
-                    class="h-10 w-10 flex justify-center items-center rounded-full bg-brand"
+                    class="flex items-center gap-[4px]"
                   >
-                    <!-- <img class="h-10 w-10 bg-[#0A090991] rounded-full" /> -->
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      class="w-5 text-gray-100 h-5"
+                    <div
+                      class="h-10 w-10 flex justify-center items-center object-contain rounded-full bg-brand"
                     >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                      <img
+                        v-if="userProfileDetails?.organization_logo"
+                        :src="userProfileDetails?.organization_logo"
+                        class="h-10 w-10 object-cover rounded-full"
                       />
-                    </svg>
+                      <svg
+                        v-else
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="w-5 text-gray-100 h-5"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                        />
+                      </svg>
+                    </div>
+                    <CaretDown />
                   </div>
+
+                  <NavDropDown
+                    v-if="showDropdown"
+                    :showDropdown="showDropdown"
+                    :link="true"
+                    :items="items"
+                    @closeDropdown="toogleDropdown"
+                  />
                 </div>
               </div>
             </div>
