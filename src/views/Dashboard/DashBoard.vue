@@ -23,7 +23,6 @@
               </div>
             </div>
             <div
-              v-if="feature.includes('INVENTORY')"
               class="flex flex-row justify-between rounded-[8px] p-4"
               style="background-color: rgb(123, 97, 255)"
             >
@@ -70,7 +69,6 @@
               </div> -->
             </div>
             <div
-              v-if="feature.includes('SUPPLIER')"
               class="flex flex-row justify-between rounded-[8px] p-4"
               style="background-color: rgb(44, 43, 108)"
             >
@@ -92,7 +90,6 @@
             </div>
 
             <div
-              v-if="feature.includes('CUSTOMERS')"
               class="flex flex-row justify-between rounded-[8px] p-4"
               style="background-color: rgb(123, 97, 255)"
             >
@@ -117,7 +114,6 @@
               </div>
             </div>
             <div
-              v-if="feature.includes('CUSTOMERS')"
               class="flex flex-row justify-between rounded-[8px] p-4"
               style="background-color: rgb(123, 97, 255)"
             >
@@ -136,7 +132,6 @@
               </div>
             </div>
             <div
-              v-if="feature.includes('CUSTOMERS')"
               class="flex flex-row justify-between rounded-[8px] p-4"
               style="background-color: rgb(44, 43, 108)"
             >
@@ -155,7 +150,6 @@
               </div>
             </div>
             <div
-              v-if="feature.includes('CUSTOMERS')"
               class="flex flex-row justify-between rounded-[8px] p-4"
               style="background-color: rgb(123, 97, 255)"
             >
@@ -174,7 +168,6 @@
               </div>
             </div>
             <div
-              v-if="feature.includes('CUSTOMERS')"
               class="flex flex-row justify-between rounded-[8px] p-4"
               style="background-color: rgb(44, 43, 108)"
             >
