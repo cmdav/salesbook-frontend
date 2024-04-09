@@ -165,6 +165,7 @@ const onFinish = async () => {
     loading.value = false;
     formState.email = "";
     formState.password = "";
+    formState.organization_code = "";
     formState.code = "";
   }
 };
