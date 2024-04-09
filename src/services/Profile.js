@@ -23,7 +23,7 @@ export const uploadCompanyLogo = async (org_id, payload) => {
   const token = await getToken()
 
   try {
-    let res = await axios.put(`organizations/${org_id}`, payload, {
+    let res = await axios.post(`organizations/${org_id}`, payload, {
       headers: {
         Authorization: 'Bearer ' + token
       }

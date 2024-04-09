@@ -3,7 +3,7 @@
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
       <div class="flex justify-center items-center">
         <EditProfileAvater
-          :imageUrl="imageUrl ?? userProfileDetails.organization_logo"
+          :imageUrl="userProfileDetails.organization_logo"
           @toggleModal="openFileInput"
         />
         <input
@@ -40,11 +40,11 @@ const handleFileUpload = (event) => {
   selectedFile.value = event.target.files[0];
   if (selectedFile.value) {
     handleLogUpload();
-    const reader = new FileReader();
-    reader.onload = () => {
-      imageUrl.value = reader.result;
-    };
-    reader.readAsDataURL(selectedFile.value);
+    // const reader = new FileReader()
+    // reader.onload = () => {
+    //   imageUrl.value = reader.result
+    // }
+    // reader.readAsDataURL(selectedFile.value)
   } else {
     imageUrl.value = "";
   }
@@ -54,12 +54,13 @@ const handleLogUpload = async () => {
   loading.value = true;
   const formData = new FormData();
   formData.append("organization_logo", selectedFile.value);
-
+  formData.append("_method", "put");
   try {
     let res = await store.handleUploadCompanyLogo(
       userProfileDetails.value.user_id,
       formData
     );
+    console.log(formData, selectedFile.value);
     store.handleUserProfile();
     loading.value = false;
     return res;

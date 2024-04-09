@@ -119,7 +119,7 @@ defineProps({ pageTitle: String });
                       class="h-10 w-10 flex justify-center items-center object-contain rounded-full bg-brand"
                     >
                       <img
-                        v-if="userProfileDetails?.organization_logo"
+                        v-if="userProfileDetails?.organization_logo !== null"
                         :src="userProfileDetails?.organization_logo"
                         class="h-10 w-10 object-cover rounded-full"
                       />
