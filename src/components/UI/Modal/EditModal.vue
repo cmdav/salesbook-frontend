@@ -91,7 +91,7 @@ const handleEditCategoryChange = (value, field_name) => {
 };
 
 onMounted(async () => {
-  console.log(items.value)
+ // console.log(items.value)
   emit('fetchDataForSubCategory', items.value["cat_id"], "category_id",items.value[subCategoryIdToPopulate.value]);
 });
 </script>

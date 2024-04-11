@@ -48,6 +48,7 @@ export function useEditComposable(formFields, url,itemId,emit) {
      
 
       formFields.value.forEach(field => {
+           console.log(field.value)
       
           if (field.databaseField === 'product_image') {
             
@@ -60,8 +61,11 @@ export function useEditComposable(formFields, url,itemId,emit) {
       });
 
 
-       
+      console.log(url);
+      console.log(itemId);
+      itemId = "9bc64d90-76e8-4f2a-b446-9d7f8e2180f6";
        const Url = `${url}/${itemId}`
+      
       
        formData.append('_method', 'PUT')
        const response = await apiService.post(Url, formData);

@@ -184,24 +184,6 @@ const newImage = ref(imagePath);
 // const selectInput = ref(null);
 // emit an event on change
 const handleCategoryChange = (value, field_name) => {
-  // const foundItemId = findItemById(value);
-
-  // pass the  selected value and field name
-  // let foundItemId = null;
-  // localFields.value.forEach((field) => {
-  //   const foundItem = field?.options?.find((option) => option.label === value);
-  //   if (foundItem) {
-  //     foundItemId = foundItem.value;
-  //   }
-  // });
-  // console.log(foundItemId, field_name);
-  // if (foundItemId) {
-  //   emit("fetchDataForSubCategory", foundItemId, field_name);
-  //   emit("handleEditCategoryChange", foundItemId, field_name);
-  //   console.log(foundItemId, field_name);
-  // } else {
-  //   console.error(`Item with label '${value}' not found.`);
-  // }
   console.log(value);
   console.log(field_name);
   emit("fetchDataForSubCategory", value, field_name);
@@ -209,17 +191,7 @@ const handleCategoryChange = (value, field_name) => {
   emit("handleEditCategoryChange", value, field_name);
   // console.log(selectInput.value);
 };
-// Function to find item ID based on label
-// const findItemById = (label) => {
-//   let foundItemId = null;
-//   localFields.value.forEach((field) => {
-//     const foundItem = field?.options?.find((option) => option.label === label);
-//     if (foundItem) {
-//       foundItemId = foundItem.value;
-//     }
-//   });
-//   return foundItemId;
-// };
+
 
 const handleImageChange = (index, event) => {
   index = 2;
