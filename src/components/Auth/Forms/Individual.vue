@@ -59,16 +59,15 @@
         </div>
         <div class="mb-3 flex flex-col w-full">
           <AuthInput
-            label="Organizational Code*"
-            :error="errors.code"
-            :errorsMsg="errorsMsg.code"
-            type="number"
-            placeholder="Enter Organizational Code"
-            v-model="formData.code"
+            label="Phone number*"
+            :error="false"
+            type="tel"
+            placeholder="Enter Phone number"
+            v-model="phoneNo"
           />
         </div>
       </div>
-      <div class="flex lg:flex-row flex-col w-full gap-[20px]">
+      <!-- <div class="flex lg:flex-row flex-col w-full gap-[20px]">
         <div class="mb-3 flex flex-col w-full">
           <AuthInput
             label="Phone number*"
@@ -78,7 +77,7 @@
             v-model="phoneNo"
           />
         </div>
-      </div>
+      </div> -->
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
         <div class="mb-3 flex flex-col w-full">
           <PasswordInput
@@ -210,7 +209,7 @@ const dob = ref("");
 const formData = reactive({
   firstName: "",
   lastName: "",
-  code: "",
+  // code: "",
   email: "",
   password: "",
   confirmPassword: "",
@@ -220,7 +219,7 @@ let loading = ref(false);
 const errors = reactive({
   firstName: false,
   lastName: false,
-  code: false,
+  // code: false,
   email: false,
   password: false,
   confirmPassword: false,
@@ -232,7 +231,7 @@ const confirmPassword = ref("");
 const errorsMsg = {
   firstName: "First name is required",
   lastName: "Last name is required",
-  code: "Organisation code is required",
+  // code: "Organisation code is required",
   email: "Email is required",
   password: "Password is required",
   confirmPassword: "Password does not match",
@@ -339,7 +338,7 @@ const isFormValid = computed(() => {
     formData.lastName.trim() !== "" &&
     formData.email.trim() !== "" &&
     formData.password.trim() !== "" &&
-    formData.code.trim() !== "" &&
+    // formData.code.trim() !== "" &&
     confirmPassword.value.trim() !== ""
   );
 });
@@ -350,7 +349,7 @@ const clearInputs = () => {
     (formData.password = "");
   middelName.value = "";
   phoneNo.value = "";
-  formData.code = "";
+  // formData.code = "";
   dob.value = "";
   confirmPassword.value = "";
 };
@@ -371,14 +370,14 @@ const handleSignup = async () => {
     last_name: formData.lastName,
     middle_name: middelName.value,
     phone_number: phoneNo.value,
-    organization_code: formData.code,
+    // organization_code: formData.code,
     dob: dob.value,
     email: formData.email,
     password: formData.password,
     password_confirmation: formData.confirmPassword,
-    type_id: 2,
-    role_id: 0,
-    organization_type: 0,
+    // type_id: 2,
+    // role_id: 0,
+    organization_type: "sole_properietor",
   };
   try {
     let res = await register(payload);

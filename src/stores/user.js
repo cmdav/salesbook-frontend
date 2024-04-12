@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { encrypt, decrypt } from '../services/Encrypt'
-import { getUserProfile } from '@/services/Profile'
+import { getUserProfile, uploadCompanyLogo } from '@/services/Profile'
 
 export const useStore = defineStore('user', () => {
   const user = ref(null)
@@ -26,6 +26,14 @@ export const useStore = defineStore('user', () => {
     try {
       userProfileDetails.value = await getUserProfile()
       return userProfileDetails.value
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  const handleUploadCompanyLogo = async (org_id, payload) => {
+    try {
+      let res = await uploadCompanyLogo(org_id, payload)
+      return res
     } catch (error) {
       console.error(error)
     }
@@ -69,6 +77,7 @@ export const useStore = defineStore('user', () => {
     saveUser,
     userProfileDetails,
     handleUserProfile,
-    features
+    features,
+    handleUploadCompanyLogo
   }
 })

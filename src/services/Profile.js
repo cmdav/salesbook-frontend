@@ -18,3 +18,21 @@ export const getUserProfile = async () => {
     throw error
   }
 }
+
+export const uploadCompanyLogo = async (org_id, payload) => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.post(`organizations/${org_id}`, payload, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res.data)
+    return res.data
+  } catch (error) {
+    console.log(error)
+    catchAxiosError(error)
+    throw error
+  }
+}

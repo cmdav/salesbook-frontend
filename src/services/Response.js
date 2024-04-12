@@ -7,11 +7,11 @@ export const catchAxiosError = (error) => {
     const responseData = error.response.data
 
     // Display the main error message
-    // if (responseData.message) {
-    //   toast.error(responseData.message, {
-    //     timeout: 4000
-    //   })
-    // }
+    if (responseData.message) {
+      toast.error(responseData.message, {
+        timeout: 4000
+      })
+    }
 
     // Display individual error messages
     if (responseData.errors) {
@@ -31,11 +31,11 @@ export const catchAxiosError = (error) => {
       }
   }
   
-  } else {
-    // Handle generic error when no specific message is available
-    toast.error('', {
-      timeout: 4000
-    })
+  // } else {
+  //   // Handle generic error when no specific message is available
+  //   toast.error('', {
+  //     timeout: 4000
+  //   })
   }
 }
 

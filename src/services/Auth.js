@@ -57,21 +57,22 @@ export const verifyEmail = async (token) => {
   }
 }
 
-// forgot password
-// export const forgottenPassword = async (email) => {
-//   let data = {
-//     email
-//   }
-
-//   try {
-//     let res = await axios.post('forgot-password', data)
-//     catchAxiosSuccess(res)
-//     return res
-//   } catch (error) {
-//     catchAxiosError(error)
-//     throw error
-//   }
-// }
+// change password
+export const changePassword = async (token, email, password, password_confirmation) => {
+  let payload = {
+    email,
+    password,
+    password_confirmation
+  }
+  try {
+    let res = await axios.put(`email-verification/${token}`, payload)
+    catchAxiosSuccess(res)
+    return res
+  } catch (error) {
+    catchAxiosError(error)
+    throw error
+  }
+}
 
 export const getToken = () => {
 
