@@ -18,7 +18,11 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  {{ dashboardAutoSataus?.total_product_type }}
+                  {{
+                    dashboardAutoSataus?.total_product_type
+                      ? dashboardAutoSataus?.total_product_type
+                      : 0
+                  }}
                 </div>
               </div>
             </div>
@@ -38,7 +42,7 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  {{ productsStore?.sales?.total }}
+                  {{ productsStore?.sales?.total ? productsStore?.sales?.total : 0 }}
                 </div>
               </div>
               <!-- <div class="flex flex-col justify-between">
@@ -84,7 +88,9 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  {{ dashboardAutoSataus?.suppliers }}
+                  {{
+                    dashboardAutoSataus?.suppliers ? dashboardAutoSataus?.suppliers : 0
+                  }}
                 </div>
               </div>
             </div>
@@ -103,7 +109,9 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  {{ dashboardAutoSataus?.customers }}
+                  {{
+                    dashboardAutoSataus?.customers ? dashboardAutoSataus?.customers : 0
+                  }}
 
                   <!-- {{
                     Customers?.total + companiesCustomers?.total
@@ -127,7 +135,11 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  {{ dashboardAutoSataus?.total_product }}
+                  {{
+                    dashboardAutoSataus?.total_product
+                      ? dashboardAutoSataus?.total_product
+                      : 0
+                  }}
                 </div>
               </div>
             </div>
@@ -145,7 +157,11 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  {{ dashboardAutoSataus?.total_product_type_daily_profits }}
+                  {{
+                    dashboardAutoSataus?.total_product_type_daily_profits
+                      ? dashboardAutoSataus?.total_product_type_daily_profits
+                      : 0
+                  }}
                 </div>
               </div>
             </div>
@@ -163,7 +179,7 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  {{ dashboardAutoSataus?.active_users }}
+                  {{ dashboardAutoSataus?.active_users ?? 0 }}
                 </div>
               </div>
             </div>
@@ -181,7 +197,7 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  {{ dashboardAutoSataus?.daily_product_type_quantity_sold }}
+                  {{ dashboardAutoSataus?.daily_product_type_quantity_sold ?? 0 }}
                 </div>
               </div>
             </div>

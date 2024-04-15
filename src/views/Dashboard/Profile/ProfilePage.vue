@@ -1,18 +1,51 @@
 <template>
   <DashboardLayout pageTitle="Profile Page">
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
-      <div class="flex justify-center items-center">
-        <EditProfileAvater
-          :imageUrl="userProfileDetails.organization_logo"
-          @toggleModal="openFileInput"
-        />
-        <input
-          type="file"
-          id="fileInput"
-          @change="handleFileUpload"
-          accept="image/*"
-          style="display: none"
-        />
+      <div
+        class="w-full bg-secondary-800/[30%] rounded-lg flex flex-col justify-center items-center p-4"
+      >
+        <div class="flex justify-center items-center">
+          <EditProfileAvater
+            :imageUrl="userProfileDetails?.organization_logo"
+            @toggleModal="openFileInput"
+          />
+          <input
+            type="file"
+            id="fileInput"
+            @change="handleFileUpload"
+            accept="image/*"
+            style="display: none"
+          />
+        </div>
+        <div class="text-center">
+          <p
+            class="text-[#000000] text-[24.518px] capitalize flex lg:flex-row flex-col gap-[2px] items-center font-bold leading-[31.739px]"
+          >
+            {{
+              userProfileDetails?.first_name || userProfileDetails?.last_name
+                ? userProfileDetails?.first_name + `` + userProfileDetails?.last_name
+                : userProfileDetails?.company_name
+            }}
+
+            <span
+              ><span
+                class="bg-brand rounded-full py-[2.05px] capitalize text-[12.519px] text-[#E6F1F3] font-medium px-[19px]"
+                >{{ userProfileDetails?.role }}</span
+              ></span
+            >
+          </p>
+          <span
+            ><span
+              class="bg-brand rounded-full py-[2.05px] capitalize text-[12.519px] text-[#E6F1F3] font-medium px-[19px]"
+              >{{ userProfileDetails?.organization_type }}</span
+            ></span
+          >
+          <p
+            class="text-[#00000066] !my-1.5 text-[14.598px] flex gap-[8px] items-center capitalize leading-[31.739px]"
+          >
+            {{ userProfileDetails?.email }}
+          </p>
+        </div>
       </div>
     </div>
   </DashboardLayout>
