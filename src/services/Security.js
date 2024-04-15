@@ -49,6 +49,21 @@ export const getPages = async () => {
     console.log(error)
   }
 }
+export const getUser = async () => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.get(`users?type=sales_personnel`, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res)
+    return res.data
+  } catch (error) {
+    console.log(error)
+  }
+}
 export const getAllPages = async () => {
   const token = await getToken()
 

@@ -1,48 +1,47 @@
 <template>
-  <div class="modal backdrop-blur z-[100] fixed animate__zoomIn animate__rubberBand animate__fadeOut min-h-screen h-full">
-    <div class="modal__body relative w-full md:max-w-[700px] bg-white m-0 md:px-5 py-4 px-4">
-      <header class="flex flex-row items-center justify-between border-b-[#000000] pb-[5px] mb-[35px] border-b-[1px]">
-        <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">Add Permission</h4>
-        <button class="close-button" @click="$emit('close')">&#10005;</button>
-      </header>
-      <form @submit.prevent="handleAddPermissions">
-        <div class="flex flex-col overflow-y-auto h-[60vh] gap-4">
-          <div>
-            <label>Product Role</label>
-            <select class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-              v-model="formData.role_id"
-              @change="changePermission(formData.role_id)"
-              >
-              <option v-for="(option, optionIndex) in roles?.data" :key="optionIndex" :value="option.id">
-                {{ option.role_name }}
-              </option>
-            </select>
-          </div>
-          <table>
-            <tr>
-              <th>Page Name</th>
-              <th>View</th>
-              <th>Create</th>
-              <th>Update</th>
-              <th>Delete</th>
-            </tr>
-            <tr v-for="(permission, index) in formData.permissions" :key="index">
-              <td>{{ permission.page_name }}</td>
-              <td><input type="checkbox" v-model="permission.read" :true-value="1" :false-value="0"></td>
-              <td><input type="checkbox" v-model="permission.write" :true-value="1" :false-value="0"></td>
-              <td><input type="checkbox" v-model="permission.update" :true-value="1" :false-value="0"></td>
-              <td><input type="checkbox" v-model="permission.del" :true-value="1" :false-value="0"></td>
-            </tr>
-          </table>
+  <div class="flex items-center justify-center min-h-screen">
+    <div class="w-full max-w-4xl bg-white rounded-lg shadow overflow-hidden">
+      <form @submit.prevent="handleAddPermissions" class="p-8">
+        <div class="mb-6">
+          <label for="role" class="block mb-2 text-sm font-medium text-gray-900">Select Role</label>
+          <select id="role"
+            v-model="formData.role_id"
+            @change="changePermission(formData.role_id)"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+            <option v-for="(option, optionIndex) in roles?.data" :key="optionIndex" :value="option.id">
+              {{ option.role_name }}
+            </option>
+          </select>
         </div>
-        <div class="flex justify-center mt-3">
-          <input type="submit" v-if="!loading" class="btn-brand" />
+        <table class="w-full text-sm text-left text-gray-500">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+            <tr>
+              <th class="p-4">Page Name</th>
+              <th class="p-4">View</th>
+              <th class="p-4">Create</th>
+              <th class="p-4">Update</th>
+              <th class="p-4">Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(permission, index) in formData.permissions" :key="index" class="border-b">
+              <td class="p-4">{{ permission.page_name }}</td>
+              <td class="p-4 text-center"><input type="checkbox" v-model="permission.read" :true-value="1" :false-value="0"></td>
+              <td class="p-4 text-center"><input type="checkbox" v-model="permission.write" :true-value="1" :false-value="0"></td>
+              <td class="p-4 text-center"><input type="checkbox" v-model="permission.update" :true-value="1" :false-value="0"></td>
+              <td class="p-4 text-center"><input type="checkbox" v-model="permission.del" :true-value="1" :false-value="0"></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="mt-6 flex justify-center">
+          <button type="submit" v-if="!loading" class="px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">Submit</button>
           <Loader v-else />
         </div>
       </form>
     </div>
   </div>
 </template>
+
 
 <script setup>
 import { ref, reactive, onMounted } from "vue";

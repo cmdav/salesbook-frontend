@@ -1,5 +1,58 @@
 import { ref } from 'vue'
 
+export const userFormFields = ref([
+  {
+    label: 'First Name',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter first name',
+    databaseField: 'first_name'
+  },
+  {
+    label: 'Last Name',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter last name',
+    databaseField: 'last_name'
+  },
+  {
+    label: 'Email',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter email',
+    databaseField: 'email'
+  },
+  {
+    label: 'Role',
+    type: 'select',
+    value: '',
+    required: true,
+    placeholder: 'Select Role',
+    options: [],
+    databaseField: 'role_id'
+  },
+  {
+    label: 'Password',
+    type: 'password',
+    value: '',
+    required: true,
+    placeholder: 'Enter password',
+    databaseField: 'password'
+  }
+  // {
+  //   label: 'Confirm Password',
+  //   type: 'password',
+  //   value: '',
+  //   required: true,
+  //   placeholder: 'Confirm password',
+  //   databaseField: 'password_confirmation'
+  // }
+]);
+
+
 export const measurementFormFields = ref([
   {
     label: 'Measurement Name',
