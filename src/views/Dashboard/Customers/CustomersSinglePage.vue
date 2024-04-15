@@ -2,7 +2,7 @@
   <DashboardLayout>
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
       <div class="py-8">
-        <router-link to="/products" class="font-bold !my-8">Back</router-link>
+        <router-link to="/customers" class="font-bold !my-8">Back</router-link>
       </div>
       <div>
         <div
