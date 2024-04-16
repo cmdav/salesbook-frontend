@@ -38,37 +38,38 @@ export const useStore = defineStore('user', () => {
       console.error(error)
     }
   }
-  const features = computed(() => {
-    //const accountLowerCase = getUser?.value?.user?.type;
+  // const features = computed(() => {
+  //   const accountLowerCase = getUser?.value?.user?.type;
     
       
-     // if (accountLowerCase == "2") {
-        return ['STORE',
-                'SUPPLIER',
-                'RECORDS', 
-                'REPORTS', 
-                'CUSTOMERS', 
-                'INVENTORY',
-                'PRODUCTS',
-                'MEASUREMENT',
-                'PRODUCTCATEGORY',
-                'PRODUCTSUBCATEGORY',
-                'CURRENCY',
-                'PRODUCTTYPE',
-                'SALE',
-                'PURCHASE',
-                'STORE',
-                'PRICE',
-                'SUPPLIER_PRODUCT'
-            ];
-      //} else if (accountLowerCase == "1") {
-       // return ['SUPPLIER_PRODUCT'];
-      //} else if (accountLowerCase == "0") {
-       // return ['0'];
-      //}
+  //    if (accountLowerCase == "2") {
+  //       return [
+  //              'STORE',
+  //               'SUPPLIER',
+  //               'RECORDS', 
+  //               'REPORTS', 
+  //               'CUSTOMERS', 
+  //               'INVENTORY',
+  //               'PRODUCTS',
+  //               'MEASUREMENT',
+  //               'PRODUCTCATEGORY',
+  //               'PRODUCTSUBCATEGORY',
+  //               'CURRENCY',
+  //               'PRODUCTTYPE',
+  //               'SALE',
+  //               'PURCHASE',
+  //               'STORE',
+  //               'PRICE',
+  //               'SUPPLIER_PRODUCT'
+  //           ];
+  //     } else if (accountLowerCase == "1") {
+  //      return ['SUPPLIER_PRODUCT'];
+  //     } else if (accountLowerCase == "0") {
+  //      return ['0'];
+  //     }
     
-      //return null;
-  });
+  //     return null;
+  // });
   
  
   return {
@@ -77,7 +78,7 @@ export const useStore = defineStore('user', () => {
     saveUser,
     userProfileDetails,
     handleUserProfile,
-    features,
+    //features,
     handleUploadCompanyLogo
   }
 })

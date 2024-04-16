@@ -10,7 +10,7 @@
         :key="forceRefresh"
         searchEndpoint="search-sales"
         :additionalColumns="[
-          { name: 'edit', action: handleEdit },
+          { name: 'delete', action: handleDeletes },
          
         ]"
       >

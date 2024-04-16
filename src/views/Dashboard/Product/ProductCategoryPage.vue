@@ -6,10 +6,7 @@
         :key="forceUpdate"
         endpoint="product-categories"
         searchEndpoint="search-product-categories"
-        :additionalColumns="[
-          { name: 'edit', action: handleEdit },
-          { name: 'delete', action: handleDelete },
-        ]"
+        :additionalColumns=additionalColumns
       >
         <button class="btn-brand" @click="closeUploadModal">Upload</button>
       </DataTableLayout>
@@ -74,7 +71,8 @@ const {
   defineEmits,
   UploadModal,
   useUploadComposable,
-} = useSharedComponent();
+  additionalColumns
+} = useSharedComponent('product-categories');
 const { showUploadModal, closeUploadModal } = useUploadComposable();
 
 const { showModal, forceUpdate, closeModal } = usePostComposable(
@@ -82,12 +80,12 @@ const { showModal, forceUpdate, closeModal } = usePostComposable(
   productCategoryFormFields
 );
 const emit = defineEmits("forceRefresh");
-const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
+const { showEditModal, closeEditModal, items } = useEditComposable(emit);
 const forceRefresh = () => {
   forceUpdate.value++;
 };
 const {
-  handleDelete,
+
   showDeleteModal,
   itemsId,
   closeDeleteModal,

@@ -31,10 +31,7 @@
          // product_name: openProductDetailModal,
           view_price: navigateToProductTypePrice,
         }"
-        :additionalColumns="[
-          { name: 'edit', action: handleEdit },
-          { name: 'delete', action: handleDelete },
-        ]"
+        :additionalColumns=additionalColumns
       >
         <button @click="togglePriceModal" class="btn-brand !text-sm !px-1.5">
           Add Price
@@ -145,7 +142,8 @@ const {
   DeleteModal,
   UploadModal,
   useUploadComposable,
-} = useSharedComponent();
+  additionalColumns
+} = useSharedComponent('products');
 const { showUploadModal, closeUploadModal } = useUploadComposable();
 
 const modalTitle = "View Product";
@@ -158,7 +156,7 @@ const showPriceModal = ref(false);
 
 
 const {
-  handleDelete,
+  
   showDeleteModal,
   itemsId,
   closeDeleteModal,
@@ -172,7 +170,7 @@ const {
   closeModal,
   closeViewModal,
 } = usePostComposable("/products", formFields);
-const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
+const {  showEditModal, closeEditModal, items } = useEditComposable(emit);
 
 // fetchDataForSubCategory is emitted
 const {

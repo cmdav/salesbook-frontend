@@ -7,10 +7,7 @@
         endpoint="product-sub-categories"
         searchEndpoint="search-product-sub-categories"
         :excludedKeys="['id', 'sub_category_id']"
-        :additionalColumns="[
-          { name: 'edit', action: handleEdit },
-          { name: 'delete', action: handleDelete },
-        ]"
+        :additionalColumns=additionalColumns
       >
         <button class="btn-brand" @click="closeUploadModal">Upload</button>
       </DataTableLayout>
@@ -66,12 +63,13 @@ const {
   useDeleteComposable,
   UploadModal,
   useUploadComposable,
-} = useSharedComponent();
+  additionalColumns
+} = useSharedComponent('product-sub-categories');
 const { showUploadModal, closeUploadModal } = useUploadComposable();
 
 const emit = defineEmits("forceRefresh");
 const {
-  handleDelete,
+  
   showDeleteModal,
   itemsId,
   closeDeleteModal,
@@ -81,7 +79,7 @@ const { showModal, forceUpdate, closeModal } = usePostComposable(
   "/product-sub-categories",
   productSubCategoryFormFields
 );
-const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
+const { showEditModal, closeEditModal, items } = useEditComposable(emit);
 const { fetchDataForSelect } = useSelectComposable(productSubCategoryFormFields);
 
 const forceRefresh = () => {

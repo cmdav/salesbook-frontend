@@ -2,7 +2,6 @@
   <header class="h-screen bg-secondary-800/[40%]">
     <div class="logo lg:visible invisible">
       <router-link to="/">
-        <!-- <h3 class="text-white text-[40px] my-4">iSalesBook</h3> -->
         <img src="@/assets/iSalesbook-Option-02.png" class="h-[5rem]" alt=" logo" />
       </router-link>
     </div>
@@ -11,7 +10,6 @@
       <nav class="nav !font-light">
         <template v-for="item in menuItems" :key="item.name">
           <router-link
-            v-if="!item.feature || feature.includes(item.feature)"
             :to="item.route"
             class="p-[10px] flex justify-start hover:bg-brand/[50%] hover:text-white rounded-[5px]"
             :class="{
@@ -37,10 +35,11 @@
     </div>
   </header>
 </template>
+
 <script setup>
+import { useRoute } from "vue-router";
 import { computed } from "vue";
 import { useStore } from "@/stores/user";
-//import EmptyIcon from "@/components/icons/EmptyIcon.vue";
 import homeIcon from "@/components/icons/homeIcon.vue";
 import StoreIcon from "@/components/icons/StoreIcon.vue";
 import ProductIcon from "@/components/icons/ProductIcon.vue";
@@ -55,58 +54,45 @@ import MeasurementIcon from "@/components/icons/MeasurementIcon.vue";
 import FireIcon from "@/components/icons/FireIcon.vue";
 import SalesIcon from "@/components/icons/SalesIcon.vue";
 import PurchaseIcon from "@/components/icons/PurchaseIcon.vue";
-import { useRoute } from "vue-router";
-const store = useStore();
+
 const route = useRoute();
-const feature = computed(() => {
-  return Array.isArray(store.features) ? store.features : [];
+const store = useStore();
+const permissions = computed(() => {
+  return store.getUser.user.permission.permissions;
 });
 
-const menuItems = [
-  { name: "Dashboard", route: "/dashboard", icon: homeIcon, feature: "" },
-  { name: "Organisation", route: "/organisation", icon: StoreIcon, feature: "" },
-  // { name: 'Product',             route: '/product', icon: ProductIcon, feature: 'PRODUCT' },
-  {
-    name: "Measurement",
-    route: "/measurement",
-    icon: MeasurementIcon,
-    feature: "",
-  },
-  { name: "Currency", route: "/currency", icon: FireIcon, feature: "" },
-  {
-    name: "Product Category",
-    route: "/product-category",
-    icon: CategoryIcon,
-    feature: "",
-  },
-  {
-    name: "Product Sub Category",
-    route: "/product-sub-category",
-    icon: StoreIcon,
-    feature: "",
-  },
-  { name: "Products", route: "/products", icon: recordsIcon, feature: "" },
-  //
-  //{ name: 'Product Type',             route: '/product-type',          icon: ProductIcon,     feature: 'PRODUCTTYPE' },
-  //{ name: 'Price',                    route: '/price',                 icon: StoreIcon,     feature: 'PRICE' },
-  { name: "Sale", route: "/sale", icon: SalesIcon, feature: "" },
-  { name: "Purchase", route: "/purchase", icon: PurchaseIcon, feature: "" },
-  { name: "Store", route: "/store", icon: ProductIcon, feature: "" },
+console.log(permissions.value)
 
-  {
-    name: "Supplier Product",
-    route: "/supplier-product",
-    icon: ProductIcon,
-    feature: "",
-  },
-  { name: "Customers", route: "/customers", icon: CustomerIcon, feature: "" },
-  { name: "Suppliers", route: "/supplier", icon: SuppliersIcon, feature: "" },
-  { name: "Records", route: "/", icon: recordsIcon, feature: "" },
-  { name: "Reports", route: "/", icon: reportsIcon, feature: "" },
-  { name: "settings", route: "/settings", icon: SettingsIcon, feature: "" },
-  { name: "Log Out", route: "/logout", icon: logoutIcon, feature: "" },
-];
+const menuItems = computed(() => {
+  const allItems = [
+  { name: "Dashboard", route: "/dashboard", icon: homeIcon, backendKey:null},
+  { name: "Organisation", route: "/organisation", icon: StoreIcon , backendKey:"organizations"},
+  { name: "Measurement", route: "/measurement", icon: MeasurementIcon , backendKey:"measurements"},
+  { name: "Currency", route: "/currency", icon: FireIcon, backendKey:"currencies" },
+  { name: "Product Category", route: "/product-category", icon: CategoryIcon, backendKey:"product-categories" },
+  { name: "Product Sub Category", route: "/product-sub-category", icon: StoreIcon, backendKey:"product-sub-categories" },
+  { name: "Products", route: "/products", icon: recordsIcon, backendKey:"products" },
+  { name: "Sale", route: "/sale", icon: SalesIcon , backendKey:"sales"},
+  { name: "Purchase", route: "/purchase", icon: PurchaseIcon, backendKey:"purchases" },
+  { name: "Store", route: "/store", icon: ProductIcon , backendKey:"stores"},
+  { name: "Supplier Product", route: "/supplier-product", icon: ProductIcon, backendKey:null },
+  { name: "Customers", route: "/customers", icon: CustomerIcon , backendKey:null},
+  { name: "Suppliers", route: "/supplier", icon: SuppliersIcon , backendKey:null},
+  { name: "Records", route: "/", icon: recordsIcon , backendKey:null},
+  { name: "Reports", route: "/", icon: reportsIcon, backendKey:null},
+  { name: "Settings", route: "/settings", icon: SettingsIcon , backendKey:"permissions"},
+  { name: "Log Out", route: "/logout", icon: logoutIcon, backendKey:"" },
+  ];
+
+return allItems.filter(item => {
+  const perm = permissions.value.find(p => p.page_name === item.backendKey);
+  return perm && perm.read !== 0;
+});
+});
+
+//console.log(menuItems.value)
 </script>
+
 
 <style lang="scss" scoped>
 header {
