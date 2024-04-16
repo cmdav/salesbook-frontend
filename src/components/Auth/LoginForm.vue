@@ -80,9 +80,9 @@ const router = useRouter();
 let loading = ref(false);
 const store = useStore();
 const formState = reactive({
-  email: "test@gmail.com",
-  password: "test",
-  organization_code: "237324",
+  email: "",
+  password: "",
+  organization_code: "",
   code: "yes",
 });
 const errors = reactive({
@@ -171,7 +171,6 @@ const onFinish = async () => {
     formState.email = "";
     formState.password = "";
     formState.organization_code = "";
-   
   }
 };
 </script>
