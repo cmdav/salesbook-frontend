@@ -7,10 +7,7 @@
         :key="forceUpdate"
         endpoint="measurements"
         searchEndpoint="search-measurement"
-        :additionalColumns="[
-          { name: 'edit', action: handleEdit },
-          { name: 'delete', action: handleDelete },
-        ]"
+        :additionalColumns=additionalColumns
       >
         <button class="btn-brand" @click="closeUploadModal">Upload</button>
       </DataTableLayout>
@@ -72,10 +69,11 @@ const {
   defineEmits,
   UploadModal,
   useUploadComposable,
-} = useSharedComponent();
+  additionalColumns
+} = useSharedComponent('measurements');
 
 const {
-  handleDelete,
+  //handleDelete,
   showDeleteModal,
   itemsId,
   closeDeleteModal,
@@ -88,7 +86,7 @@ const { showModal, forceUpdate, closeModal } = usePostComposable(
   measurementFormFields
 );
 
-const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
+const {  showEditModal, closeEditModal, items } = useEditComposable(emit);
 const { showUploadModal, closeUploadModal } = useUploadComposable(emit);
 
 const forceRefresh = () => {

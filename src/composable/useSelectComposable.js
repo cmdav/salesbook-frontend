@@ -28,7 +28,7 @@ export function useSelectComposable(formFields, baseSubCategoriesUrl ="", catego
         const response = await apiService.get(currentUrl);
        
         const subCategoryField = formFields.value.find(field => field.databaseField === subCategoryDatabaseField);
-        console.log(subCategoryField);
+        // console.log(subCategoryField);
         // console.log(response);
         if (subCategoryField) {
           
@@ -82,7 +82,7 @@ export function useSelectComposable(formFields, baseSubCategoriesUrl ="", catego
     console.log(isOptionLoadingMsg.value)
   };
  
-  //useLabelNameToselectFormFieldToPopulate, endpoint, optionValue, formKeyToUse
+  //useLabelNameToselectFormFieldToPopulate(product name), endpoint, optionValue(id for the option value), formKeyToUse(field that will be use to populate the label)
 const fetchDataForSelect = async (useLabelNameToselectFormFieldToPopulate, endpoint, optionValue, formKey,defaultFormField=formFields.value,) => {
   try {
     const response = await apiService.get(endpoint);

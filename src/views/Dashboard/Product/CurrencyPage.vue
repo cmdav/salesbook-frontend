@@ -6,10 +6,7 @@
         :key="forceUpdate"
         endpoint="currencies"
         searchEndpoint="search-currency"
-        :additionalColumns="[
-          { name: 'edit', action: handleEdit },
-          { name: 'delete', action: handleDelete },
-        ]"
+        :additionalColumns=additionalColumns
       >
         <button class="btn-brand" @click="closeUploadModal">Upload</button>
       </DataTableLayout>
@@ -65,7 +62,8 @@ const {
   useDeleteComposable,
   UploadModal,
   useUploadComposable,
-} = useSharedComponent();
+  additionalColumns
+} = useSharedComponent('currencies');
 const { showUploadModal, closeUploadModal } = useUploadComposable();
 
 const { showModal, forceUpdate, closeModal } = usePostComposable(
@@ -73,9 +71,8 @@ const { showModal, forceUpdate, closeModal } = usePostComposable(
   currenciesFormFields
 );
 
-const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable();
+const {  showEditModal, closeEditModal, items } = useEditComposable();
 const {
-  handleDelete,
   showDeleteModal,
   itemsId,
   closeDeleteModal,

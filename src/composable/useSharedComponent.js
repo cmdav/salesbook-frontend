@@ -19,8 +19,29 @@ import { useDeleteComposable } from "@/composable/useDeleteComposable";
 import DeleteModal from "@/components/UI/Modal/DeleteModal.vue";
 import EditModal from "@/components/UI/Modal/EditModal.vue"; 
 import UploadModal from "@/components/UI/Modal/UploadModal.vue";
-export function useSharedComponent() {
+import { useStore } from "@/stores/user";
+import { computed } from 'vue';
+
+export function useSharedComponent(pageName) {
+  const store = useStore();
+  const permissions = computed(() => {
+    
+     return  store.getUser.user.permission.permissions.find(p => p.page_name === pageName);
+  })
   
+  // Dynamically generate additional columns based on permissions
+  const additionalColumns = computed(() => {
+    const cols = [];
+    if (permissions.value.update) {
+      cols.push({ name: 'edit', action: useEditComposable().handleEdit });
+    }
+    if (permissions.value.del) {
+      cols.push({ name: 'delete', action: useDeleteComposable().handleDelete });
+    }
+    return cols;
+  });
+
+
     return {
       DataTableLayout,
       FormModal,
@@ -41,6 +62,7 @@ export function useSharedComponent() {
       UploadModal,
       ReusablePermissionForm,
       PermissionFormModal,
-      SettingsLayout
+      SettingsLayout,
+      additionalColumns
     }
 }

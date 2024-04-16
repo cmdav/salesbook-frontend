@@ -83,6 +83,7 @@ export function usePostComposable(
       //forceUpdate.value++
       loading.value = false
       emit('close')
+      emit('updated');
       //console.log(response)
       catchAxiosSuccess(response)
       return response

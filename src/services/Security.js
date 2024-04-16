@@ -49,6 +49,21 @@ export const getPages = async () => {
     console.log(error)
   }
 }
+export const getUser = async () => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.get(`users?type=sales_personnel`, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res)
+    return res.data
+  } catch (error) {
+    console.log(error)
+  }
+}
 export const getAllPages = async () => {
   const token = await getToken()
 
@@ -66,11 +81,12 @@ export const getAllPages = async () => {
 
   }
 }
-export const getPermissions = async (id,page = 1) => {
+export const getPermissions = async (id) => {
   const token = await getToken()
 
   try {
-    let res = await axios.get(`permissions?role=${id}?page=${page}`, {
+    //console.log(id)
+    let res = await axios.get(`permissions?role=${id}`, {
       headers: {
         Authorization: 'Bearer ' + token
       }

@@ -21,11 +21,11 @@
         </button>
       </div>
       <slot></slot>
-      <div v-if="hideToggleButtonLabel">
+      <!-- <div v-if="hideToggleButtonLabel">
         <button @click="$emit('toggleModal')" class="btn-brand !px-4">
           {{ props?.toggleButtonLabel }}
         </button>
-      </div>
+      </div> -->
     </div>
 
     <!-- Section for the  table -->
@@ -121,7 +121,7 @@
                 :key="key"
                 class="px-5 py-5 border-brand border-r-[1px] bg-white text-sm"
               >
-                <!-- Check for columns with onclick event -->
+                <!-- Check for columns with onclick event. e.g click on product to view on details -->
                 <template v-if="clickableKeys[key]">
                   <span
                     @click.prevent="clickableKeys[key](product)"

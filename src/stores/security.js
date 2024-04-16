@@ -6,11 +6,13 @@ import {
   getRole,
   getPermissions,
   addPermissions,
-  getAllPages
+  getAllPages,
+  getUser
 } from '@/services/Security'
 
 export const useSecurityStore = defineStore('Security', () => {
   const allRoles = ref({})
+  const allUser = ref({})
   const allPages = ref({})
   const roles = ref({})
   const pages = ref({})
@@ -32,6 +34,14 @@ export const useSecurityStore = defineStore('Security', () => {
       console.error(error)
     }
   }
+  const handleGetUser = async () => {
+    try {
+      allUser.value = await getUser()
+      return allUser.value
+    } catch (error) {
+      console.error(error)
+    }
+  }
   const handleGetPages = async () => {
     try {
       pages.value = await getPages()
@@ -49,9 +59,9 @@ export const useSecurityStore = defineStore('Security', () => {
     }
   }
 
-  const handleGetPermissions = async (id,page) => {
+  const handleGetPermissions = async (id) => {
     try {
-      permissions.value = await getPermissions(id,page)
+      permissions.value = await getPermissions(id)
       return permissions.value
     } catch (error) {
       console.error(error)
@@ -72,11 +82,13 @@ export const useSecurityStore = defineStore('Security', () => {
     roles,
     pages,
     permissions,
+    allUser,
     handleGetAllRole,
     handleGetRole,
     handleGetPages,
     handleGetAllPages,
     handleGetPermissions,
-    handleAddPermissions
+    handleAddPermissions,
+    handleGetUser
   }
 })

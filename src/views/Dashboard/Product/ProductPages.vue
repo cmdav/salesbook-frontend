@@ -31,10 +31,7 @@
          // product_name: openProductDetailModal,
           view_price: navigateToProductTypePrice,
         }"
-        :additionalColumns="[
-          { name: 'edit', action: handleEdit },
-          { name: 'delete', action: handleDelete },
-        ]"
+        :additionalColumns=additionalColumns
       >
         <button @click="togglePriceModal" class="btn-brand !text-sm !px-1.5">
           Add Price
@@ -65,6 +62,7 @@
     <FormModal
       v-if="showProductTypeModal"
       @close="toggleProductTypeModal('close')"
+      @updated="forceRefresh"
       :formTitle="'Add Product Type'"
       :fields="productTypeFormFields"
       @fetchDataForSubCategory="fetchDataForSubCategory"
@@ -97,15 +95,15 @@
       :url="'/product-types'"
       :modalTitle="modalTitle"
     />
-    <!--Modal to edit product and product types-->
+    <!--Modal to edit  product types-->
     <EditModal
       v-if="showEditModal"
       @close="closeEditModal"
       @fetchDataForSubCategory="fetchDataForSubCategory"
       :items="items"
       @updated="forceRefresh"
-      :formField="formFields"
-      :url="'/products'"
+      :formField="dynamicFormFields"
+      :url="dynamicUrl"
     />
     <UploadModal
       v-if="showUploadModal"
@@ -118,7 +116,8 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch, computed } from "vue";
+//import { computed } from 'vue';
 import { useRouter } from "vue-router";
 import { useProductStore } from "@/stores/products";
 const productsStore = useProductStore();
@@ -143,7 +142,8 @@ const {
   DeleteModal,
   UploadModal,
   useUploadComposable,
-} = useSharedComponent();
+  additionalColumns
+} = useSharedComponent('products');
 const { showUploadModal, closeUploadModal } = useUploadComposable();
 
 const modalTitle = "View Product";
@@ -154,8 +154,9 @@ const products = ref();
 const showProductTypeModal = ref(false);
 const showPriceModal = ref(false);
 
+
 const {
-  handleDelete,
+  
   showDeleteModal,
   itemsId,
   closeDeleteModal,
@@ -169,7 +170,7 @@ const {
   closeModal,
   closeViewModal,
 } = usePostComposable("/products", formFields);
-const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
+const {  showEditModal, closeEditModal, items } = useEditComposable(emit);
 
 // fetchDataForSubCategory is emitted
 const {
@@ -224,7 +225,7 @@ const forceRefresh = () => {
 onMounted(async () => {
   await fetchDataForSelect("Measurement", "/measurements", "id", "measurement_name");
   await fetchDataForSelect("Category", "/product-categories", "id", "category_name");
-  //await fetchDataForSelect( "Product Name", "/all-products","id", "product_name", productTypeFormFields.value);
+  await fetchDataForSelect( "Product Name", "/all-products","id", "product_name", productTypeFormFields.value);
   //await fetchDataForSelect( "Product Type", "/all-product-type-name","id","product_type_name", priceFormFields.value);
   await fetchDataForSelect( "Currency Name", "/currencies","id", "currency_name", priceFormFields.value);
   await productsStore.handleGetProductType();
@@ -270,4 +271,34 @@ watch(
     priceFormFields.value.find((field) => field.databaseField === "cost_price")?.value,
   updateSellingPrice
 );
+
+
+
+const dynamicFormFields = computed(() => {
+  
+  if (items.value && items.value.product) {
+   
+    // check if product type and product name are the same
+    if (items.value.product === items.value.product_type_name) {
+    
+      return formFields; 
+    }
+  }
+  return productTypeFormFields;
+});
+
+
+const dynamicUrl = computed(() => {
+  
+  if (items.value && items.value.product) {
+   
+    // check if product type and product name are the same
+    if (items.value.product === items.value.product_type_name) {
+        return "products";
+     
+    }
+  }
+     return  "product-types";
+  
+});
 </script>

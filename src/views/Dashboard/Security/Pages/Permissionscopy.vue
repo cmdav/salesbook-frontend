@@ -5,7 +5,7 @@
         Add Permission
       </button>
     </SettingsLayoutcopy>
-    <PermissionFormModalcopy v-if="showModal" @close="toggleAddPermissionModal" />
+    <FormPermissionModal v-if="showModal" @close="toggleAddPermissionModal" />
   </div>
 </template>
 
@@ -19,7 +19,7 @@ const securityStore = useSecurityStore();
 const { allRoles, allPages, roles, pages, permissions } = storeToRefs(securityStore);
 
 import SettingsLayoutcopy from "@/components/Layouts/settingsLayoutcopy.vue";
-import PermissionFormModalcopy from "@/components/UI/Modal/PermissionFormModalcopy.vue";
+import FormPermissionModal from "@/components/UI/Modal/FormPermissionModal.vue";
 const changePage = async (link) => {
   try {
     await securityStore.handleGetPermissions(store.getUser.user.role_id, link);

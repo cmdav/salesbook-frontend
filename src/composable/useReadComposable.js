@@ -48,9 +48,15 @@ export function useReadComposable(props = {}) {
     isLoading.value = true;
     hasError.value = false;
     try {
-      //  console.log(apiUrl);
-      const data = await apiService.get(`${apiUrl}?page=${page}`);
-      console.log('success');
+       
+        // Check if apiUrl already contains a query parameter
+        const separator = apiUrl.includes('?') ? '&' : '?';
+        const fullUrl = `${apiUrl}${separator}page=${page}`;
+      
+  
+        const data = await apiService.get(fullUrl);
+      //const data = await apiService.get(`${apiUrl}?page=${page}`);
+      //console.log('success');
       // process paginated endpoint
       if (data.data && Array.isArray(data.data)) {
         products.value = data.data;
