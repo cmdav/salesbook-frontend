@@ -171,7 +171,6 @@ const onFinish = async () => {
     formState.email = "";
     formState.password = "";
     formState.organization_code = "";
-   
   }
 };
 </script>
