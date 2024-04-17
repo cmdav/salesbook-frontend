@@ -273,3 +273,36 @@ export const getSales = async () => {
     throw error
   }
 }
+export const getAllProductTypeName = async () => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.get(`all-product-type-name`, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res)
+    return res.data
+  } catch (error) {
+    catchAxiosError(error)
+    throw error
+  }
+}
+
+export const addSaless = async (payload) => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.post(`sales`, payload, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res)
+    return res.data
+  } catch (error) {
+    catchAxiosError(error)
+    throw error
+  }
+}
