@@ -21,11 +21,11 @@
         </button>
       </div>
       <slot></slot>
-      <!-- <div v-if="hideToggleButtonLabel">
+      <div v-if="hideToggleButtonLabel">
         <button @click="$emit('toggleModal')" class="btn-brand !px-4">
           {{ props?.toggleButtonLabel }}
         </button>
-      </div> -->
+      </div>
     </div>
 
     <!-- Section for the  table -->
