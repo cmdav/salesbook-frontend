@@ -85,8 +85,12 @@ const menuItems = computed(() => {
   ];
 
 return allItems.filter(item => {
-  const perm = permissions.value.find(p => p.page_name === item.backendKey);
-  return perm && perm.read !== 0;
+  if (item.backendKey === null) {
+      return true; 
+    } else {
+      const perm = permissions.value.find(p => p.page_name === item.backendKey);
+      return perm && perm.read !== 0; 
+    }
 });
 });
 
