@@ -34,6 +34,7 @@
       :loading="salesLoading"
       @close="closeSalesModal"
       @submitForm="handleAddSales"
+      title="Add Sale"
     >
       <div>
         <label class="block text-sm font-medium text-gray-700"> Customer </label>

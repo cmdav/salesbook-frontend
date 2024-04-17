@@ -19,7 +19,8 @@ import {
   getProductType,
   getSales,
   getAllProductTypeName,
-  addSaless
+  addSaless,
+  addPurchases
 } from '@/services/Products'
 
 export const useProductStore = defineStore('Products', () => {
@@ -44,6 +45,15 @@ const allProductTypeName = ref({})
       console.error(error)
     }
   } 
+     const handleAddPurchases = async (payload) => {
+       try {
+         let res = await addPurchases(payload)
+         return res
+       } catch (error) {
+         console.error(error)
+       }
+     }
+
    const handleAddSaless = async (payload) => {
      try {
        let res = await addSaless(payload)
@@ -223,6 +233,7 @@ const allProductTypeName = ref({})
     sales,
     allProductTypeName,
     handleGetAllProductTypeName,
-    handleAddSaless
+    handleAddSaless,
+    handleAddPurchases
   }
 })

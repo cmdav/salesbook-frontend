@@ -8,7 +8,7 @@
       <header
         class="flex flex-row items-center justify-between border-b-[#000000] pb-[5px] mb-[35px] border-b-[1px]"
       >
-        <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">Add Sale</h4>
+        <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">{{ title }}</h4>
         <button class="close-button" @click="$emit('close')">&#10005;</button>
       </header>
       <form @submit.prevent="submitForm">
@@ -37,6 +37,7 @@ const submitForm = () => {
 };
 const props = defineProps({
   buttonLable: String,
+  title: String,
   loading: {
     type: Boolean,
     default: false,
