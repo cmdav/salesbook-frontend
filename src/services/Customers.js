@@ -47,3 +47,19 @@ export const getSingleCustomer = async (id) => {
     console.log(error)
   }
 }
+export const customerName = async () => {
+   const token = await getToken()
+
+  try {
+    let res = await axios.get(`customers`, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res.data)
+    return res.data
+  } catch (error) {
+    console.log(error)
+  }
+}
+

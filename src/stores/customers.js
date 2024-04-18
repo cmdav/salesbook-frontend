@@ -1,11 +1,27 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { getAllCustomer, getSingleCustomer, getAllCompanyCustomers } from '@/services/Customers'
+import {
+  getAllCustomer,
+  getSingleCustomer,
+  getAllCompanyCustomers,
+  customerName
+} from '@/services/Customers'
 
 export const useCustomerstore = defineStore('Customer', () => {
   const Customers = ref({})
   const companiesCustomers = ref({})
   const singleCustomer = ref({})
+  const customerNames = ref({})
+
+
+  const handleCustomerName = async () => {
+    try {
+      customerNames.value = await customerName()
+      return customerNames.value
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   const allCustomer = async () => {
     try {
@@ -38,6 +54,8 @@ export const useCustomerstore = defineStore('Customer', () => {
     singleCustomer,
     handleGetSingleCustomer,
     allCompanyCustomers,
-    companiesCustomers
+    companiesCustomers,
+    customerNames,
+    handleCustomerName
   }
 })
