@@ -4,7 +4,10 @@ import {
   getAllCustomer,
   getSingleCustomer,
   getAllCompanyCustomers,
-  customerName
+  customerName,
+  addCustomer,
+  companyName,
+  allCustomersName
 } from '@/services/Customers'
 
 export const useCustomerstore = defineStore('Customer', () => {
@@ -12,8 +15,33 @@ export const useCustomerstore = defineStore('Customer', () => {
   const companiesCustomers = ref({})
   const singleCustomer = ref({})
   const customerNames = ref({})
-
-
+const companyNames = ref({})
+const allCustomersNames = ref({})
+const handleAllCustomersName = async () => {
+    try {
+      allCustomersNames.value = await allCustomersName()
+      return allCustomersNames.value
+    } catch (error) {
+      console.error(error)
+    }
+  
+    }
+const handleCompanyName = async () => {
+    try {
+      companyNames.value = await companyName()
+      return companyNames.value
+    } catch (error) {
+      console.error(error)
+    }
+  }
+const handleAddCustomer = async (payload) => {
+  try {
+    const response = await addCustomer(payload)
+    return response
+  } catch (error) {
+    console.error(error)
+  }
+}
   const handleCustomerName = async () => {
     try {
       customerNames.value = await customerName()
@@ -56,6 +84,11 @@ export const useCustomerstore = defineStore('Customer', () => {
     allCompanyCustomers,
     companiesCustomers,
     customerNames,
-    handleCustomerName
+    handleCustomerName,
+    handleAddCustomer,
+    handleCompanyName,
+    companyNames,
+    allCustomersNames,
+    handleAllCustomersName
   }
 })

@@ -51,7 +51,22 @@ export const customerName = async () => {
    const token = await getToken()
 
   try {
-    let res = await axios.get(`customers`, {
+    let res = await axios.get(`customers?type=individual`, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res.data)
+    return res.data
+  } catch (error) {
+    console.log(error)
+  }
+}
+export const addCustomer = async (payload) => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.post(`customers`, payload, {
       headers: {
         Authorization: 'Bearer ' + token
       }
@@ -63,3 +78,41 @@ export const customerName = async () => {
   }
 }
 
+
+
+
+export const companyName = async () => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.get(`customers?type=company`, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res.data)
+    return res.data
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
+
+
+
+export const allCustomersName = async () => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.get(`customer-names`, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res.data)
+    return res.data
+  } catch (error) {
+    console.log(error)
+  }
+}

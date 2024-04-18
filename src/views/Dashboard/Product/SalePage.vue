@@ -44,8 +44,8 @@
           v-model="formState.customer_id"
           class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
         >
-          <option v-for="name in customerNames?.data" :key="name.id" :value="name.id">
-            {{ name.first_name }}
+          <option v-for="name in allCustomersNames" :key="name.id" :value="name.id">
+            {{ name.customer_detail }}
           </option>
         </select>
       </div>
@@ -204,7 +204,7 @@ import { storeToRefs } from "pinia";
 const productsStore = useProductStore();
 
 const customersStore = useCustomerstore();
-const { customerNames } = storeToRefs(customersStore);
+const { allCustomersNames } = storeToRefs(customersStore);
 const { allProductTypeName } = storeToRefs(productsStore);
 
 const salesLoading = ref(false);
@@ -276,7 +276,6 @@ const {
   useUploadComposable,
   useStore,
   computed,
-  
 } = useSharedComponent("sales");
 const { showUploadModal, closeUploadModal } = useUploadComposable();
 const emit = defineEmits("forceRefresh");
@@ -299,7 +298,12 @@ const { showModal, forceUpdate, closeModal } = usePostComposable(
   "/sales",
   saleFormFields
 );
-const { handleDelete, showDeleteModal, itemsId, closeDeleteModal } = useDeleteComposable();
+const {
+  handleDelete,
+  showDeleteModal,
+  itemsId,
+  closeDeleteModal,
+} = useDeleteComposable();
 
 const forceRefresh = () => {
   forceUpdate.value++;
@@ -383,7 +387,7 @@ watch(
 );
 onMounted(async () => {
   try {
-    await customersStore.handleCustomerName();
+    await customersStore.handleAllCustomersName();
     await productsStore.handleGetAllProductTypeName();
   } catch (error) {
     console.error;
@@ -391,18 +395,17 @@ onMounted(async () => {
 });
 const store = useStore();
 const permissions = computed(() => {
-    
-    return  store.getUser.user.permission.permissions.find(p => p.page_name === "sales");
- })
+  return store.getUser.user.permission.permissions.find((p) => p.page_name === "sales");
+});
 
 const additionalColumns = computed(() => {
-    const cols = [];
-    if (permissions.value?.update) {
-      cols.push({ name: 'Edit', action: handleEdit });
-    }
-    if (permissions.value?.del) {
-      cols.push({ name: 'Delete', action: handleDelete });
-    }
-    return cols;
-  });
+  const cols = [];
+  if (permissions.value?.update) {
+    cols.push({ name: "Edit", action: handleEdit });
+  }
+  if (permissions.value?.del) {
+    cols.push({ name: "Delete", action: handleDelete });
+  }
+  return cols;
+});
 </script>

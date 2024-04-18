@@ -17,7 +17,7 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  {{ Customers?.total }}
+                  {{ customerNames?.total ?? 0 }}
                 </div>
               </div>
             </div>
@@ -34,7 +34,7 @@
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
-                  {{ companiesCustomers?.total }}
+                  {{ companyNames?.total ?? 0 }}
                 </div>
               </div>
             </div>
@@ -415,7 +415,9 @@ import Loader from "@/components/UI/Loader.vue";
 // import { useQuery } from "vue-query";
 import { storeToRefs } from "pinia";
 const CustomerStore = useCustomerstore();
-const { Customers, companiesCustomers } = storeToRefs(CustomerStore);
+const { Customers, companiesCustomers, customerNames, companyNames } = storeToRefs(
+  CustomerStore
+);
 import { register } from "@/services/Auth";
 import { useRouter } from "vue-router";
 const router = useRouter();
@@ -461,7 +463,7 @@ function clearSearch() {
 }
 const filteredCustomer = computed(() => {
   // Create a shallow copy of the jobs array
-  let filtered = Customers.value?.data;
+  let filtered = customerNames.value?.data;
 
   // Filtering based on the search criteria
   if (sortInput.Customers) {
@@ -474,7 +476,7 @@ const filteredCustomer = computed(() => {
 });
 const filteredCompany = computed(() => {
   // Create a shallow copy of the jobs array
-  let filtered = companiesCustomers.value?.data;
+  let filtered = companyNames.value?.data;
 
   // Filtering based on the search criteria
   if (sortInput.companies) {
@@ -623,13 +625,11 @@ const handleCustomerRegisteration = async () => {
     phone_number: formData.phoneNo,
     dob: dob.value,
     email: formData.email,
-    type_id: 0,
-    role_id: 0,
-    organization_id: userProfileDetails.value?.organization_id,
+    type_id: "individual",
   };
   try {
-    let res = await register(payload);
-    CustomerStore.allCustomer();
+    let res = await CustomerStore.handleAddCustomer(payload);
+    CustomerStore.handleCustomerName();
     HandleToggleModal();
     loading.value = false;
     clearInputs();
@@ -651,12 +651,10 @@ const handleCompanyCustomerRegisteration = async () => {
     contact_person: formCompanyData.contact_person,
     phone_number: formCompanyData.phone_number,
     email: formCompanyData.email,
-    role_id: 1,
-    type_id: 0,
-    organization_id: userProfileDetails.value?.organization_id,
+    type_id: "company",
   };
   try {
-    let res = await register(payload);
+    let res = await CustomerStore.handleAddCustomer(payload);
     CustomerStore.allCustomer();
     HandleToggleModal();
     loading.value = false;
@@ -688,6 +686,8 @@ const setCurrentCustomersPage = (page) => {
 
 onMounted(async () => {
   try {
+    await CustomerStore.handleCustomerName();
+    await CustomerStore.handleCompanyName();
     await CustomerStore.allCustomer(
       Customers?.value?.current_page ? Customers?.value?.current_page : 1
     );
