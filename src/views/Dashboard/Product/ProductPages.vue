@@ -142,7 +142,7 @@ const {
   DeleteModal,
   UploadModal,
   useUploadComposable,
-  additionalColumns
+  useStore
 } = useSharedComponent('products');
 const { showUploadModal, closeUploadModal } = useUploadComposable();
 
@@ -156,7 +156,7 @@ const showPriceModal = ref(false);
 
 
 const {
-  
+  handleDelete,
   showDeleteModal,
   itemsId,
   closeDeleteModal,
@@ -170,7 +170,7 @@ const {
   closeModal,
   closeViewModal,
 } = usePostComposable("/products", formFields);
-const {  showEditModal, closeEditModal, items } = useEditComposable(emit);
+const {  handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 
 // fetchDataForSubCategory is emitted
 const {
@@ -301,4 +301,21 @@ const dynamicUrl = computed(() => {
      return  "product-types";
   
 });
+
+const store = useStore();
+const permissions = computed(() => {
+    
+    return  store.getUser.user.permission.permissions.find(p => p.page_name === "measurements");
+ })
+
+const additionalColumns = computed(() => {
+    const cols = [];
+    if (permissions.value?.update) {
+      cols.push({ name: 'Edit', action: handleEdit });
+    }
+    if (permissions.value?.del) {
+      cols.push({ name: 'Delete', action: handleDelete });
+    }
+    return cols;
+  });
 </script>

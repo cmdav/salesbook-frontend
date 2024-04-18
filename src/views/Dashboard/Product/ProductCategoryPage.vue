@@ -67,11 +67,13 @@ const {
   useEditComposable,
   EditModal,
   DeleteModal,
+  useStore,
+  computed,
   useDeleteComposable,
   defineEmits,
   UploadModal,
   useUploadComposable,
-  additionalColumns
+  
 } = useSharedComponent('product-categories');
 const { showUploadModal, closeUploadModal } = useUploadComposable();
 
@@ -80,14 +82,31 @@ const { showModal, forceUpdate, closeModal } = usePostComposable(
   productCategoryFormFields
 );
 const emit = defineEmits("forceRefresh");
-const { showEditModal, closeEditModal, items } = useEditComposable(emit);
+const {  handleEdit,showEditModal, closeEditModal, items } = useEditComposable(emit);
 const forceRefresh = () => {
   forceUpdate.value++;
 };
 const {
-
+  handleDelete,
   showDeleteModal,
   itemsId,
   closeDeleteModal,
 } = useDeleteComposable();
+
+const store = useStore();
+const permissions = computed(() => {
+    
+    return  store.getUser.user.permission.permissions.find(p => p.page_name === "measurements");
+ })
+
+const additionalColumns = computed(() => {
+    const cols = [];
+    if (permissions.value?.update) {
+      cols.push({ name: 'Edit', action: handleEdit });
+    }
+    if (permissions.value?.del) {
+      cols.push({ name: 'Delete', action: handleDelete });
+    }
+    return cols;
+  });
 </script>

@@ -8,6 +8,7 @@
         endpoint="measurements"
         searchEndpoint="search-measurement"
         :additionalColumns=additionalColumns
+       
       >
         <button class="btn-brand" @click="closeUploadModal">Upload</button>
       </DataTableLayout>
@@ -52,6 +53,8 @@
 import { onMounted } from "vue";
 import { useProductStore } from "@/stores/products";
 import { measurementFormFields } from "@/formfields/formFields";
+// import { useStore } from "@/stores/user";
+// import { computed } from 'vue';
 
 // const formTitle = "Add Measurement";
 const modalTitle = "measurement_name";
@@ -67,13 +70,16 @@ const {
   DeleteModal,
   useDeleteComposable,
   defineEmits,
+  useStore,
+  computed,
   UploadModal,
   useUploadComposable,
-  additionalColumns
+ 
+
 } = useSharedComponent('measurements');
 
 const {
-  //handleDelete,
+  handleDelete,
   showDeleteModal,
   itemsId,
   closeDeleteModal,
@@ -86,12 +92,33 @@ const { showModal, forceUpdate, closeModal } = usePostComposable(
   measurementFormFields
 );
 
-const {  showEditModal, closeEditModal, items } = useEditComposable(emit);
+const { 
+    handleEdit,
+     showEditModal, closeEditModal, items } = useEditComposable(emit);
+
 const { showUploadModal, closeUploadModal } = useUploadComposable(emit);
 
 const forceRefresh = () => {
   forceUpdate.value++;
 };
+
+const store = useStore();
+const permissions = computed(() => {
+    
+    return  store.getUser.user.permission.permissions.find(p => p.page_name === "measurements");
+ })
+
+const additionalColumns = computed(() => {
+    const cols = [];
+    if (permissions.value?.update) {
+      cols.push({ name: 'Edit', action: handleEdit });
+    }
+    if (permissions.value?.del) {
+      cols.push({ name: 'Delete', action: handleDelete });
+    }
+    return cols;
+  });
+
 onMounted(async () => {
   try {
     await productsStore.handleGetMeasurements();

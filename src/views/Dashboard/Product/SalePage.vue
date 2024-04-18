@@ -85,7 +85,8 @@ const {
   defineEmits,
   UploadModal,
   useUploadComposable,
-  additionalColumns
+  useStore,
+  computed,
 } = useSharedComponent('sales');
 const { showUploadModal, closeUploadModal } = useUploadComposable();
 const emit = defineEmits("forceRefresh");
@@ -102,14 +103,14 @@ const {
   "price_id",
   "selling_price"
 );
-const {  showEditModal, closeEditModal, items } = useEditComposable(emit);
+const {  handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 
 const { showModal, forceUpdate, closeModal } = usePostComposable(
   "/sales",
   saleFormFields
 );
 const {
-  
+  handleDelete,
   showDeleteModal,
   itemsId,
   closeDeleteModal,
@@ -118,6 +119,23 @@ const {
 const forceRefresh = () => {
   forceUpdate.value++;
 };
+
+const store = useStore();
+const permissions = computed(() => {
+    
+    return  store.getUser.user.permission.permissions.find(p => p.page_name === "measurements");
+ })
+
+const additionalColumns = computed(() => {
+    const cols = [];
+    if (permissions.value?.update) {
+      cols.push({ name: 'Edit', action: handleEdit });
+    }
+    if (permissions.value?.del) {
+      cols.push({ name: 'Delete', action: handleDelete });
+    }
+    return cols;
+  });
 
 onMounted(async () => {
   await fetchDataForSelect(

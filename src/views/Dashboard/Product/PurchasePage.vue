@@ -65,7 +65,8 @@ const {
   defineEmits,
   UploadModal,
   useUploadComposable,
-  additionalColumns
+  useStore,
+  computed,
 } = useSharedComponent('purchases');
 const { showUploadModal, closeUploadModal } = useUploadComposable();
 
@@ -73,7 +74,7 @@ const url = "/all-price-by-product-type";
 const emit = defineEmits("forceRefresh");
 
 const {
-  
+  handleDelete,
   showDeleteModal,
   itemsId,
   closeDeleteModal,
@@ -90,7 +91,7 @@ const { showModal, forceUpdate, closeModal } = usePostComposable(
 );
 
 
-const {  showEditModal, closeEditModal, items } = useEditComposable(emit);
+const {   handleEdit,showEditModal, closeEditModal, items } = useEditComposable(emit);
 
 const forceRefresh = () => {
   forceUpdate.value++;
@@ -118,6 +119,24 @@ watch(() =>
  purchaseFormFields.value.find((field) => field.databaseField === "expired_at")?.value,
   checkDate
 );
+
+const store = useStore();
+const permissions = computed(() => {
+    
+    return  store.getUser.user.permission.permissions.find(p => p.page_name === "measurements");
+ })
+
+const additionalColumns = computed(() => {
+    const cols = [];
+    if (permissions.value?.update) {
+      cols.push({ name: 'Edit', action: handleEdit });
+    }
+    if (permissions.value?.del) {
+      cols.push({ name: 'Delete', action: handleDelete });
+    }
+    return cols;
+  });
+
 // Fetch data for select options on component mount
 onMounted(async () => {
   await fetchDataForSelect(

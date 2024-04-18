@@ -62,7 +62,9 @@ const {
   useDeleteComposable,
   UploadModal,
   useUploadComposable,
-  additionalColumns
+  useStore,
+  computed,
+
 } = useSharedComponent('currencies');
 const { showUploadModal, closeUploadModal } = useUploadComposable();
 
@@ -71,8 +73,9 @@ const { showModal, forceUpdate, closeModal } = usePostComposable(
   currenciesFormFields
 );
 
-const {  showEditModal, closeEditModal, items } = useEditComposable();
+const {  handleEdit, showEditModal, closeEditModal, items } = useEditComposable();
 const {
+  handleDelete,
   showDeleteModal,
   itemsId,
   closeDeleteModal,
@@ -82,4 +85,21 @@ const {
 const forceRefresh = () => {
   forceUpdate.value++;
 };
+
+const store = useStore();
+const permissions = computed(() => {
+    
+    return  store.getUser.user.permission.permissions.find(p => p.page_name === "measurements");
+ })
+
+const additionalColumns = computed(() => {
+    const cols = [];
+    if (permissions.value?.update) {
+      cols.push({ name: 'Edit', action: handleEdit });
+    }
+    if (permissions.value?.del) {
+      cols.push({ name: 'Delete', action: handleDelete });
+    }
+    return cols;
+  });
 </script>
