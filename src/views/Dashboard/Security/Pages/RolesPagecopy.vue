@@ -4,11 +4,34 @@
     <!-- Button to Open Modal -->
     <!-- <button @click="showModal = true" class="btn btn-primary">Add Store</button> -->
     <SettingsLayoutcopy @changePage="changePage" :products="roles">
-      <button class="btn-brand !px-2 !text-[14px]" @click="toggleAddPermissionModal">
-        Add Role
-      </button>
+      <button class="btn-brand !px-2 !text-[14px]" @click="closeModal">Add Role</button>
     </SettingsLayoutcopy>
     <!-- <PermissionFormModalcopy v-if="showModal" @close="toggleAddPermissionModal" /> -->
+    <SaleFormModal
+      v-if="showModal"
+      :buttonLable="'submit'"
+      :loading="loading"
+      @close="closeModal"
+      @submitForm="handleAddRole"
+      title="Add Role"
+    >
+      <div class="my-8 flex flex-col gap-2">
+        <div class="overflow-y-auto flex flex-col gap-2 max-h-[340px]">
+          <div class="flex flex-col gap-2">
+            <div class="flex flex-col gap-2">
+              <div class="w-full">
+                <label class="block text-sm font-medium text-gray-700"> Role name </label>
+                <input
+                  v-model="formState.role_name"
+                  type="text"
+                  class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </SaleFormModal>
   </div>
 </template>
 
@@ -21,7 +44,35 @@ const store = useStore();
 const securityStore = useSecurityStore();
 const { allRoles, allPages, roles, pages, permissions } = storeToRefs(securityStore);
 import SettingsLayoutcopy from "@/components/Layouts/RolesTable.vue";
-import PermissionFormModalcopy from "@/components/UI/Modal/PermissionFormModalcopy.vue";
+// import PermissionFormModalcopy from "@/components/UI/Modal/PermissionFormModalcopy.vue";
+import SaleFormModal from "@/components/UI/Modal/SalesFormModal.vue";
+const loading = ref(false);
+const showModal = ref(false);
+
+const formState = reactive({ role_name: "" });
+
+const closeModal = () => {
+  showModal.value = !showModal.value;
+  formState.role_name = "";
+};
+const handleAddRole = async () => {
+  loading.value = true;
+  let payload = {
+    role_name: formState.role_name,
+  };
+  try {
+    let res = await securityStore.handleAddRole(payload);
+    await securityStore.handleGetRole();
+    loading.value = false;
+    return res;
+  } catch (error) {
+    console.log(error);
+  } finally {
+    loading.value = false;
+    closeModal();
+    formState.role_name = "";
+  }
+};
 const changePage = async (link) => {
   try {
     await securityStore.handleGetPermissions(
@@ -31,10 +82,6 @@ const changePage = async (link) => {
   } catch (error) {
     //
   }
-};
-const showModal = ref(false);
-const toggleAddPermissionModal = async () => {
-  showModal.value = !showModal.value;
 };
 onMounted(async () => {
   try {

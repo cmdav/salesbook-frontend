@@ -18,6 +18,22 @@ export const getRole = async () => {
     console.log(error)
   }
 }
+export const addRole = async (payload) => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.post(`job-roles`,payload, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res)
+    return res.data
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 export const getAllRole = async () => {
   const token = await getToken()
 

@@ -7,7 +7,8 @@ import {
   getPermissions,
   addPermissions,
   getAllPages,
-  getUser
+  getUser,
+  addRole
 } from '@/services/Security'
 
 export const useSecurityStore = defineStore('Security', () => {
@@ -18,6 +19,16 @@ export const useSecurityStore = defineStore('Security', () => {
   const pages = ref({})
   const permissions = ref({})
 
+
+
+    const handleAddRole = async (payload) => {
+      try {
+        let res = await addRole(payload)
+        return res
+      } catch (error) {
+        console.error(error)
+      }
+    }
   const handleGetAllRole = async () => {
     try {
       allRoles.value = await getAllRole()
@@ -89,6 +100,7 @@ export const useSecurityStore = defineStore('Security', () => {
     handleGetAllPages,
     handleGetPermissions,
     handleAddPermissions,
-    handleGetUser
+    handleGetUser,
+    handleAddRole
   }
 })
