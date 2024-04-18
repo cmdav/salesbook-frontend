@@ -69,7 +69,6 @@
                   </label>
 
                   <input
-                    required
                     :label="`Supplier ${index + 1}`"
                     :name="`Supplier ${index + 1}`"
                     :placeholder="`Supplier ${index + 1}`"
@@ -131,7 +130,6 @@
                   </label>
 
                   <input
-                    required
                     :label="`product identifier ${index + 1}`"
                     :name="`product identifier ${index + 1}`"
                     :placeholder="`product identifier ${index + 1}`"
@@ -146,7 +144,6 @@
                   </label>
 
                   <input
-                    required
                     :label="`expired date ${index + 1}`"
                     :name="`expired date ${index + 1}`"
                     :placeholder="`expired date ${index + 1}`"
@@ -296,14 +293,18 @@ const {
   useStore,
   computed,
   useUploadComposable,
- 
 } = useSharedComponent("purchases");
 const { showUploadModal, closeUploadModal } = useUploadComposable();
 
 const url = "/all-price-by-product-type";
 const emit = defineEmits("forceRefresh");
 
-const {handleDelete, showDeleteModal, itemsId, closeDeleteModal } = useDeleteComposable();
+const {
+  handleDelete,
+  showDeleteModal,
+  itemsId,
+  closeDeleteModal,
+} = useDeleteComposable();
 
 const {
   fetchDataForSelect,
@@ -315,7 +316,7 @@ const { showModal, forceUpdate, closeModal } = usePostComposable(
   purchaseFormFields
 );
 
-const {handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
+const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 
 const forceRefresh = () => {
   forceUpdate.value++;
@@ -362,18 +363,19 @@ onMounted(async () => {
 });
 const store = useStore();
 const permissions = computed(() => {
-    
-    return  store.getUser.user.permission.permissions.find(p => p.page_name === "purchases");
- })
+  return store.getUser.user.permission.permissions.find(
+    (p) => p.page_name === "purchases"
+  );
+});
 
 const additionalColumns = computed(() => {
-    const cols = [];
-    if (permissions.value?.update) {
-      cols.push({ name: 'Edit', action: handleEdit });
-    }
-    if (permissions.value?.del) {
-      cols.push({ name: 'Delete', action: handleDelete });
-    }
-    return cols;
-  });
+  const cols = [];
+  if (permissions.value?.update) {
+    cols.push({ name: "Edit", action: handleEdit });
+  }
+  if (permissions.value?.del) {
+    cols.push({ name: "Delete", action: handleDelete });
+  }
+  return cols;
+});
 </script>
