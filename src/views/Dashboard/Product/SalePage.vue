@@ -245,7 +245,7 @@ const handleAddSales = async () => {
   salesLoading.value = true;
   let payload = {
     customer_id: formState.customer_id,
-    payment_method: formState.customer_id,
+    payment_method: formState.payment_method,
     products: formState.products,
   };
   try {
