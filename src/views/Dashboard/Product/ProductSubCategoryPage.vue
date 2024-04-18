@@ -90,7 +90,7 @@ const forceRefresh = () => {
 const store = useStore();
 const permissions = computed(() => {
     
-    return  store.getUser.user.permission.permissions.find(p => p.page_name === "measurements");
+    return  store.getUser.user.permission.permissions.find(p => p.page_name === "product-sub-categories");
  })
 
 const additionalColumns = computed(() => {
