@@ -63,13 +63,14 @@ const {
   useDeleteComposable,
   UploadModal,
   useUploadComposable,
-  additionalColumns
+  useStore,
+  computed,
 } = useSharedComponent('product-sub-categories');
 const { showUploadModal, closeUploadModal } = useUploadComposable();
 
 const emit = defineEmits("forceRefresh");
 const {
-  
+  handleDelete,
   showDeleteModal,
   itemsId,
   closeDeleteModal,
@@ -79,12 +80,29 @@ const { showModal, forceUpdate, closeModal } = usePostComposable(
   "/product-sub-categories",
   productSubCategoryFormFields
 );
-const { showEditModal, closeEditModal, items } = useEditComposable(emit);
+const {  handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 const { fetchDataForSelect } = useSelectComposable(productSubCategoryFormFields);
 
 const forceRefresh = () => {
   forceUpdate.value++;
 };
+
+const store = useStore();
+const permissions = computed(() => {
+    
+    return  store.getUser.user.permission.permissions.find(p => p.page_name === "product-sub-categories");
+ })
+
+const additionalColumns = computed(() => {
+    const cols = [];
+    if (permissions.value?.update) {
+      cols.push({ name: 'Edit', action: handleEdit });
+    }
+    if (permissions.value?.del) {
+      cols.push({ name: 'Delete', action: handleDelete });
+    }
+    return cols;
+  });
 // Fetch data for select options on component mount
 onMounted(async () => {
   await fetchDataForSelect("Category", "/product-categories", "id", "category_name");

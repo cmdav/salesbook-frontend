@@ -22,25 +22,9 @@ import UploadModal from "@/components/UI/Modal/UploadModal.vue";
 import { useStore } from "@/stores/user";
 import { computed } from 'vue';
 
-export function useSharedComponent(pageName) {
-  const store = useStore();
-  const permissions = computed(() => {
-    
-     return  store.getUser.user.permission.permissions.find(p => p.page_name === pageName);
-  })
-  
-  // Dynamically generate additional columns based on permissions
-  const additionalColumns = computed(() => {
-    const cols = [];
-    if (permissions.value.update) {
-      cols.push({ name: 'edit', action: useEditComposable().handleEdit });
-    }
-    if (permissions.value.del) {
-      cols.push({ name: 'delete', action: useDeleteComposable().handleDelete });
-    }
-    return cols;
-  });
 
+export function useSharedComponent() {
+  
 
     return {
       DataTableLayout,
@@ -59,10 +43,12 @@ export function useSharedComponent(pageName) {
       DeleteModal,
       EditModal,
       defineEmits,
+      useStore,
+      computed,
       UploadModal,
       ReusablePermissionForm,
       PermissionFormModal,
       SettingsLayout,
-      additionalColumns
+      
     }
 }
