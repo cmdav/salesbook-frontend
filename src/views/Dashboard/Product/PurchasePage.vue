@@ -149,6 +149,7 @@
                     :placeholder="`expired date ${index + 1}`"
                     v-model="formState.purchases[index].expired_date"
                     type="date"
+                    :min="minDate"
                     class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
                   />
                 </div>
@@ -216,6 +217,14 @@ const pruchaseLoading = ref(false);
 const showPurchaseModal = ref(false);
 
 const { allProductTypeName } = storeToRefs(productsStore);
+const minDate = ref(getMinDate());
+
+function getMinDate() {
+  const today = new Date();
+  const minDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  // Return the minimum date in the format required by the input[type=date] field
+  return minDate.toISOString().split("T")[0];
+}
 
 const formState = reactive({
   purchases: [
