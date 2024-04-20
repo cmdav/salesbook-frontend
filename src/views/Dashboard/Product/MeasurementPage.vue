@@ -92,9 +92,7 @@ const { showModal, forceUpdate, closeModal } = usePostComposable(
   measurementFormFields
 );
 
-const { 
-    handleEdit,
-     showEditModal, closeEditModal, items } = useEditComposable(emit);
+const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 
 const { showUploadModal, closeUploadModal } = useUploadComposable(emit);
 

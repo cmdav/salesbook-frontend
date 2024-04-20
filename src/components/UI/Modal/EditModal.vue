@@ -47,6 +47,8 @@ const props = defineProps({
 });
 const emit = defineEmits(["fetchDataForSubCategory", "handleEditCategoryChange","close"]);
 const { items, formField, modalTitle, url,subCategoryIdToPopulate } = toRefs(props);
+
+console.log(items.value)
 const { editForm, loading } = useEditComposable(formField, url.value, items.value["id"], emit);
 const imagePath = ref();
 
