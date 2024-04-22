@@ -47,23 +47,31 @@ const props = defineProps({
 });
 const emit = defineEmits(["fetchDataForSubCategory", "handleEditCategoryChange","close"]);
 const { items, formField, modalTitle, url,subCategoryIdToPopulate } = toRefs(props);
+
+console.log(items.value)
 const { editForm, loading } = useEditComposable(formField, url.value, items.value["id"], emit);
 const imagePath = ref();
 
 watch(items, (newItems) => {
   if (newItems) {
-    //console.log(newItems)
+  
     formField.value.forEach(field => {
-      field.value = newItems[field.databaseField] || ''; 
-     
-        if(field.type == 'select') {
+    
+    
+          
+        if(field.type == 'select' && Array.isArray(field.options)) {
+
+          console.log(field.options) 
+          console.log(field.databaseField) 
+         console.log(newItems[field.databaseField]) 
           //set the selected item
-          // const selectedItem = field.options.find(option => option.label === newItems[field.databaseField]);
-          // if (selectedItem) {
-          //    field.value = selectedItem.value; 
+          const selectedItem = field.options.find(option => option.label == newItems[field.databaseField]);
+          if (selectedItem) {
+             field.value = selectedItem.value; 
              
-          //  }
+           }
         } else {
+        
           
           field.value = newItems[field.databaseField];
         }

@@ -4,8 +4,7 @@ import { ref} from 'vue';
 import apiService from '@/services/apiService';
 //import { useReadComposable} from '@/composable/useReadComposable';
 import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
-import { useStore } from "@/stores/user";
-import { computed } from 'vue';
+
 
 
 //const { fetchPage } = useReadComposable();
@@ -18,24 +17,25 @@ export function useEditComposable(formFields, url,itemId,emit) {
   let errorMessage = ref();
   let loading = ref(false);
 
-  const store = useStore();
-const permissions = computed(() => {
-    
-    return  store.getUser.user.permission.permissions.find(p => p.page_name === "measurements");
- })
+  
+  function constructUrl(url, itemId) {
+   
+    const segments = url.split('/');
+   
+    const segmentCount = segments.filter(segment => segment.length > 0).length;
+    //console.log(segmentCount)
+    if (segmentCount > 1) {
+      
+      return url;
+       
+       
+    } else {
+      
+        return url.endsWith('/') ? `${url}${itemId}` : `${url}/${itemId}`;
+    }
+}
 
-const additionalColumns = computed(() => {
-    const cols = [];
-    if (permissions.value?.update) {
-      cols.push({ name: 'Edit', action: handleEdit });
-    }
-    if (permissions.value?.del) {
-      cols.push({ name: 'Delete', action: handleDelete });
-    }
-    return cols;
-  });
-  //const forceUpdate = ref(true);
- 
+
 
 
   const closeEditModal = () => {
@@ -44,13 +44,13 @@ const additionalColumns = computed(() => {
   };
   
   const handleEdit = (item='') => {
-    console.log('before value')
-    console.log(showEditModal.value)
+    // console.log('before value')
+    // console.log(showEditModal.value)
     console.log(item)
     items.value =item;
     showEditModal.value = true;
-    console.log('after value')
-    console.log(showEditModal.value)
+    // console.log('after value')
+    // console.log(showEditModal.value)
     
   };
 
@@ -70,24 +70,29 @@ const additionalColumns = computed(() => {
      
 
       formFields.value.forEach(field => {
-           console.log(field.value)
+
+        console.log(field.databaseField)
+           //console.log(field.value)
+           formData.append(field.databaseField, field.value); 
       
-          if (field.databaseField === 'product_image') {
+          // if (field.databaseField === 'product_image') {
             
-              formData.append(field.databaseField, field.value);
+          //     formData.append(field.databaseField, field.value);
               
-          } else {
-              formData.append(field.databaseField, field.value); 
-             // console.log(field.value)
-          }
+          // } else {
+          //     formData.append(field.databaseField, field.value); 
+          //    // console.log(field.value)
+          // }
       });
 
 
-      console.log(url);
-      console.log(itemId);
-      //itemId = "9bc64d90-76e8-4f2a-b446-9d7f8e2180f6";
-       const Url = `${url}/${itemId}`
-      
+     
+      //console.log(itemId)
+      //itemId = "9bd85113-1189-42b9-8f10-7c4c3c1bc967";
+      const Url = constructUrl(url, itemId);
+
+      console.log(Url)
+        
       
        formData.append('_method', 'PUT')
        const response = await apiService.post(Url, formData);
@@ -133,7 +138,7 @@ const additionalColumns = computed(() => {
     items,
     editForm,
     loading,
-    additionalColumns
+    
   
   };
 }
