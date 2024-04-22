@@ -18,7 +18,24 @@ export function useEditComposable(formFields, url,itemId,emit) {
   let loading = ref(false);
 
   
- 
+  function constructUrl(url, itemId) {
+   
+    const segments = url.split('/');
+   
+    const segmentCount = segments.filter(segment => segment.length > 0).length;
+    //console.log(segmentCount)
+    if (segmentCount > 1) {
+      
+      return url;
+       
+       
+    } else {
+      
+        return url.endsWith('/') ? `${url}${itemId}` : `${url}/${itemId}`;
+    }
+}
+
+
 
 
   const closeEditModal = () => {
@@ -53,23 +70,28 @@ export function useEditComposable(formFields, url,itemId,emit) {
      
 
       formFields.value.forEach(field => {
-           console.log(field.value)
+
+        console.log(field.databaseField)
+           //console.log(field.value)
+           formData.append(field.databaseField, field.value); 
       
-          if (field.databaseField === 'product_image') {
+          // if (field.databaseField === 'product_image') {
             
-              formData.append(field.databaseField, field.value);
+          //     formData.append(field.databaseField, field.value);
               
-          } else {
-              formData.append(field.databaseField, field.value); 
-             // console.log(field.value)
-          }
+          // } else {
+          //     formData.append(field.databaseField, field.value); 
+          //    // console.log(field.value)
+          // }
       });
 
 
-      console.log(url);
-      console.log(itemId)
+     
+      //console.log(itemId)
       //itemId = "9bd85113-1189-42b9-8f10-7c4c3c1bc967";
-       const Url = `${url}/${itemId}`
+      const Url = constructUrl(url, itemId);
+
+      console.log(Url)
         
       
        formData.append('_method', 'PUT')

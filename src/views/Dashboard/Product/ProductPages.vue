@@ -25,7 +25,7 @@
         endpoint="product-types"
         @toggleModal="showModal = !showModal"
         toggleButtonLabel="Add Product"
-        :excludedKeys="['id', 'product_description', 'cat_id','product_image','product_type_description']"
+        :excludedKeys="['id', 'product_description', 'product_id','product_image','product_type_description']"
         :clickableKeys="{
           //this will be render as a closure
          // product_name: openProductDetailModal,
@@ -276,29 +276,32 @@ watch(
 
 const dynamicFormFields = computed(() => {
   
-  if (items.value && items.value.product) {
+  if (items.value && items.value.product_name) {
    
+  console.log(items.value.product_type_name)
     // check if product type and product name are the same
-    if (items.value.product === items.value.product_type_name) {
-    
+    if (items.value.product_name == items.value.product_type_name) {
+      console.log('found');
       return formFields; 
     }
   }
+ 
   return productTypeFormFields;
 });
 
 
 const dynamicUrl = computed(() => {
+ 
   
-  if (items.value && items.value.product) {
+  if (items.value && items.value.product_name) {
    
     // check if product type and product name are the same
-    if (items.value.product === items.value.product_type_name) {
-        return "products";
-     
+    if (items.value.product_name == items.value.product_type_name) {
+      
+      return `/products/${items.value.product_id}`;
     }
   }
-     return  "product-types";
+  return `/product-types/${items.value.id}`;
   
 });
 

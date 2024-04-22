@@ -61,40 +61,42 @@ const permissions = computed(() => {
   return store.getUser.user.permission.permissions;
 });
 
-console.log(permissions.value)
+//console.log(permissions.value)
 
 const menuItems = computed(() => {
   const allItems = [
-  { name: "Dashboard", route: "/dashboard", icon: homeIcon, backendKey:null},
+  { name: "Dashboard", route: "/dashboard", icon: homeIcon, backendKey:"dashboards"},
   { name: "Organisation", route: "/organisation", icon: StoreIcon , backendKey:"organizations"},
   { name: "Measurement", route: "/measurement", icon: MeasurementIcon , backendKey:"measurements"},
   { name: "Currency", route: "/currency", icon: FireIcon, backendKey:"currencies" },
-  { name: "Product Category", route: "/product-category", icon: CategoryIcon, backendKey:"product-categories" },
-  { name: "Product Sub Category", route: "/product-sub-category", icon: StoreIcon, backendKey:"product-sub-categories" },
-  { name: "Products", route: "/products", icon: recordsIcon, backendKey:"products" },
+  { name: "Product Category", route: "/product-category", icon: CategoryIcon, backendKey:"product-categories"},
+  { name: "Product Sub Category", route: "/product-sub-category", icon: StoreIcon, backendKey:"product-sub-categories"},
+  { name: "Products", route: "/products", icon: recordsIcon, backendKey:"products"},
+  { name: "Purchase", route: "/purchase", icon: PurchaseIcon, backendKey:"purchases"},
   { name: "Sale", route: "/sale", icon: SalesIcon , backendKey:"sales"},
-  { name: "Purchase", route: "/purchase", icon: PurchaseIcon, backendKey:"purchases" },
   { name: "Store", route: "/store", icon: ProductIcon , backendKey:"stores"},
-  { name: "Supplier Product", route: "/supplier-product", icon: ProductIcon, backendKey:null },
-  { name: "Customers", route: "/customers", icon: CustomerIcon , backendKey:null},
-  { name: "Suppliers", route: "/supplier", icon: SuppliersIcon , backendKey:null},
-  { name: "Records", route: "/", icon: recordsIcon , backendKey:null},
-  { name: "Reports", route: "/", icon: reportsIcon, backendKey:null},
+  { name: "Supplier Product", route: "/supplier-product", icon: ProductIcon, backendKey:"supplier-products"},
+  { name: "Customers", route: "/customers", icon: CustomerIcon , backendKey:"customers"},
+  { name: "Suppliers", route: "/supplier", icon: SuppliersIcon , backendKey:"suppliers"},
+  { name: "Records", route: "/", icon: recordsIcon , backendKey:"records"},
+  { name: "Reports", route: "/", icon: reportsIcon, backendKey:"reports"},
   { name: "Settings", route: "/settings", icon: SettingsIcon , backendKey:"permissions"},
-  { name: "Log Out", route: "/logout", icon: logoutIcon, backendKey:"" },
+  { name: "Log Out", route: "/logout", icon: logoutIcon, backendKey:""},
   ];
 
 return allItems.filter(item => {
   if (item.backendKey === null) {
       return true; 
     } else {
-      const perm = permissions.value.find(p => p.page_name === item.backendKey);
-      return perm && perm.read !== 0; 
+     
+      const perm = permissions.value.find(p => p.page_name == item.backendKey);
+      return perm && perm.read == 1; 
     }
 });
 });
 
 //console.log(menuItems.value)
+
 </script>
 
 
