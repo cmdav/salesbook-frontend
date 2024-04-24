@@ -293,7 +293,7 @@ export const purchaseFormFields = ref([
     value: null,
     required: false,
     placeholder: 'Select expired date',
-    databaseField: 'expired_date'
+    databaseField: 'expiry_date'
   }
   // { label: 'Organization ID', type: 'text', value: '', required: false, placeholder: 'Enter organization ID', databaseField: "organization_id" },
   // { label: 'Purchase By', type: 'text', value: '0', required: true, placeholder: 'Enter purchase by', databaseField: "purchase_by" },
