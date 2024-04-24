@@ -147,7 +147,7 @@
                     :label="`expired date ${index + 1}`"
                     :name="`expired date ${index + 1}`"
                     :placeholder="`expired date ${index + 1}`"
-                    v-model="formState.purchases[index].expired_date"
+                    v-model="formState.purchases[index].expiry_date"
                     type="date"
                     :min="minDate"
                     class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
@@ -235,7 +235,7 @@ const formState = reactive({
       batch_no: "",
       quantity: "",
       product_identifier: "",
-      expired_date: "",
+      expiry_date: "",
     },
   ],
 });
@@ -249,7 +249,7 @@ const addPurchases = () => {
       batch_no: "",
       quantity: "",
       product_identifier: "",
-      expired_date: "",
+      expiry_date: "",
     });
   }
 };
@@ -262,7 +262,7 @@ const resetForm = () => {
       batch_no: "",
       quantity: "",
       product_identifier: "",
-      expired_date: "",
+      expiry_date: "",
     },
   ];
 };
@@ -331,7 +331,7 @@ const forceRefresh = () => {
   forceUpdate.value++;
 };
 const checkDate = (fieldDatabase, value) => {
-  if (fieldDatabase === "expired_date") {
+  if (fieldDatabase === "expiry_date") {
     const selectedDate = new Date(value);
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Reset time part to compare only date parts
@@ -340,7 +340,7 @@ const checkDate = (fieldDatabase, value) => {
       alert("Invalid date: Date cannot be in the past.");
       // Find the field and reset its value
       const expiredDateField = purchaseFormFields.value.find(
-        (field) => field.databaseField === "expired_date"
+        (field) => field.databaseField === "expiry_date"
       );
       if (expiredDateField) {
         expiredDateField.value = ""; // Clear the input field

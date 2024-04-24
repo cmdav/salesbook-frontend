@@ -55,17 +55,21 @@ const imagePath = ref();
 
 watch(items, (newItems) => {
   if (newItems) {
-  
+    console.log(newItems)
     formField.value.forEach(field => {
-    
-    
+        console.log(field)
+      
+      if(field.databaseField == 'expiry_date'){
+        console.log('okay')
+        console.log(field)
+      } 
           
         if(field.type == 'select' && Array.isArray(field.options)) {
 
-          console.log(field.options) 
-          console.log(field.databaseField) 
-          console.log(newItems) 
-         console.log(newItems[field.databaseField]) 
+        //   console.log(field.options) 
+        //   console.log(field.databaseField) 
+        //   console.log(newItems) 
+        //  console.log(newItems[field.databaseField]) 
 
         //  field.options.forEach(option => {
         //       console.log(`Value: ${option.value}, Label: ${option.label}`);
