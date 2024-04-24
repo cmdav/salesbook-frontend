@@ -45,6 +45,7 @@
       v-if="showEditModal"
       @close="closeEditModal"
       :items="items"
+      @fieldChanged="updateSellingPrice"
       @updated="forceRefresh"
       :formField="priceFormFields"
       :url="'/prices'"
@@ -145,27 +146,50 @@ const forceRefresh = () => {
 // router.go(-1);
 // Fetch data for select options on component mount
 onMounted(async () => {
+  
   await fetchDataForSelect("Product Type","/all-product-type-name","id","product_type_name");
-  await fetchDataForSelect("Currency Name", "/currencies", "id", "currency_name");
+  //await fetchDataForSelect( "Currency Name", "/currencies","id", "currency_name", priceFormFields.value, "naira");
 });
 
 const updateSellingPrice = (fieldDatabase, value) => {
-   console.log(value)
+  console.log(value);
 
-  if (fieldDatabase === 'cost_price') {
-    const costPrice = parseFloat(priceFormFields.value.find(field => field.databaseField === 'cost_price')?.value) || 0;
-    const auto_generated_selling_price = parseFloat(priceFormFields.value.find(field => field.databaseField === 'auto_generated_selling_price')?.value) || 0;
-    const totalPriceField = priceFormFields.value.find(field => field.databaseField === 'selling_price');
+  if (
+    fieldDatabase === "auto_generated_selling_price" ||
+    fieldDatabase === "cost_price"
+  ) {
+    const costPrice =
+      parseFloat(
+        priceFormFields.value.find((field) => field.databaseField === "cost_price")?.value
+      ) || 0;
+    const auto_generated_selling_price =
+      parseFloat(
+        priceFormFields.value.find(
+          (field) => field.databaseField === "auto_generated_selling_price"
+        )?.value
+      ) || 0;
+    const totalPriceField = priceFormFields.value.find(
+      (field) => field.databaseField === "selling_price"
+    );
     if (totalPriceField) {
-      totalPriceField.value = costPrice + costPrice * (auto_generated_selling_price/100);
+      totalPriceField.value =
+        Math.floor(costPrice + costPrice * (auto_generated_selling_price / 100));
     }
   }
 };
 
-// // Call this function whenever the related fields change.
+// Call this function whenever the related fields change.
 watch(
   () =>
-  priceFormFields.value.find((field) => field.databaseField === "price_sold_at")?.value,
+    priceFormFields.value.find(
+      (field) => field.databaseField === "auto_generated_selling_price"
+    )?.value,
   updateSellingPrice
 );
+watch(
+  () =>
+    priceFormFields.value.find((field) => field.databaseField === "cost_price")?.value,
+  updateSellingPrice
+);
+
 </script>

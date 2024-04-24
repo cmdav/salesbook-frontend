@@ -14,9 +14,11 @@ export function useSelectComposable(formFields, baseSubCategoriesUrl ="", catego
     const isOptionLoadingMsg = ref("");
   
   //value is emitted from reusable form. it represented the selected category and database field
-  const fetchDataForSubCategory = async (value, field_name, setSelectOption=null) => {
-    //value=>id of the category to pull e.g 
+  const fetchDataForSubCategory = async (value, field_name, setSelectOption=null, previouslySelected=null) => {
+    //value=>id of the category to pull e.g "uuid:9bdf653c-5e09-48a0-b479-2f2f10417d18"
     //field_name is the category field name .e g category_id
+    // console.log(value)
+    // console.log(field_name)
 
     const currentUrl = `${baseSubCategoriesUrl}/${value}`;
    
@@ -29,7 +31,7 @@ export function useSelectComposable(formFields, baseSubCategoriesUrl ="", catego
        
         const subCategoryField = formFields.value.find(field => field.databaseField === subCategoryDatabaseField);
         // console.log(subCategoryField);
-        // console.log(response);
+        
         if (subCategoryField) {
           
           if (response.length === 0) {
@@ -39,14 +41,24 @@ export function useSelectComposable(formFields, baseSubCategoriesUrl ="", catego
            
                 let options = [{ value: '', label: 'Select an option', disabled: true }];
                   
-                    if (Array.isArray(response)) {
-                   
+                  if (Array.isArray(response)) {
+                    //  console.log("if condiion is passed")
                       response.forEach(item => {
                           options.push({ value: item.id, label: item[optionValue] });
                       });
                       subCategoryField.options = options;
+                      //console.log(options)
+                      const selectedItem = options.find(option => option.value == previouslySelected);
+                      //console.log(selectedItem)
+                      if (selectedItem) {
+                        subCategoryField.value = selectedItem.value; 
+                         
+                       }
+
+
                      
                   } else if (response && response.id) {
+                    // console.log("else if condiion is passed")
                     // Handle single object response
                     options = [{ value: response.id, label: response[optionValue] }];
                     subCategoryField.options = options;
@@ -83,21 +95,28 @@ export function useSelectComposable(formFields, baseSubCategoriesUrl ="", catego
   };
  
   //useLabelNameToselectFormFieldToPopulate(product name), endpoint, optionValue(id for the option value), formKeyToUse(field that will be use to populate the label)
-const fetchDataForSelect = async (useLabelNameToselectFormFieldToPopulate, endpoint, optionValue, formKey,defaultFormField=formFields.value,) => {
+const fetchDataForSelect = async (useLabelNameToselectFormFieldToPopulate, endpoint, optionValue, formKey,defaultFormField=formFields.value,activeSelect=null) => {
   try {
     const response = await apiService.get(endpoint);
-    console.log(response);
+    //console.log(response);
     const fieldObject = defaultFormField.find(f => f.label === useLabelNameToselectFormFieldToPopulate);
     if (fieldObject) {
      // console.log(fieldObject)
     //  console.log(response)
-   
+    //console.log(activeSelect)
     //   console.log(optionValue)
     //   console.log(formKey)
       fieldObject.options = [
                                  { value: '', label: 'Select an option', disabled: true },
         ...response.map(item => ({ value: item[optionValue], label: item[formKey] }))
       ];
+      
+      const selectedItem =  fieldObject.options.find(option => option.value == activeSelect);
+      //console.log(selectedItem)
+      if (selectedItem) {
+        defaultFormField.value = selectedItem.value; 
+         
+       }
 
     } else {
      
@@ -107,6 +126,7 @@ const fetchDataForSelect = async (useLabelNameToselectFormFieldToPopulate, endpo
   } catch (error) {
     console.error('Error fetching data:', error);
   }
+ 
 };
 
   return {

@@ -18,6 +18,7 @@
         <ReusableForm 
             :fields="formField"  
             @handleEditCategoryChange="handleEditCategoryChange" 
+            @fieldChanged="handleFieldChanged"
             :imagePath="imagePath" 
             />
         <input type="submit" v-if="!loading" class="btn-brand" value="Submit" />
@@ -48,7 +49,7 @@ const props = defineProps({
 const emit = defineEmits(["fetchDataForSubCategory", "handleEditCategoryChange","close"]);
 const { items, formField, modalTitle, url,subCategoryIdToPopulate } = toRefs(props);
 
-console.log(items.value)
+//console.log(items.value)
 const { editForm, loading } = useEditComposable(formField, url.value, items.value["id"], emit);
 const imagePath = ref();
 
@@ -63,15 +64,25 @@ watch(items, (newItems) => {
 
           console.log(field.options) 
           console.log(field.databaseField) 
+          console.log(newItems) 
          console.log(newItems[field.databaseField]) 
-          //set the selected item
-          const selectedItem = field.options.find(option => option.label == newItems[field.databaseField]);
+
+        //  field.options.forEach(option => {
+        //       console.log(`Value: ${option.value}, Label: ${option.label}`);
+        //   });
+
+          //set the selected item remove spaces and case sensitivity
+          const selectedItem = field.options.find(option => 
+                option.label.replace(/\s+/g, '').toLowerCase() === newItems[field.databaseField].replace(/\s+/g, '').toLowerCase()
+            );
+
           if (selectedItem) {
+           
              field.value = selectedItem.value; 
              
            }
         } else {
-        
+          
           
           field.value = newItems[field.databaseField];
         }
@@ -98,9 +109,14 @@ const handleEditCategoryChange = (value, field_name) => {
   
 };
 
+const handleFieldChanged = (fieldDatabase, value) => {
+  emit('fieldChanged', fieldDatabase, value); // Re-emit upwards
+};
+
 onMounted(async () => {
- // console.log(items.value)
-  emit('fetchDataForSubCategory', items.value["cat_id"], "category_id",items.value[subCategoryIdToPopulate.value]);
+  //console.log('emitting data from modal')
+  //console.log(items.value["category_ids"])
+  emit('fetchDataForSubCategory', items.value["category_ids"], "category_id",items.value[subCategoryIdToPopulate.value], items.value["sub_category_id"]);
 });
 </script>
 
