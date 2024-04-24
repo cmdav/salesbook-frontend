@@ -71,27 +71,15 @@ export function useEditComposable(formFields, url,itemId,emit) {
 
       formFields.value.forEach(field => {
 
-        console.log(field.databaseField)
+        //console.log(field.databaseField)
            //console.log(field.value)
            formData.append(field.databaseField, field.value); 
       
-          // if (field.databaseField === 'product_image') {
-            
-          //     formData.append(field.databaseField, field.value);
-              
-          // } else {
-          //     formData.append(field.databaseField, field.value); 
-          //    // console.log(field.value)
-          // }
       });
 
-
-     
-      //console.log(itemId)
-      //itemId = "9bd85113-1189-42b9-8f10-7c4c3c1bc967";
       const Url = constructUrl(url, itemId);
 
-      console.log(Url)
+      //console.log(Url)
         
       
        formData.append('_method', 'PUT')

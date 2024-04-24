@@ -184,6 +184,7 @@ const newImage = ref(imagePath);
 // const selectInput = ref(null);
 // emit an event on change
 const handleCategoryChange = (value, field_name) => {
+ 
   console.log(value);
   console.log(field_name);
   emit("fetchDataForSubCategory", value, field_name);

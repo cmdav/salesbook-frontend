@@ -25,7 +25,7 @@
         endpoint="product-types"
         @toggleModal="showModal = !showModal"
         toggleButtonLabel="Add Product"
-        :excludedKeys="['id', 'product_description', 'product_id','product_image','product_type_description']"
+        :excludedKeys="['id', 'product_description', 'product_id','product_ids','category_ids','sub_category_id','product_image','product_type_description']"
         :clickableKeys="{
           //this will be render as a closure
          // product_name: openProductDetailModal,
@@ -227,7 +227,7 @@ onMounted(async () => {
   await fetchDataForSelect("Category", "/product-categories", "id", "category_name");
   await fetchDataForSelect( "Product Name", "/all-products","id", "product_name", productTypeFormFields.value);
   //await fetchDataForSelect( "Product Type", "/all-product-type-name","id","product_type_name", priceFormFields.value);
-  await fetchDataForSelect( "Currency Name", "/currencies","id", "currency_name", priceFormFields.value);
+ // await fetchDataForSelect( "Currency Name", "/currencies","id", "currency_name", priceFormFields.value, "naira");
   await productsStore.handleGetProductType();
 });
 
@@ -297,8 +297,10 @@ const dynamicUrl = computed(() => {
    
     // check if product type and product name are the same
     if (items.value.product_name == items.value.product_type_name) {
+
+      console.log(items.value.product_ids);
       
-      return `/products/${items.value.product_id}`;
+      return `/products/${items.value.product_ids}`;
     }
   }
   return `/product-types/${items.value.id}`;

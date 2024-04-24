@@ -70,7 +70,8 @@ export const measurementFormFields = ref([
     placeholder: 'Enter unit',
     maxLength: 5,
     databaseField: 'unit'
-  }
+  },
+  
 ])
 
 export const currenciesFormFields = ref([
@@ -337,14 +338,14 @@ export const priceFormFields = ref([
     min: 0
   },
 
-  {
-    label: 'Currency Name',
-    type: 'select',
-    value: '',
-    required: true,
-    placeholder: 'Enter currency ID',
-    databaseField: 'currency_id'
-  },
+  // {
+  //   label: 'Currency Name',
+  //   type: 'select',
+  //   value: '',
+  //   required: true,
+  //   placeholder: 'Enter currency ID',
+  //   databaseField: 'currency_id'
+  // },
   // { label: 'Discount', type: 'number', value: 0, required: false, placeholder: 'Enter discount', databaseField: "discount" },
   {
     label: 'Status',

@@ -8,6 +8,7 @@
         endpoint="measurements"
         searchEndpoint="search-measurement"
         :additionalColumns=additionalColumns
+        
        
       >
         <button class="btn-brand" @click="closeUploadModal">Upload</button>
