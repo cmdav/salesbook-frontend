@@ -76,7 +76,7 @@ export default {
               // return value.toFixed(0) + "k"; // Replace 'Prefix' with your desired prefix
             },
             style: {
-              cssClass: "!font-primary font-bold !text-[#97A6A899] !text-[12px] ", // Add your custom font class name here
+              cssClass: "!font-primary font-bold !text-[#97A6A899] !text-[16px] ", // Add your custom font class name here
             },
           },
         },
@@ -123,7 +123,7 @@ export default {
           tickAmount: 8,
           labels: {
             style: {
-              cssClass: "!font-primary font-bold !text-[#97A6A899] !text-[12px]", // Add your custom font class name here
+              cssClass: "!font-primary font-bold !text-[#97A6A899] !text-[16px]", // Add your custom font class name here
             },
           },
         },
