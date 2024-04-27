@@ -3,39 +3,16 @@
   <div class="">
     <!-- Button to Open Modal -->
     <!-- <button @click="showModal = true" class="btn btn-primary">Add Store</button> -->
-    <DataTableLayout
-      @toggleModal="showModal = !showModal"
-      :hideToggleButtonLabel="false"
-      :key="forceUpdate"
-      endpoint="job-roles"
-      :additionalColumns="[{ name: 'delete', action: handleDelete }]"
-    >
+    <DataTableLayout @toggleModal="showModal = !showModal" :hideToggleButtonLabel="false" :key="forceUpdate"
+      endpoint="job-roles" :additionalColumns="[{ name: 'delete', action: showDeleteModal }]">
     </DataTableLayout>
-    <FormModal
-      v-if="showModal"
-      @close="closeModal"
-      :formTitle="'Add Purchase'"
-      :fields="purchaseFormFields"
-      @fetchDataForSubCategory="fetchDataForSubCategory"
-      :url="'/job-roles'"
-    ></FormModal>
+    <FormModal v-if="showModal" @close="closeModal" :formTitle="'Add Purchase'" :fields="purchaseFormFields"
+      @fetchDataForSubCategory="fetchDataForSubCategory" :url="'/job-roles'"></FormModal>
 
-    <DeleteModal
-      v-if="showDeleteModal"
-      @close="closeDeleteModal"
-      @updated="forceRefresh"
-      :items="itemsId"
-      :url="'/job-roles'"
-      :modalTitle="modalTitle"
-    />
-    <EditModal
-      v-if="showEditModal"
-      @close="closeEditModal"
-      :items="items"
-      :formField="purchaseFormFields"
-      @updated="forceRefresh"
-      :url="'/job-roles'"
-    />
+    <DeleteModal v-if="showDeleteModal" @close="closeDeleteModal" @updated="forceRefresh" :items="itemsId"
+      :url="'/job-roles'" :modalTitle="modalTitle" />
+    <EditModal v-if="showEditModal" @close="closeEditModal" :items="items" :formField="purchaseFormFields"
+      @updated="forceRefresh" :url="'/job-roles'" />
   </div>
 
   <!-- </DashboardLayout> -->
@@ -58,7 +35,7 @@ const {
   useDeleteComposable,
   defineEmits,
 } = useSharedComponent();
-const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
+const { showEditModal, closeEditModal, items } = useEditComposable(emit);
 const { showModal, forceUpdate, closeModal } = usePostComposable(
   "/purchases",
   purchaseFormFields
@@ -76,7 +53,7 @@ const forceRefresh = () => {
 
 // } = usePostComposable("/stores", cu);
 const {
-  handleDelete,
+  // handleDelete,
   showDeleteModal,
   itemsId,
   closeDeleteModal,
