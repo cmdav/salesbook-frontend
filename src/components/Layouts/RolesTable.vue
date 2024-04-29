@@ -74,13 +74,8 @@
                 <button>Edit</button>
               </td>
               <td class="px-5 py-5 border-brand border-r-[1px] bg-white text-sm">
-<<<<<<< HEAD
-                <button>Delete</button>
-              </td> -->
-=======
                 <Button @click="confirmWork">Delete</button>
               </td>
->>>>>>> origin/main
 
               <!-- render content for additional code -->
             </tr>
