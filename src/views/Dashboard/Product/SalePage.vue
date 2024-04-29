@@ -156,7 +156,7 @@
         </div>
       </div>
     </SaleFormModal>
-    <FormModal
+    <!-- <FormModal
       v-if="showModal"
       @close="closeModal"
       :formTitle="'Add Sale'"
@@ -166,7 +166,7 @@
       :isLoadingMsg="isOptionLoadingMsg"
       :url="'sales'"
     >
-    </FormModal>
+    </FormModal> -->
     <DeleteModal
       v-if="showDeleteModal"
       @close="closeDeleteModal"
@@ -264,7 +264,7 @@ const handleAddSales = async () => {
 
 const {
   DataTableLayout,
-  FormModal,
+  //FormModal,
   usePostComposable,
   useEditComposable,
   EditModal,
@@ -283,8 +283,8 @@ const url = "/latest-product-type-price";
 const priceSoldAt = ref();
 const {
   fetchDataForSelect,
-  fetchDataForSubCategory,
-  isOptionLoadingMsg,
+  // fetchDataForSubCategory,
+  // isOptionLoadingMsg,
 } = useSelectComposable(
   saleFormFields,
   url,
@@ -294,7 +294,11 @@ const {
 );
 const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 
-const { showModal, forceUpdate, closeModal } = usePostComposable(
+const {
+      // showModal, 
+      forceUpdate,
+       //closeModal
+       } = usePostComposable(
   "/sales",
   saleFormFields
 );
