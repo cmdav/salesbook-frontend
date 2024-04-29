@@ -40,6 +40,9 @@
                 {{ index + 1 }}
               </h4>
             </div>
+        
+
+
 
             <div class="flex flex-col gap-2">
               <div class="w-full">
@@ -52,13 +55,10 @@
                   :placeholder="`Add Product ${index + 1}`"
                   class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
                 >
-                  <option
-                    v-for="name in allProductTypeName"
-                    :key="name.id"
-                    :value="name.id"
-                  >
-                    {{ name.product_type_name }}
-                  </option>
+                <option v-for="product in allProductTypeName" :key="product.id" :value="product.id">
+                  {{ product.product_type_name }}
+                </option>
+                   
                 </select>
               </div>
 
@@ -81,14 +81,14 @@
                   <label class="block text-sm font-medium text-gray-700"> Price </label>
 
                   <input
-                    required
-                    :label="`price ${index + 1}`"
-                    :name="`price ${index + 1}`"
-                    :placeholder="`price ${index + 1}`"
-                    v-model="formState.purchases[index].price"
-                    type="number"
-                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-                  />
+                      required
+                      type="text"
+                      :value="formState.purchases[index].display_price"
+                      class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+                      readonly
+                    />
+                    <!-- Hidden input to hold the actual price_id for submission -->
+                    <input type="hidden" v-model="formState.purchases[index].price_id">
                 </div>
               </div>
               <div class="flex flex-row w-full gap-2">
@@ -98,7 +98,7 @@
                   </label>
 
                   <input
-                    required
+
                     :label="`batch no ${index + 1}`"
                     :name="`batch no ${index + 1}`"
                     :placeholder="`batch no ${index + 1}`"
@@ -118,6 +118,7 @@
                     :name="`quantity ${index + 1}`"
                     :placeholder="`quantity ${index + 1}`"
                     v-model="formState.purchases[index].quantity"
+                    min="0"
                     type="number"
                     class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
                   />
@@ -155,30 +156,12 @@
                 </div>
               </div>
             </div>
-            <!-- <div class="flex flex-row justify-end text-[14px] items-end gap-2">
-            amount:
-            <span class="text-[14px] text-green-600">
-              {{
-                formState.products[index].price_sold_at *
-                formState.products[index].quantity
-              }}</span
-            >
-          </div> -->
+           
           </div>
         </div>
       </div>
     </SaleFormModal>
-    <FormModal
-      v-if="showModal"
-      @close="closeModal"
-      :formTitle="'Add Purchase'"
-      :fields="purchaseFormFields"
-      @fetchDataForSubCategory="fetchDataForSubCategory"
-      @fieldChanged="checkDate"
-      :isLoadingMsg="isOptionLoadingMsg"
-      :url="'/purchases'"
-    >
-    </FormModal>
+
     <DeleteModal
       v-if="showDeleteModal"
       @close="closeDeleteModal"
@@ -217,6 +200,8 @@ const pruchaseLoading = ref(false);
 const showPurchaseModal = ref(false);
 
 const { allProductTypeName } = storeToRefs(productsStore);
+
+ console.log(allProductTypeName.value)
 const minDate = ref(getMinDate());
 
 function getMinDate() {
@@ -231,7 +216,8 @@ const formState = reactive({
     {
       product_type_id: "",
       supplier_id: "",
-      price: "",
+      price_id: "",
+      display_price: "",
       batch_no: "",
       quantity: "",
       product_identifier: "",
@@ -245,7 +231,7 @@ const addPurchases = () => {
     formState.purchases.push({
       product_type_id: "",
       supplier_id: "",
-      price: "",
+      price_id: "",
       batch_no: "",
       quantity: "",
       product_identifier: "",
@@ -258,7 +244,7 @@ const resetForm = () => {
     {
       product_type_id: "",
       supplier_id: "",
-      price: "",
+      price_id: "",
       batch_no: "",
       quantity: "",
       product_identifier: "",
@@ -288,9 +274,16 @@ const handleAddPurchase = async () => {
   }
 };
 
+
+
+
+
+
+
+
+
 const {
   DataTableLayout,
-  FormModal,
   usePostComposable,
   useEditComposable,
   EditModal,
@@ -317,10 +310,9 @@ const {
 
 const {
   fetchDataForSelect,
-  fetchDataForSubCategory,
-  isOptionLoadingMsg,
+
 } = useSelectComposable(purchaseFormFields, url, "Product Type", "Price", "cost_price");
-const { showModal, forceUpdate, closeModal } = usePostComposable(
+const { forceUpdate, } = usePostComposable(
   "/purchases",
   purchaseFormFields
 );
@@ -370,6 +362,28 @@ onMounted(async () => {
     console.error;
   }
 });
+
+
+
+const updatePriceId = (productTypeId, index) => {
+  const productInfo = allProductTypeName.value.find(product => product.id === productTypeId);
+  if (productInfo) {
+    formState.purchases[index].price_id = productInfo.price_id;  
+    formState.purchases[index].display_price = productInfo.cost_price;  
+  } else {
+    formState.purchases[index].price_id = "";
+    formState.purchases[index].display_price = ""; 
+  }
+};
+
+watch(() => formState.purchases.map(p => p.product_type_id), (newProductTypeIds, oldProductTypeIds) => {
+  newProductTypeIds.forEach((productTypeId, index) => {
+    if (productTypeId !== oldProductTypeIds[index]) {
+      updatePriceId(productTypeId, index);
+    }
+  });
+}, { deep: true });
+
 const store = useStore();
 const permissions = computed(() => {
   return store.getUser.user.permission.permissions.find(
