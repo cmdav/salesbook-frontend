@@ -10,9 +10,10 @@
       @toggleModal="showModal = !showModal"
       :key="forceUpdate"
       endpoint="job-roles"
+      toggleButtonLabel="Add Role"
       :additionalColumns="[{ name: 'edit', action: handleEdit}, { name: 'delete', action: handleDelete },]"
     >
-    <button class="btn-brand !px-2 !text-[14px]" @click="closeModal">Add Role</button>
+    <!-- <button class="btn-brand !px-2 !text-[14px]" @click="closeModal">Add Role</button> -->
     </DataTableLayout>
     <!-- <PermissionFormModalcopy v-if="showModal" @close="toggleAddPermissionModal" /> -->
     <SaleFormModal
