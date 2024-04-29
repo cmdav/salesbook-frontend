@@ -1,13 +1,8 @@
 <template>
   <div
-    class="modal backdrop-blur z-[100] fixed animate__zoomIn animate__rubberBand animate__fadeOut min-h-screen h-full"
-  >
-    <div
-      class="modal__body relative w-full md:max-w-[600px] bg-white m-0 md:px-5 py-4 px-4"
-    >
-      <header
-        class="flex flex-row items-center justify-between border-b-[#000000] pb-[5px] mb-[35px] border-b-[1px]"
-      >
+    class="modal backdrop-blur z-[100] fixed animate__zoomIn animate__rubberBand animate__fadeOut min-h-screen h-full">
+    <div class="modal__body relative w-full md:max-w-[600px] bg-white m-0 md:px-5 py-4 px-4">
+      <header class="flex flex-row items-center justify-between border-b-[#000000] pb-[5px] mb-[35px] border-b-[1px]">
         <h4 class="text-[22px] font-EBGaramond500 text-[#244034]">
           {{ title || "Delete Detail" }}
         </h4>
@@ -16,12 +11,7 @@
       <p class="text-center py-4">Are you sure you want to delete this item ?</p>
       <form @submit.prevent="handleDelete()">
         <div class="flex justify-center">
-          <input
-            type="submit"
-            v-if="!loading"
-            class="btn-brand !bg-red-600"
-            value="Delete"
-          />
+          <input type="submit" v-if="!loading" class="btn-brand !bg-red-600" value="Delete" />
           <Loader v-else />
         </div>
       </form>
@@ -34,7 +24,7 @@ import { watch, defineProps, toRefs, ref } from "vue";
 import Loader from "@/components/UI/Loader.vue";
 import { useDeleteComposable } from "@/composable/useDeleteComposable";
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["close", "updated"]);
 const title = ref();
 
 const props = defineProps({
@@ -49,6 +39,7 @@ const { deleteForm, loading, showDeleteModal } = useDeleteComposable(
   items.value
 );
 const handleDelete = () => {
+  console.log("Delete botton clicked")
   deleteForm();
   if (showDeleteModal.value === false) {
     emit("updated");
