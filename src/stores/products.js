@@ -40,6 +40,7 @@ const allProductTypeName = ref({})
   const handleGetAllProductTypeName = async () => {
     try {
       allProductTypeName.value = await getAllProductTypeName()
+    
       return allProductTypeName.value
     } catch (error) {
       console.error(error)
