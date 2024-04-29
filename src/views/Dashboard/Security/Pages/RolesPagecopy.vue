@@ -8,7 +8,6 @@
     </SettingsLayoutcopy> -->
     <DataTableLayout
       @toggleModal="showModal = !showModal"
-      
       :key="forceUpdate"
       endpoint="job-roles"
       :additionalColumns="[{ name: 'edit', action: handleEdit}, { name: 'delete', action: handleDelete },]"
@@ -172,14 +171,5 @@ const {
   closeDeleteModal,
 } = useDeleteComposable();
 
-const additionalColumns = computed(() => {
-  const cols = [];
-  if (permissions.value?.update) {
-    cols.push({ name: "Edit", action: handleEdit });
-  }
-  if (permissions.value?.del) {
-    cols.push({ name: "Delete", action: handleDelete });
-  }
-  return cols;
-});
+
 </script>
