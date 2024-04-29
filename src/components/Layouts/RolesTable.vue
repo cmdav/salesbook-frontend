@@ -38,7 +38,7 @@
               <th scope="col"
                 class="px-5 py-5 border-b-2 border-x-[1px] border-r-gray-200 border-l-brand bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider">
                 Delete
-              </th>
+              </th> -->
 
               <!-- Merge the additional columns with keys from the api -->
               <!-- <th
@@ -70,7 +70,7 @@
               <td class="px-5 py-5 border-brand border-r-[1px] bg-white text-sm">
                 {{ product.role_name }}
               </td>
-              <td class="px-5 py-5 border-brand border-r-[1px] bg-white text-sm">
+              <!-- <td class="px-5 py-5 border-brand border-r-[1px] bg-white text-sm">
                 <button>Edit</button>
               </td>
               <td class="px-5 py-5 border-brand border-r-[1px] bg-white text-sm">

@@ -8,7 +8,8 @@ import {
   addPermissions,
   getAllPages,
   getUser,
-  addRole
+  addRole,
+  updateRole
 } from '@/services/Security'
 
 export const useSecurityStore = defineStore('Security', () => {
@@ -78,11 +79,21 @@ export const useSecurityStore = defineStore('Security', () => {
       console.error(error)
     }
   }
+
   const handleAddPermissions = async (id,payload) => {
     try {
       let res = await addPermissions(id,payload)
       return res
     } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const handleUpdateRoles = async (id, payload) => {
+    try{
+      let res = await updateRole(id, payload)
+      return res
+    } catch (error){
       console.error(error)
     }
   }
@@ -101,6 +112,7 @@ export const useSecurityStore = defineStore('Security', () => {
     handleGetPermissions,
     handleAddPermissions,
     handleGetUser,
-    handleAddRole
+    handleAddRole,
+    handleUpdateRoles
   }
 })
