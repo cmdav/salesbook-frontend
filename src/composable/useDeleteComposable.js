@@ -1,7 +1,5 @@
-
-
-import { ref} from 'vue'
-import apiService from '@/services/apiService';
+import { ref } from 'vue'
+import apiService from '@/services/apiService'
 //import { useReadComposable} from '@/composable/useReadComposable';
 import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
 
@@ -16,30 +14,27 @@ export function useDeleteComposable(url, ItemObject) {
   const closeDeleteModal = () => {
     showDeleteModal.value = false
     loading.value = false
-    
   }
   const handleDelete = (item) => {
-    
     itemsId.value = item
     showDeleteModal.value = true
   }
 
   const deleteForm = async () => {
-    
     try {
       loading.value = true
       console.log(ItemObject.id)
-     
+
       let response = await apiService.delete(`${url}/${ItemObject.id}`)
-      
+
       //await fetchPage(url, 1)
-      
+
       loading.value = false
-              catchAxiosSuccess(response)
+      catchAxiosSuccess(response)
 
       return response
     } catch (error) {
-              catchAxiosError(error)
+      catchAxiosError(error)
 
       loading.value = false
       //  isError.value = true;
@@ -62,7 +57,6 @@ export function useDeleteComposable(url, ItemObject) {
     closeDeleteModal,
     itemsId,
     deleteForm,
-    loading,
+    loading
   }
 }
-

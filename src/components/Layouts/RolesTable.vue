@@ -1,22 +1,11 @@
 <template>
   <div>
     <div
-      class="px-5 py-2 mt-8 border-[1px] rounded-t-md lg:items-center gap-6 border-brand/[50%] flex flex-col lg:flex-row justify-between bg-secondary-800/[20%] text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
-    >
+      class="px-5 py-2 mt-8 border-[1px] rounded-t-md lg:items-center gap-6 border-brand/[50%] flex flex-col lg:flex-row justify-between bg-secondary-800/[20%] text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider">
       <div class="flex flex-row relative w-full lg:w-[40%]">
-        <AuthInput
-          :error="false"
-          type="text"
-          v-model="searchQuery"
-          placeholder="Search..."
-          class="w-full !py-1"
-          @input="search"
-        />
-        <button
-          @click="clear"
-          v-if="searchQuery"
-          class="absolute font-bold text-red-500 text-lg right-2 top-3.5"
-        >
+        <AuthInput :error="false" type="text" v-model="searchQuery" placeholder="Search..." class="w-full !py-1"
+          @input="search" />
+        <button @click="clear" v-if="searchQuery" class="absolute font-bold text-red-500 text-lg right-2 top-3.5">
           X
         </button>
       </div>
@@ -34,28 +23,20 @@
         <table class="w-full">
           <thead>
             <tr>
-              <th
-                scope="col"
-                class="px-5 py-5 border-b-2 border-x-[1px] border-r-gray-200 border-l-brand bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th scope="col"
+                class="px-5 py-5 border-b-2 border-x-[1px] border-r-gray-200 border-l-brand bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider">
                 S.No
               </th>
-              <th
-                scope="col"
-                class="px-5 py-5 border-b-2 border-x-[1px] border-r-gray-200 border-l-brand bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th scope="col"
+                class="px-5 py-5 border-b-2 border-x-[1px] border-r-gray-200 border-l-brand bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider">
                 role name
               </th>
-              <!-- <th
-                scope="col"
-                class="px-5 py-5 border-b-2 border-x-[1px] border-r-gray-200 border-l-brand bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th scope="col"
+                class="px-5 py-5 border-b-2 border-x-[1px] border-r-gray-200 border-l-brand bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider">
                 Edit
               </th>
-              <th
-                scope="col"
-                class="px-5 py-5 border-b-2 border-x-[1px] border-r-gray-200 border-l-brand bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th scope="col"
+                class="px-5 py-5 border-b-2 border-x-[1px] border-r-gray-200 border-l-brand bg-gray-100 text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider">
                 Delete
               </th> -->
 
@@ -93,8 +74,13 @@
                 <button>Edit</button>
               </td>
               <td class="px-5 py-5 border-brand border-r-[1px] bg-white text-sm">
+<<<<<<< HEAD
                 <button>Delete</button>
               </td> -->
+=======
+                <Button @click="confirmWork">Delete</button>
+              </td>
+>>>>>>> origin/main
 
               <!-- render content for additional code -->
             </tr>
@@ -108,24 +94,12 @@
       <!--- Pagination link -->
       <div class="overflow-x-auto mt-4">
         <ul class="flex space-x-2">
-          <li
-            v-for="(link, index) in products?.links"
-            :key="index"
-            :class="
-              products?.current_page == link.label
-                ? 'bg-blue-500 text-white'
-                : 'bg-blue-500/[30%] !text-black'
-            "
-            class="flex items-center justify-center px-4 min-w-[32px] h-[32px] rounded-full cursor-pointer"
-          >
-            <a
-              :class="
-                products?.current_page == link.label ? ' text-white' : ' !text-black'
-              "
-              v-html="link.label"
-              @click="$emit('changePage', link.label)"
-              class="block"
-            >
+          <li v-for="(link, index) in products?.links" :key="index" :class="products?.current_page == link.label
+          ? 'bg-blue-500 text-white'
+          : 'bg-blue-500/[30%] !text-black'
+          " class="flex items-center justify-center px-4 min-w-[32px] h-[32px] rounded-full cursor-pointer">
+            <a :class="products?.current_page == link.label ? ' text-white' : ' !text-black'
+          " v-html="link.label" @click="$emit('changePage', link.label)" class="block">
             </a>
           </li>
         </ul>
@@ -172,8 +146,13 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-  products: { type: Object, default: () => {} },
+  products: { type: Object, default: () => { } },
 });
+
+const confirmWork = () => {
+  console.log("Delete bottom clicked")
+}
+// emit("close");
 // const paginationArray = computed(() => {
 //   let pages = [];
 //   for (let i = 1; i <= lastPage.value; i++) {
@@ -247,6 +226,7 @@ table {
   width: 100%;
   border-collapse: collapse;
 }
+
 th,
 td {
   padding: 8px;
@@ -254,10 +234,12 @@ td {
   border-bottom: 1px solid #fff;
   @apply border-b-[1px] border-b-brand;
 }
+
 tbody,
 tr {
   @apply border-x-brand hover:bg-brand/[70%] hover:text-white;
 }
+
 tbody,
 tr,
 td {
@@ -265,14 +247,17 @@ td {
   text-align: left;
   @apply bg-white text-brand border-b-[1px] border-b-brand;
 }
+
 tr {
   @apply hover:bg-brand/[70%] hover:text-white;
 }
+
 thead,
 tr,
 th {
   @apply bg-brand/[50%] text-white;
 }
+
 .flex {
   display: flex;
   overflow-x: auto;
@@ -280,12 +265,14 @@ th {
 
 /* Style for the active link */
 .bg-blue-500 {
-  background-color: #4299e1; /* Adjust the color based on your design */
+  background-color: #4299e1;
+  /* Adjust the color based on your design */
 }
 
 /* Style for the non-active links */
 .bg-gray-200 {
-  background-color: #edf2f7; /* Adjust the color based on your design */
+  background-color: #edf2f7;
+  /* Adjust the color based on your design */
 }
 
 /* Ensure text is centered and white for all links */

@@ -274,7 +274,7 @@ export const purchaseFormFields = ref([
     label: 'Batch Number',
     type: 'text',
     value: '',
-    required: true,
+    required: false,
     placeholder: 'Enter batch number',
     databaseField: 'batch_no'
   },
