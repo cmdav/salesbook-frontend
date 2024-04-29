@@ -3,9 +3,18 @@
   <div class="">
     <!-- Button to Open Modal -->
     <!-- <button @click="showModal = true" class="btn btn-primary">Add Store</button> -->
-    <SettingsLayoutcopy @changePage="changePage" :products="roles">
+    <!-- <SettingsLayoutcopy @changePage="changePage" :products="roles">
       <button class="btn-brand !px-2 !text-[14px]" @click="closeModal">Add Role</button>
-    </SettingsLayoutcopy>
+    </SettingsLayoutcopy> -->
+    <DataTableLayout
+      @toggleModal="showModal = !showModal"
+      
+      :key="forceUpdate"
+      endpoint="job-roles"
+      :additionalColumns="[{ name: 'edit', action: handleEdit}, { name: 'delete', action: handleDelete },]"
+    >
+    <button class="btn-brand !px-2 !text-[14px]" @click="closeModal">Add Role</button>
+    </DataTableLayout>
     <!-- <PermissionFormModalcopy v-if="showModal" @close="toggleAddPermissionModal" /> -->
     <SaleFormModal
       v-if="showModal"
@@ -15,6 +24,7 @@
       @submitForm="handleAddRole"
       title="Add Role"
     >
+   
       <div class="my-8 flex flex-col gap-2">
         <div class="overflow-y-auto flex flex-col gap-2 max-h-[340px]">
           <div class="flex flex-col gap-2">
@@ -32,11 +42,48 @@
         </div>
       </div>
     </SaleFormModal>
+    <!-- <DataTableLayout
+      @toggleModal="showModal = !showModal"
+      :hideToggleButtonLabel="false"
+      :key="forceUpdate"
+      endpoint="job-roles"
+      :additionalColumns="additionalColumns"
+    >
+    </DataTableLayout> -->
+
+    <!-- <FormModal
+      v-if="showModal"
+      @close="closeModal"
+      :formTitle="'Add Purchase'"
+      :fields="purchaseFormFields"
+      @fetchDataForSubCategory="fetchDataForSubCategory"
+      :url="'/job-roles'"
+    ></FormModal> -->
+
+    <EditModal
+      v-if="showEditModal"
+      @close="closeEditModal"
+      :items="items"
+      :formField="roleFormFields"
+      @updated="forceRefresh"
+      :url="'/job-roles'"
+    />
+
+    <DeleteModal
+      v-if="showDeleteModal"
+      @close="closeDeleteModal"
+      @updated="forceRefresh"
+      :items="itemsId"
+      :url="'/job-roles'"
+      :modalTitle="modalTitle"
+    />
   </div>
+  <!-- </DashboardLayout> -->
 </template>
 
 <script setup>
 import { ref, reactive, watch, onMounted, computed } from "vue";
+import { roleFormFields } from "@/formfields/formFields";
 import { storeToRefs } from "pinia";
 import { useSecurityStore } from "@/stores/security";
 import { useStore } from "@/stores/user";
@@ -46,10 +93,32 @@ const { allRoles, allPages, roles, pages, permissions } = storeToRefs(securitySt
 import SettingsLayoutcopy from "@/components/Layouts/RolesTable.vue";
 // import PermissionFormModalcopy from "@/components/UI/Modal/PermissionFormModalcopy.vue";
 import SaleFormModal from "@/components/UI/Modal/SalesFormModal.vue";
+import { useSharedComponent } from "@/composable/useSharedComponent";
+const emit = defineEmits("forceRefresh");
+
 const loading = ref(false);
 const showModal = ref(false);
 
 const formState = reactive({ role_name: "" });
+const {
+  DataTableLayout,
+  useEditComposable,
+  EditModal,
+  DeleteModal,
+  useDeleteComposable,
+  defineEmits,
+  usePostComposable
+} = useSharedComponent('job-roles');
+
+const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
+const { forceUpdate } = usePostComposable(
+  "/job-roles",
+  roleFormFields
+);
+
+const forceRefresh = () => {
+  forceUpdate.value++;
+};
 
 const closeModal = () => {
   showModal.value = !showModal.value;
@@ -94,5 +163,23 @@ onMounted(async () => {
   } catch (error) {
     console.error(error);
   }
+});
+
+const {
+  handleDelete,
+  showDeleteModal,
+  itemsId,
+  closeDeleteModal,
+} = useDeleteComposable();
+
+const additionalColumns = computed(() => {
+  const cols = [];
+  if (permissions.value?.update) {
+    cols.push({ name: "Edit", action: handleEdit });
+  }
+  if (permissions.value?.del) {
+    cols.push({ name: "Delete", action: handleDelete });
+  }
+  return cols;
 });
 </script>

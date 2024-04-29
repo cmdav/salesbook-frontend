@@ -571,3 +571,15 @@ export const permissionFormFields = ref([
     databaseField: 'delete'
   }
 ])
+
+export const roleFormFields = ref([
+  {
+    label: 'Role name',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter role',
+    databaseField: 'role_name'
+  }
+  
+])

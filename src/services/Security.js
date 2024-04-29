@@ -18,6 +18,23 @@ export const getRole = async () => {
     console.log(error)
   }
 }
+export const updateRole = async (id, payload) => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.put(`job-roles/${id}`, payload, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res)
+    return res.data
+  } catch (error) {
+    catchAxiosError(error)
+    throw error
+  }
+}
+
 export const addRole = async (payload) => {
   const token = await getToken()
 
