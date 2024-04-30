@@ -13,14 +13,102 @@
         </h4>
         <button class="close-button" @click="$emit('close')">&#10005;</button>
       </header>
-      <form @submit.prevent="submitForm">
-       
-      </form>
+      <form @submit.prevent="submitForm" class="max-w-4xl mx-auto p-4">
+    <!-- Radio buttons for customer type selection with Tailwind styling -->
+    <div class="mb-4">
+      <label class="inline-flex items-center mr-6">
+        <input type="radio" value="1" v-model="customerType" class="form-radio h-5 w-5 text-blue-600" />
+        <span class="ml-2 text-gray-700">Individual</span>
+      </label>
+      <label class="inline-flex items-center">
+        <input type="radio" value="2" v-model="customerType" class="form-radio h-5 w-5 text-blue-600" />
+        <span class="ml-2 text-gray-700">Company</span>
+      </label>
+    </div>
+
+    <!-- Dynamic form fields based on customer type with Tailwind CSS grid layout -->
+    <div class="grid grid-cols-2 gap-4">
+      <div v-for="field in currentFormFields" :key="field.databaseField" class="mb-4">
+        <label :for="field.databaseField" class="block text-sm font-medium text-gray-700">{{ field.label }}</label>
+        <input 
+          :type="field.type"
+          v-model="formData[field.databaseField]"
+          :placeholder="field.placeholder"
+          :required="field.required"
+          :id="field.databaseField"
+          :maxlength="field.maxLength || null"
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        />
+      </div>
+    </div>
+
+    <button type="submit" class="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      Add
+    </button>
+  </form>
     </div>
   </div>
 </template>
 
 <script setup>
+import { defineEmits,ref,computed } from "vue";
+import apiService from "@/services/apiService";
+const emits = defineEmits(["close"]);
+
+
+
+
+ const customerType = ref('1');  // Default to 'Individual'
+
+   
+
+    const individualFields = [
+      { label: 'First Name', type: 'text', databaseField: 'first_name', placeholder: 'Enter first name', required: true },
+      { label: 'Last Name', type: 'text', databaseField: 'last_name', placeholder: 'Enter last name', required: true },
+      { label: 'Middle Name', type: 'text', databaseField: 'middle_name', placeholder: 'Enter middle name', required: false },
+      { label: 'Phone Number', type: 'text', databaseField: 'phone_number', placeholder: 'Enter phone number', required: true },
+      { label: 'Date of Birth', type: 'date', databaseField: 'dob', required: false },
+      { label: 'Email', type: 'email', databaseField: 'email', placeholder: 'Enter email', required: true },
+      {  type: 'hidden', databaseField: 'type_id', placeholder: 'Enter email', required: true, value:'company'}
+    ];
+
+    const companyFields = [
+      { label: 'Company Name', type: 'text', databaseField: 'company_name', placeholder: 'Enter company name', required: true },
+      { label: 'Contact Person', type: 'text', databaseField: 'contact_person', placeholder: 'Enter contact person', required: true },
+      { label: 'Phone Number', type: 'text', databaseField: 'phone_number', placeholder: 'Enter phone number', required: true },
+      { label: 'Email', type: 'email', databaseField: 'email', placeholder: 'Enter email', required: true },
+      {  type: 'hidden', databaseField: 'type_id', placeholder: 'Enter email', required: true, value:'company'}
+    ];
+
+    const currentFormFields = computed(() => {
+      return customerType.value === '1' ? individualFields : companyFields;
+    });
+    
+     // Initialize formData as a reactive object
+const formData = ref({});
+
+// Function to handle form submission
+const submitForm = async () => {
+    // Construct the payload from formData
+    const payload = {};
+    currentFormFields.value.forEach(field => {
+        payload[field.databaseField] = formData.value[field.databaseField];
+    });
+
+    // Call API to submit data
+    try {
+        const response = await apiService.post('/customers', payload);
+        console.log('Submission Successful:', response);
+        // Optionally reset formData here if necessary
+        formData.value = {};
+        alert('Customer detail has been added successfully')
+        emits('close'); // Close modal on success
+    } catch (error) {
+        console.error('Submission Failed:', error);
+        // Handle errors (e.g., show error messages to the user)
+    }
+};
+   
 
 </script>
 

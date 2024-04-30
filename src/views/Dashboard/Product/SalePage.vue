@@ -112,7 +112,7 @@
       <div>
         <label class="block text-sm font-medium text-gray-700">Product</label>
         <select
-          required
+        
           v-model="formState.products[index].product_type_id"
           class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
         >
@@ -163,7 +163,7 @@
     </div>
   </div>
     </SaleFormModal>
-    <CustomerFormModal  v-if="showCustomerModal" @close="closeModal"/>
+    <CustomerFormModal  v-if="showModal" @close="closeModal"/>
 
     <DeleteModal
       v-if="showDeleteModal"
@@ -210,9 +210,13 @@ const { allProductTypeName } = storeToRefs(productsStore);
 // Your existing script setup code
 
 //const showCustomerModal = ref(false);
-const showCustomerModal = ref(false)
+const showModal = ref(false)
 const addNewCustomer = () => {
-  showCustomerModal.value  = true
+  showModal.value  = true
+
+}
+const closeModal = () => {
+  showModal.value  = false
 
 }
 const salesLoading = ref(false);
@@ -302,7 +306,7 @@ const {
 );
 const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 
-const {  forceUpdate, } = usePostComposable(
+const {  forceUpdate } = usePostComposable(
   "/sales",
   saleFormFields
 );
