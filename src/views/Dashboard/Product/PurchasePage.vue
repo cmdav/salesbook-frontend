@@ -1,24 +1,13 @@
 <template>
   <DashboardLayout pageTitle="Purchase page">
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
-      <DataTableLayout
-        @toggleModal="showPurchaseModal = !showPurchaseModal"
-        :key="forceUpdate"
-        endpoint="purchases"
-        searchEndpoint="search-purchases"
-        :additionalColumns="additionalColumns"
-      >
+      <DataTableLayout @toggleModal="showPurchaseModal = !showPurchaseModal" :key="forceUpdate" endpoint="purchases"
+        searchEndpoint="search-purchases" :additionalColumns="additionalColumns">
         <button class="btn-brand" @click="closeUploadModal">Upload</button>
       </DataTableLayout>
     </div>
-    <SaleFormModal
-      v-if="showPurchaseModal"
-      :buttonLable="'submit'"
-      :loading="pruchaseLoading"
-      @close="closePruchaseModal"
-      @submitForm="handleAddPurchase"
-      title="Add Purchases"
-    >
+    <SaleFormModal v-if="showPurchaseModal" :buttonLable="'submit'" :loading="pruchaseLoading"
+      @close="closePruchaseModal" @submitForm="handleAddPurchase" title="Add Purchases">
       <div class="my-8 flex flex-col gap-2">
         <div class="flex flex-row justify-end items-end">
           <button @click="addPurchases" class="btn-brand !bg-brand/[20%] !text-black !px-3">
@@ -27,11 +16,7 @@
         </div>
 
         <div class="overflow-y-auto flex flex-col gap-2 max-h-[340px]">
-          <div
-            v-for="(question, index) in formState.purchases"
-            :key="index"
-            class="flex flex-col gap-2"
-          >
+          <div v-for="(question, index) in formState.purchases" :key="index" class="flex flex-col gap-2">
             <div class="bg-brand/[50%] rounded-full px-4 py-2">
               <h4 class="text-[#fff] text-[15px] font-bold">
                 {{ index + 1 }}
@@ -41,19 +26,10 @@
             <div class="flex flex-col gap-2">
               <div class="w-full">
                 <label class="block text-sm font-medium text-gray-700"> Product </label>
-                <select
-                  required
-                  v-model="formState.purchases[index].product_type_id"
-                  :label="`Product ${index + 1}`"
-                  :name="`Product ${index + 1}`"
-                  :placeholder="`Add Product ${index + 1}`"
-                  class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-                >
-                  <option
-                    v-for="product in allProductTypeName"
-                    :key="product.id"
-                    :value="product.id"
-                  >
+                <select required v-model="formState.purchases[index].product_type_id" :label="`Product ${index + 1}`"
+                  :name="`Product ${index + 1}`" :placeholder="`Add Product ${index + 1}`"
+                  class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm">
+                  <option v-for="product in allProductTypeName" :key="product.id" :value="product.id">
                     {{ product.product_type_name }}
                   </option>
                 </select>
@@ -63,25 +39,17 @@
                 <div class="w-full">
                   <label class="block text-sm font-medium text-gray-700"> Supplier </label>
 
-                  <input
-                    :label="`Supplier ${index + 1}`"
-                    :name="`Supplier ${index + 1}`"
-                    :placeholder="`Supplier ${index + 1}`"
-                    v-model="formState.purchases[index].supplier_id"
+                  <input :label="`Supplier ${index + 1}`" :name="`Supplier ${index + 1}`"
+                    :placeholder="`Supplier ${index + 1}`" v-model="formState.purchases[index].supplier_id"
                     type="number"
-                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-                  />
+                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
                 </div>
                 <div class="w-full">
                   <label class="block text-sm font-medium text-gray-700"> Price </label>
 
-                  <input
-                    required
-                    type="text"
-                    :value="formState.purchases[index].display_price"
+                  <input required type="text" :value="formState.purchases[index].display_price"
                     class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-                    readonly
-                  />
+                    readonly />
                   <!-- Hidden input to hold the actual price_id for submission -->
                   <input type="hidden" v-model="formState.purchases[index].price_id" />
                 </div>
@@ -90,28 +58,17 @@
                 <div class="w-full">
                   <label class="block text-sm font-medium text-gray-700"> Batch no </label>
 
-                  <input
-                    :label="`batch no ${index + 1}`"
-                    :name="`batch no ${index + 1}`"
-                    :placeholder="`batch no ${index + 1}`"
-                    v-model="formState.purchases[index].batch_no"
-                    type="text"
-                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-                  />
+                  <input :label="`batch no ${index + 1}`" :name="`batch no ${index + 1}`"
+                    :placeholder="`batch no ${index + 1}`" v-model="formState.purchases[index].batch_no" type="text"
+                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
                 </div>
                 <div class="w-full">
                   <label class="block text-sm font-medium text-gray-700"> Quantity </label>
 
-                  <input
-                    required
-                    :label="`quantity ${index + 1}`"
-                    :name="`quantity ${index + 1}`"
-                    :placeholder="`quantity ${index + 1}`"
-                    v-model="formState.purchases[index].quantity"
-                    min="0"
+                  <input required :label="`quantity ${index + 1}`" :name="`quantity ${index + 1}`"
+                    :placeholder="`quantity ${index + 1}`" v-model="formState.purchases[index].quantity" min="0"
                     type="number"
-                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-                  />
+                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
                 </div>
               </div>
               <div class="flex flex-row w-full gap-2">
@@ -120,27 +77,18 @@
                     Product Identifier
                   </label>
 
-                  <input
-                    :label="`product identifier ${index + 1}`"
-                    :name="`product identifier ${index + 1}`"
+                  <input :label="`product identifier ${index + 1}`" :name="`product identifier ${index + 1}`"
                     :placeholder="`product identifier ${index + 1}`"
-                    v-model="formState.purchases[index].product_identifier"
-                    type="text"
-                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-                  />
+                    v-model="formState.purchases[index].product_identifier" type="text"
+                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
                 </div>
                 <div class="w-full">
                   <label class="block text-sm font-medium text-gray-700"> Expired Date </label>
 
-                  <input
-                    :label="`expired date ${index + 1}`"
-                    :name="`expired date ${index + 1}`"
-                    :placeholder="`expired date ${index + 1}`"
-                    v-model="formState.purchases[index].expiry_date"
-                    type="date"
-                    :min="minDate"
-                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-                  />
+                  <input :label="`expired date ${index + 1}`" :name="`expired date ${index + 1}`"
+                    :placeholder="`expired date ${index + 1}`" v-model="formState.purchases[index].expiry_date"
+                    type="date" :min="minDate"
+                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
                 </div>
               </div>
             </div>
@@ -149,31 +97,13 @@
       </div>
     </SaleFormModal>
 
-    <DeleteModal
-      v-if="showDeleteModal"
-      @close="closeDeleteModal"
-      @updated="forceRefresh"
-      :items="itemsId"
-      :url="'purchases'"
-      :modalTitle="modalTitle"
-    />
-    <EditModal
-      v-if="showEditModal"
-      @close="closeEditModal"
-      :items="items"
-      @fetchDataForSubCategory="fetchDataForSubCategory"
-      :formField="purchaseFormFields"
-      @updated="forceRefresh"
-      :url="'purchases'"
-      :minDate="true"
-    />
-    <UploadModal
-      v-if="showUploadModal"
-      @close="closeUploadModal"
-      @updated="forceRefresh"
-      :url="'/purchases'"
-      type="Purchase"
-    />
+    <DeleteModal v-if="showDeleteModal" @close="closeDeleteModal" @updated="forceRefresh" :items="itemsId"
+      :url="'purchases'" :modalTitle="modalTitle" />
+    <EditModal v-if="showEditModal" @close="closeEditModal" :items="items"
+      @fetchDataForSubCategory="fetchDataForSubCategory" :formField="purchaseFormFields" @updated="forceRefresh"
+      :url="'purchases'" :minDate="true" />
+    <UploadModal v-if="showUploadModal" @close="closeUploadModal" @updated="forceRefresh" :url="'/purchases'"
+      type="Purchase" />
   </DashboardLayout>
 </template>
 
