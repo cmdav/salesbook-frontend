@@ -34,52 +34,52 @@ export const useProductStore = defineStore('Products', () => {
   const stores = ref({})
   const measurements = ref({})
   const productType = ref({})
- const sales = ref({})
-const allProductTypeName = ref({})
+  const sales = ref({})
+  const allProductTypeName = ref({})
 
   const handleGetAllProductTypeName = async () => {
     try {
       allProductTypeName.value = await getAllProductTypeName()
-    
+
       return allProductTypeName.value
     } catch (error) {
       console.error(error)
     }
-  } 
-     const handleAddPurchases = async (payload) => {
-       try {
-         let res = await addPurchases(payload)
-         return res
-       } catch (error) {
-         console.error(error)
-       }
-     }
-
-   const handleAddSaless = async (payload) => {
-     try {
-       let res = await addSaless(payload)
-       return res
-     } catch (error) {
-       console.error(error)
-     }
-   }
-
- const handleGetSales = async () => {
-      try {
-        sales.value = await getSales()
-        return sales.value
-      } catch (error) {
-        console.error(error)
-      }
+  }
+  const handleAddPurchases = async (payload) => {
+    try {
+      let res = await addPurchases(payload)
+      return res
+    } catch (error) {
+      console.error(error)
     }
-    const handleGetProductType = async () => {
-      try {
-        productType.value = await getProductType()
-        return productType.value
-      } catch (error) {
-        console.error(error)
-      }
+  }
+
+  const handleAddSaless = async (payload) => {
+    try {
+      let res = await addSaless(payload)
+      return res
+    } catch (error) {
+      console.error(error)
     }
+  }
+
+  const handleGetSales = async () => {
+    try {
+      sales.value = await getSales()
+      return sales.value
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  const handleGetProductType = async () => {
+    try {
+      productType.value = await getProductType()
+      return productType.value
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   const handleGetMeasurements = async () => {
     try {

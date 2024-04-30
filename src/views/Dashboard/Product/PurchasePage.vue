@@ -21,10 +21,7 @@
     >
       <div class="my-8 flex flex-col gap-2">
         <div class="flex flex-row justify-end items-end">
-          <button
-            @click="addPurchases"
-            class="btn-brand !bg-brand/[20%] !text-black !px-3"
-          >
+          <button @click="addPurchases" class="btn-brand !bg-brand/[20%] !text-black !px-3">
             Add purchases
           </button>
         </div>
@@ -40,9 +37,6 @@
                 {{ index + 1 }}
               </h4>
             </div>
-        
-
-
 
             <div class="flex flex-col gap-2">
               <div class="w-full">
@@ -55,18 +49,19 @@
                   :placeholder="`Add Product ${index + 1}`"
                   class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
                 >
-                <option v-for="product in allProductTypeName" :key="product.id" :value="product.id">
-                  {{ product.product_type_name }}
-                </option>
-                   
+                  <option
+                    v-for="product in allProductTypeName"
+                    :key="product.id"
+                    :value="product.id"
+                  >
+                    {{ product.product_type_name }}
+                  </option>
                 </select>
               </div>
 
               <div class="flex flex-row w-full gap-2">
                 <div class="w-full">
-                  <label class="block text-sm font-medium text-gray-700">
-                    Supplier
-                  </label>
+                  <label class="block text-sm font-medium text-gray-700"> Supplier </label>
 
                   <input
                     :label="`Supplier ${index + 1}`"
@@ -81,24 +76,21 @@
                   <label class="block text-sm font-medium text-gray-700"> Price </label>
 
                   <input
-                      required
-                      type="text"
-                      :value="formState.purchases[index].display_price"
-                      class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-                      readonly
-                    />
-                    <!-- Hidden input to hold the actual price_id for submission -->
-                    <input type="hidden" v-model="formState.purchases[index].price_id">
+                    required
+                    type="text"
+                    :value="formState.purchases[index].display_price"
+                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+                    readonly
+                  />
+                  <!-- Hidden input to hold the actual price_id for submission -->
+                  <input type="hidden" v-model="formState.purchases[index].price_id" />
                 </div>
               </div>
               <div class="flex flex-row w-full gap-2">
                 <div class="w-full">
-                  <label class="block text-sm font-medium text-gray-700">
-                    Batch no
-                  </label>
+                  <label class="block text-sm font-medium text-gray-700"> Batch no </label>
 
                   <input
-
                     :label="`batch no ${index + 1}`"
                     :name="`batch no ${index + 1}`"
                     :placeholder="`batch no ${index + 1}`"
@@ -108,9 +100,7 @@
                   />
                 </div>
                 <div class="w-full">
-                  <label class="block text-sm font-medium text-gray-700">
-                    Quantity
-                  </label>
+                  <label class="block text-sm font-medium text-gray-700"> Quantity </label>
 
                   <input
                     required
@@ -140,9 +130,7 @@
                   />
                 </div>
                 <div class="w-full">
-                  <label class="block text-sm font-medium text-gray-700">
-                    Expired Date
-                  </label>
+                  <label class="block text-sm font-medium text-gray-700"> Expired Date </label>
 
                   <input
                     :label="`expired date ${index + 1}`"
@@ -156,7 +144,6 @@
                 </div>
               </div>
             </div>
-           
           </div>
         </div>
       </div>
@@ -174,9 +161,11 @@
       v-if="showEditModal"
       @close="closeEditModal"
       :items="items"
+      @fetchDataForSubCategory="fetchDataForSubCategory"
       :formField="purchaseFormFields"
       @updated="forceRefresh"
       :url="'purchases'"
+      :minDate="true"
     />
     <UploadModal
       v-if="showUploadModal"
@@ -189,98 +178,90 @@
 </template>
 
 <script setup>
-import { onMounted, watch, ref, reactive } from "vue";
-import { purchaseFormFields } from "@/formfields/formFields";
-import SaleFormModal from "@/components/UI/Modal/SalesFormModal.vue";
-import { useSharedComponent } from "@/composable/useSharedComponent";
-import { useProductStore } from "@/stores/products";
-import { storeToRefs } from "pinia";
-const productsStore = useProductStore();
-const pruchaseLoading = ref(false);
-const showPurchaseModal = ref(false);
+import { onMounted, watch, ref, reactive } from 'vue'
+import { purchaseFormFields } from '@/formfields/formFields'
+import SaleFormModal from '@/components/UI/Modal/SalesFormModal.vue'
+import { useSharedComponent } from '@/composable/useSharedComponent'
+import { useProductStore } from '@/stores/products'
+import { storeToRefs } from 'pinia'
+const productsStore = useProductStore()
+const pruchaseLoading = ref(false)
+const showPurchaseModal = ref(false)
 
-const { allProductTypeName } = storeToRefs(productsStore);
+const { allProductTypeName } = storeToRefs(productsStore)
 
- console.log(allProductTypeName.value)
-const minDate = ref(getMinDate());
+console.log(allProductTypeName.value)
+const minDate = ref(getMinDate())
 
 function getMinDate() {
-  const today = new Date();
-  const minDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const today = new Date()
+  const minDate = new Date(today.getFullYear(), today.getMonth(), today.getDate())
   // Return the minimum date in the format required by the input[type=date] field
-  return minDate.toISOString().split("T")[0];
+  return minDate.toISOString().split('T')[0]
 }
 
 const formState = reactive({
   purchases: [
     {
-      product_type_id: "",
-      supplier_id: "",
-      price_id: "",
-      display_price: "",
-      batch_no: "",
-      quantity: "",
-      product_identifier: "",
-      expiry_date: "",
-    },
-  ],
-});
+      product_type_id: '',
+      supplier_id: '',
+      price_id: '',
+      display_price: '',
+      batch_no: '',
+      quantity: '',
+      product_identifier: '',
+      expiry_date: ''
+    }
+  ]
+})
 const addPurchases = () => {
-  const lastPurchases = formState.purchases[formState.purchases.length - 1];
-  if (lastPurchases.product_type_id.trim() !== "") {
+  const lastPurchases = formState.purchases[formState.purchases.length - 1]
+  if (lastPurchases.product_type_id.trim() !== '') {
     formState.purchases.push({
-      product_type_id: "",
-      supplier_id: "",
-      price_id: "",
-      batch_no: "",
-      quantity: "",
-      product_identifier: "",
-      expiry_date: "",
-    });
+      product_type_id: '',
+      supplier_id: '',
+      price_id: '',
+      batch_no: '',
+      quantity: '',
+      product_identifier: '',
+      expiry_date: ''
+    })
   }
-};
+}
 const resetForm = () => {
   formState.purchases = [
     {
-      product_type_id: "",
-      supplier_id: "",
-      price_id: "",
-      batch_no: "",
-      quantity: "",
-      product_identifier: "",
-      expiry_date: "",
-    },
-  ];
-};
+      product_type_id: '',
+      supplier_id: '',
+      price_id: '',
+      batch_no: '',
+      quantity: '',
+      product_identifier: '',
+      expiry_date: ''
+    }
+  ]
+}
 const closePruchaseModal = () => {
-  showPurchaseModal.value = !showPurchaseModal.value;
-  resetForm();
-};
+  showPurchaseModal.value = !showPurchaseModal.value
+  resetForm()
+}
 const handleAddPurchase = async () => {
-  pruchaseLoading.value = true;
+  pruchaseLoading.value = true
   let payload = {
-    purchases: formState.purchases,
-  };
-  try {
-    let res = await productsStore.handleAddPurchases(payload);
-    pruchaseLoading.value = false;
-    return res;
-  } catch (error) {
-    console.log(error);
-  } finally {
-    pruchaseLoading.value = false;
-    closePruchaseModal();
-    forceRefresh();
+    purchases: formState.purchases
   }
-};
-
-
-
-
-
-
-
-
+  try {
+    let res = await productsStore.handleAddPurchases(payload)
+    pruchaseLoading.value = false
+    return res
+  } catch (error) {
+    console.log(error)
+  } finally {
+    pruchaseLoading.value = false
+    closePruchaseModal()
+    forceRefresh()
+  }
+}
 
 const {
   DataTableLayout,
@@ -294,111 +275,103 @@ const {
   UploadModal,
   useStore,
   computed,
-  useUploadComposable,
-} = useSharedComponent("purchases");
-const { showUploadModal, closeUploadModal } = useUploadComposable();
+  useUploadComposable
+} = useSharedComponent('purchases')
+const { showUploadModal, closeUploadModal } = useUploadComposable()
 
-const url = "/all-price-by-product-type";
-const emit = defineEmits("forceRefresh");
+const url = '/all-price-by-product-type'
+const emit = defineEmits('forceRefresh', 'handleFieldChanged')
 
-const {
-  handleDelete,
-  showDeleteModal,
-  itemsId,
-  closeDeleteModal,
-} = useDeleteComposable();
+const { handleDelete, showDeleteModal, itemsId, closeDeleteModal } = useDeleteComposable()
 
-const {
-  fetchDataForSelect,
+const { fetchDataForSelect, fetchDataForSubCategory } = useSelectComposable(
+  purchaseFormFields,
+  url,
+  'Product Type',
+  'Price',
+  'cost_price'
+)
+const { forceUpdate } = usePostComposable('/purchases', purchaseFormFields)
 
-} = useSelectComposable(purchaseFormFields, url, "Product Type", "Price", "cost_price");
-const { forceUpdate, } = usePostComposable(
-  "/purchases",
-  purchaseFormFields
-);
-
-const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
+const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit)
 
 const forceRefresh = () => {
-  forceUpdate.value++;
-};
+  forceUpdate.value++
+}
+
 const checkDate = (fieldDatabase, value) => {
-  if (fieldDatabase === "expiry_date") {
-    const selectedDate = new Date(value);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reset time part to compare only date parts
+  if (fieldDatabase === 'expiry_date') {
+    console.log(fieldDatabase, 'Field')
+    const selectedDate = new Date(value)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0) // Reset time part to compare only date parts
 
     if (selectedDate < today) {
-      alert("Invalid date: Date cannot be in the past.");
+      alert('Invalid date: Date cannot be in the past.')
       // Find the field and reset its value
       const expiredDateField = purchaseFormFields.value.find(
-        (field) => field.databaseField === "expiry_date"
-      );
+        (field) => field.databaseField === 'expiry_date'
+      )
       if (expiredDateField) {
-        expiredDateField.value = ""; // Clear the input field
+        expiredDateField.value = '' // Clear the input field
       }
     }
   }
-};
+}
 // Call this function whenever the related fields change.
 watch(
-  () =>
-    purchaseFormFields.value.find((field) => field.databaseField === "expired_at")?.value,
+  () => purchaseFormFields.value.find((field) => field.databaseField === 'expired_at')?.value,
   checkDate
-);
+)
 // Fetch data for select options on component mount
 onMounted(async () => {
-  await fetchDataForSelect(
-    "Product Type",
-    "/all-product-type-name",
-    "id",
-    "product_type_name"
-  );
-});
+  await fetchDataForSelect('Product Type', '/all-product-type-name', 'id', 'product_type_name')
+})
 onMounted(async () => {
   try {
-    await productsStore.handleGetAllProductTypeName();
+    await productsStore.handleGetAllProductTypeName()
   } catch (error) {
-    console.error;
+    console.error
   }
-});
-
-
+})
 
 const updatePriceId = (productTypeId, index) => {
-  const productInfo = allProductTypeName.value.find(product => product.id === productTypeId);
+  const productInfo = allProductTypeName.value.find((product) => product.id === productTypeId)
+  console.log('Product info', productInfo)
   if (productInfo) {
-    formState.purchases[index].price_id = productInfo.price_id;  
-    formState.purchases[index].display_price = productInfo.cost_price;  
+    formState.purchases[index].price_id = productInfo.price_id
+    formState.purchases[index].display_price = productInfo.cost_price
   } else {
-    formState.purchases[index].price_id = "";
-    formState.purchases[index].display_price = ""; 
+    formState.purchases[index].price_id = ''
+    formState.purchases[index].display_price = ''
   }
-};
+}
 
-watch(() => formState.purchases.map(p => p.product_type_id), (newProductTypeIds, oldProductTypeIds) => {
-  newProductTypeIds.forEach((productTypeId, index) => {
-    if (productTypeId !== oldProductTypeIds[index]) {
-      updatePriceId(productTypeId, index);
-    }
-  });
-}, { deep: true });
+watch(
+  () => formState.purchases.map((p) => p.product_type_id),
+  (newProductTypeIds, oldProductTypeIds) => {
+    newProductTypeIds.forEach((productTypeId, index) => {
+      if (productTypeId !== oldProductTypeIds[index]) {
+        updatePriceId(productTypeId, index)
+      }
+    })
+  },
+  { deep: true }
+)
 
-const store = useStore();
+const store = useStore()
 const permissions = computed(() => {
-  return store.getUser.user.permission.permissions.find(
-    (p) => p.page_name === "purchases"
-  );
-});
+  return store.getUser.user.permission.permissions.find((p) => p.page_name === 'purchases')
+})
 
 const additionalColumns = computed(() => {
-  const cols = [];
+  const cols = []
   if (permissions.value?.update) {
-    cols.push({ name: "Edit", action: handleEdit });
+    cols.push({ name: 'Edit', action: handleEdit })
   }
   if (permissions.value?.del) {
-    cols.push({ name: "Delete", action: handleDelete });
+    cols.push({ name: 'Delete', action: handleDelete })
   }
-  return cols;
-});
+  return cols
+})
 </script>

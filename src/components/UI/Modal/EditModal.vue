@@ -2,25 +2,24 @@
   <div
     class="modal backdrop-blur z-[100] fixed animate__zoomIn animate__rubberBand animate__fadeOut min-h-screen h-full"
   >
-    <div
-      class="modal__body relative w-full md:max-w-[600px] bg-white m-0 md:px-5 py-4 px-4"
-    >
+    <div class="modal__body relative w-full md:max-w-[600px] bg-white m-0 md:px-5 py-4 px-4">
       <header
         class="flex flex-row items-center justify-between border-b-[#000000] pb-[5px] mb-[35px] border-b-[1px]"
       >
         <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">
-          {{ modalTitle || "Edit Detail" }}
+          {{ modalTitle || 'Edit Detail' }}
         </h4>
         <button class="close-button" @click="$emit('close')">&#10005;</button>
       </header>
       <!--Pass the formField and  value(value is gotten onclick from the datatable) as props from the parent to this modal-->
       <form @submit.prevent="editForm">
-        <ReusableForm 
-            :fields="formField"  
-            @handleEditCategoryChange="handleEditCategoryChange" 
-            @fieldChanged="handleFieldChanged"
-            :imagePath="imagePath" 
-            />
+        <ReusableForm
+          :fields="formField"
+          @handleEditCategoryChange="handleEditCategoryChange"
+          @fieldChanged="handleFieldChanged"
+          :imagePath="imagePath"
+          :hasMinDate="hasMinDate"
+        />
         <input type="submit" v-if="!loading" class="btn-brand" value="Submit" />
 
         <Loader v-else />
@@ -30,98 +29,108 @@
 </template>
 
 <script setup>
-import { watch, defineProps, toRefs, onMounted, defineEmits, ref} from "vue";
-import { useSharedComponent } from "@/composable/useSharedComponent";
-const { ReusableForm, Loader, useEditComposable } = useSharedComponent();
-
-
+import { watch, defineProps, toRefs, onMounted, defineEmits, ref } from 'vue'
+import { useSharedComponent } from '@/composable/useSharedComponent'
+const { ReusableForm, Loader, useEditComposable } = useSharedComponent()
 
 const props = defineProps({
   items: Object,
   formField: Object,
   modalTitle: String,
-  subCategoryIdToPopulate:{
-    type:String,
-    default:""
+  subCategoryIdToPopulate: {
+    type: String,
+    default: ''
   },
   url: String,
-});
-const emit = defineEmits(["fetchDataForSubCategory", "handleEditCategoryChange","close"]);
-const { items, formField, modalTitle, url,subCategoryIdToPopulate } = toRefs(props);
+  minDate: Boolean
+})
+const emit = defineEmits([
+  'fetchDataForSubCategory',
+  'handleEditCategoryChange',
+  'fieldChanged',
+  'close'
+])
+const { items, formField, modalTitle, url, subCategoryIdToPopulate } = toRefs(props)
 
-//console.log(items.value)
-const { editForm, loading } = useEditComposable(formField, url.value, items.value["id"], emit);
-const imagePath = ref();
+const { editForm, loading } = useEditComposable(formField, url.value, items.value['id'], emit)
+const imagePath = ref()
+const hasMinDate = ref(props.minDate)
 
-watch(items, (newItems) => {
-  if (newItems) {
-    console.log(newItems)
-    formField.value.forEach(field => {
+console.log('Min Date', hasMinDate.value)
+
+watch(
+  items,
+  (newItems) => {
+    if (newItems) {
+      console.log(newItems)
+      formField.value.forEach((field) => {
         console.log(field)
-      
-      if(field.databaseField == 'expiry_date'){
-        console.log('okay')
-        console.log(field)
-      } 
-          
-        if(field.type == 'select' && Array.isArray(field.options)) {
 
-        //   console.log(field.options) 
-        //   console.log(field.databaseField) 
-        //   console.log(newItems) 
-        //  console.log(newItems[field.databaseField]) 
+        if (field.databaseField == 'expiry_date') {
+          console.log('okay')
+          console.log(field)
+        }
 
-        //  field.options.forEach(option => {
-        //       console.log(`Value: ${option.value}, Label: ${option.label}`);
-        //   });
+        if (field.type == 'select' && Array.isArray(field.options)) {
+          //   console.log(field.options)
+          //   console.log(field.databaseField)
+          //   console.log(newItems)
+          //  console.log(newItems[field.databaseField])
+
+          //  field.options.forEach(option => {
+          //       console.log(`Value: ${option.value}, Label: ${option.label}`);
+          //   });
 
           //set the selected item remove spaces and case sensitivity
-          const selectedItem = field.options.find(option => 
-                option.label.replace(/\s+/g, '').toLowerCase() === newItems[field.databaseField].replace(/\s+/g, '').toLowerCase()
-            );
+          const selectedItem = field.options.find(
+            (option) =>
+              option.label.replace(/\s+/g, '').toLowerCase() ===
+              newItems[field.databaseField].replace(/\s+/g, '').toLowerCase()
+            // option.label.replace(/\s+/g, '').toLowerCase() === !newItems[field.databaseField] ? newItems[field.databaseField].replace(/\s+/g, '').toLowerCase() : ""
+          )
+          console.log('New Item', newItems[field.databaseField])
 
           if (selectedItem) {
-           
-             field.value = selectedItem.value; 
-             
-           }
+            field.value = selectedItem.value
+          }
         } else {
-          
-          
-          field.value = newItems[field.databaseField];
+          field.value = newItems[field.databaseField]
         }
-    });
+      })
 
-    
-    Object.keys(newItems).forEach(key => {
-       const isImageField = /.*(image|logo|file)$/.test(key); // Check if key ends with 'image', 'logo', or 'file'
-       const field = formField.value.find(f => f.databaseField === key)
-       
-       if (isImageField && field) {
-        
-         imagePath.value = field.value;
-        //console.log(field.value)
-        } 
-    });
-    
-  } 
-}, { immediate: true, deep: true }); 
+      Object.keys(newItems).forEach((key) => {
+        const isImageField = /.*(image|logo|file)$/.test(key) // Check if key ends with 'image', 'logo', or 'file'
+        const field = formField.value.find((f) => f.databaseField === key)
+
+        if (isImageField && field) {
+          imagePath.value = field.value
+          //console.log(field.value)
+        }
+      })
+    }
+  },
+  { immediate: true, deep: true }
+)
 
 const handleEditCategoryChange = (value, field_name) => {
+  emit('fetchDataForSubCategory', value, field_name)
+}
 
-  emit('fetchDataForSubCategory',value, field_name);
-  
-};
-
-const handleFieldChanged = (fieldDatabase, value) => {
-  emit('fieldChanged', fieldDatabase, value); // Re-emit upwards
-};
+const handleFieldChanged = (value, fieldDatabase) => {
+  emit('fieldChanged', value, fieldDatabase) // Re-emit upwards
+}
 
 onMounted(async () => {
   //console.log('emitting data from modal')
   //console.log(items.value["category_ids"])
-  emit('fetchDataForSubCategory', items.value["category_ids"], "category_id",items.value[subCategoryIdToPopulate.value], items.value["sub_category_id"]);
-});
+  emit(
+    'fetchDataForSubCategory',
+    items.value['category_ids'],
+    'category_id',
+    items.value[subCategoryIdToPopulate.value],
+    items.value['sub_category_id']
+  )
+})
 </script>
 
 <style lang="scss" scoped>
