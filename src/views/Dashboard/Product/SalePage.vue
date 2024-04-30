@@ -36,137 +36,106 @@
       @submitForm="handleAddSales"
       title="Add Sale"
     >
+    <div>
+    <label class="block text-sm font-medium text-gray-700">Customer</label>
+    <select
+      v-model="formState.customer_id"
+      class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+    >
+      <option v-for="name in allCustomersNames" :key="name.id" :value="name.id">
+        {{ name.customer_detail }}
+      </option>
+    </select>
+  </div>
+  <div class="mt-4">
+    <label class="block text-sm font-medium text-gray-700">Payment method</label>
+    <select
+      required
+      v-model="formState.payment_method"
+      class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+    >
+      <option
+        v-for="option in [
+          { value: 'cash', label: 'Cash' },
+          { value: 'pos', label: 'Pos' },
+          { value: 'bank-transfer', label: 'Bank Transfer' },
+        ]"
+        :key="option.value"
+        :value="option.value"
+      >
+        {{ option.label }}
+      </option>
+    </select>
+  </div>
+  <div class="my-8">
+    <div class="flex justify-end">
+      <button
+        @click="addProducts"
+        class="btn-brand !bg-brand/[20%] !text-black !px-3"
+      >
+        Add product
+      </button>
+    </div>
+    <div
+      v-for="(question, index) in formState.products"
+      :key="index"
+      class="grid grid-cols-5 gap-4 items-end"
+    >
       <div>
-        <label class="block text-sm font-medium text-gray-700"> Customer </label>
-
+        <label class="block text-sm font-medium text-gray-700">Product</label>
         <select
           required
-          v-model="formState.customer_id"
-          class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-        >
-          <option v-for="name in allCustomersNames" :key="name.id" :value="name.id">
-            {{ name.customer_detail }}
-          </option>
-        </select>
-      </div>
-      <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-700"> Payment method </label>
-
-        <select
-          required
-          v-model="formState.payment_method"
+          v-model="formState.products[index].product_type_id"
           class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
         >
           <option
-            v-for="option in [
-              { value: 'cash', label: 'Cash' },
-              { value: 'pos', label: 'Pos' },
-              { value: 'bank-transfer', label: 'Bank Transfer' },
-            ]"
-            :key="option.value"
-            :value="option.value"
+            v-for="name in allProductTypeName"
+            :key="name.id"
+            :value="name.id"
           >
-            {{ option.label }}
+            {{ name.product_type_name }}
           </option>
         </select>
       </div>
-
-      <div class="my-8 flex flex-col gap-2">
-        <div class="flex flex-row justify-end items-end">
-          <button
-            @click="addProducts"
-            class="btn-brand !bg-brand/[20%] !text-black !px-3"
-          >
-            Add product
-          </button>
-        </div>
-
-        <div
-          v-for="(question, index) in formState.products"
-          :key="index"
-          class="flex flex-col gap-2"
-        >
-          <div class="flex flex-row gap-2">
-            <div class="w-full">
-              <label class="block text-sm font-medium text-gray-700"> Product </label>
-              <select
-                required
-                v-model="formState.products[index].product_type_id"
-                :label="`Product ${index + 1}`"
-                :name="`Product ${index + 1}`"
-                :placeholder="`Add Product ${index + 1}`"
-                class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-              >
-                <option
-                  v-for="name in allProductTypeName"
-                  :key="name.id"
-                  :value="name.id"
-                >
-                  {{ name.product_type_name }}
-                </option>
-              </select>
-              <!-- <input
-              :label="`Product ${index + 1}`"
-              :name="`Product ${index + 1}`"
-              :placeholder="`Add Product ${index + 1}`"
-              v-model="formState.products[index].product_type_id"
-              type="text"
-              class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-            /> -->
-            </div>
-
-            <div class="flex flex-row w-[90%] gap-2">
-              <div class="w-full">
-                <label class="block text-sm font-medium text-gray-700"> Price </label>
-
-                <input
-                  required
-                  :label="`price ${index + 1}`"
-                  :name="`price ${index + 1}`"
-                  :placeholder="`price ${index + 1}`"
-                  v-model="formState.products[index].price_sold_at"
-                  type="number"
-                  class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-                />
-              </div>
-              <div class="w-full">
-                <label class="block text-sm font-medium text-gray-700"> Quantity </label>
-
-                <input
-                  required
-                  :label="`quantity ${index + 1}`"
-                  :name="`quantity ${index + 1}`"
-                  :placeholder="`quantity ${index + 1}`"
-                  v-model="formState.products[index].quantity"
-                  type="number"
-                  class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-                />
-              </div>
-            </div>
-          </div>
-          <div class="flex flex-row justify-end text-[14px] items-end gap-2">
-            amount:
-            <span class="text-[14px] text-green-600">
-              {{
-                formState.products[index].price_sold_at *
-                formState.products[index].quantity
-              }}</span
-            >
-          </div>
-        </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Available Qty</label>
+        <input
+          type="text"
+          :value="formState.products[index].available_qty"
+          class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+          readonly
+        />
       </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Price</label>
+        <input
+          required
+          v-model="formState.products[index].price_sold_at"
+          type="number"
+          class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Qty Sold</label>
+        <input
+          required
+          v-model="formState.products[index].quantity"
+          type="number"
+          class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Amount</label>
+        <span>
+          {{
+            formState.products[index].price_sold_at * formState.products[index].quantity
+          }}
+        </span>
+      </div>
+    </div>
+  </div>
     </SaleFormModal>
-    <!-- <FormModal
-      v-if="showModal"
-      @close="closeModal"
-      :formTitle="'Add Sale'"
-      :fields="saleFormFields"
-      @fieldChanged="updateTotalPrice"
-      @fetchDataForSubCategory="fetchDataForSubCategory"
-      :isLoadingMsg="isOptionLoadingMsg"
-      :url="'sales'"
-    >
-    </FormModal> -->
+   
     <DeleteModal
       v-if="showDeleteModal"
       @close="closeDeleteModal"
@@ -211,12 +180,13 @@ const salesLoading = ref(false);
 const showSalesModal = ref(false);
 const formState = reactive({
   customer_id: "",
-  payment_method: "",
+  payment_method: "cash",
   products: [
     {
       product_type_id: "",
       price_sold_at: null,
       quantity: null,
+      available_qty:null,
     },
   ],
 });
@@ -264,7 +234,6 @@ const handleAddSales = async () => {
 
 const {
   DataTableLayout,
-  //FormModal,
   usePostComposable,
   useEditComposable,
   EditModal,
@@ -283,8 +252,7 @@ const url = "/latest-product-type-price";
 const priceSoldAt = ref();
 const {
   fetchDataForSelect,
-  // fetchDataForSubCategory,
-  // isOptionLoadingMsg,
+
 } = useSelectComposable(
   saleFormFields,
   url,
@@ -294,11 +262,7 @@ const {
 );
 const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 
-const {
-      // showModal, 
-      forceUpdate,
-       //closeModal
-       } = usePostComposable(
+const {  forceUpdate, } = usePostComposable(
   "/sales",
   saleFormFields
 );
@@ -397,6 +361,32 @@ onMounted(async () => {
     console.error;
   }
 });
+
+
+
+
+
+
+const updatePriceId = (productTypeId, index) => {
+const productInfo = allProductTypeName.value.find(product => product.id === productTypeId);
+if (productInfo) {
+  formState.products[index].price_sold_at = productInfo.selling_price;  
+  formState.products[index].available_qty = productInfo.quantity_available;  
+} else {
+  formState.products[index].price_sold_at = "";
+  formState.products[index].available_qty = ""; 
+}
+};
+
+watch(() => formState.products.map(p => p.product_type_id), (newProductTypeIds, oldProductTypeIds) => {
+newProductTypeIds.forEach((productTypeId, index) => {
+  if (productTypeId !== oldProductTypeIds[index]) {
+    updatePriceId(productTypeId, index);
+  }
+});
+}, { deep: true });
+
+
 const store = useStore();
 const permissions = computed(() => {
   return store.getUser.user.permission.permissions.find((p) => p.page_name === "sales");
