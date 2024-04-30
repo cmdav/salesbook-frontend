@@ -36,7 +36,7 @@
       @submitForm="handleAddSales"
       title="Add Sale"
     >
-    <div>
+    <!-- <div>
     <label class="block text-sm font-medium text-gray-700">Customer</label>
     <select
       v-model="formState.customer_id"
@@ -46,7 +46,35 @@
         {{ name.customer_detail }}
       </option>
     </select>
-  </div>
+  </div> -->
+  <div class="mt-4">
+        <span class="font-medium text-gray-700">Print Receipt:</span>
+        <label class="ml-4">
+          <input type="radio" value="yes" v-model="printReceipt" />
+          Yes
+        </label>
+        <label class="ml-2">
+          <input type="radio" value="no" v-model="printReceipt" />
+          No
+        </label>
+      </div>
+
+      <!-- Conditionally render Customer select based on printReceipt -->
+      <div v-if="printReceipt === 'yes'" class="mt-4 flex items-center">
+        <div class="flex-grow">
+          <select
+            v-model="formState.customer_id"
+            class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+          >
+            <option v-for="name in allCustomersNames" :key="name.id" :value="name.id">
+              {{ name.customer_detail }}
+            </option>
+          </select>
+
+        </div>
+        <button type="button" class="ml-4 btn-brand" @click="addNewCustomer">Add Customer</button>
+      
+      </div>
   <div class="mt-4">
     <label class="block text-sm font-medium text-gray-700">Payment method</label>
     <select
@@ -135,7 +163,8 @@
     </div>
   </div>
     </SaleFormModal>
-   
+    <CustomerFormModal  v-if="showCustomerModal" @close="closeModal"/>
+
     <DeleteModal
       v-if="showDeleteModal"
       @close="closeDeleteModal"
@@ -167,6 +196,7 @@ import { onMounted, watch, ref, reactive } from "vue";
 import { saleFormFields } from "@/formfields/formFields";
 import SaleFormModal from "@/components/UI/Modal/SalesFormModal.vue";
 import { useSharedComponent } from "@/composable/useSharedComponent";
+import CustomerFormModal from '@/components/UI/Modal/CustomerFormModal.vue';
 import { useProductStore } from "@/stores/products";
 import { useCustomerstore } from "@/stores/customers";
 import { storeToRefs } from "pinia";
@@ -176,8 +206,18 @@ const customersStore = useCustomerstore();
 const { allCustomersNames } = storeToRefs(customersStore);
 const { allProductTypeName } = storeToRefs(productsStore);
 
+
+// Your existing script setup code
+
+//const showCustomerModal = ref(false);
+const showCustomerModal = ref(false)
+const addNewCustomer = () => {
+  showCustomerModal.value  = true
+
+}
 const salesLoading = ref(false);
 const showSalesModal = ref(false);
+const printReceipt = ref('no');
 const formState = reactive({
   customer_id: "",
   payment_method: "cash",
@@ -249,7 +289,7 @@ const {
 const { showUploadModal, closeUploadModal } = useUploadComposable();
 const emit = defineEmits("forceRefresh");
 const url = "/latest-product-type-price";
-const priceSoldAt = ref();
+//const priceSoldAt = ref();
 const {
   fetchDataForSelect,
 
@@ -288,71 +328,7 @@ onMounted(async () => {
   await productsStore.handleGetSales();
 });
 
-// Method to update the total price
 
-const updateTotalPrice = (fieldDatabase, value) => {
-  console.log(value);
-
-  if (fieldDatabase === "price_sold_at" || fieldDatabase === "quantity") {
-    priceSoldAt.value =
-      parseFloat(
-        saleFormFields.value.find((field) => field.databaseField === "price_sold_at")
-          ?.value
-      ) || 0;
-    const quantity =
-      parseFloat(
-        saleFormFields.value.find((field) => field.databaseField === "quantity")?.value
-      ) || 0;
-    const totalPriceField = saleFormFields.value.find(
-      (field) => field.databaseField === "total_price"
-    );
-    if (totalPriceField) {
-      totalPriceField.value = Math.round(priceSoldAt.value * quantity);
-    }
-  }
-};
-
-const confirmPrice = () => {
-  const priceIdField = saleFormFields.value.find(
-    (field) => field.databaseField === "price_id"
-  );
-  const sellingPriceOption = priceIdField.options.find(
-    (option) => option.value === priceIdField.value
-  );
-  const priceSoldAtField = saleFormFields.value.find(
-    (field) => field.databaseField === "price_sold_at"
-  );
-  const quantityField = saleFormFields.value.find(
-    (field) => field.databaseField === "quantity"
-  );
-
-  // Ensure that we found the fields and sellingPriceOption before proceeding
-  if (
-    sellingPriceOption &&
-    priceSoldAtField &&
-    quantityField &&
-    parseFloat(priceSoldAtField.value) < parseFloat(sellingPriceOption.label)
-  ) {
-    alert("Invalid Price: Price Sold At Cannot be less than the selling price.");
-
-    // Reset the values directly in the saleFormFields
-    priceSoldAtField.value = ""; // Clear the price sold at field
-    quantityField.value = ""; // Clear the quantity field
-  }
-};
-// Call this function whenever the related fields change.
-watch(
-  () =>
-    saleFormFields.value.find((field) => field.databaseField === "price_sold_at")?.value,
-  updateTotalPrice
-);
-watch(
-  () => saleFormFields.value.find((field) => field.databaseField === "quantity")?.value,
-  () => {
-    updateTotalPrice();
-    confirmPrice();
-  }
-);
 onMounted(async () => {
   try {
     await customersStore.handleAllCustomersName();
