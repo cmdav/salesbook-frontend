@@ -34,6 +34,8 @@
                   </option>
                 </select>
               </div>
+              <div class="w-full">
+                <label class="block text-sm font-medium text-gray-700"> Price </label>
 
               <div class="flex flex-row w-full gap-2">
                 <div class="w-full">
@@ -93,6 +95,7 @@
               </div>
             </div>
           </div>
+          
         </div>
       </div>
     </SaleFormModal>
@@ -129,6 +132,7 @@ function getMinDate() {
   // Return the minimum date in the format required by the input[type=date] field
   return minDate.toISOString().split('T')[0]
 }
+
 
 const formState = reactive({
   purchases: [
