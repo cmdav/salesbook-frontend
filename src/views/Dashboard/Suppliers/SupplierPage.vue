@@ -209,13 +209,13 @@
 
                 <div class="flex lg:flex-row flex-col w-full gap-[20px]">
                   <div class="flex flex-col w-full">
-                    <AuthInput
+                    <DisabledInput
                     label="Organization Id"
                       :error="errors.orgId"
                       type="text"
                       placeholder="Enter orgId"
                       v-model="formData.orgId"
-                      disable
+                      class="bg-gray-200 cursor-not-allowed"
                     />
                   </div>
                 </div>
@@ -321,6 +321,7 @@ import { useSupplierStore } from "@/stores/suppliers";
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import CenteredModalLarge from "@/components/UI/CenteredModalLarge.vue";
 import AuthInput from "@/components/UI/Input/AuthInput.vue";
+import DisabledInput from "@/components/UI/Input/DisabledInput.vue";
 import Pagination from "@/components/UI/Pagination/Pagination.vue";
 import Loader from "@/components/UI/Loader.vue";
 const store = useStore();
