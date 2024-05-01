@@ -206,7 +206,20 @@
                     />
                   </div>
                 </div>
-              </div>
+
+                <div class="flex lg:flex-row flex-col w-full gap-[20px]">
+                  <div class="flex flex-col w-full">
+                    <AuthInput
+                    label="Organization Id"
+                      :error="errors.orgId"
+                      type="text"
+                      placeholder="Enter orgId"
+                      v-model="formData.orgId"
+                      disable
+                    />
+                  </div>
+                </div>
+              </div> 
 
               <div class="flex flex-col lg:flex-row w-full gap-[30px]">
                 <div class="w-full flex justify-center">
@@ -310,12 +323,12 @@ import CenteredModalLarge from "@/components/UI/CenteredModalLarge.vue";
 import AuthInput from "@/components/UI/Input/AuthInput.vue";
 import Pagination from "@/components/UI/Pagination/Pagination.vue";
 import Loader from "@/components/UI/Loader.vue";
+const store = useStore();
 import { storeToRefs } from "pinia";
 const supplierStore = useSupplierStore();
 const { Supplier } = storeToRefs(supplierStore);
 import { resendEmail } from "@/services/Auth";
 import { useStore } from "@/stores/user";
-const store = useStore();
 const { userProfileDetails } = storeToRefs(store);
 import CloudUploadIcon from "@/components/icons/cloudUploadIcon.vue";
 import { useRouter } from "vue-router";
@@ -331,6 +344,7 @@ const formData = reactive({
   firstName: "",
   lastName: "",
   email: "",
+  orgId: ""
 });
 let loading = ref(false);
 let sortInput = reactive({
@@ -410,7 +424,8 @@ const handleSupplierInvite = async () => {
   let payload = {
     first_name: formData.firstName,
     last_name: formData.lastName,
-    organization_id: userProfileDetails.value?.organization_id,
+    // organization_id: userProfileDetails.value?.organization_id,
+    organization_id: formData.orgId,
     email: formData.email,
     type: "invitation",
   };
@@ -430,5 +445,8 @@ const handleSupplierInvite = async () => {
 onMounted(async () => {
   await supplierStore.allSupplier();
   await store.handleUserProfile();
+
+  formData.orgId = userProfileDetails.value?.organization_id;
+  // console.log(userProfileDetails.value?.organization_id)
 });
 </script>
