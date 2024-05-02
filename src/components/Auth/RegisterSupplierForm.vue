@@ -386,7 +386,7 @@ const handleSupplierSignup = async () => {
   try {
     let res = await register(payload);
     // if (res.data.status === true) {
-    router.push({ name: "login" });
+    router.push({ name: "supplier-login" });
     // } else {
     // Handle unsuccessful login
     //   loading.value = false;
@@ -395,7 +395,7 @@ const handleSupplierSignup = async () => {
     loading.value = false;
     clearInputs();
     return res;
-  } catch (error) {
+  } catch (error) {~
     console.log(error);
   } finally {
     loading.value = false;

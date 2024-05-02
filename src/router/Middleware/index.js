@@ -16,6 +16,11 @@ const redirectDashboard = () => {
   return user && user.token ? { name: 'dashboard' } : undefined
 }
 
+const redirectSupplierDashboard = () => {
+  const user = getUserFromLocalStorage()
+  return user && user.token ? { name: 'supplier-dashboard' } : undefined
+}
+
 const deleteSession = async () => {
   if (localStorage.getItem('_user_data')) {
     logout()
@@ -26,6 +31,7 @@ const deleteSession = async () => {
 export default {
   redirectLogin,
   redirectDashboard,
+  redirectSupplierDashboard,
   deleteSession
 }
 

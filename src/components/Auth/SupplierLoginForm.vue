@@ -149,7 +149,7 @@ const onFinish = async () => {
   try {
     let res = await login(formState.email, formState.password);
     store.saveUser(res.data);
-    router.push({ name: "dashboard" });
+    router.push({ name: "supplier-dashboard" });
     loading.value = false;
     return res;
   } catch (error) {
