@@ -40,12 +40,12 @@
         </div>
 
         <div class="mb-10 w-full flex lg:flex-row flex-col justify-between">
-          <p class="text-[14px]">
+          <!-- <p class="text-[14px]">
             Don’t have an account?
             <router-link to="/register" class="font-medium text-brand text-[14px]"
               >Register</router-link
-            >
-          </p>
+            > 
+          </p>-->
           <router-link class="font-medium text-brand text-[14px]" to="/forgotten-password"
             >Forgotten password?</router-link
           >
@@ -81,7 +81,7 @@ const store = useStore();
 const formState = reactive({
   email: "",
   password: "",
-  code: "",
+  
 });
 const errors = reactive({
   email: false,
@@ -158,7 +158,7 @@ const onFinish = async () => {
     loading.value = false;
     formState.email = "";
     formState.password = "";
-    formState.code = "";
+   
   }
 };
 </script>

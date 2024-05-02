@@ -167,7 +167,7 @@
         <div class="w-full flex justify-between">
           <p class="text-[14px]">
             Already have an account
-            <router-link to="/login" class="font-medium text-brand text-[14px]"
+            <router-link to="/supplier/login" class="font-medium text-brand text-[14px]"
               >Login</router-link
             >
           </p>
@@ -244,7 +244,7 @@ const dobErrorMsg = ref("date of birth is lower than 18");
 const errorsMsg = {
   firstName: "First name is required",
   lastName: "Last name is required",
-  email: "Last name is required",
+  email: "Email is required",
   phoneNo: "phone Number is required",
   password: "Password is required",
   confirmPassword: "Password does not match",
@@ -376,13 +376,12 @@ const handleSupplierSignup = async () => {
     last_name: formData.lastName,
     middle_name: middelName.value,
     phone_number: formData.phoneNo,
+    organization_id: VerificationRespData.value?.data.organization_id,
     dob: dob.value,
     email: formData.email,
     password: formData.password,
     password_confirmation: formData.confirmPassword,
-    type_id: 1,
-    organization_id: VerificationRespData.value?.data.organization_id,
-    role_id: 0,
+    organization_type: "supplier"
   };
   try {
     let res = await register(payload);
