@@ -17,7 +17,11 @@
         :key="forceUpdate"
         :endpoint="computedEndpoint"
         searchEndpoint="search-product-types"
+        :excludedKeys="[
+          'product_ids','category_ids'
+        ]"
         :clickableKeys="{ view_price: navigateToPrice }"
+
       />
     </div>
     <FormModal v-if="showModal" @close="closeModal" :formTitle="formTitle">
