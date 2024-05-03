@@ -37,77 +37,77 @@
               <div class="w-full">
                 <label class="block text-sm font-medium text-gray-700"> Price </label>
 
-              <div class="flex flex-row w-full gap-2">
-                <div class="w-full">
-                  <label class="block text-sm font-medium text-gray-700"> Supplier </label>
+                <div class="flex flex-row w-full gap-2">
+                  <div class="w-full">
+                    <label class="block text-sm font-medium text-gray-700"> Supplier </label>
 
-                  <select required v-model="formState.purchases[index].supplier_id" :label="`Supplier ${index + 1}`"
-                    :name="`Supplier ${index + 1}`" :placeholder="`Add Supplier ${index + 1}`"
-                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm">
-                    <option v-for="supplier in suppliersByProductId" :key="supplier.id" :value="supplier.id">
-                      {{ supplier.supplier_detail }}
-                    </option>
-                  </select>
+                    <select required v-model="formState.purchases[index].supplier_id" :label="`Supplier ${index + 1}`"
+                      :name="`Supplier ${index + 1}`" :placeholder="`Add Supplier ${index + 1}`"
+                      class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm">
+                      <option v-for="supplier in suppliersByProductId" :key="supplier.id" :value="supplier.id">
+                        {{ supplier.supplier_detail }}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="w-full">
+                    <label class="block text-sm font-medium text-gray-700"> Cost Price </label>
+
+                    <input required type="text" :value="formState.purchases[index].display_price"
+                      @input="updateSellingPrice()"
+                      class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+                      :readonly="isReadonly" />
+                    <!-- Hidden input to hold the actual price_id for submission -->
+                    <input type="hidden" v-model="formState.purchases[index].price_id" />
+                  </div>
+
+                  <div class="w-full">
+                    <label class="block text-sm font-medium text-gray-700"> Selling Price </label>
+
+                    <input required type="text" :value="formState.purchases[index].selling_price"
+                      class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
+                  </div>
+
                 </div>
-                <div class="w-full">
-                  <label class="block text-sm font-medium text-gray-700"> Cost Price </label>
+                <div class="flex flex-row w-full gap-2">
+                  <div class="w-full">
+                    <label class="block text-sm font-medium text-gray-700"> Batch no </label>
 
-                  <input required type="text" :value="formState.purchases[index].display_price"
-                    @input="updateSellingPrice()"
-                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-                    :readonly="isReadonly" />
-                  <!-- Hidden input to hold the actual price_id for submission -->
-                  <input type="hidden" v-model="formState.purchases[index].price_id" />
+                    <input :label="`batch no ${index + 1}`" :name="`batch no ${index + 1}`"
+                      :placeholder="`batch no ${index + 1}`" v-model="formState.purchases[index].batch_no" type="text"
+                      class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
+                  </div>
+                  <div class="w-full">
+                    <label class="block text-sm font-medium text-gray-700"> Quantity </label>
+
+                    <input required :label="`quantity ${index + 1}`" :name="`quantity ${index + 1}`"
+                      :placeholder="`quantity ${index + 1}`" v-model="formState.purchases[index].quantity" min="0"
+                      type="number"
+                      class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
+                  </div>
                 </div>
+                <div class="flex flex-row w-full gap-2">
+                  <div class="w-full">
+                    <label class="block text-sm font-medium text-gray-700">
+                      Product Identifier
+                    </label>
 
-                <div class="w-full">
-                  <label class="block text-sm font-medium text-gray-700"> Selling Price </label>
+                    <input :label="`product identifier ${index + 1}`" :name="`product identifier ${index + 1}`"
+                      :placeholder="`product identifier ${index + 1}`"
+                      v-model="formState.purchases[index].product_identifier" type="text"
+                      class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
+                  </div>
+                  <div class="w-full">
+                    <label class="block text-sm font-medium text-gray-700"> Expired Date </label>
 
-                  <input required type="text" :value="formState.purchases[index].selling_price"
-                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
-                </div>
-
-              </div>
-              <div class="flex flex-row w-full gap-2">
-                <div class="w-full">
-                  <label class="block text-sm font-medium text-gray-700"> Batch no </label>
-
-                  <input :label="`batch no ${index + 1}`" :name="`batch no ${index + 1}`"
-                    :placeholder="`batch no ${index + 1}`" v-model="formState.purchases[index].batch_no" type="text"
-                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
-                </div>
-                <div class="w-full">
-                  <label class="block text-sm font-medium text-gray-700"> Quantity </label>
-
-                  <input required :label="`quantity ${index + 1}`" :name="`quantity ${index + 1}`"
-                    :placeholder="`quantity ${index + 1}`" v-model="formState.purchases[index].quantity" min="0"
-                    type="number"
-                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
-                </div>
-              </div>
-              <div class="flex flex-row w-full gap-2">
-                <div class="w-full">
-                  <label class="block text-sm font-medium text-gray-700">
-                    Product Identifier
-                  </label>
-
-                  <input :label="`product identifier ${index + 1}`" :name="`product identifier ${index + 1}`"
-                    :placeholder="`product identifier ${index + 1}`"
-                    v-model="formState.purchases[index].product_identifier" type="text"
-                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
-                </div>
-                <div class="w-full">
-                  <label class="block text-sm font-medium text-gray-700"> Expired Date </label>
-
-                  <input :label="`expired date ${index + 1}`" :name="`expired date ${index + 1}`"
-                    :placeholder="`expired date ${index + 1}`" v-model="formState.purchases[index].expiry_date"
-                    type="date" :min="minDate"
-                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
+                    <input :label="`expired date ${index + 1}`" :name="`expired date ${index + 1}`"
+                      :placeholder="`expired date ${index + 1}`" v-model="formState.purchases[index].expiry_date"
+                      type="date" :min="minDate"
+                      class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-          
         </div>
       </div>
     </SaleFormModal>
