@@ -52,7 +52,13 @@
 
 <script setup>
 import { defineEmits,ref,computed } from "vue";
-import apiService from "@/services/apiService";
+//import apiService from "@/services/apiService";
+import { useCustomerstore } from '@/stores/customers';
+
+// Retrieve store using Pinia's useCustomerstore function
+const customerStore = useCustomerstore();
+
+
 const emits = defineEmits(["close"]);
 
 
@@ -73,9 +79,9 @@ const emits = defineEmits(["close"]);
     ];
 
     const companyFields = [
-      { label: 'Company Name', type: 'text', databaseField: 'company_name', placeholder: 'Enter company name', required: true },
-      { label: 'Contact Person', type: 'text', databaseField: 'contact_person', placeholder: 'Enter contact person', required: true },
-      { label: 'Phone Number', type: 'text', databaseField: 'phone_number', placeholder: 'Enter phone number', required: true },
+      { label: 'Company Name', type: 'text', databaseField: 'company_name', placeholder: 'Enter company name', required: false },
+      { label: 'Contact Person', type: 'text', databaseField: 'contact_person', placeholder: 'Enter contact person', required: false },
+      { label: 'Phone Number', type: 'text', databaseField: 'phone_number', placeholder: 'Enter phone number', required: false },
       { label: 'Email', type: 'email', databaseField: 'email', placeholder: 'Enter email', required: true },
       {  type: 'hidden', databaseField: 'type_id', placeholder: 'Enter email', required: true, value:'company'}
     ];
@@ -87,7 +93,7 @@ const emits = defineEmits(["close"]);
      // Initialize formData as a reactive object
 const formData = ref({});
 
-// Function to handle form submission
+
 const submitForm = async () => {
     // Construct the payload from formData
     const payload = {};
@@ -95,19 +101,21 @@ const submitForm = async () => {
         payload[field.databaseField] = formData.value[field.databaseField];
     });
 
-    // Call API to submit data
+    
     try {
-        const response = await apiService.post('/customers', payload);
+        const response = await customerStore.handleAddCustomer(payload);
+        console.log(response);
         console.log('Submission Successful:', response);
-        // Optionally reset formData here if necessary
-        formData.value = {};
-        alert('Customer detail has been added successfully')
+        formData.value = {}; // Optionally reset formData here if necessary
+        alert('Customer detail has been added successfully');
         emits('close'); // Close modal on success
     } catch (error) {
         console.error('Submission Failed:', error);
         // Handle errors (e.g., show error messages to the user)
     }
 };
+
+
    
 
 </script>
