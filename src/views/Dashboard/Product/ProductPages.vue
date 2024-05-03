@@ -27,8 +27,6 @@
         toggleButtonLabel="Add Product"
         :excludedKeys="['id', 'product_description', 'product_id','product_ids','category_ids','sub_category_id','product_image','product_type_description']"
         :clickableKeys="{
-          //this will be render as a closure
-         // product_name: openProductDetailModal,
           view_price: navigateToProductTypePrice,
         }"
         :additionalColumns=additionalColumns
