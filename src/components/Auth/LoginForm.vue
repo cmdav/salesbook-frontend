@@ -153,13 +153,14 @@ const onFinish = async () => {
     loading.value = false;
     return;
   }
+  let data = {
+    email: formState.email,
+    password: formState.password,
+    organization_code: formState.organization_code,
+    code: formState.code
+  };
   try {
-    let res = await login(
-      formState.email,
-      formState.password,
-      formState.organization_code,
-      formState.code
-    );
+    let res = await login(data);
     store.saveUser(res.data);
     router.push({ name: "dashboard" });
     loading.value = false;
