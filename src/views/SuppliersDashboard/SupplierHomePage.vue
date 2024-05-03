@@ -30,6 +30,87 @@
         >
         </DataTableLayout>
       </div>
+
+      <!-- <CenteredModalLarge v-if="showModal">
+        <div class="p-4">
+          <header
+            class="flex flex-row items-center justify-between border-b-[#000000] pb-[35px] mb-[35px] border-b-[1px]"
+          >
+            <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">
+              Invite Suppliers
+            </h4>
+            <button @click="HandleToggleModal" class="text-[30px]">X</button>
+          </header>
+          <div>
+            <form
+              class="flex flex-col gap-[17px]"
+              action="POST"
+              @submit.prevent="handleSupplierInvite()"
+            >
+              <div class="flex flex-col gap-[17px]">
+                <div class="flex lg:flex-row flex-col w-full gap-[20px]">
+                  <div class="flex flex-col w-full">
+                    <AuthInput
+                      label="First Name"
+                      :error="errors.firstName"
+                      type="text"
+                      placeholder="Enter first name"
+                      v-model="formData.firstName"
+                    />
+                  </div>
+                  <div class="flex flex-col w-full">
+                    <AuthInput
+                      label="Last Name"
+                      :error="errors.lastName"
+                      type="text"
+                      placeholder="Enter last name"
+                      v-model="formData.lastName"
+                    />
+                  </div>
+                </div>
+
+                <div class="flex lg:flex-row flex-col w-full gap-[20px]">
+                  <div class="flex flex-col w-full">
+                    <AuthInput
+                      label="Email Address"
+                      :error="errors.email"
+                      type="email"
+                      placeholder="Enter email address"
+                      v-model="formData.email"
+                    />
+                  </div>
+                </div>
+
+                <div class="flex lg:flex-row flex-col w-full gap-[20px]">
+                  <div class="flex flex-col w-full">
+                    <DisabledInput
+                    label="Organization Id"
+                      :error="errors.orgId"
+                      type="text"
+                      placeholder="Enter orgId"
+                      v-model="formData.orgId"
+                      class="bg-gray-200 cursor-not-allowed"
+                    />
+                  </div>
+                </div>
+              </div> 
+
+              <div class="flex flex-col lg:flex-row w-full gap-[30px]">
+                <div class="w-full flex justify-center">
+                  <button
+                    type="submit"
+                    class="btn-brand !border-none !w-[30%] mx-auto !py-3 lg:!px-10 !px-5 !text-[#FFFFFF] text-center"
+                  >
+                    <span v-if="!loading" class="text-[12.067px]">Invite</span>
+                    <Loader v-else />
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </CenteredModalLarge> -->
+
       <!--Modal to add product-->
       <!-- <FormModal
         v-if="showModal"
@@ -66,9 +147,7 @@
       >
       </FormModal> -->
 
-      <ViewModal v-if="showViewModal" @close="closeViewModal" :modalTitle="modalTitle">
-        <ViewModalDetail :products="products" />
-      </ViewModal>
+      
 
       <DeleteModal
         v-if="showDeleteModal"
@@ -102,6 +181,7 @@
   import { onMounted, ref, watch, computed } from "vue";
   import { useRouter } from "vue-router";
   import { useSupplierStore } from "@/stores/suppliers"
+import CenteredModalLarge from "@/components/UI/CenteredModalLarge.vue";
   const supplierStore = useSupplierStore();
   import {
     formFields,

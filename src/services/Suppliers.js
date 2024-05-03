@@ -82,3 +82,19 @@ export const getSupplierProducts = async () => {
     throw error
   }
 }
+
+export const addProductCategories = async (payload) => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.post(`price-notifications`, payload, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res)
+    return res.data
+  } catch (error) {
+    console.log(error)
+  }
+}
