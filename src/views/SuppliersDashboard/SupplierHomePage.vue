@@ -23,7 +23,7 @@
         <DataTableLayout
           :key="forceUpdate"
           endpoint="auth-supplier-products"
-          @toggleModal="showModal = !showModal"
+          @click="HandleToggleModal"
           toggleButtonLabel="Add Product"
           :excludedKeys="['id','product_type_id','supplier_id','product_category_name']"
           :additionalColumns=additionalColumns
@@ -31,13 +31,13 @@
         </DataTableLayout>
       </div>
 
-      <!-- <CenteredModalLarge v-if="showModal">
+       <CenteredModalLarge v-if="showModal">
         <div class="p-4">
           <header
             class="flex flex-row items-center justify-between border-b-[#000000] pb-[35px] mb-[35px] border-b-[1px]"
           >
             <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">
-              Invite Suppliers
+              Add Price
             </h4>
             <button @click="HandleToggleModal" class="text-[30px]">X</button>
           </header>
@@ -45,51 +45,17 @@
             <form
               class="flex flex-col gap-[17px]"
               action="POST"
-              @submit.prevent="handleSupplierInvite()"
+              @submit.prevent="handleAddSupplierPrice()"
             >
               <div class="flex flex-col gap-[17px]">
                 <div class="flex lg:flex-row flex-col w-full gap-[20px]">
                   <div class="flex flex-col w-full">
                     <AuthInput
-                      label="First Name"
-                      :error="errors.firstName"
+                      label="Price"
+                      :error="errors.costPrice"
                       type="text"
-                      placeholder="Enter first name"
-                      v-model="formData.firstName"
-                    />
-                  </div>
-                  <div class="flex flex-col w-full">
-                    <AuthInput
-                      label="Last Name"
-                      :error="errors.lastName"
-                      type="text"
-                      placeholder="Enter last name"
-                      v-model="formData.lastName"
-                    />
-                  </div>
-                </div>
-
-                <div class="flex lg:flex-row flex-col w-full gap-[20px]">
-                  <div class="flex flex-col w-full">
-                    <AuthInput
-                      label="Email Address"
-                      :error="errors.email"
-                      type="email"
-                      placeholder="Enter email address"
-                      v-model="formData.email"
-                    />
-                  </div>
-                </div>
-
-                <div class="flex lg:flex-row flex-col w-full gap-[20px]">
-                  <div class="flex flex-col w-full">
-                    <DisabledInput
-                    label="Organization Id"
-                      :error="errors.orgId"
-                      type="text"
-                      placeholder="Enter orgId"
-                      v-model="formData.orgId"
-                      class="bg-gray-200 cursor-not-allowed"
+                      placeholder="Enter Price"
+                      v-model="formData.costPrice"
                     />
                   </div>
                 </div>
@@ -101,7 +67,7 @@
                     type="submit"
                     class="btn-brand !border-none !w-[30%] mx-auto !py-3 lg:!px-10 !px-5 !text-[#FFFFFF] text-center"
                   >
-                    <span v-if="!loading" class="text-[12.067px]">Invite</span>
+                    <span v-if="!loading" class="text-[12.067px]">Add Price</span>
                     <Loader v-else />
                   </button>
                 </div>
@@ -109,43 +75,7 @@
             </form>
           </div>
         </div>
-      </CenteredModalLarge> -->
-
-      <!--Modal to add product-->
-      <!-- <FormModal
-        v-if="showModal"
-        @close="closeModal"
-        :formTitle="'Add Product'"
-        :fields="formFields"
-        @fetchDataForSubCategory="fetchDataForSubCategory"
-        :isLoadingMsg="isOptionLoadingMsg"
-        :url="'/products'"
-      >
-      </FormModal> -->
-      <!-- Modal to add product type-->
-      <!-- <FormModal
-        v-if="showProductTypeModal"
-        @close="toggleProductTypeModal('close')"
-        @updated="forceRefresh"
-        :formTitle="'Add Product Type'"
-        :fields="productTypeFormFields"
-        @fetchDataForSubCategory="fetchDataForSubCategory"
-        :isLoadingMsg="isOptionLoadingMsg"
-        :url="'/product-types'"
-      >
-      </FormModal> -->
-      <!-- Modal for Price Type-->
-      <!-- <FormModal
-        v-if="showPriceModal"
-        @close="togglePriceModal('close')"
-        :formTitle="'Add Price'"
-        :fields="priceFormFields"
-        @fieldChanged="updateSellingPrice"
-        @fetchDataForSubCategory="fetchDataForSubCategory"
-        :isLoadingMsg="isOptionLoadingMsg"
-        :url="'/prices'"
-      >
-      </FormModal> -->
+      </CenteredModalLarge>
 
       
 
@@ -167,18 +97,12 @@
         :formField="dynamicFormFields"
         :url="dynamicUrl"
       />
-      <!-- <UploadModal
-        v-if="showUploadModal"
-        @close="closeUploadModal"
-        :url="'/auth-supplier-products'"
-        type="Product"
-        @updated="forceRefresh"
-      /> -->
+     
     </DashboardLayout>
   </template>
 
   <script setup>
-  import { onMounted, ref, watch, computed } from "vue";
+  import { onMounted, ref, watch, reactive, computed } from "vue";
   import { useRouter } from "vue-router";
   import { useSupplierStore } from "@/stores/suppliers"
 import CenteredModalLarge from "@/components/UI/CenteredModalLarge.vue";
@@ -226,113 +150,38 @@ import CenteredModalLarge from "@/components/UI/CenteredModalLarge.vue";
   const emit = defineEmits("forceRefresh");
   //const { showModal, showViewModal,**loading, **allError,forceUpdate,**errorMessage,isError,closeModal,closeViewModal,} = usePostComposable('/products', formFields);
   const {
-    showModal,
-    showViewModal,
     forceUpdate,
-    closeModal,
-    closeViewModal,
-  } = usePostComposable("/products", formFields);
-  const {  handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
+    } = usePostComposable("/products");
 
-  // fetchDataForSubCategory is emitted
-  const {
-    fetchDataForSelect,
-    fetchDataForSubCategory,
-    isOptionLoadingMsg,
-  } = useSelectComposable(
-    formFields,
-    "category_id",
-    "sub_category_id",
-    "sub_category_name"
-  );
+  const showModal = ref(false)
 
-  // const openProductDetailModal = (product) => {
-  //   products.value = product;
-  //   showViewModal.value = true;
-  // };
+  function HandleToggleModal() {
+  showModal.value = !showModal.value;
+  clearInputs();
+}
+ 
+const formData = reactive({
+ costPrice: "",
+productTypeId:"", 
+supplierId: "",
+status: 0
+});
 
-  const navigateToProductTypePrice = (product) => {
-    router.push({ name: "price", params: { id: product.id } });
-    // router.push({ name: "product-type", params: { id: product.id } });
-  };
-
-  const toggleProductTypeModal = async(action = null) => {
-    if(action == 'close'){
-      productTypeFormFields.value.forEach((field) => {
-          field.value = "";
-       });
-
-    }
-    await fetchDataForSelect( "Product Name", "/all-products","id", "product_name", productTypeFormFields.value);
-    showProductTypeModal.value = !showProductTypeModal.value;
-  };
-  const togglePriceModal = async(action =null) => {
-    if(action == 'close'){
-      priceFormFields.value.forEach((field) => {
-          field.value = "";
-       });
-
-    }
-
-    await fetchDataForSelect( "Product Type", "/all-product-type-name","id","product_type_name", priceFormFields.value);
-    showPriceModal.value = !showPriceModal.value;
-  };
 
   const forceRefresh = () => {
     forceUpdate.value++;
   };
 
+  const errors = reactive({
+ costPrice: false
+});
+
   //useLabelNameToselectFormFieldToPopulate, endpoint, optionValue, formKey:is the name from endpoint
   onMounted(async () => {
-    await fetchDataForSelect("Measurement", "/measurements", "id", "measurement_name");
-    await fetchDataForSelect("Category", "/product-categories", "id", "category_name");
-    await fetchDataForSelect( "Product Name", "/all-products","id", "product_name", productTypeFormFields.value);
-    // await productsStore.handleGetProductType();
+
     await supplierStore.handleGetSupplierProducts()
+
   });
-
-//   const updateSellingPrice = (fieldDatabase, value) => {
-//     console.log(value);
-
-//     if (
-//       fieldDatabase === "auto_generated_selling_price" ||
-//       fieldDatabase === "cost_price"
-//     ) {
-//       const costPrice =
-//         parseFloat(
-//           priceFormFields.value.find((field) => field.databaseField === "cost_price")?.value
-//         ) || 0;
-//       const auto_generated_selling_price =
-//         parseFloat(
-//           priceFormFields.value.find(
-//             (field) => field.databaseField === "auto_generated_selling_price"
-//           )?.value
-//         ) || 0;
-//       const totalPriceField = priceFormFields.value.find(
-//         (field) => field.databaseField === "selling_price"
-//       );
-//       if (totalPriceField) {
-//         totalPriceField.value =
-//           Math.floor(costPrice + costPrice * (auto_generated_selling_price / 100));
-//       }
-//     }
-//   };
-
-  // Call this function whenever the related fields change.
-//   watch(
-//     () =>
-//       priceFormFields.value.find(
-//         (field) => field.databaseField === "auto_generated_selling_price"
-//       )?.value,
-//     updateSellingPrice
-//   );
-//   watch(
-//     () =>
-//       priceFormFields.value.find((field) => field.databaseField === "cost_price")?.value,
-//     updateSellingPrice
-//   );
-
-
 
   const dynamicFormFields = computed(() => {
 

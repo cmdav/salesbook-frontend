@@ -83,7 +83,7 @@ export const getSupplierProducts = async () => {
   }
 }
 
-export const addProductCategories = async (payload) => {
+export const addSupplierPrice = async (payload) => {
   const token = await getToken()
 
   try {

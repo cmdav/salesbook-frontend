@@ -5,7 +5,8 @@ import {
   getSingleSupplier,
   getSupplierProduct,
   getAllSupplierProduct,
-  getSupplierProducts
+  getSupplierProducts,
+  addSupplierPrice
 } from '@/services/Suppliers'
 
 export const useSupplierStore = defineStore('Supplier', () => {
@@ -55,6 +56,15 @@ export const useSupplierStore = defineStore('Supplier', () => {
     }
   }
 
+  const handleAddSupplierPrice = async (payload) => {
+    try {
+      let res = await addSupplierPrice(payload)
+      return res
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
 
   return {
     Supplier,
@@ -65,6 +75,7 @@ export const useSupplierStore = defineStore('Supplier', () => {
     supplierProduct,
     handleAllSupplierProduct,
     handleGetSupplierProduct,
-    handleGetSupplierProducts
+    handleGetSupplierProducts,
+    handleAddSupplierPrice
   }
 })
