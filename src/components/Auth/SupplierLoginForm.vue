@@ -81,7 +81,7 @@ const store = useStore();
 const formState = reactive({
   email: "",
   password: "",
-  
+  code: 'no'
 });
 const errors = reactive({
   email: false,
@@ -146,8 +146,14 @@ const onFinish = async () => {
     loading.value = false;
     return;
   }
+  let data = {
+    email: formState.email,
+    password: formState.password,
+    // organization_code: formState.organization_code,
+    code: formState.code
+  };
   try {
-    let res = await login(formState.email, formState.password);
+    let res = await login(data);
     store.saveUser(res.data);
     router.push({ name: "supplier-dashboard" });
     loading.value = false;
