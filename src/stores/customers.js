@@ -36,6 +36,7 @@ const handleCompanyName = async () => {
   }
 const handleAddCustomer = async (payload) => {
   try {
+    alert('reached')
     const response = await addCustomer(payload)
     return response
   } catch (error) {

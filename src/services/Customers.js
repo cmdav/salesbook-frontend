@@ -63,6 +63,8 @@ export const customerName = async () => {
   }
 }
 export const addCustomer = async (payload) => {
+    console.log('reached again')
+  console.log(payload);
   const token = await getToken()
 
   try {

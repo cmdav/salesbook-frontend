@@ -94,6 +94,11 @@ const router = createRouter({
       beforeEnter: [middleware.redirectLogin]
     },
     {
+      path: '/supplier-dashboard',
+      name: 'supplier-dashboard',
+      component: () => import('@/views/SuppliersDashboard/SupplierHomePage.vue')
+    },
+    {
       path: '/profile',
       name: 'profile',
       component: ProfilePage,

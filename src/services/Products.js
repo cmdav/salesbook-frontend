@@ -340,19 +340,3 @@ export const getSupplierByProductTypeId = async (id) => {
   }
 }
 
-// export const getLatestSupplierPrice = async (productId, supplierId) => {
-//   const token = await getToken()
-
-//   try {
-//     let res = await axios.get(`latest-supplier-price/${productId}/${supplierId}`, {
-//       headers: {
-//         Authorization: 'Bearer ' + token
-//       }
-//     })
-//     catchAxiosSuccess(res)
-//     return res.data
-//   } catch (error) {
-//     catchAxiosError(error)
-//     throw error
-//   }
-// }

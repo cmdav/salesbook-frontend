@@ -27,7 +27,10 @@
           'id',
           'product_description',
           'product_id',
+          'product_ids',
+          'category_ids',
           'product_image',
+          'sub_category_id',
           'product_type_description'
         ]"
         :clickableKeys="{

@@ -40,12 +40,12 @@
         </div>
 
         <div class="mb-10 w-full flex lg:flex-row flex-col justify-between">
-          <p class="text-[14px]">
+          <!-- <p class="text-[14px]">
             Don’t have an account?
             <router-link to="/register" class="font-medium text-brand text-[14px]"
               >Register</router-link
-            >
-          </p>
+            > 
+          </p>-->
           <router-link class="font-medium text-brand text-[14px]" to="/forgotten-password"
             >Forgotten password?</router-link
           >
@@ -81,7 +81,7 @@ const store = useStore();
 const formState = reactive({
   email: "",
   password: "",
-  code: "",
+  code: 'no'
 });
 const errors = reactive({
   email: false,
@@ -146,10 +146,16 @@ const onFinish = async () => {
     loading.value = false;
     return;
   }
+  let data = {
+    email: formState.email,
+    password: formState.password,
+    // organization_code: formState.organization_code,
+    code: formState.code
+  };
   try {
-    let res = await login(formState.email, formState.password);
+    let res = await login(data);
     store.saveUser(res.data);
-    router.push({ name: "dashboard" });
+    router.push({ name: "supplier-dashboard" });
     loading.value = false;
     return res;
   } catch (error) {
@@ -158,7 +164,7 @@ const onFinish = async () => {
     loading.value = false;
     formState.email = "";
     formState.password = "";
-    formState.code = "";
+   
   }
 };
 </script>
