@@ -60,7 +60,6 @@ export const measurementFormFields = ref([
     value: '',
     required: true,
     placeholder: 'Enter measurement name',
-    databaseField: 'measurement_name'
   },
   {
     label: 'Unit',
@@ -164,6 +163,18 @@ export const formFields = ref([
     required: false,
     placeholder: 'Enter image URL',
     databaseField: 'product_image'
+  },
+  {
+    label: 'Vat',
+    type: 'select',
+    value: '1',
+    required: true,
+    placeholder: 'Select Vat',
+    databaseField: 'vat',
+    options: [
+      { value: '1', label: 'Yes' },
+      { value: '0', label: 'No' }
+    ]
   },
   // // { label: 'Purchasing price', type: 'text', value: '', required: false, placeholder: 'Enter purchasing price', databaseField: "purchasing_price" },
   // // { label: 'Selling Price', type: 'text', value: '', required: false, placeholder: 'Enter selling price', databaseField: "selling_price" },
@@ -319,15 +330,15 @@ export const priceFormFields = ref([
     placeholder: 'Enter cost price',
     databaseField: 'cost_price'
   },
-  {
-    label: 'Allow system to generate price',
-    type: 'number',
-    value: null,
-    required: false,
-    placeholder: 'Enter percentage increase',
-    databaseField: 'auto_generated_selling_price',
-    min: 0
-  },
+  // {
+  //   label: 'Allow system to generate price',
+  //   type: 'number',
+  //   value: null,
+  //   required: false,
+  //   placeholder: 'Enter percentage increase',
+  //   databaseField: 'auto_generated_selling_price',
+  //   min: 0
+  // },
   {
     label: 'Selling Price',
     type: 'number',
