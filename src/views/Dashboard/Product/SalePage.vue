@@ -206,7 +206,7 @@ const customersStore = useCustomerstore();
 const { allCustomersNames } = storeToRefs(customersStore);
 const { allProductTypeName } = storeToRefs(productsStore);
 
-
+console.log(allProductTypeName);
 // Your existing script setup code
 
 //const showCustomerModal = ref(false);
