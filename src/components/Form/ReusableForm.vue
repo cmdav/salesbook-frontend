@@ -2,11 +2,7 @@
   <!-- Display existing image-->
 
   <div class="relative w-full rounded-md object-contain" v-if="newImage">
-    <img
-      :src="newImage"
-      class="mb-4 max-h-40 w-full rounded-md object-cover"
-      alt="Current Image"
-    />
+    <img :src="newImage" class="mb-4 max-h-40 w-full rounded-md object-cover" alt="Current Image" />
     <button
       type="button"
       @click="triggerFileInput"
@@ -46,6 +42,7 @@
     </template>
     <!-- Select field -->
     <template v-else-if="field.type === 'select'">
+      <!-- <div>{{ field }}</div> -->
       <select
         :id="field.id"
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
@@ -60,7 +57,7 @@
           :key="optionIndex"
           :value="option.value"
         >
-          {{ option["label"] }}
+          {{ option['label'] }}
         </option>
       </select>
       <span v-if="field.showLoading === true" class="text-sm text-red-500">
@@ -114,7 +111,7 @@
         :id="field.id"
         type="number"
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-        :class="{ 'readonly-background': field.readonly }" 
+        :class="{ 'readonly-background': field.readonly }"
         @input="$emit('fieldChanged', field.databaseField, parseFloat(field.value) || 0)"
         v-model.number="field.value"
         :name="field.databaseField"
@@ -131,12 +128,13 @@
         :id="field.id"
         type="date"
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-        :class="{ 'readonly-background': field.readonly }" 
-        @input="$emit('fieldChanged', field.databaseField, field.value )"
+        :class="{ 'readonly-background': field.readonly }"
+        @input="$emit('fieldChanged', field.databaseField, field.value)"
         v-model="field.value"
         :required="field.required"
         :name="field.databaseField"
         :placeholder="field.placeholder"
+        :min="constantMinDate"
       />
     </template>
 
@@ -145,7 +143,7 @@
         :id="field.id"
         :type="field.type"
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-        :class="{ 'readonly-background': field.readonly }" 
+        :class="{ 'readonly-background': field.readonly }"
         v-model="field.value"
         :required="field.required"
         :placeholder="field.placeholder"
@@ -156,75 +154,96 @@
 </template>
 
 <script setup>
-import { defineEmits, ref } from "vue";
+import { defineEmits, ref } from 'vue'
+import { useProductStore } from '@/stores/products'
+import { storeToRefs } from 'pinia'
 
-
+const productsStore = useProductStore()
 // Destructure fields from props
-const { fields, isLoadingMsg, allError, imagePath } = defineProps({
+const { fields, isLoadingMsg, allError, imagePath, hasMinDate } = defineProps({
   fields: Array,
   allError: {
     type: Object,
-    default: () => ({}),
+    default: () => ({})
   },
   imagePath: {
     type: String,
-    default: "",
+    default: ''
   },
   isLoadingMsg: String,
-});
-const emit = defineEmits([
-  "fetchDataForSubCategory",
-  "handleEditCategoryChange",
-  "fieldChanged",
-]);
-console.log(allError);
-const localFields = ref(fields);
-const fileInput = ref(null);
-const newImage = ref(imagePath);
+  hasMinDate: Boolean
+})
+const emit = defineEmits(['fetchDataForSubCategory', 'handleEditCategoryChange', 'fieldChanged'])
+console.log(allError)
+const localFields = ref(fields)
+const { allProductTypeName } = storeToRefs(productsStore)
+const fileInput = ref(null)
+const newImage = ref(imagePath)
+const minDate = ref(getMinDate())
+
 // const selectInput = ref(null);
 // emit an event on change
-const handleCategoryChange = (value, field_name) => {
- 
-  console.log(value);
-  console.log(field_name);
-  emit("fetchDataForSubCategory", value, field_name);
-  // emit("fetchDataForSubCategory", value, field_name);
-  emit("handleEditCategoryChange", value, field_name);
-  // console.log(selectInput.value);
-};
 
+const defaultMinDate = ref('1900-01-01')
+let constantMinDate = hasMinDate ? minDate : defaultMinDate
+
+function getMinDate() {
+  const today = new Date()
+  const minDate = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+  return minDate.toISOString().split('T')[0]
+}
+
+const handleCategoryChange = (value, field_name) => {
+  console.log('value', value)
+  console.log(field_name)
+
+  emit('fetchDataForSubCategory', value, field_name)
+  // emit("fetchDataForSubCategory", value, field_name);
+  emit('handleEditCategoryChange', value, field_name)
+  // console.log(selectInput.value);
+
+  allProductTypeName.value.find((itemId) => {
+    if (itemId.id == value) {
+      localFields.value.find((field) => {
+        if (field.label == 'Price') {
+          field.value = itemId.cost_price
+        }
+      })
+    }
+  })
+}
 
 const handleImageChange = (index, event) => {
-  index = 2;
-  const file = event.target.files[0];
-  const maxSizeInBytes = 5 * 1024 * 1024; // 5MB max size (adjust as needed)
+  index = 2
+  const file = event.target.files[0]
+  const maxSizeInBytes = 5 * 1024 * 1024 // 5MB max size (adjust as needed)
 
   if (file && file.size > maxSizeInBytes) {
     // Handle error for image too big
-    alert("Error: Image size is too big. Please choose an image smaller than 5MB.");
-    newImage.value = null;
-    localFields.value[index].value = null;
-    return;
+    alert('Error: Image size is too big. Please choose an image smaller than 5MB.')
+    newImage.value = null
+    localFields.value[index].value = null
+    return
   }
   if (file) {
     // Preview the image
-    const reader = new FileReader();
+    const reader = new FileReader()
     reader.onload = (e) => {
-      newImage.value = e.target.result;
-    };
-    reader.readAsDataURL(file);
+      newImage.value = e.target.result
+    }
+    reader.readAsDataURL(file)
     //changes the value of the selected index
-    localFields.value[index].value = file;
+    localFields.value[index].value = file
   }
-};
+}
 
 const triggerFileInput = () => {
   if (fileInput.value) {
-    fileInput.value.click();
+    fileInput.value.click()
   } else {
-    console.error("File input is not correctly referenced.");
+    console.error('File input is not correctly referenced.')
   }
-};
+}
 </script>
 <style scoped>
 .readonly-background {

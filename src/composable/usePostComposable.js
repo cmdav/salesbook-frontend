@@ -56,6 +56,7 @@ export function usePostComposable(
       const formData = new FormData()
       modifiedFields.forEach((field) => {
         formData.append(field.databaseField, field.value)
+        console.log(field.value)
       })
 
       // Append file data to FormData

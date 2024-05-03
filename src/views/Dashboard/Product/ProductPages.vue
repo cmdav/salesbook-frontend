@@ -7,9 +7,7 @@
             <!-- <div class="icon">
                   <img src="/assets/verifiedusers-5d08be57.svg" alt="" />
                 </div> -->
-            <div
-              class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
-            >
+            <div class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]">
               <span>Total Products</span>
             </div>
             <div class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]">
@@ -25,15 +23,22 @@
         endpoint="product-types"
         @toggleModal="showModal = !showModal"
         toggleButtonLabel="Add Product"
-        :excludedKeys="['id', 'product_description', 'product_id','product_ids','category_ids','sub_category_id','product_image','product_type_description']"
+        :excludedKeys="[
+          'id',
+          'product_description',
+          'product_id',
+          'product_ids',
+          'category_ids',
+          'product_image',
+          'sub_category_id',
+          'product_type_description'
+        ]"
         :clickableKeys="{
           view_price: navigateToProductTypePrice,
         }"
-        :additionalColumns=additionalColumns
+        :additionalColumns="additionalColumns"
       >
-        <button @click="togglePriceModal" class="btn-brand !text-sm !px-1.5">
-          Add Price
-        </button>
+        <button @click="togglePriceModal" class="btn-brand !text-sm !px-1.5">Add Price</button>
         <button @click="toggleProductTypeModal" class="btn-brand !px-1.5 !text-[14px]">
           Add Product Type
         </button>
@@ -114,18 +119,14 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch, computed } from "vue";
+import { onMounted, ref, watch, computed } from 'vue'
 //import { computed } from 'vue';
-import { useRouter } from "vue-router";
-import { useProductStore } from "@/stores/products";
-const productsStore = useProductStore();
-import {
-  formFields,
-  priceFormFields,
-  productTypeFormFields,
-} from "@/formfields/formFields";
+import { useRouter } from 'vue-router'
+import { useProductStore } from '@/stores/products'
+const productsStore = useProductStore()
+import { formFields, priceFormFields, productTypeFormFields } from '@/formfields/formFields'
 //handles all component import
-import { useSharedComponent } from "@/composable/useSharedComponent";
+import { useSharedComponent } from '@/composable/useSharedComponent'
 const {
   DataTableLayout,
   FormModal,
@@ -141,47 +142,34 @@ const {
   UploadModal,
   useUploadComposable,
   useStore
-} = useSharedComponent('products');
-const { showUploadModal, closeUploadModal } = useUploadComposable();
+} = useSharedComponent('products')
+const { showUploadModal, closeUploadModal } = useUploadComposable()
 
-const modalTitle = "View Product";
-const router = useRouter();
-const url = "/all-product-sub-categories-by-category-id";
-const products = ref();
+const modalTitle = 'View Product'
+const router = useRouter()
+const url = '/all-product-sub-categories-by-category-id'
+const products = ref()
 //const postUrl = ref('/products')
-const showProductTypeModal = ref(false);
-const showPriceModal = ref(false);
+const showProductTypeModal = ref(false)
+const showPriceModal = ref(false)
 
-
-const {
-  handleDelete,
-  showDeleteModal,
-  itemsId,
-  closeDeleteModal,
-} = useDeleteComposable();
-const emit = defineEmits("forceRefresh");
+const { handleDelete, showDeleteModal, itemsId, closeDeleteModal } = useDeleteComposable()
+const emit = defineEmits('forceRefresh')
 //const { showModal, showViewModal,**loading, **allError,forceUpdate,**errorMessage,isError,closeModal,closeViewModal,} = usePostComposable('/products', formFields);
-const {
-  showModal,
-  showViewModal,
-  forceUpdate,
-  closeModal,
-  closeViewModal,
-} = usePostComposable("/products", formFields);
-const {  handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
+const { showModal, showViewModal, forceUpdate, closeModal, closeViewModal } = usePostComposable(
+  '/products',
+  formFields
+)
+const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit)
 
 // fetchDataForSubCategory is emitted
-const {
-  fetchDataForSelect,
-  fetchDataForSubCategory,
-  isOptionLoadingMsg,
-} = useSelectComposable(
+const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg } = useSelectComposable(
   formFields,
   url,
-  "category_id",
-  "sub_category_id",
-  "sub_category_name"
-);
+  'category_id',
+  'sub_category_id',
+  'sub_category_name'
+)
 
 // const openProductDetailModal = (product) => {
 //   products.value = product;
@@ -189,136 +177,141 @@ const {
 // };
 
 const navigateToProductTypePrice = (product) => {
-  router.push({ name: "price", params: { id: product.id } });
+  router.push({ name: 'price', params: { id: product.id } })
   // router.push({ name: "product-type", params: { id: product.id } });
-};
+}
 
-const toggleProductTypeModal = async(action = null) => {
-  if(action == 'close'){
+const toggleProductTypeModal = async (action = null) => {
+  if (action == 'close') {
     productTypeFormFields.value.forEach((field) => {
-        field.value = ""; 
-     });
-
+      field.value = ''
+    })
   }
-  await fetchDataForSelect( "Product Name", "/all-products","id", "product_name", productTypeFormFields.value);
-  showProductTypeModal.value = !showProductTypeModal.value;
-};
-const togglePriceModal = async(action =null) => {
-  if(action == 'close'){
+  await fetchDataForSelect(
+    'Product Name',
+    '/all-products',
+    'id',
+    'product_name',
+    productTypeFormFields.value
+  )
+  showProductTypeModal.value = !showProductTypeModal.value
+}
+const togglePriceModal = async (action = null) => {
+  if (action == 'close') {
     priceFormFields.value.forEach((field) => {
-        field.value = ""; 
-     });
-
+      field.value = ''
+    })
   }
-  
-  await fetchDataForSelect( "Product Type", "/all-product-type-name","id","product_type_name", priceFormFields.value);
-  showPriceModal.value = !showPriceModal.value;
-};
+
+  await fetchDataForSelect(
+    'Product Type',
+    '/all-product-type-name',
+    'id',
+    'product_type_name',
+    priceFormFields.value
+  )
+  showPriceModal.value = !showPriceModal.value
+}
 
 const forceRefresh = () => {
-  forceUpdate.value++;
-};
+  forceUpdate.value++
+}
 
 //useLabelNameToselectFormFieldToPopulate, endpoint, optionValue, formKey:is the name from endpoint
 onMounted(async () => {
-  await fetchDataForSelect("Measurement", "/measurements", "id", "measurement_name");
-  await fetchDataForSelect("Category", "/product-categories", "id", "category_name");
-  await fetchDataForSelect( "Product Name", "/all-products","id", "product_name", productTypeFormFields.value);
+  await fetchDataForSelect('Measurement', '/measurements', 'id', 'measurement_name')
+  await fetchDataForSelect('Category', '/product-categories', 'id', 'category_name')
+  await fetchDataForSelect(
+    'Product Name',
+    '/all-products',
+    'id',
+    'product_name',
+    productTypeFormFields.value
+  )
   //await fetchDataForSelect( "Product Type", "/all-product-type-name","id","product_type_name", priceFormFields.value);
- // await fetchDataForSelect( "Currency Name", "/currencies","id", "currency_name", priceFormFields.value, "naira");
-  await productsStore.handleGetProductType();
-});
+  await fetchDataForSelect(
+    'Currency Name',
+    '/currencies',
+    'id',
+    'currency_name',
+    priceFormFields.value
+  )
+  await productsStore.handleGetProductType()
+})
 
 const updateSellingPrice = (fieldDatabase, value) => {
-  console.log(value);
+  console.log(value)
 
-  if (
-    fieldDatabase === "auto_generated_selling_price" ||
-    fieldDatabase === "cost_price"
-  ) {
+  if (fieldDatabase === 'auto_generated_selling_price' || fieldDatabase === 'cost_price') {
     const costPrice =
       parseFloat(
-        priceFormFields.value.find((field) => field.databaseField === "cost_price")?.value
-      ) || 0;
+        priceFormFields.value.find((field) => field.databaseField === 'cost_price')?.value
+      ) || 0
     const auto_generated_selling_price =
       parseFloat(
         priceFormFields.value.find(
-          (field) => field.databaseField === "auto_generated_selling_price"
+          (field) => field.databaseField === 'auto_generated_selling_price'
         )?.value
-      ) || 0;
+      ) || 0
     const totalPriceField = priceFormFields.value.find(
-      (field) => field.databaseField === "selling_price"
-    );
+      (field) => field.databaseField === 'selling_price'
+    )
     if (totalPriceField) {
-      totalPriceField.value =
-        Math.floor(costPrice + costPrice * (auto_generated_selling_price / 100));
+      totalPriceField.value = Math.floor(
+        costPrice + costPrice * (auto_generated_selling_price / 100)
+      )
     }
   }
-};
+}
 
 // Call this function whenever the related fields change.
 watch(
   () =>
-    priceFormFields.value.find(
-      (field) => field.databaseField === "auto_generated_selling_price"
-    )?.value,
+    priceFormFields.value.find((field) => field.databaseField === 'auto_generated_selling_price')
+      ?.value,
   updateSellingPrice
-);
+)
 watch(
-  () =>
-    priceFormFields.value.find((field) => field.databaseField === "cost_price")?.value,
+  () => priceFormFields.value.find((field) => field.databaseField === 'cost_price')?.value,
   updateSellingPrice
-);
-
-
+)
 
 const dynamicFormFields = computed(() => {
-  
   if (items.value && items.value.product_name) {
-   
-  console.log(items.value.product_type_name)
+    console.log(items.value.product_type_name)
     // check if product type and product name are the same
     if (items.value.product_name == items.value.product_type_name) {
-      console.log('found');
-      return formFields; 
+      console.log('found')
+      return formFields
     }
   }
- 
-  return productTypeFormFields;
-});
 
+  return productTypeFormFields
+})
 
 const dynamicUrl = computed(() => {
- 
-  
   if (items.value && items.value.product_name) {
-   
     // check if product type and product name are the same
     if (items.value.product_name == items.value.product_type_name) {
-
-      console.log(items.value.product_ids);
-      
-      return `/products/${items.value.product_ids}`;
+      return `/products/${items.value.product_id}`
     }
   }
-  return `/product-types/${items.value.id}`;
-  
-});
+  return `/product-types/${items.value.id}`
+})
 
-const store = useStore();
+const store = useStore()
 const permissions = computed(() => {
-    
-    return  store.getUser.user.permission.permissions.find(p => p.page_name === "products");
- })
+  return store.getUser.user.permission.permissions.find((p) => p.page_name === 'products')
+})
 
 const additionalColumns = computed(() => {
-    const cols = [];
-    if (permissions.value?.update) {
-      cols.push({ name: 'Edit', action: handleEdit });
-    }
-    if (permissions.value?.del) {
-      cols.push({ name: 'Delete', action: handleDelete });
-    }
-    return cols;
-  });
+  const cols = []
+  if (permissions.value?.update) {
+    cols.push({ name: 'Edit', action: handleEdit })
+  }
+  if (permissions.value?.del) {
+    cols.push({ name: 'Delete', action: handleDelete })
+  }
+  return cols
+})
 </script>
