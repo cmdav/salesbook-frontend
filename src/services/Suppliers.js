@@ -65,3 +65,36 @@ export const getAllSupplierProduct = async () => {
     throw error
   }
 }
+
+export const getSupplierProducts = async () => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.get(`auth-supplier-products`, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res)
+    return res.data
+  } catch (error) {
+    catchAxiosError(error)
+    throw error
+  }
+}
+
+export const addSupplierPrice = async (payload) => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.post(`price-notifications`, payload, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res)
+    return res.data
+  } catch (error) {
+    console.log(error)
+  }
+}
