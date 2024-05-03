@@ -34,9 +34,7 @@
           'product_type_description'
         ]"
         :clickableKeys="{
-          //this will be render as a closure
-          // product_name: openProductDetailModal,
-          view_price: navigateToProductTypePrice
+          view_price: navigateToProductTypePrice,
         }"
         :additionalColumns="additionalColumns"
       >
