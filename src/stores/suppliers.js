@@ -4,7 +4,8 @@ import {
   getAllSupplier,
   getSingleSupplier,
   getSupplierProduct,
-  getAllSupplierProduct
+  getAllSupplierProduct,
+  getSupplierProducts
 } from '@/services/Suppliers'
 
 export const useSupplierStore = defineStore('Supplier', () => {
@@ -12,6 +13,7 @@ export const useSupplierStore = defineStore('Supplier', () => {
   const singleSupplier = ref({})
   const allSupplierProduct = ref({})
   const supplierProduct = ref({})
+  const supplierProducts = ref({})
   const allSupplier = async () => {
     try {
       Supplier.value = await getAllSupplier()
@@ -44,7 +46,14 @@ export const useSupplierStore = defineStore('Supplier', () => {
       console.error(error)
     }
   }
-
+  const handleGetSupplierProducts = async () => {
+    try {
+      supplierProducts.value = await getSupplierProducts()
+      return supplierProducts.value 
+    }catch (error){
+      console.error(error)
+    }
+  }
 
 
   return {
@@ -55,6 +64,7 @@ export const useSupplierStore = defineStore('Supplier', () => {
     allSupplierProduct,
     supplierProduct,
     handleAllSupplierProduct,
-    handleGetSupplierProduct
+    handleGetSupplierProduct,
+    handleGetSupplierProducts
   }
 })

@@ -322,4 +322,3 @@ export const addPurchases = async (payload) => {
     throw error
   }
 }
-

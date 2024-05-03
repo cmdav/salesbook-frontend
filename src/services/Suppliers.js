@@ -65,3 +65,20 @@ export const getAllSupplierProduct = async () => {
     throw error
   }
 }
+
+export const getSupplierProducts = async () => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.get(`auth-supplier-products`, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res)
+    return res.data
+  } catch (error) {
+    catchAxiosError(error)
+    throw error
+  }
+}

@@ -96,7 +96,7 @@ const router = createRouter({
     {
       path: '/supplier-dashboard',
       name: 'supplier-dashboard',
-      component: () => import('@/views/Dashboard/SuppliersDashboard/SupplierHomePage.vue')
+      component: () => import('@/views/SuppliersDashboard/SupplierHomePage.vue')
     },
     {
       path: '/profile',
