@@ -1,5 +1,5 @@
 import axios from '../axios'
-import { catchAxiosError, catchAxiosSuccess } from './Response'
+import { catchAxiosError } from './Response'
 import { getToken } from './Auth'
 
 export const getAllCustomer = async () => {
@@ -11,7 +11,7 @@ export const getAllCustomer = async () => {
         Authorization: 'Bearer ' + token
       }
     })
-    catchAxiosSuccess(res.data)
+    //catchAxiosSuccess(res.data)
     return res.data
   } catch (error) {
     console.log(error)
@@ -26,7 +26,7 @@ export const getAllCompanyCustomers = async () => {
         Authorization: 'Bearer ' + token
       }
     })
-    catchAxiosSuccess(res.data)
+    //catchAxiosSuccess(res.data)
     return res.data
   } catch (error) {
     console.log(error)
@@ -41,7 +41,7 @@ export const getSingleCustomer = async (id) => {
         Authorization: 'Bearer ' + token
       }
     })
-    catchAxiosSuccess(res.data)
+    //catchAxiosSuccess(res.data)
     return res.data
   } catch (error) {
     console.log(error)
@@ -56,15 +56,15 @@ export const customerName = async () => {
         Authorization: 'Bearer ' + token
       }
     })
-    catchAxiosSuccess(res.data)
+   // catchAxiosSuccess(res.data)
     return res.data
   } catch (error) {
     console.log(error)
   }
 }
 export const addCustomer = async (payload) => {
-    console.log('reached again')
-  console.log(payload);
+ 
+  //console.log(payload);
   const token = await getToken()
 
   try {
@@ -73,10 +73,13 @@ export const addCustomer = async (payload) => {
         Authorization: 'Bearer ' + token
       }
     })
-    catchAxiosSuccess(res.data)
+   
+    //catchAxiosSuccess(res.data)
     return res.data
   } catch (error) {
-    console.log(error)
+    //alert('error')
+    catchAxiosError(error)
+   // console.log(error)
   }
 }
 
@@ -92,7 +95,7 @@ export const companyName = async () => {
         Authorization: 'Bearer ' + token
       }
     })
-    catchAxiosSuccess(res.data)
+    //catchAxiosSuccess(res.data)
     return res.data
   } catch (error) {
     console.log(error)
@@ -112,7 +115,7 @@ export const allCustomersName = async () => {
         Authorization: 'Bearer ' + token
       }
     })
-    catchAxiosSuccess(res.data)
+    //catchAxiosSuccess(res.data)
     return res.data
   } catch (error) {
     console.log(error)

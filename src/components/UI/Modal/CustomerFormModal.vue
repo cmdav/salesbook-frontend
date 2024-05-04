@@ -51,11 +51,11 @@
 </template>
 
 <script setup>
-import { defineEmits,ref,computed } from "vue";
-//import apiService from "@/services/apiService";
+import { defineEmits,ref,computed, watch} from "vue";
 import { useCustomerstore } from '@/stores/customers';
+import { catchAxiosSuccess } from '@/services/Response'
 
-// Retrieve store using Pinia's useCustomerstore function
+
 const customerStore = useCustomerstore();
 
 
@@ -69,20 +69,20 @@ const emits = defineEmits(["close"]);
    
 
     const individualFields = [
-      { label: 'First Name', type: 'text', databaseField: 'first_name', placeholder: 'Enter first name', required: true },
-      { label: 'Last Name', type: 'text', databaseField: 'last_name', placeholder: 'Enter last name', required: true },
-      { label: 'Middle Name', type: 'text', databaseField: 'middle_name', placeholder: 'Enter middle name', required: false },
-      { label: 'Phone Number', type: 'text', databaseField: 'phone_number', placeholder: 'Enter phone number', required: true },
-      { label: 'Date of Birth', type: 'date', databaseField: 'dob', required: false },
+      { label: 'First Name', type: 'text', databaseField: 'first_name', placeholder: 'Enter first name', required: true, value:'' },
+      { label: 'Last Name', type: 'text', databaseField: 'last_name', placeholder: 'Enter last name', required: true , value:''},
+     // { label: 'Middle Name', type: 'text', databaseField: 'middle_name', placeholder: 'Enter middle name', required: false, value:'' },
+      { label: 'Phone Number', type: 'text', databaseField: 'phone_number', placeholder: 'Enter phone number', required: true, value:'' },
+      // { label: 'Date of Birth', type: 'date', databaseField: 'dob', required: false },
       { label: 'Email', type: 'email', databaseField: 'email', placeholder: 'Enter email', required: true },
-      {  type: 'hidden', databaseField: 'type_id', placeholder: 'Enter email', required: true, value:'company'}
+      {  type: 'hidden', databaseField: 'type_id', placeholder: 'Enter email', required: true, value:'individual'}
     ];
 
     const companyFields = [
-      { label: 'Company Name', type: 'text', databaseField: 'company_name', placeholder: 'Enter company name', required: false },
-      { label: 'Contact Person', type: 'text', databaseField: 'contact_person', placeholder: 'Enter contact person', required: false },
-      { label: 'Phone Number', type: 'text', databaseField: 'phone_number', placeholder: 'Enter phone number', required: false },
-      { label: 'Email', type: 'email', databaseField: 'email', placeholder: 'Enter email', required: true },
+      { label: 'Company Name', type: 'text', databaseField: 'company_name', placeholder: 'Enter company name', required: true , value:''},
+      { label: 'Contact Person', type: 'text', databaseField: 'contact_person', placeholder: 'Enter contact person', required: true , value:''},
+      { label: 'Phone Number', type: 'text', databaseField: 'phone_number', placeholder: 'Enter phone number', required: true, value:'' },
+      { label: 'Email', type: 'email', databaseField: 'email', placeholder: 'Enter email', required: true, value:'1@gmail.com' },
       {  type: 'hidden', databaseField: 'type_id', placeholder: 'Enter email', required: true, value:'company'}
     ];
 
@@ -93,25 +93,31 @@ const emits = defineEmits(["close"]);
      // Initialize formData as a reactive object
 const formData = ref({});
 
+const allFields = { '1': individualFields, '2': companyFields };
+watch(customerType, (newType) => {
+  formData.value = {};  // Reset formData
+  allFields[newType].forEach(field => {
+    formData.value[field.databaseField] = field.value || '';
+  });
+}, { immediate: true });
 
 const submitForm = async () => {
-    // Construct the payload from formData
-    const payload = {};
-    currentFormFields.value.forEach(field => {
-        payload[field.databaseField] = formData.value[field.databaseField];
-    });
-
+  
+    const payload = {...formData.value};
+    //console.log(payload)
     
     try {
+      console.log(payload)
         const response = await customerStore.handleAddCustomer(payload);
         console.log(response);
-        console.log('Submission Successful:', response);
-        formData.value = {}; // Optionally reset formData here if necessary
-        alert('Customer detail has been added successfully');
-        emits('close'); // Close modal on success
+        catchAxiosSuccess(response)
+       // alert('Submission Successful:', response);
+        formData.value = {};
+     
+        emits('close'); 
     } catch (error) {
         console.error('Submission Failed:', error);
-        // Handle errors (e.g., show error messages to the user)
+       
     }
 };
 
