@@ -35,7 +35,6 @@
                 </select>
               </div>
               <div class="w-full">
-                <label class="block text-sm font-medium text-gray-700"> Price </label>
 
                 <div class="flex flex-row w-full gap-2">
                   <div class="w-full">
@@ -52,8 +51,8 @@
                   <div class="w-full">
                     <label class="block text-sm font-medium text-gray-700"> Cost Price </label>
 
-                    <input required type="text" :value="formState.purchases[index].display_price"
-                      @input="updateSellingPrice()"
+                    <input required type="number" v-model="formState.purchases[index].cost_price"
+                      @input="updateSellingPrice($event.target.value)"
                       class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
                       :readonly="isReadonly" />
                     <!-- Hidden input to hold the actual price_id for submission -->
@@ -63,7 +62,7 @@
                   <div class="w-full">
                     <label class="block text-sm font-medium text-gray-700"> Selling Price </label>
 
-                    <input required type="text" :value="formState.purchases[index].selling_price"
+                    <input required type="number" :value="formState.purchases[index].selling_price"
                       class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
                   </div>
 
@@ -163,7 +162,7 @@ const formState = reactive({
       supplier_id: '',
       price_id: '',
       selling_price: '',
-      display_price: '',
+      cost_price: '',
       batch_no: '',
       quantity: '',
       product_identifier: '',
@@ -319,10 +318,10 @@ const fetchSupplierByProductId = async (id) => {
 //   console.log('Product info', productInfo)
 //   if (productInfo) {
 //     formState.purchases[index].price_id = productInfo.price_id
-//     formState.purchases[index].display_price = productInfo.cost_price
+//     formState.purchases[index].cost_price = productInfo.cost_price
 //   } else {
 //     formState.purchases[index].price_id = ''
-//     formState.purchases[index].display_price = ''
+//     formState.purchases[index].cost_price = ''
 //   }
 // }
 
@@ -337,18 +336,18 @@ const updatePriceId = () => {
   if (getShowSupplierPrice.value.cost_price !== 0) {
     console.log("Entered the if")
     formState.purchases[0].price_id = getShowSupplierPrice.value.id
-    formState.purchases[0].display_price = getShowSupplierPrice.value.cost_price
+    formState.purchases[0].cost_price = getShowSupplierPrice.value.cost_price
   }
   else if (getShowSupplierPrice.value.cost_price === 0) {
     isReadonly.value = false
-    formState.purchases[0].price_id = ''
-    formState.purchases[0].display_price = ''
+    formState.purchases[0].price_id = getShowSupplierPrice.value.id
+    formState.purchases[0].cost_price = ''
   }
   else {
     console.log("Entered the else")
     isReadonly.value = false
     formState.purchases[0].price_id = ''
-    formState.purchases[0].display_price = ''
+    formState.purchases[0].cost_price = ''
   }
 }
 
@@ -374,19 +373,34 @@ const fetchSystemSellingPrice = async () => {
   }
 }
 
-const updateSellingPrice = () => {
+
+const updateSellingPrice = (costPrice) => {
   console.log("System Selling Price", systemValue.value)
-  console.log("Cost Price", formState.purchases[0].display_price)
+  console.log("Cost Price", costPrice)
   console.log("Selling Price", formState.purchases[0].selling_price)
   if (systemValue.value && !isReadonly.value) {
-    let costPrice = parseFloat(formState.purchases[0].display_price)
+    let cost_price = parseFloat(costPrice)
     const auto_generated_selling_price = parseFloat(systemValue.value)
-
-    let totalPriceField = Math.floor(costPrice + costPrice * (auto_generated_selling_price / 100))
+    let totalPriceField = Math.floor(cost_price + cost_price * (auto_generated_selling_price / 100))
     console.log("Total Price Field", totalPriceField)
     formState.purchases[0].selling_price = totalPriceField
   }
 }
+
+const updateSellingPriceWhenPriceSet = () => {
+  console.log("System Selling Price", systemValue.value)
+  console.log("Cost Price", formState.purchases[0].cost_price)
+  console.log("Selling Price", formState.purchases[0].selling_price)
+  if (systemValue.value && !isReadonly.value) {
+    let cost_price = parseFloat(formState.purchases[0].cost_price)
+    const auto_generated_selling_price = parseFloat(systemValue.value)
+    let totalPriceField = Math.floor(cost_price + cost_price * (auto_generated_selling_price / 100))
+    console.log("Total Price Field", totalPriceField)
+    formState.purchases[0].selling_price = totalPriceField
+  }
+}
+
+
 
 const fetchSuppliersPriceByProduct = async (getProductId, supplierId) => {
   try {
@@ -421,18 +435,11 @@ watch(
   (supplierId) => {
     console.log("Supplier ID", supplierId)
     fetchSuppliersPriceByProduct(getProductId.value, supplierId[0])
-    updateSellingPrice()
+    updateSellingPriceWhenPriceSet()
     console.log("Product, Supplier", getProductId.value, supplierId[0]);
   },
   { deep: true }
 )
-
-
-// watch(formState.purchases[0].display_price,
-//   () => {
-//     console.log(formState.purchases[0].display_price)
-//   }, { deep: true }
-// )
 
 watch(
   () => formState.purchases.map((p) => p.product_type_id),
