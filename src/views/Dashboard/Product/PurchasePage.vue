@@ -51,12 +51,12 @@
                   <div class="w-full">
                     <label class="block text-sm font-medium text-gray-700"> Cost Price </label>
 
-                    <input required type="number" v-model="formState.purchases[index].price_id"
+                    <input required type="number" v-model="formState.purchases[index].cost_price"
                       @input="updateSellingPrice($event.target.value)"
                       class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
                       :readonly="isReadonly" />
                     <!-- Hidden input to hold the actual price_id for submission -->
-                    <!-- <input type="hidden" v-model="formState.purchases[index].price_id" /> -->
+                    <input type="hidden" v-model="formState.purchases[index].price_id" />
                   </div>
 
                   <div class="w-full">
@@ -389,6 +389,7 @@ const updateSellingPrice = (costPrice) => {
     const auto_generated_selling_price = parseFloat(systemValue.value)
     let totalPriceField = Math.floor(cost_price + cost_price * (auto_generated_selling_price / 100))
     console.log("Total Price Field", totalPriceField)
+    formState.purchases[0].price_id = costPrice
     formState.purchases[0].selling_price = totalPriceField
   }
 }
