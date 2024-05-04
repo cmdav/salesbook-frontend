@@ -297,6 +297,10 @@ onMounted(async () => {
 const fetchSupplierByProductId = async (id) => {
   try {
     let res = await productsStore.handleGetSupplierByProductId(id)
+    if (suppliersByProductId.value.length === 0) {
+      console.log("Entered")
+      isReadonly.value = false
+    }
     return res;
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -447,10 +451,6 @@ watch(
   (newProductTypeIds) => {
     newProductTypeIds.forEach((productTypeId) => {
       getProductId.value = productTypeId;
-      if (suppliersByProductId.value.length === 0) {
-        console.log("Entered")
-        isReadonly.value = false
-      }
       fetchSupplierByProductId(productTypeId)
     })
   },
