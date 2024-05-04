@@ -47,7 +47,7 @@ const router = createRouter({
       path: '/supplier/login',
       name: 'supplier-login',
       component: LoginSuppliers,
-      beforeEnter: [middleware.redirectDashboard]
+      beforeEnter: [middleware.redirectSupplierDashboard]
     },
     {
       path: '/register',
