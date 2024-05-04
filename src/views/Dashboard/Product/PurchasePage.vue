@@ -447,10 +447,11 @@ watch(
   (newProductTypeIds) => {
     newProductTypeIds.forEach((productTypeId) => {
       getProductId.value = productTypeId;
-      fetchSupplierByProductId(productTypeId)
       if (suppliersByProductId.value.length === 0) {
+        console.log("Entered")
         isReadonly.value = false
       }
+      fetchSupplierByProductId(productTypeId)
     })
   },
   { deep: true }
