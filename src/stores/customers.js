@@ -38,7 +38,7 @@ const handleCompanyName = async () => {
   }
 const handleAddCustomer = async (payload) => {
   try {
-     console.log('handing add customer')
+    
     const response = await addCustomer(payload)
     if (response.data && response.data.id) {
       const firstName = response.data.first_name || '';
