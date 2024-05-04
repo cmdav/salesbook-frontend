@@ -20,6 +20,8 @@ const allCustomersNames = ref({})
 const handleAllCustomersName = async () => {
     try {
       allCustomersNames.value = await allCustomersName()
+      console.log('getting names')
+     console.log(allCustomersNames.value)
       return allCustomersNames.value
     } catch (error) {
       console.error(error)
@@ -36,8 +38,26 @@ const handleCompanyName = async () => {
   }
 const handleAddCustomer = async (payload) => {
   try {
-    alert('reached')
+    
     const response = await addCustomer(payload)
+    if (response.data && response.data.id) {
+      const firstName = response.data.first_name || '';
+        const lastName = response.data.last_name || '';
+        let details = `${firstName} ${lastName}`.trim();
+
+        // Include contact person if available and non-empty
+        const contactPerson = response.data.contact_person || '';
+        if (contactPerson) {
+          details += ` ${contactPerson} `;
+        }
+      
+      allCustomersNames.value.unshift({
+        id: response.data.id,
+        customer_detail: details
+      });
+   }
+
+    
     return response
   } catch (error) {
     console.error(error)
