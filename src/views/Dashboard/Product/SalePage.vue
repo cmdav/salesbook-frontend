@@ -231,7 +231,7 @@ const formState = reactive({
       product_type_id: "",
       price_sold_at: null,
       quantity: null,
-      batch_no: 'abc',
+      batch_no: '',
       available_qty:null,
     },
   ],
