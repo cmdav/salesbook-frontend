@@ -229,6 +229,11 @@ const router = createRouter({
       beforeEnter: [middleware.deleteSession]
     },
     {
+      path: '/logout-supplier',
+      name: 'signout',
+      beforeEnter: [middleware.deleteSupplierSession]
+    },
+    {
       path: '/:catchAll(.*)',
       component: Login
     }
