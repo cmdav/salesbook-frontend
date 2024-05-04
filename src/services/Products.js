@@ -322,3 +322,21 @@ export const addPurchases = async (payload) => {
     throw error
   }
 }
+
+export const getSupplierByProductTypeId = async (id) => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.get(`get-suppliers-by-product-type-id/${id}`, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res)
+    return res.data
+  } catch (error) {
+    catchAxiosError(error)
+    throw error
+  }
+}
+
