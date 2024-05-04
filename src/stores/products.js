@@ -209,7 +209,7 @@ export const useProductStore = defineStore('Products', () => {
   const handleGetSupplierByProductId = async (id) => {
     try {
       suppliersByProductId.value = await getSupplierByProductTypeId(id)
-      console.log('Supplier Product Id', suppliersByProductId.value)
+      console.log('Supplier Product Id', suppliersByProductId.value.length)
       return suppliersByProductId.value
     } catch (error) {
       console.error(error)
