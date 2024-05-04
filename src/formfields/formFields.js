@@ -60,6 +60,7 @@ export const measurementFormFields = ref([
     value: '',
     required: true,
     placeholder: 'Enter measurement name',
+    databaseField: 'measurement_name'
   },
   {
     label: 'Unit',
