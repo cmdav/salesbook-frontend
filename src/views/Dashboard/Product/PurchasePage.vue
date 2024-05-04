@@ -40,7 +40,7 @@
                   <div class="w-full">
                     <label class="block text-sm font-medium text-gray-700"> Supplier </label>
 
-                    <select required v-model="formState.purchases[index].supplier_id" :label="`Supplier ${index + 1}`"
+                    <select v-model="formState.purchases[index].supplier_id" :label="`Supplier ${index + 1}`"
                       :name="`Supplier ${index + 1}`" :placeholder="`Add Supplier ${index + 1}`"
                       class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm">
                       <option v-for="supplier in suppliersByProductId" :key="supplier.id" :value="supplier.id">
