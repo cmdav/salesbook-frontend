@@ -300,8 +300,10 @@ const fetchSupplierByProductId = async (id) => {
     let res = await productsStore.handleGetSupplierByProductId(id)
     if (suppliersByProductId.value.length === 0) {
       console.log("Entered")
-      fetchAllSuppliers()
       isReadonly.value = false
+      console.log("Entere after product")
+      suppliersByProductId.value = allSuppliers.value
+      console.log("New suppliers", suppliersByProductId.value)
     }
     return res;
   } catch (error) {
@@ -482,8 +484,10 @@ watch(
   (newProductTypeIds) => {
     newProductTypeIds.forEach((productTypeId) => {
       getProductId.value = productTypeId;
-
       fetchSupplierByProductId(productTypeId)
+      // if (suppliersByProductId.value.length === 0) {
+
+      // }
     })
   },
   { deep: true }
@@ -491,6 +495,7 @@ watch(
 
 onMounted(async () => {
   fetchSystemSellingPrice()
+  fetchAllSuppliers()
 })
 
 const store = useStore()
