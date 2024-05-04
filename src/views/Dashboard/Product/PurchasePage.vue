@@ -51,12 +51,12 @@
                   <div class="w-full">
                     <label class="block text-sm font-medium text-gray-700"> Cost Price </label>
 
-                    <input required type="number" v-model="formState.purchases[index].cost_price"
+                    <input required type="number" v-model="formState.purchases[index].price_id"
                       @input="updateSellingPrice($event.target.value)"
                       class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
                       :readonly="isReadonly" />
                     <!-- Hidden input to hold the actual price_id for submission -->
-                    <input type="hidden" v-model="formState.purchases[index].price_id" />
+                    <!-- <input type="hidden" v-model="formState.purchases[index].price_id" /> -->
                   </div>
 
                   <div class="w-full">
@@ -140,6 +140,7 @@ let loading = ref(false)
 const getShowSupplierPrice = ref()
 const isReadonly = ref(true)
 const systemValue = ref()
+const allSuppliers = ref()
 
 const { allProductTypeName, suppliersByProductId } = storeToRefs(productsStore)
 
@@ -299,6 +300,7 @@ const fetchSupplierByProductId = async (id) => {
     let res = await productsStore.handleGetSupplierByProductId(id)
     if (suppliersByProductId.value.length === 0) {
       console.log("Entered")
+      fetchAllSuppliers()
       isReadonly.value = false
     }
     return res;
@@ -306,7 +308,6 @@ const fetchSupplierByProductId = async (id) => {
     console.error("Error fetching products:", error);
   }
 };
-
 // const fetchSuppliersPrice = async (productId, supplierId) => {
 //   try {
 //     let res = await productsStore.handleGetSuppliersPrice(productId, supplierId)
@@ -345,7 +346,7 @@ const updatePriceId = () => {
   }
   else if (getShowSupplierPrice.value.cost_price === 0) {
     isReadonly.value = false
-    formState.purchases[0].price_id = getShowSupplierPrice.value.id
+    formState.purchases[0].price_id = ''
     formState.purchases[0].cost_price = ''
   }
   else {
@@ -435,6 +436,35 @@ const fetchSuppliersPriceByProduct = async (getProductId, supplierId) => {
   }
 }
 
+const fetchAllSuppliers = async () => {
+  try {
+    loading.value = true
+    let response = await apiService.get('all-suppliers')
+
+    console.log("API Response", response)
+
+    loading.value = false
+    catchAxiosSuccess(response)
+
+    console.log("Response", response)
+    allSuppliers.value = response
+    return response
+  } catch (error) {
+    catchAxiosError(error)
+    loading.value = false
+    //  isError.value = true;
+    if (error.response && error.response.data) {
+      console.log(error.response.data.errors)
+      console.log(error.response.data.message)
+      errorMessage.value = error.response.data.message
+    } else {
+      console.error(error.message)
+      errorMessage.value = error.message
+    }
+  }
+}
+
+
 watch(
   () => formState.purchases.map((p) => p.supplier_id),
   (supplierId) => {
@@ -451,6 +481,7 @@ watch(
   (newProductTypeIds) => {
     newProductTypeIds.forEach((productTypeId) => {
       getProductId.value = productTypeId;
+
       fetchSupplierByProductId(productTypeId)
     })
   },
