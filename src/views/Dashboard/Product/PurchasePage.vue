@@ -108,7 +108,6 @@
             </div>
           </div>
         </div>
-        </div>
       </div>
     </SaleFormModal>
 
@@ -238,6 +237,7 @@ const { showUploadModal, closeUploadModal } = useUploadComposable()
 
 const url = '/all-price-by-product-type'
 const emit = defineEmits('forceRefresh', 'handleFieldChanged')
+const modalTitle = "Edit Purchase"
 
 const { handleDelete, showDeleteModal, itemsId, closeDeleteModal } = useDeleteComposable()
 
