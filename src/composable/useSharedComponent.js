@@ -1,7 +1,9 @@
 
 import DataTableLayout from "@/components/Layouts/dataTableLayout.vue";
+import SupplierTableLayout from "@/components/Layouts/supplierTableLayout.vue";
 import SettingsLayout from "@/components/Layouts/settingsLayout.vue";
 import FormModal from "@/components/UI/Modal/FormModal.vue";
+import SupplierDashboardLayout from "@/components/Layouts/supplierDashboardLayout.vue"
 import PermissionFormModal from "@/components/UI/Modal/PermissionFormModal.vue";
  import { defineEmits } from "vue";
 import ViewModal from "@/components/UI/Modal/ViewModal.vue";
@@ -27,6 +29,8 @@ export function useSharedComponent() {
   
 
     return {
+      SupplierDashboardLayout,
+      SupplierTableLayout,
       DataTableLayout,
       FormModal,
       ViewModal,

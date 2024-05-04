@@ -15,6 +15,7 @@ export const useSupplierStore = defineStore('Supplier', () => {
   const allSupplierProduct = ref({})
   const supplierProduct = ref({})
   const supplierProducts = ref({})
+
   const allSupplier = async () => {
     try {
       Supplier.value = await getAllSupplier()
@@ -70,6 +71,7 @@ export const useSupplierStore = defineStore('Supplier', () => {
     Supplier,
     allSupplier,
     singleSupplier,
+    supplierProducts,
     handleGetSingleSupplier,
     allSupplierProduct,
     supplierProduct,
