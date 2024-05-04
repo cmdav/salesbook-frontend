@@ -28,10 +28,18 @@ const deleteSession = async () => {
     return { name: 'login' }
   }
 }
+const deleteSupplierSession = async () => {
+  if (localStorage.getItem('_user_data')) {
+    logout()
+    localStorage.removeItem('_user_data')
+    return { name: 'supplier-login' }
+  }
+}
 export default {
   redirectLogin,
   redirectDashboard,
   redirectSupplierDashboard,
-  deleteSession
+  deleteSession,
+  deleteSupplierSession
 }
 
