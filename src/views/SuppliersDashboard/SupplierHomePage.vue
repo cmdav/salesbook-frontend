@@ -25,7 +25,7 @@
           endpoint="auth-supplier-products"
           hideToggleButtonLabel: false
           :excludedKeys="['id','product_type_id','supplier_id','product_category_name']"
-        :additionalColumns="[{ name: 'Add Price', action: handleModal}]"
+        :additionalColumns="[{ name: 'Add New Price', action: handleModal}]"
         >
         </SupplierTableLayout>
       </div>
