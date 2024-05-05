@@ -36,17 +36,7 @@
       @submitForm="handleAddSales"
       title="Add Sale"
     >
-    <!-- <div>
-    <label class="block text-sm font-medium text-gray-700">Customer</label>
-    <select
-      v-model="formState.customer_id"
-      class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-    >
-      <option v-for="name in allCustomersNames" :key="name.id" :value="name.id">
-        {{ name.customer_detail }}
-      </option>
-    </select>
-  </div> -->
+   
   <div class="mt-4">
         <span class="font-medium text-gray-700">Print Receipt:</span>
         <label class="ml-4">
@@ -105,61 +95,94 @@
       </button>
     </div>
     <div
-      v-for="(question, index) in formState.products"
-      :key="index"
-      class="grid grid-cols-5 gap-4 items-end"
-    >
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Product</label>
-        <select
-        
-          v-model="formState.products[index].product_type_id"
-          class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+    v-for="(question, index) in formState.products"
+    :key="index"
+    class="flex justify-between items-end mt-4"
+  >
+    <div class="flex-1 mr-2">
+      <label class="block text-sm font-medium text-gray-700">Product</label>
+      <select
+        v-model="formState.products[index].product_type_id"
+        class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+      >
+        <option
+          v-for="name in allProductTypeName"
+          :key="name.id"
+          :value="name.id"
         >
-          <option
-            v-for="name in allProductTypeName"
-            :key="name.id"
-            :value="name.id"
-          >
-            {{ name.product_type_name }}
-          </option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Available Qty</label>
-        <input
-          type="text"
-          :value="formState.products[index].available_qty"
-          class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-          readonly
-        />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Price</label>
-        <input
-          required
-          v-model="formState.products[index].price_sold_at"
-          type="number"
-          class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-        />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Qty Sold</label>
-        <input
-          required
-          v-model="formState.products[index].quantity"
-          type="number"
-          class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-        />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Amount</label>
-        <span>
-          {{
-            formState.products[index].price_sold_at * formState.products[index].quantity
-          }}
-        </span>
-      </div>
+          {{ name.product_type_name }}
+        </option>
+      </select>
+    </div>
+    <div class="flex-1 mr-2">
+      <label class="block text-sm font-medium text-gray-700">Product Batch</label>
+      <select
+        v-model="formState.products[index].batch_id"
+        @change="updateBatchDetails(formState.products[index].batch_id, index)"
+        class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+      >
+        <option
+          v-for="batch in formState.products[index].batches"
+          :key="batch.id"
+          :value="batch.id"
+        >
+          {{ batch.batch_no }}
+        </option>
+      </select>
+    </div>
+    <div class="w-20 mr-2">
+      <label class="block text-sm font-medium text-gray-700">Qty left</label>
+      <input
+        type="text"
+        :value="formState.products[index].available_qty"
+        class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+        readonly
+      />
+    </div>
+    <div class="w-20 mr-2">
+      <label class="block text-sm font-medium text-gray-700">Price</label>
+      <input
+        required
+        v-model="formState.products[index].price_sold_at"
+        type="number"
+        readonly
+        class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+      />
+    </div>
+    <div class="w-20 mr-2">
+      <label class="block text-sm font-medium text-gray-700">Qty Sold</label>
+      <input
+        required
+        v-model="formState.products[index].quantity"
+        type="number"
+        class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+      />
+    </div>
+    <div class="w-20 mr-2">
+      <label class="block text-sm font-medium text-gray-700">VAT</label>
+      <select
+        v-model="formState.products[index].vat"
+        class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+      >
+        <option
+          v-for="option in vatOptions"
+          :key="option.id"
+          :value="option.value"
+        >
+          {{ option.label }}
+        </option>
+      </select>
+    </div>
+
+    <div class="flex-1">
+      <label class="block text-sm font-medium text-gray-700">Amount</label>
+      <span>
+        {{ formState.products[index].amount ? formState.products[index].amount.toFixed(2) : '0.00' }}
+      </span>
+    </div>
+
+
+
     </div>
   </div>
     </SaleFormModal>
@@ -208,9 +231,7 @@ const { allProductTypeName } = storeToRefs(productsStore);
 
 console.log(allProductTypeName.value);
 console.log(allCustomersNames.value);
-// Your existing script setup code
 
-//const showCustomerModal = ref(false);
 const showModal = ref(false)
 const addNewCustomer = () => {
   showModal.value  = true
@@ -223,6 +244,13 @@ const closeModal = () => {
 const salesLoading = ref(false);
 const showSalesModal = ref(false);
 const printReceipt = ref('no');
+// Define VAT options
+const vatOptions = reactive([
+  { id: 'yes', value: 'yes', label: 'Yes' },
+  { id: 'no', value: 'no', label: 'No' }
+]);
+
+
 const formState = reactive({
   customer_id: "",
   payment_method: "cash",
@@ -233,6 +261,7 @@ const formState = reactive({
       quantity: null,
       batch_no: '',
       available_qty:null,
+      amount: 0,
     },
   ],
 });
@@ -347,27 +376,87 @@ onMounted(async () => {
 
 
 
+//////////////////
+// Add this watcher in your setup function or directly in the <script setup> block
+// watch(() => formState.products.map(product => product.quantity), (newQuantities, oldQuantities) => {
+//   formState.products.forEach((product, index) => {
+//     if (newQuantities[index] !== oldQuantities[index]) {
+//       calculateAmount(index);
+//     }
+//   });
+// }, { deep: true });
 
+watch(() => formState.products.map(product => ({ quantity: product.quantity, vat: product.vat })), (newValues, oldValues) => {
+  newValues.forEach((newValue, index) => {
+    if (newValue.quantity !== oldValues[index].quantity || newValue.vat !== oldValues[index].vat) {
+      calculateAmount(index);
+    }
+  });
+}, { deep: true });
 
-
-const updatePriceId = (productTypeId, index) => {
-const productInfo = allProductTypeName.value.find(product => product.id === productTypeId);
-if (productInfo) {
-  formState.products[index].price_sold_at = productInfo.selling_price;  
-  formState.products[index].available_qty = productInfo.quantity_available;  
-} else {
-  formState.products[index].price_sold_at = "";
-  formState.products[index].available_qty = ""; 
+// This function can handle the amount calculation
+function calculateAmount(index) {
+  const product = formState.products[index];
+  if (!product) return;
+  
+  const baseAmount = product.price_sold_at * product.quantity;
+  if (product.vat === 'yes') {
+    const vatPercentage = product.vat_percentage || 7.5; // Default VAT percentage if not specified
+    product.amount = baseAmount * (1 + vatPercentage / 100);
+  } else {
+    product.amount = baseAmount;
+  }
 }
+
+// Function to update product details based on the selected product type
+const updatePriceId = (productTypeId, index) => {
+  const productInfo = allProductTypeName.value.find(product => product.id === productTypeId);
+  if (productInfo) {
+    formState.products[index].batches = productInfo.batches; // Update the batches array
+    formState.products[index].vat = productInfo.vat === "Yes" ? 'yes' : 'no'; // Set VAT based on the product info
+  } else {
+    formState.products[index].batches = []; // Clear batches if product is not found
+    formState.products[index].vat = 'no'; // Default VAT to 'no'
+  }
 };
 
+// Watcher for product type ID changes
 watch(() => formState.products.map(p => p.product_type_id), (newProductTypeIds, oldProductTypeIds) => {
-newProductTypeIds.forEach((productTypeId, index) => {
-  if (productTypeId !== oldProductTypeIds[index]) {
-    updatePriceId(productTypeId, index);
-  }
-});
+  newProductTypeIds.forEach((productTypeId, index) => {
+    if (productTypeId !== oldProductTypeIds[index]) {
+      updatePriceId(productTypeId, index);
+    }
+  });
 }, { deep: true });
+////////////////////////
+const updateBatchDetails = (batchId, index) => {
+  const productInfo = allProductTypeName.value.find(p => p.batches.some(b => b.id === batchId));
+  const batchInfo = productInfo ? productInfo.batches.find(batch => batch.id === batchId) : null;
+
+  if (batchInfo && productInfo) {
+    formState.products[index].available_qty = batchInfo.batch_quantity_left;
+    formState.products[index].price_sold_at = batchInfo.batch_selling_price;
+  
+  } else {
+    formState.products[index].available_qty = "";
+    formState.products[index].price_sold_at = "";
+    formState.products[index].vat = 'no';
+    formState.products[index].amount = 0;
+  }
+};
+
+
+watch(() => formState.products.map(p => p.batch_id), (newBatchIds, oldBatchIds) => {
+  newBatchIds.forEach((batchId, index) => {
+    if (batchId !== oldBatchIds[index]) {
+      updateBatchDetails(batchId, index);
+    }
+  });
+}, { deep: true });
+
+
+
+
 
 
 const store = useStore();

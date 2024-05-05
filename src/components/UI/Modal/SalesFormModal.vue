@@ -3,7 +3,7 @@
     class="modal backdrop-blur z-[100] fixed animate__zoomIn animate__rubberBand animate__fadeOut min-h-screen h-full"
   >
     <div
-      class="modal__body relative w-full md:max-w-[600px] bg-white m-0 md:px-5 py-4 px-4"
+      class="modal__body relative w-full md:max-w-[66%] bg-white m-0 md:px-5 py-4 px-4"
     >
       <header
         class="flex flex-row items-center justify-between border-b-[#000000] pb-[5px] mb-[35px] border-b-[1px]"
@@ -18,7 +18,7 @@
             type="submit"
             v-if="!props.loading"
             class="btn-brand"
-            :value="props.buttonLable"
+            :value="props.buttonLabel"
           />
           <Loader v-else />
         </div>
@@ -36,7 +36,7 @@ const submitForm = () => {
   emits("submitForm");
 };
 const props = defineProps({
-  buttonLable: String,
+  buttonLabel: String,
   title: String,
   loading: {
     type: Boolean,
@@ -45,7 +45,6 @@ const props = defineProps({
 });
 
 onMounted(async () => {});
-
 
 </script>
 
@@ -63,11 +62,11 @@ onMounted(async () => {});
 
 .modal__body {
   position: relative;
-  max-width: 600px; // Consider using max-width for better responsiveness
+  max-width: 65%; // Updated width to two-thirds of the screen width
   background-color: #fff;
   border-radius: 12px;
   animation: slidedown 0.8s ease;
-  max-height: 90vh; // Set a maximum height
+  max-height: 95vh; // Set a maximum height
   overflow-y: auto; // Enable vertical scrolling
 }
 
