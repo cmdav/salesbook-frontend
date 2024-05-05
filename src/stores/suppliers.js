@@ -6,7 +6,9 @@ import {
   getSupplierProduct,
   getAllSupplierProduct,
   getSupplierProducts,
-  addSupplierPrice
+  addSupplierPrice,
+  getSupplierPrice,
+  updateSupplierPriceStatus
 } from '@/services/Suppliers'
 
 export const useSupplierStore = defineStore('Supplier', () => {
@@ -15,6 +17,7 @@ export const useSupplierStore = defineStore('Supplier', () => {
   const allSupplierProduct = ref({})
   const supplierProduct = ref({})
   const supplierProducts = ref({})
+  const supplierPrice = ref({})
 
   const allSupplier = async () => {
     try {
@@ -24,6 +27,7 @@ export const useSupplierStore = defineStore('Supplier', () => {
       console.error(error)
     }
   }
+
   const handleGetSingleSupplier = async (id) => {
     try {
       singleSupplier.value = await getSingleSupplier(id)
@@ -40,6 +44,7 @@ export const useSupplierStore = defineStore('Supplier', () => {
       console.error(error)
     }
   }
+
   const handleGetSupplierProduct = async () => {
     try {
       supplierProduct.value = await getSupplierProduct()
@@ -48,6 +53,7 @@ export const useSupplierStore = defineStore('Supplier', () => {
       console.error(error)
     }
   }
+
   const handleGetSupplierProducts = async () => {
     try {
       supplierProducts.value = await getSupplierProducts()
@@ -66,6 +72,23 @@ export const useSupplierStore = defineStore('Supplier', () => {
     }
   }
 
+  const handleGetSupplierPrice = async () => {
+    try {
+      supplierPrice.value = await getSupplierPrice()
+      return supplierPrice.value 
+    }catch (error){
+      console.error(error)
+    }
+  }
+
+  const handleUpdateSupplierPriceStatus = async (id, payload) => {
+    try {
+      let res = await updateSupplierPriceStatus(id, payload)
+      return res
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   return {
     Supplier,
@@ -75,9 +98,12 @@ export const useSupplierStore = defineStore('Supplier', () => {
     handleGetSingleSupplier,
     allSupplierProduct,
     supplierProduct,
+    supplierPrice,
     handleAllSupplierProduct,
     handleGetSupplierProduct,
     handleGetSupplierProducts,
-    handleAddSupplierPrice
+    handleAddSupplierPrice,
+    handleGetSupplierPrice,
+    handleUpdateSupplierPriceStatus
   }
 })

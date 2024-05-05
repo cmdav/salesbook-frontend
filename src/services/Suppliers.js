@@ -98,3 +98,37 @@ export const addSupplierPrice = async (payload) => {
     console.log(error)
   }
 }
+
+export const getSupplierPrice = async () => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.get(`price-notifications`, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res)
+    return res.data
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const updateSupplierPriceStatus = async (id, payload) => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.put(`price-notifications/${id}`, payload, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    catchAxiosSuccess(res)
+    return res.data
+  } catch (error) {
+    catchAxiosError(error)
+    throw error
+    console.log(error)
+  }
+}

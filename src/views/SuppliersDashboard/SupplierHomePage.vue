@@ -1,23 +1,6 @@
 <template>
     <SupplierDashboardLayout pageTitle="Suppliers Page">
       <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
-        <!-- <div class="grid lg:grid-cols-3 grid-cols-1 gap-4">
-          <div class="flex flex-row justify-between rounded-[8px] bg-brand p-4">
-            <div>
-              <div class="icon">
-                    <img src="/assets/verifiedusers-5d08be57.svg" alt="" />
-                  </div>
-              <div
-                class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
-              >
-                <span>Total Products</span>
-              </div>
-               <div class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]">
-                {{ productsStore?.productType?.total }}
-              </div>
-            </div>
-          </div>
-        </div> -->
 
         <!-- Button to Open Modal -->
         <SupplierTableLayout
