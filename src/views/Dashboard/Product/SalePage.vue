@@ -146,7 +146,7 @@
         required
         v-model="formState.products[index].price_sold_at"
         type="number"
-        
+       
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
       />
     </div>
@@ -156,7 +156,6 @@
         required
         v-model="formState.products[index].quantity"
         type="number"
-        min=0
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
       />
     </div>
@@ -379,8 +378,26 @@ onMounted(async () => {
 
 
 //////////////////
-// Add this watcher in your setup function or directly in the <script setup> block
+// watch quantity change
 watch(() => formState.products.map(product => product.quantity), (newQuantities, oldQuantities) => {
+  formState.products.forEach((product, index) => {
+    if (newQuantities[index] !== oldQuantities[index]) {
+      calculateAmount(index);
+    }
+  });
+}, { deep: true });
+
+// watch vat change
+watch(() => formState.products.map(product => product.vat), (newQuantities, oldQuantities) => {
+  formState.products.forEach((product, index) => {
+    if (newQuantities[index] !== oldQuantities[index]) {
+      calculateAmount(index);
+    }
+  });
+}, { deep: true });
+
+// watch price sold at change
+watch(() => formState.products.map(product => product.price_sold_at), (newQuantities, oldQuantities) => {
   formState.products.forEach((product, index) => {
     if (newQuantities[index] !== oldQuantities[index]) {
       calculateAmount(index);
@@ -395,12 +412,13 @@ function calculateAmount(index) {
   
   const baseAmount = product.price_sold_at * product.quantity;
   if (product.vat === 'yes') {
-    const vatPercentage = product.vat_percentage || 7.5; // Default VAT percentage if not specified
+    const vatPercentage = 7.5; // Default VAT percentage
     product.amount = baseAmount * (1 + vatPercentage / 100);
   } else {
-    product.amount = baseAmount;
+    product.amount = baseAmount; //VAT is "no"
   }
 }
+
 
 // Function to update product details based on the selected product type
 const updatePriceId = (productTypeId, index) => {
@@ -430,8 +448,7 @@ const updateBatchDetails = (batchId, index) => {
   if (batchInfo && productInfo) {
     formState.products[index].available_qty = batchInfo.batch_quantity_left;
     formState.products[index].price_sold_at = batchInfo.batch_selling_price;
-    // Reset quantity sold when batch changes
-    //formState.products[index].quantity = null;
+  
   } else {
     formState.products[index].available_qty = "";
     formState.products[index].price_sold_at = "";
@@ -440,14 +457,14 @@ const updateBatchDetails = (batchId, index) => {
   }
 };
 
-// Watcher to reset quantity sold when batch changes
-// watch(() => formState.products.map(p => p.batch_id), (newBatchIds, oldBatchIds) => {
-//   newBatchIds.forEach((batchId, index) => {
-//     if (batchId !== oldBatchIds[index]) {
-//       updateBatchDetails(batchId, index);
-//     }
-//   });
-// }, { deep: true });
+
+watch(() => formState.products.map(p => p.batch_id), (newBatchIds, oldBatchIds) => {
+  newBatchIds.forEach((batchId, index) => {
+    if (batchId !== oldBatchIds[index]) {
+      updateBatchDetails(batchId, index);
+    }
+  });
+}, { deep: true });
 
 
 
