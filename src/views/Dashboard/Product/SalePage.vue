@@ -87,6 +87,7 @@
   </div>
   <div class="my-8">
     <div class="flex justify-end">
+      <span class="font-medium text-gray-700">Total Price: ${{ totalPrice }}</span>
       <button
        type="button"
         @click="addProducts"
@@ -120,16 +121,16 @@
       <select
         v-model="formState.products[index].batch_id"
         @change="updateBatchDetails(formState.products[index].batch_id, index)"
-        class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-      >
+        class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm">
         <option
           v-for="batch in formState.products[index].batches"
           :key="batch.id"
           :value="batch.id"
-        >
+          :disabled="isBatchSelected(formState.products[index].product_type_id, batch.id, index)">
           {{ batch.batch_no }}
         </option>
       </select>
+
     </div>
     <div class="w-20 mr-2">
       <label class="block text-sm font-medium text-gray-700">Qty left</label>
@@ -245,7 +246,17 @@ const closeModal = () => {
 const salesLoading = ref(false);
 const showSalesModal = ref(false);
 const printReceipt = ref('no');
-// Define VAT options
+
+
+const isBatchSelected = (productId, batchId, currentIndex) => {
+  // Check if the batch has been selected in any other product entry except the current one
+  return formState.products.some((product, index) => {
+    return index !== currentIndex && 
+           product.product_type_id === productId && 
+           product.batch_id === batchId;
+  });
+};
+
 const vatOptions = reactive([
   { id: 'yes', value: 'yes', label: 'Yes' },
   { id: 'no', value: 'no', label: 'No' }
@@ -354,6 +365,13 @@ const forceRefresh = () => {
   forceUpdate.value++;
 };
 
+const totalPrice = computed(() => {
+  return formState.products.reduce((sum, product, index) => {
+    return sum + calculateAmount(index); // Correctly add the amount
+  }, 0).toFixed(2); // Convert to string with two decimal places
+});
+
+
 onMounted(async () => {
   await fetchDataForSelect(
     "Product Type",
@@ -375,9 +393,6 @@ onMounted(async () => {
   }
 });
 
-
-
-//////////////////
 // watch quantity change
 watch(() => formState.products.map(product => product.quantity), (newQuantities, oldQuantities) => {
   formState.products.forEach((product, index) => {
@@ -405,19 +420,23 @@ watch(() => formState.products.map(product => product.price_sold_at), (newQuanti
   });
 }, { deep: true });
 
-// This function can handle the amount calculation
 function calculateAmount(index) {
   const product = formState.products[index];
-  if (!product) return;
+  if (!product || product.price_sold_at === null || product.quantity === null) {
+    return 0; // Return 0 if there's insufficient data to calculate
+  }
   
-  const baseAmount = product.price_sold_at * product.quantity;
+  const baseAmount = parseFloat(product.price_sold_at) * parseInt(product.quantity);
   if (product.vat === 'yes') {
-    const vatPercentage = 7.5; // Default VAT percentage
+    const vatPercentage = 7.5; // Assuming 7.5% is the VAT rate
     product.amount = baseAmount * (1 + vatPercentage / 100);
   } else {
-    product.amount = baseAmount; //VAT is "no"
+    product.amount = baseAmount; // No VAT applied
   }
+
+  return product.amount; // Ensure amount is returned
 }
+
 
 
 // Function to update product details based on the selected product type
