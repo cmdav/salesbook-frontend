@@ -88,6 +88,7 @@
   <div class="my-8">
     <div class="flex justify-end">
       <button
+       type="button"
         @click="addProducts"
         class="btn-brand !bg-brand/[20%] !text-black !px-3"
       >
@@ -133,7 +134,7 @@
     <div class="w-20 mr-2">
       <label class="block text-sm font-medium text-gray-700">Qty left</label>
       <input
-        type="text"
+        type="number"
         :value="formState.products[index].available_qty"
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
         readonly
@@ -145,7 +146,7 @@
         required
         v-model="formState.products[index].price_sold_at"
         type="number"
-        readonly
+        
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
       />
     </div>
@@ -155,6 +156,7 @@
         required
         v-model="formState.products[index].quantity"
         type="number"
+        min=0
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
       />
     </div>
@@ -378,17 +380,9 @@ onMounted(async () => {
 
 //////////////////
 // Add this watcher in your setup function or directly in the <script setup> block
-// watch(() => formState.products.map(product => product.quantity), (newQuantities, oldQuantities) => {
-//   formState.products.forEach((product, index) => {
-//     if (newQuantities[index] !== oldQuantities[index]) {
-//       calculateAmount(index);
-//     }
-//   });
-// }, { deep: true });
-
-watch(() => formState.products.map(product => ({ quantity: product.quantity, vat: product.vat })), (newValues, oldValues) => {
-  newValues.forEach((newValue, index) => {
-    if (newValue.quantity !== oldValues[index].quantity || newValue.vat !== oldValues[index].vat) {
+watch(() => formState.products.map(product => product.quantity), (newQuantities, oldQuantities) => {
+  formState.products.forEach((product, index) => {
+    if (newQuantities[index] !== oldQuantities[index]) {
       calculateAmount(index);
     }
   });
@@ -436,7 +430,8 @@ const updateBatchDetails = (batchId, index) => {
   if (batchInfo && productInfo) {
     formState.products[index].available_qty = batchInfo.batch_quantity_left;
     formState.products[index].price_sold_at = batchInfo.batch_selling_price;
-  
+    // Reset quantity sold when batch changes
+    //formState.products[index].quantity = null;
   } else {
     formState.products[index].available_qty = "";
     formState.products[index].price_sold_at = "";
@@ -445,14 +440,14 @@ const updateBatchDetails = (batchId, index) => {
   }
 };
 
-
-watch(() => formState.products.map(p => p.batch_id), (newBatchIds, oldBatchIds) => {
-  newBatchIds.forEach((batchId, index) => {
-    if (batchId !== oldBatchIds[index]) {
-      updateBatchDetails(batchId, index);
-    }
-  });
-}, { deep: true });
+// Watcher to reset quantity sold when batch changes
+// watch(() => formState.products.map(p => p.batch_id), (newBatchIds, oldBatchIds) => {
+//   newBatchIds.forEach((batchId, index) => {
+//     if (batchId !== oldBatchIds[index]) {
+//       updateBatchDetails(batchId, index);
+//     }
+//   });
+// }, { deep: true });
 
 
 
