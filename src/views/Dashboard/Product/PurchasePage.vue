@@ -35,67 +35,78 @@
                 </select>
               </div>
               <div class="w-full">
-                <label class="block text-sm font-medium text-gray-700"> Price </label>
 
-              <div class="flex flex-row w-full gap-2">
-                <div class="w-full">
-                  <label class="block text-sm font-medium text-gray-700"> Supplier </label>
+                <div class="flex flex-row w-full gap-2">
+                  <div class="w-full">
+                    <label class="block text-sm font-medium text-gray-700"> Supplier </label>
 
-                  <input :label="`Supplier ${index + 1}`" :name="`Supplier ${index + 1}`"
-                    :placeholder="`Supplier ${index + 1}`" v-model="formState.purchases[index].supplier_id"
-                    type="number"
-                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
+                    <select v-model="formState.purchases[index].supplier_id" :label="`Supplier ${index + 1}`"
+                      :name="`Supplier ${index + 1}`" :placeholder="`Add Supplier ${index + 1}`"
+                      class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm">
+                      <option v-for="supplier in suppliersByProductId" :key="supplier.id" :value="supplier.id">
+                        {{ supplier.supplier_detail }}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="w-full">
+                    <label class="block text-sm font-medium text-gray-700"> Cost Price </label>
+
+                    <input required type="number" v-model="formState.purchases[index].cost_price"
+                      @input="updateSellingPrice($event.target.value)"
+                      class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+                      :readonly="isReadonly" />
+                    <!-- Hidden input to hold the actual price_id for submission -->
+                    <input type="hidden" v-model="formState.purchases[index].price_id" />
+                  </div>
+
+                  <div class="w-full">
+                    <label class="block text-sm font-medium text-gray-700"> Selling Price </label>
+
+                    <input required type="number" :value="formState.purchases[index].selling_price"
+                      class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
+                  </div>
+
                 </div>
-                <div class="w-full">
-                  <label class="block text-sm font-medium text-gray-700"> Price </label>
+                <div class="flex flex-row w-full gap-2">
+                  <div class="w-full">
+                    <label class="block text-sm font-medium text-gray-700"> Batch no </label>
 
-                  <input required type="text" :value="formState.purchases[index].display_price"
-                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-                    readonly />
-                  <!-- Hidden input to hold the actual price_id for submission -->
-                  <input type="hidden" v-model="formState.purchases[index].price_id" />
+                    <input :label="`batch no ${index + 1}`" :name="`batch no ${index + 1}`"
+                      :placeholder="`batch no ${index + 1}`" v-model="formState.purchases[index].batch_no" type="text"
+                      class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
+                  </div>
+                  <div class="w-full">
+                    <label class="block text-sm font-medium text-gray-700"> Quantity </label>
+
+                    <input required :label="`quantity ${index + 1}`" :name="`quantity ${index + 1}`"
+                      :placeholder="`quantity ${index + 1}`" v-model="formState.purchases[index].quantity" min="0"
+                      type="number"
+                      class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
+                  </div>
                 </div>
-              </div>
-              <div class="flex flex-row w-full gap-2">
-                <div class="w-full">
-                  <label class="block text-sm font-medium text-gray-700"> Batch no </label>
+                <div class="flex flex-row w-full gap-2">
+                  <div class="w-full">
+                    <label class="block text-sm font-medium text-gray-700">
+                      Product Identifier
+                    </label>
 
-                  <input :label="`batch no ${index + 1}`" :name="`batch no ${index + 1}`"
-                    :placeholder="`batch no ${index + 1}`" v-model="formState.purchases[index].batch_no" type="text"
-                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
-                </div>
-                <div class="w-full">
-                  <label class="block text-sm font-medium text-gray-700"> Quantity </label>
+                    <input :label="`product identifier ${index + 1}`" :name="`product identifier ${index + 1}`"
+                      :placeholder="`product identifier ${index + 1}`"
+                      v-model="formState.purchases[index].product_identifier" type="text"
+                      class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
+                  </div>
+                  <div class="w-full">
+                    <label class="block text-sm font-medium text-gray-700"> Expired Date </label>
 
-                  <input required :label="`quantity ${index + 1}`" :name="`quantity ${index + 1}`"
-                    :placeholder="`quantity ${index + 1}`" v-model="formState.purchases[index].quantity" min="0"
-                    type="number"
-                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
-                </div>
-              </div>
-              <div class="flex flex-row w-full gap-2">
-                <div class="w-full">
-                  <label class="block text-sm font-medium text-gray-700">
-                    Product Identifier
-                  </label>
-
-                  <input :label="`product identifier ${index + 1}`" :name="`product identifier ${index + 1}`"
-                    :placeholder="`product identifier ${index + 1}`"
-                    v-model="formState.purchases[index].product_identifier" type="text"
-                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
-                </div>
-                <div class="w-full">
-                  <label class="block text-sm font-medium text-gray-700"> Expired Date </label>
-
-                  <input :label="`expired date ${index + 1}`" :name="`expired date ${index + 1}`"
-                    :placeholder="`expired date ${index + 1}`" v-model="formState.purchases[index].expiry_date"
-                    type="date" :min="minDate"
-                    class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
+                    <input :label="`expired date ${index + 1}`" :name="`expired date ${index + 1}`"
+                      :placeholder="`expired date ${index + 1}`" v-model="formState.purchases[index].expiry_date"
+                      type="date" :min="minDate"
+                      class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
         </div>
       </div>
     </SaleFormModal>
@@ -116,14 +127,25 @@ import { purchaseFormFields } from '@/formfields/formFields'
 import SaleFormModal from '@/components/UI/Modal/SalesFormModal.vue'
 import { useSharedComponent } from '@/composable/useSharedComponent'
 import { useProductStore } from '@/stores/products'
+import apiService from '@/services/apiService'
+import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
+
 import { storeToRefs } from 'pinia'
 const productsStore = useProductStore()
 const pruchaseLoading = ref(false)
 const showPurchaseModal = ref(false)
+const getProductId = ref();
+let errorMessage = ref()
+let loading = ref(false)
+const getShowSupplierPrice = ref()
+const isReadonly = ref(true)
+const systemValue = ref()
+const allSuppliers = ref()
 
-const { allProductTypeName } = storeToRefs(productsStore)
+const { allProductTypeName, suppliersByProductId } = storeToRefs(productsStore)
 
-console.log(allProductTypeName.value)
+
+console.log("allProductTypeName", allProductTypeName.value)
 const minDate = ref(getMinDate())
 
 function getMinDate() {
@@ -140,7 +162,8 @@ const formState = reactive({
       product_type_id: '',
       supplier_id: '',
       price_id: '',
-      display_price: '',
+      selling_price: '',
+      cost_price: '',
       batch_no: '',
       quantity: '',
       product_identifier: '',
@@ -215,6 +238,7 @@ const { showUploadModal, closeUploadModal } = useUploadComposable()
 
 const url = '/all-price-by-product-type'
 const emit = defineEmits('forceRefresh', 'handleFieldChanged')
+const modalTitle = "Edit Purchase"
 
 const { handleDelete, showDeleteModal, itemsId, closeDeleteModal } = useDeleteComposable()
 
@@ -252,6 +276,7 @@ const checkDate = (fieldDatabase, value) => {
     }
   }
 }
+
 // Call this function whenever the related fields change.
 watch(
   () => purchaseFormFields.value.find((field) => field.databaseField === 'expired_at')?.value,
@@ -260,6 +285,7 @@ watch(
 // Fetch data for select options on component mount
 onMounted(async () => {
   await fetchDataForSelect('Product Type', '/all-product-type-name', 'id', 'product_type_name')
+  // await fetchDataForSelect(;)
 })
 onMounted(async () => {
   try {
@@ -269,29 +295,208 @@ onMounted(async () => {
   }
 })
 
-const updatePriceId = (productTypeId, index) => {
-  const productInfo = allProductTypeName.value.find((product) => product.id === productTypeId)
-  console.log('Product info', productInfo)
-  if (productInfo) {
-    formState.purchases[index].price_id = productInfo.price_id
-    formState.purchases[index].display_price = productInfo.cost_price
-  } else {
-    formState.purchases[index].price_id = ''
-    formState.purchases[index].display_price = ''
+const fetchSupplierByProductId = async (id) => {
+  try {
+    let res = await productsStore.handleGetSupplierByProductId(id)
+    if (suppliersByProductId.value.length === 0) {
+      console.log("Entered")
+      isReadonly.value = false
+      console.log("Entere after product")
+      suppliersByProductId.value = allSuppliers.value
+      console.log("New suppliers", suppliersByProductId.value)
+    }
+    return res;
+  } catch (error) {
+    console.error("Error fetching products:", error);
+  }
+};
+// const fetchSuppliersPrice = async (productId, supplierId) => {
+//   try {
+//     let res = await productsStore.handleGetSuppliersPrice(productId, supplierId)
+//     return res;
+//   } catch (error) {
+//     console.error("Error fetching products:", error);
+//   }
+// }
+
+// const updatePriceId = (productTypeId, index) => {
+//   const productInfo = allProductTypeName.value.find((product) => product.id === productTypeId)
+
+//   // console.log("supplier by product, ID", suppliersByProductId.value)
+//   console.log('Product info', productInfo)
+//   if (productInfo) {
+//     formState.purchases[index].price_id = productInfo.price_id
+//     formState.purchases[index].cost_price = productInfo.cost_price
+//   } else {
+//     formState.purchases[index].price_id = ''
+//     formState.purchases[index].cost_price = ''
+//   }
+// }
+
+const updatePriceId = () => {
+
+  console.log("Index", 0)
+  console.log("price", getShowSupplierPrice.value)
+  console.log("Supplier", suppliersByProductId.value.length)
+  console.log("form purchase", formState.purchases)
+  console.log("form with INDEX", formState.purchases[0].price_id)
+
+  if (getShowSupplierPrice.value.cost_price !== 0) {
+    console.log("Entered the if")
+    formState.purchases[0].price_id = getShowSupplierPrice.value.id
+    formState.purchases[0].cost_price = getShowSupplierPrice.value.cost_price
+  }
+  else if (getShowSupplierPrice.value.cost_price === 0) {
+    isReadonly.value = false
+    formState.purchases[0].price_id = ''
+    formState.purchases[0].cost_price = ''
+  }
+  else {
+    console.log("Entered the else")
+    isReadonly.value = false
+    formState.purchases[0].price_id = ''
+    formState.purchases[0].cost_price = ''
   }
 }
 
+const fetchSystemSellingPrice = async () => {
+  try {
+    let response = await apiService.get('auto-generate-system-selling-price')
+    catchAxiosSuccess(response)
+    systemValue.value = response;
+    return response
+  }
+  catch (error) {
+    catchAxiosError(error)
+    loading.value = false
+    //  isError.value = true;
+    if (error.response && error.response.data) {
+      console.log(error.response.data.errors)
+      console.log(error.response.data.message)
+      errorMessage.value = error.response.data.message
+    } else {
+      console.error(error.message)
+      errorMessage.value = error.message
+    }
+  }
+}
+
+
+const updateSellingPrice = (costPrice) => {
+  console.log("System Selling Price", systemValue.value)
+  console.log("Cost Price", costPrice)
+  console.log("Selling Price", formState.purchases[0].selling_price)
+  if (systemValue.value && !isReadonly.value) {
+    let cost_price = parseFloat(costPrice)
+    const auto_generated_selling_price = parseFloat(systemValue.value)
+    let totalPriceField = Math.floor(cost_price + cost_price * (auto_generated_selling_price / 100))
+    console.log("Total Price Field", totalPriceField)
+    formState.purchases[0].price_id = costPrice
+    formState.purchases[0].selling_price = totalPriceField
+  }
+}
+
+const updateSellingPriceWhenPriceSet = () => {
+  console.log("System Selling Price", systemValue.value)
+  console.log("Cost Price", formState.purchases[0].cost_price)
+  console.log("Selling Price", formState.purchases[0].selling_price)
+  if (systemValue.value && !isReadonly.value) {
+    let cost_price = parseFloat(formState.purchases[0].cost_price)
+    const auto_generated_selling_price = parseFloat(systemValue.value)
+    let totalPriceField = Math.floor(cost_price + cost_price * (auto_generated_selling_price / 100))
+    console.log("Total Price Field", totalPriceField)
+    formState.purchases[0].selling_price = totalPriceField
+  }
+}
+
+
+
+const fetchSuppliersPriceByProduct = async (getProductId, supplierId) => {
+  try {
+    loading.value = true
+    let response = await apiService.get(`latest-supplier-price/${getProductId}/${supplierId}`)
+
+    console.log("API Response", response)
+
+    loading.value = false
+    catchAxiosSuccess(response)
+    getShowSupplierPrice.value = response
+    updatePriceId()
+    console.log("Response", response)
+    return response
+  } catch (error) {
+    catchAxiosError(error)
+    loading.value = false
+    //  isError.value = true;
+    if (error.response && error.response.data) {
+      console.log(error.response.data.errors)
+      console.log(error.response.data.message)
+      errorMessage.value = error.response.data.message
+    } else {
+      console.error(error.message)
+      errorMessage.value = error.message
+    }
+  }
+}
+
+const fetchAllSuppliers = async () => {
+  try {
+    loading.value = true
+    let response = await apiService.get('all-suppliers')
+
+    console.log("API Response", response)
+
+    loading.value = false
+    catchAxiosSuccess(response)
+
+    console.log("Response", response)
+    allSuppliers.value = response
+    return response
+  } catch (error) {
+    catchAxiosError(error)
+    loading.value = false
+    //  isError.value = true;
+    if (error.response && error.response.data) {
+      console.log(error.response.data.errors)
+      console.log(error.response.data.message)
+      errorMessage.value = error.response.data.message
+    } else {
+      console.error(error.message)
+      errorMessage.value = error.message
+    }
+  }
+}
+
+
+watch(
+  () => formState.purchases.map((p) => p.supplier_id),
+  (supplierId) => {
+    console.log("Supplier ID", supplierId)
+    fetchSuppliersPriceByProduct(getProductId.value, supplierId[0])
+    updateSellingPriceWhenPriceSet()
+    console.log("Product, Supplier", getProductId.value, supplierId[0]);
+  },
+  { deep: true }
+)
+
 watch(
   () => formState.purchases.map((p) => p.product_type_id),
-  (newProductTypeIds, oldProductTypeIds) => {
-    newProductTypeIds.forEach((productTypeId, index) => {
-      if (productTypeId !== oldProductTypeIds[index]) {
-        updatePriceId(productTypeId, index)
-      }
+  (newProductTypeIds) => {
+    newProductTypeIds.forEach((productTypeId) => {
+      getProductId.value = productTypeId;
+      fetchSupplierByProductId(productTypeId)
+      // if (suppliersByProductId.value.length === 0) {
+
+      // }
     })
   },
   { deep: true }
 )
+
+onMounted(async () => {
+  fetchSystemSellingPrice()
+  fetchAllSuppliers()
+})
 
 const store = useStore()
 const permissions = computed(() => {

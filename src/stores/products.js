@@ -20,7 +20,8 @@ import {
   getSales,
   getAllProductTypeName,
   addSaless,
-  addPurchases
+  addPurchases,
+  getSupplierByProductTypeId
 } from '@/services/Products'
 
 export const useProductStore = defineStore('Products', () => {
@@ -36,6 +37,8 @@ export const useProductStore = defineStore('Products', () => {
   const productType = ref({})
   const sales = ref({})
   const allProductTypeName = ref({})
+  const suppliersByProductId = ref({})
+  const suppliersPrice = ref({})
 
   const handleGetAllProductTypeName = async () => {
     try {
@@ -203,6 +206,26 @@ export const useProductStore = defineStore('Products', () => {
     }
   }
 
+  const handleGetSupplierByProductId = async (id) => {
+    try {
+      suppliersByProductId.value = await getSupplierByProductTypeId(id)
+      console.log('Supplier Product Id', suppliersByProductId.value.length)
+      return suppliersByProductId.value
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  // const handleGetSuppliersPrice = async (productId, supplierId) => {
+  //   try {
+  //     suppliersPrice.value = await getLatestSupplierPrice(productId, supplierId)
+  //     console.log(suppliersPrice.value)
+  //     return suppliersPrice.value
+  //   } catch (error) {
+  //     console.error(error)
+  //   }
+  // }
+
   return {
     handleGetProductCategories,
     productCategories,
@@ -235,6 +258,9 @@ export const useProductStore = defineStore('Products', () => {
     allProductTypeName,
     handleGetAllProductTypeName,
     handleAddSaless,
-    handleAddPurchases
+    handleAddPurchases,
+    suppliersByProductId,
+    handleGetSupplierByProductId,
+    suppliersPrice
   }
 })
