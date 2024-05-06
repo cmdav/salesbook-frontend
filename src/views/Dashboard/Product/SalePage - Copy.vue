@@ -231,7 +231,6 @@ const formState = reactive({
       product_type_id: "",
       price_sold_at: null,
       quantity: null,
-      batch_no: '',
       available_qty:null,
     },
   ],
@@ -249,7 +248,6 @@ const resetForm = () => {
     {
       product_type_id: "",
       price_sold_at: null,
-      batch_no: null,
       quantity: null,
     },
   ];

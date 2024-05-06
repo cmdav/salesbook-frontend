@@ -47,7 +47,7 @@ const router = createRouter({
       path: '/supplier/login',
       name: 'supplier-login',
       component: LoginSuppliers,
-      beforeEnter: [middleware.redirectDashboard]
+      beforeEnter: [middleware.redirectSupplierDashboard]
     },
     {
       path: '/register',
@@ -227,6 +227,11 @@ const router = createRouter({
       path: '/logout',
       name: 'logout',
       beforeEnter: [middleware.deleteSession]
+    },
+    {
+      path: '/logout-supplier',
+      name: 'signout',
+      beforeEnter: [middleware.deleteSupplierSession]
     },
     {
       path: '/:catchAll(.*)',
