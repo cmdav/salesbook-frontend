@@ -235,6 +235,7 @@ const formState = reactive({
     },
   ],
 });
+
 const addProducts = () => {
   const lastProduct = formState.products[formState.products.length - 1];
   if (lastProduct.product_type_id.trim() !== "") {
@@ -333,7 +334,6 @@ onMounted(async () => {
   await productsStore.handleGetSales();
 });
 
-
 onMounted(async () => {
   try {
     await customersStore.handleAllCustomersName();
@@ -342,11 +342,6 @@ onMounted(async () => {
     console.error;
   }
 });
-
-
-
-
-
 
 const updatePriceId = (productTypeId, index) => {
 const productInfo = allProductTypeName.value.find(product => product.id === productTypeId);

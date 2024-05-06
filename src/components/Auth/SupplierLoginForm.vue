@@ -114,10 +114,6 @@ const validateForm = () => {
 
     isValid = false;
   }
-  // if (!formState.code) {
-  //   errors.code = true;
-  //   isValid = false;
-  // }
 
   if (!isValidPassword.value) {
     errors.password = true;

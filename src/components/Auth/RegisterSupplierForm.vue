@@ -387,27 +387,25 @@ const handleSupplierSignup = async () => {
     let res = await register(payload);
     // if (res.data.status === true) {
     router.push({ name: "supplier-login" });
-    // } else {
-    // Handle unsuccessful login
-    //   loading.value = false;
-    //   clearInputs();
-    // }
     loading.value = false;
     clearInputs();
     return res;
-  } catch (error) {~
+  } catch (error) {
     console.log(error);
   } finally {
     loading.value = false;
   }
 };
-
+const isDataLoaded = ref(false);
 onMounted(async () => {
   if (signupToken.value) {
     try {
       const response = await verifyEmail(signupToken.value);
+      let verify = response.data
+    console.log(verify)
       if (response) {
-        VerificationRespData.value = response;
+        VerificationRespData.value = verify;
+        isDataLoaded.value = true;
       }
     } catch (err) {
       // Handle network errors or other exceptions
