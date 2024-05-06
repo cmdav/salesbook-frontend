@@ -308,26 +308,37 @@ const closeSalesModal = () => {
   showSalesModal.value = !showSalesModal.value;
   resetForm();
 };
+
 const handleAddSales = async () => {
-  salesLoading.value = true;
-  let payload = {
-    customer_id: formState.customer_id,
-    payment_method: formState.payment_method,
-    products: formState.products,
-  };
-  try {
-    let res = await productsStore.handleAddSaless(payload);
-    productsStore.handleGetProducts();
-    salesLoading.value = false;
-    return res;
-  } catch (error) {
-    console.log(error);
-  } finally {
-    salesLoading.value = false;
-    closeSalesModal();
-    forceRefresh();
-  }
+    salesLoading.value = true;
+    let products = formState.products.filter(product => product.amount > 0).map(product => ({
+        product_type_id: product.product_type_id,
+        batch_no: product.batch_no,
+        price_sold_at: parseInt(product.price_sold_at), 
+        quantity: parseInt(product.quantity), 
+        vat: parseInt(product.vat === 'yes' ? 1 : 0), 
+    }));
+
+    let payload = {
+        customer_id: formState.customer_id,
+        payment_method: formState.payment_method,
+        products: products,
+    };
+
+    try {
+        let res = await productsStore.handleAddSaless(payload);
+        productsStore.handleGetProducts();
+        salesLoading.value = false;
+        return res;
+    } catch (error) {
+        console.error('Failed to submit sale:', error);
+    } finally {
+        salesLoading.value = false;
+        closeSalesModal();
+        forceRefresh();
+    }
 };
+
 
 const {
   DataTableLayout,
@@ -442,7 +453,7 @@ function calculateAmount(index) {
   const baseAmount = parseFloat(product.price_sold_at) * parseInt(product.quantity);
   let amount = baseAmount;
   if (product.vat === 'yes' && baseAmount > 0) {
-    const vatPercentage = 7.5;  // Default VAT percentage
+    const vatPercentage = 7.5;  
     amount += baseAmount * (vatPercentage / 100);
   }
 
@@ -481,6 +492,7 @@ const updateBatchDetails = (batchId, index) => {
   if (batchInfo && productInfo) {
     formState.products[index].available_qty = batchInfo.batch_quantity_left;
     formState.products[index].price_sold_at = batchInfo.batch_selling_price;
+    formState.products[index].batch_no = batchInfo.batch_no;
   
   } else {
     formState.products[index].available_qty = "";
