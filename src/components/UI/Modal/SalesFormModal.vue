@@ -29,6 +29,14 @@
 
 <script setup>
 import { onMounted } from "vue";
+import { useProductStore } from "@/stores/products";
+
+import { storeToRefs } from "pinia";
+const productsStore = useProductStore();
+
+
+const { allProductTypeName } = storeToRefs(productsStore);
+console.log(allProductTypeName)
 
 const emits = defineEmits(["submitForm"]);
 
@@ -44,7 +52,10 @@ const props = defineProps({
   },
 });
 
-onMounted(async () => {});
+onMounted(async () => {
+
+  await productsStore.handleGetAllProductTypeName();
+});
 
 </script>
 
