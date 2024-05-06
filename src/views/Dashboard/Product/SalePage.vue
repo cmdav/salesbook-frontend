@@ -453,7 +453,7 @@ function calculateAmount(index) {
   const baseAmount = parseFloat(product.price_sold_at) * parseInt(product.quantity);
   let amount = baseAmount;
   if (product.vat === 'yes' && baseAmount > 0) {
-    const vatPercentage = 7.5;  // Default VAT percentage
+    const vatPercentage = 7.5;  
     amount += baseAmount * (vatPercentage / 100);
   }
 
