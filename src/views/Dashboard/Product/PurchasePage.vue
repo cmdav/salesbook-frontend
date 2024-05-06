@@ -25,7 +25,9 @@
 
             <div class="flex flex-col gap-2">
               <div class="w-full">
-                <label class="block text-sm font-medium text-gray-700"> Product </label>
+                <label class="block text-sm font-medium text-gray-700"> Product
+                  <span class="text-red-500">*</span>
+                </label>
                 <select required v-model="formState.purchases[index].product_type_id" :label="`Product ${index + 1}`"
                   :name="`Product ${index + 1}`" :placeholder="`Add Product ${index + 1}`"
                   class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm">
@@ -49,7 +51,10 @@
                     </select>
                   </div>
                   <div class="w-full">
-                    <label class="block text-sm font-medium text-gray-700"> Cost Price </label>
+                    <label class="block text-sm font-medium text-gray-700">
+                      Cost Price
+                      <span class="text-red-500">*</span>
+                    </label>
 
                     <input required type="number" v-model="formState.purchases[index].cost_price"
                       @input="updateSellingPrice($event.target.value)"
@@ -60,7 +65,10 @@
                   </div>
 
                   <div class="w-full">
-                    <label class="block text-sm font-medium text-gray-700"> Selling Price </label>
+                    <label class="block text-sm font-medium text-gray-700">
+                      Selling Price
+                      <span class="text-red-500">*</span>
+                    </label>
 
                     <input required type="number" :value="formState.purchases[index].selling_price"
                       class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
@@ -69,14 +77,20 @@
                 </div>
                 <div class="flex flex-row w-full gap-2">
                   <div class="w-full">
-                    <label class="block text-sm font-medium text-gray-700"> Batch no </label>
+                    <label class="block text-sm font-medium text-gray-700">
+                      Batch no
+                      <span class="text-red-500">*</span>
+                    </label>
 
-                    <input :label="`batch no ${index + 1}`" :name="`batch no ${index + 1}`"
+                    <input required :label="`batch no ${index + 1}`" :name="`batch no ${index + 1}`"
                       :placeholder="`batch no ${index + 1}`" v-model="formState.purchases[index].batch_no" type="text"
                       class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
                   </div>
                   <div class="w-full">
-                    <label class="block text-sm font-medium text-gray-700"> Quantity </label>
+                    <label class="block text-sm font-medium text-gray-700">
+                      Quantity
+                      <span class="text-red-500">*</span>
+                    </label>
 
                     <input required :label="`quantity ${index + 1}`" :name="`quantity ${index + 1}`"
                       :placeholder="`quantity ${index + 1}`" v-model="formState.purchases[index].quantity" min="0"
@@ -88,6 +102,7 @@
                   <div class="w-full">
                     <label class="block text-sm font-medium text-gray-700">
                       Product Identifier
+                      <span class="text-red-500">*</span>
                     </label>
 
                     <input :label="`product identifier ${index + 1}`" :name="`product identifier ${index + 1}`"
@@ -96,7 +111,10 @@
                       class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
                   </div>
                   <div class="w-full">
-                    <label class="block text-sm font-medium text-gray-700"> Expired Date </label>
+                    <label class="block text-sm font-medium text-gray-700">
+                      Expired Date
+                      <span class="text-red-500">*</span>
+                    </label>
 
                     <input :label="`expired date ${index + 1}`" :name="`expired date ${index + 1}`"
                       :placeholder="`expired date ${index + 1}`" v-model="formState.purchases[index].expiry_date"
