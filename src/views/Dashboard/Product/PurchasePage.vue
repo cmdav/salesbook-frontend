@@ -301,7 +301,7 @@ const fetchSupplierByProductId = async (id) => {
     if (suppliersByProductId.value.length === 0) {
       console.log("Entered")
       isReadonly.value = false
-      console.log("Entere after product")
+      console.log("Entered after product")
       suppliersByProductId.value = allSuppliers.value
       console.log("New suppliers", suppliersByProductId.value)
     }
@@ -343,7 +343,7 @@ const updatePriceId = () => {
 
   if (getShowSupplierPrice.value.cost_price !== 0) {
     console.log("Entered the if")
-    formState.purchases[0].price_id = getShowSupplierPrice.value.id
+    formState.purchases[0].price_id = getShowSupplierPrice.value.cost_price
     formState.purchases[0].cost_price = getShowSupplierPrice.value.cost_price
   }
   else if (getShowSupplierPrice.value.cost_price === 0) {
@@ -391,7 +391,7 @@ const updateSellingPrice = (costPrice) => {
     const auto_generated_selling_price = parseFloat(systemValue.value)
     let totalPriceField = Math.floor(cost_price + cost_price * (auto_generated_selling_price / 100))
     console.log("Total Price Field", totalPriceField)
-    formState.purchases[0].price_id = costPrice
+    formState.purchases[0].price_id = cost_price
     formState.purchases[0].selling_price = totalPriceField
   }
 }
@@ -467,12 +467,14 @@ const fetchAllSuppliers = async () => {
   }
 }
 
-
+console.log("All Product", allProductTypeName)
 watch(
   () => formState.purchases.map((p) => p.supplier_id),
   (supplierId) => {
     console.log("Supplier ID", supplierId)
     fetchSuppliersPriceByProduct(getProductId.value, supplierId[0])
+    formState.purchases[0].product_type_id = getProductId.value
+    formState.purchases[0].supplier_id = supplierId[0]
     updateSellingPriceWhenPriceSet()
     console.log("Product, Supplier", getProductId.value, supplierId[0]);
   },
@@ -481,13 +483,13 @@ watch(
 
 watch(
   () => formState.purchases.map((p) => p.product_type_id),
-  (newProductTypeIds) => {
-    newProductTypeIds.forEach((productTypeId) => {
-      getProductId.value = productTypeId;
-      fetchSupplierByProductId(productTypeId)
-      // if (suppliersByProductId.value.length === 0) {
-
-      // }
+  (newProductTypeIds, oldProductTypeIds) => {
+    newProductTypeIds.forEach((productTypeId, index) => {
+      if (productTypeId !== oldProductTypeIds[index]) {
+        getProductId.value = productTypeId;
+        console.log("Product ID", getProductId.value)
+        fetchSupplierByProductId(productTypeId)
+      }
     })
   },
   { deep: true }

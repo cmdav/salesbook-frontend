@@ -50,8 +50,7 @@ export const userFormFields = ref([
   //   placeholder: 'Confirm password',
   //   databaseField: 'password_confirmation'
   // }
-]);
-
+])
 
 export const measurementFormFields = ref([
   {
@@ -59,7 +58,7 @@ export const measurementFormFields = ref([
     type: 'text',
     value: '',
     required: true,
-    placeholder: 'Enter measurement name',
+    placeholder: 'Enter measurement name'
   },
   {
     label: 'Unit',
@@ -69,8 +68,7 @@ export const measurementFormFields = ref([
     placeholder: 'Enter unit',
     maxLength: 5,
     databaseField: 'unit'
-  },
-  
+  }
 ])
 
 export const currenciesFormFields = ref([
@@ -276,7 +274,7 @@ export const purchaseFormFields = ref([
     type: 'text',
     value: '',
     required: true,
-    placeholder: 'Enter price ',
+    placeholder: 'Enter price',
     databaseField: 'price'
   },
   //{ label: 'Currency', type: 'select', value: '', required: true, placeholder: 'Enter currency ID', databaseField: "currency_id" },
@@ -441,8 +439,7 @@ export const saleFormFields = ref([
   // { label: 'Customer Phone Number', type: 'text', value: '', required: false, placeholder: 'Enter created by', databaseField: "created_by" },
   // { label: 'Customer Address', type: 'text', value: '', required: false, placeholder: 'Enter updated by', databaseField: "updated_by" }
 ])
- 
-  
+
 export const storeFormFields = ref([
   {
     label: 'Product Type ID',
@@ -592,5 +589,4 @@ export const roleFormFields = ref([
     placeholder: 'Enter role',
     databaseField: 'role_name'
   }
-  
 ])
