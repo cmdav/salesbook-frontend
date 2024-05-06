@@ -407,7 +407,7 @@ onMounted(async () => {
 onMounted(async () => {
   try {
     await customersStore.handleAllCustomersName();
-    await productsStore.handleGetAllProductTypeName();
+   //await productsStore.handleGetAllProductTypeName();
   } catch (error) {
     console.error;
   }
