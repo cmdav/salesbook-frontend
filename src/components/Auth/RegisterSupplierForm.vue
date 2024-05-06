@@ -415,6 +415,8 @@ onMounted(async () => {
     }
   }
 });
+
+console.log(VerificationRespData.value)
 </script>
 
 <script></script>
