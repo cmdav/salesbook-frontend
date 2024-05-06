@@ -87,7 +87,7 @@
   </div>
   <div class="my-8">
     <div class="flex justify-end">
-      <span class="font-medium text-gray-700">Total Price: ${{ totalPrice }}</span>
+      <span class="font-medium text-gray-700">Total Price: <span v-html="'&#8358;'"></span> {{ totalPrice }}</span>
       <button
        type="button"
         @click="addProducts"
@@ -147,7 +147,7 @@
         required
         v-model="formState.products[index].price_sold_at"
         type="number"
-       
+        readonly
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
       />
     </div>
@@ -279,10 +279,19 @@ const formState = reactive({
 });
 const addProducts = () => {
   const lastProduct = formState.products[formState.products.length - 1];
-  if (lastProduct.product_type_id.trim() !== "") {
-    formState.products.push({ product_type_id: "", price_sold_at: "", quantity: "" });
+  if (lastProduct.product_type_id.trim() !== "" && lastProduct.quantity > 0 && lastProduct.price_sold_at > 0) {
+    formState.products.push({
+      product_type_id: "",
+      price_sold_at: 0,
+      quantity: 0,
+      batch_no: '',
+      available_qty: 0,
+      amount: 0,
+      vat: 'no'
+    });
   }
 };
+
 const resetForm = () => {
   formState.customer_id = "";
   formState.payment_method = "";
@@ -395,14 +404,18 @@ onMounted(async () => {
 
 // watch quantity change
 watch(() => formState.products.map(product => product.quantity), (newQuantities, oldQuantities) => {
-  formState.products.forEach((product, index) => {
-    if (newQuantities[index] !== oldQuantities[index]) {
+  newQuantities.forEach((quantity, index) => {
+    if (quantity !== oldQuantities[index]) {
+      if (quantity > formState.products[index].available_qty) {
+        // Reset the quantity to the maximum available quantity or clear it
+        formState.products[index].quantity = formState.products[index].available_qty;
+      }
       calculateAmount(index);
     }
   });
 }, { deep: true });
 
-// watch vat change
+// watch vat for changes
 watch(() => formState.products.map(product => product.vat), (newQuantities, oldQuantities) => {
   formState.products.forEach((product, index) => {
     if (newQuantities[index] !== oldQuantities[index]) {
@@ -422,20 +435,21 @@ watch(() => formState.products.map(product => product.price_sold_at), (newQuanti
 
 function calculateAmount(index) {
   const product = formState.products[index];
-  if (!product || product.price_sold_at === null || product.quantity === null) {
-    return 0; // Return 0 if there's insufficient data to calculate
+  if (!product || product.price_sold_at === null || product.quantity === null || product.price_sold_at === "" || product.quantity === "") {
+    return 0;  
   }
   
   const baseAmount = parseFloat(product.price_sold_at) * parseInt(product.quantity);
-  if (product.vat === 'yes') {
-    const vatPercentage = 7.5; // Assuming 7.5% is the VAT rate
-    product.amount = baseAmount * (1 + vatPercentage / 100);
-  } else {
-    product.amount = baseAmount; // No VAT applied
+  let amount = baseAmount;
+  if (product.vat === 'yes' && baseAmount > 0) {
+    const vatPercentage = 7.5;  // Default VAT percentage
+    amount += baseAmount * (vatPercentage / 100);
   }
 
-  return product.amount; // Ensure amount is returned
+  product.amount = amount;
+  return amount;  
 }
+
 
 
 
