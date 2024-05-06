@@ -332,11 +332,10 @@ export const getSupplierByProductTypeId = async (id) => {
         Authorization: 'Bearer ' + token
       }
     })
+    console.log(res)
     catchAxiosSuccess(res)
     return res.data
   } catch (error) {
     catchAxiosError(error)
-    throw error
   }
 }
-
