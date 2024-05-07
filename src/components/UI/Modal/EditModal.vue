@@ -1,11 +1,8 @@
 <template>
   <div
-    class="modal backdrop-blur z-[100] fixed animate__zoomIn animate__rubberBand animate__fadeOut min-h-screen h-full"
-  >
+    class="modal backdrop-blur z-[100] fixed animate__zoomIn animate__rubberBand animate__fadeOut min-h-screen h-full">
     <div class="modal__body relative w-full md:max-w-[600px] bg-white m-0 md:px-5 py-4 px-4">
-      <header
-        class="flex flex-row items-center justify-between border-b-[#000000] pb-[5px] mb-[35px] border-b-[1px]"
-      >
+      <header class="flex flex-row items-center justify-between border-b-[#000000] pb-[5px] mb-[35px] border-b-[1px]">
         <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">
           {{ modalTitle || 'Edit Detail' }}
         </h4>
@@ -13,13 +10,8 @@
       </header>
       <!--Pass the formField and  value(value is gotten onclick from the datatable) as props from the parent to this modal-->
       <form @submit.prevent="editForm">
-        <ReusableForm
-          :fields="formField"
-          @handleEditCategoryChange="handleEditCategoryChange"
-          @fieldChanged="handleFieldChanged"
-          :imagePath="imagePath"
-          :hasMinDate="hasMinDate"
-        />
+        <ReusableForm :fields="formField" @handleEditCategoryChange="handleEditCategoryChange"
+          @fieldChanged="handleFieldChanged" :imagePath="imagePath" :hasMinDate="hasMinDate" />
         <input type="submit" v-if="!loading" class="btn-brand" value="Submit" />
 
         <Loader v-else />
@@ -62,9 +54,9 @@ watch(
   items,
   (newItems) => {
     if (newItems) {
-      console.log(newItems)
+      console.log("New Items", newItems)
       formField.value.forEach((field) => {
-        console.log(field)
+        console.log("Field", field)
 
         if (field.databaseField == 'expiry_date') {
           console.log('okay')
@@ -84,8 +76,7 @@ watch(
           //set the selected item remove spaces and case sensitivity
           const selectedItem = field.options.find(
             (option) =>
-              option.label.replace(/\s+/g, '').toLowerCase() ===
-              newItems[field.databaseField].replace(/\s+/g, '').toLowerCase()
+              option.label.replace(/\s+/g, '').toLowerCase() === newItems[field.databaseField].replace(/\s+/g, '').toLowerCase()
             // option.label.replace(/\s+/g, '').toLowerCase() === !newItems[field.databaseField] ? newItems[field.databaseField].replace(/\s+/g, '').toLowerCase() : ""
           )
           console.log('New Item', newItems[field.databaseField])

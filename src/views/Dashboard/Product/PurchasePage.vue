@@ -55,9 +55,9 @@
                       Cost Price
                       <span class="text-red-500">*</span>
                     </label>
-
+                    <!-- @@keyup.enter="updateSellingPrice($event.target.value)" -->
                     <input required type="number" v-model="formState.purchases[index].cost_price"
-                      @input="updateSellingPrice($event.target.value)"
+                      @change="updatePriceId($event.target.value)"
                       class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
                       :readonly="isReadonly" />
                     <!-- Hidden input to hold the actual price_id for submission -->
@@ -70,7 +70,7 @@
                       <span class="text-red-500">*</span>
                     </label>
 
-                    <input required type="number" :value="formState.purchases[index].selling_price"
+                    <input required type="number" v-model="formState.purchases[index].selling_price"
                       class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
                   </div>
 
@@ -112,7 +112,7 @@
                   </div>
                   <div class="w-full">
                     <label class="block text-sm font-medium text-gray-700">
-                      Expired Date
+                      Expiry Date
                       <span class="text-red-500">*</span>
                     </label>
 
@@ -351,7 +351,7 @@ const fetchSupplierByProductId = async (id) => {
 //   }
 // }
 
-const updatePriceId = () => {
+const updatePrice = () => {
 
   console.log("Index", 0)
   console.log("price", getShowSupplierPrice.value)
@@ -400,32 +400,44 @@ const fetchSystemSellingPrice = async () => {
 }
 
 
-const updateSellingPrice = (costPrice) => {
+const updatePriceId = (costPrice) => {
   console.log("System Selling Price", systemValue.value)
   console.log("Cost Price", costPrice)
   console.log("Selling Price", formState.purchases[0].selling_price)
   if (systemValue.value && !isReadonly.value) {
-    let cost_price = parseFloat(costPrice)
-    const auto_generated_selling_price = parseFloat(systemValue.value)
-    let totalPriceField = Math.floor(cost_price + cost_price * (auto_generated_selling_price / 100))
-    console.log("Total Price Field", totalPriceField)
-    formState.purchases[0].price_id = cost_price
-    formState.purchases[0].selling_price = totalPriceField
+    // let cost_price = parseFloat(costPrice)
+    formState.purchases[0].price_id = costPrice
+
+    console.log("Price ID", formState.purchases[0].price_id)
   }
 }
 
-const updateSellingPriceWhenPriceSet = () => {
-  console.log("System Selling Price", systemValue.value)
-  console.log("Cost Price", formState.purchases[0].cost_price)
-  console.log("Selling Price", formState.purchases[0].selling_price)
-  if (systemValue.value && !isReadonly.value) {
-    let cost_price = parseFloat(formState.purchases[0].cost_price)
-    const auto_generated_selling_price = parseFloat(systemValue.value)
-    let totalPriceField = Math.floor(cost_price + cost_price * (auto_generated_selling_price / 100))
-    console.log("Total Price Field", totalPriceField)
-    formState.purchases[0].selling_price = totalPriceField
-  }
-}
+// const updateSellingPrice = (costPrice) => {
+//   console.log("System Selling Price", systemValue.value)
+//   console.log("Cost Price", costPrice)
+//   console.log("Selling Price", formState.purchases[0].selling_price)
+//   if (systemValue.value && !isReadonly.value) {
+//     let cost_price = parseFloat(costPrice)
+//     const auto_generated_selling_price = parseFloat(systemValue.value)
+//     let totalPriceField = Math.floor(cost_price + cost_price * (auto_generated_selling_price / 100))
+//     console.log("Total Price Field", totalPriceField)
+//     formState.purchases[0].price_id = cost_price
+//     formState.purchases[0].selling_price = totalPriceField
+//   }
+// }
+
+// const updateSellingPriceWhenPriceSet = () => {
+//   console.log("System Selling Price", systemValue.value)
+//   console.log("Cost Price", formState.purchases[0].cost_price)
+//   console.log("Selling Price", formState.purchases[0].selling_price)
+//   if (systemValue.value && !isReadonly.value) {
+//     let cost_price = parseFloat(formState.purchases[0].cost_price)
+//     const auto_generated_selling_price = parseFloat(systemValue.value)
+//     let totalPriceField = Math.floor(cost_price + cost_price * (auto_generated_selling_price / 100))
+//     console.log("Total Price Field", totalPriceField)
+//     formState.purchases[0].selling_price = totalPriceField
+//   }
+// }
 
 
 
@@ -439,7 +451,7 @@ const fetchSuppliersPriceByProduct = async (getProductId, supplierId) => {
     loading.value = false
     catchAxiosSuccess(response)
     getShowSupplierPrice.value = response
-    updatePriceId()
+    updatePrice()
     console.log("Response", response)
     return response
   } catch (error) {
@@ -493,7 +505,7 @@ watch(
     fetchSuppliersPriceByProduct(getProductId.value, supplierId[0])
     formState.purchases[0].product_type_id = getProductId.value
     formState.purchases[0].supplier_id = supplierId[0]
-    updateSellingPriceWhenPriceSet()
+    // updateSellingPriceWhenPriceSet()
     console.log("Product, Supplier", getProductId.value, supplierId[0]);
   },
   { deep: true }
