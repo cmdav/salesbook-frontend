@@ -339,3 +339,20 @@ export const getSupplierByProductTypeId = async (id) => {
     catchAxiosError(error)
   }
 }
+
+export const getReceipt = async (salesid) => {
+  const token = await getToken()
+
+  try {
+    let res = await axios.get(`download-sales-receipt/${salesid}`, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    })
+    console.log(res)
+    catchAxiosSuccess(res)
+    return res.data
+  } catch (error) {
+    catchAxiosError(error)
+  }
+}
