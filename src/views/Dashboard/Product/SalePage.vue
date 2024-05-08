@@ -232,7 +232,7 @@ const { allCustomersNames } = storeToRefs(customersStore);
 const { allProductTypeName } = storeToRefs(productsStore);
 
 console.log(allProductTypeName.value);
-console.log(allCustomersNames.value);
+//console.log(allCustomersNames.value);
 
 const showModal = ref(false)
 const addNewCustomer = () => {
@@ -407,7 +407,7 @@ onMounted(async () => {
 onMounted(async () => {
   try {
     await customersStore.handleAllCustomersName();
-   //await productsStore.handleGetAllProductTypeName();
+    await productsStore.handleGetAllProductTypeName();
   } catch (error) {
     console.error;
   }
