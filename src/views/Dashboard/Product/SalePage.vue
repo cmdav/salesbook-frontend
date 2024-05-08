@@ -461,9 +461,6 @@ function calculateAmount(index) {
   return amount;  
 }
 
-
-
-
 // Function to update product details based on the selected product type
 const updatePriceId = (productTypeId, index) => {
   const productInfo = allProductTypeName.value.find(product => product.id === productTypeId);
@@ -484,7 +481,7 @@ watch(() => formState.products.map(p => p.product_type_id), (newProductTypeIds, 
     }
   });
 }, { deep: true });
-////////////////////////
+
 const updateBatchDetails = (batchId, index) => {
   const productInfo = allProductTypeName.value.find(p => p.batches.some(b => b.id === batchId));
   const batchInfo = productInfo ? productInfo.batches.find(batch => batch.id === batchId) : null;
@@ -502,7 +499,6 @@ const updateBatchDetails = (batchId, index) => {
   }
 };
 
-
 watch(() => formState.products.map(p => p.batch_id), (newBatchIds, oldBatchIds) => {
   newBatchIds.forEach((batchId, index) => {
     if (batchId !== oldBatchIds[index]) {
@@ -511,15 +507,20 @@ watch(() => formState.products.map(p => p.batch_id), (newBatchIds, oldBatchIds) 
   });
 }, { deep: true });
 
-
-
-
-
+const showReceipt = async (salesid) => {
+    try {
+        let res = await productsStore.handleGetReceipt(salesid);
+        return res;
+    } catch (error) {
+        console.error('Failed to generate receipt:', error);
+    } 
+};
 
 const store = useStore();
 const permissions = computed(() => {
   return store.getUser.user.permission.permissions.find((p) => p.page_name === "sales");
 });
+console.log(permissions)
 
 const additionalColumns = computed(() => {
   const cols = [];
@@ -528,6 +529,9 @@ const additionalColumns = computed(() => {
   }
   if (permissions.value?.del) {
     cols.push({ name: "Delete", action: handleDelete });
+  }
+  if (permissions.value?.read) {
+    cols.push({ name: "View Receipt", action: (salesid) => showReceipt(salesid) });
   }
   return cols;
 });

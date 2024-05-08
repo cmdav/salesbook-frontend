@@ -13,12 +13,12 @@
               <span>Total Sales</span>
             </div>
             <div class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]">
-              {{ productsStore?.sales?.total }}
+              {{ salesNo }}
             </div>
           </div>
         </div>
       </div>
-      <DataTableLayout
+      <!-- <DataTableLayout
         @toggleModal="showSalesModal = !showSalesModal"
         :key="forceUpdate"
         endpoint="sales"
@@ -26,7 +26,7 @@
         :additionalColumns="additionalColumns"
       >
         <button class="btn-brand" @click="closeUploadModal">Upload</button>
-      </DataTableLayout>
+      </DataTableLayout> -->
     </div>
     <SaleFormModal
       v-if="showSalesModal"
@@ -352,7 +352,7 @@ onMounted(async () => {
   await productsStore.handleGetSales();
 });
 
-
+const salesNo = ref("")
 onMounted(async () => {
   try {
     await customersStore.handleAllCustomersName();
@@ -360,6 +360,8 @@ onMounted(async () => {
   } catch (error) {
     console.error;
   }
+
+  salesNo.value = productsStore?.sales?.total
 });
 
 
@@ -400,6 +402,9 @@ const additionalColumns = computed(() => {
   }
   if (permissions.value?.del) {
     cols.push({ name: "Delete", action: handleDelete });
+  }
+  if (permissions.value?.download) {
+    cols.push({ name: "View Receipt", action: (salesid) => showReceipt(salesid) });
   }
   return cols;
 });
