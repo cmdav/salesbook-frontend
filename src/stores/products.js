@@ -218,10 +218,10 @@ export const useProductStore = defineStore('Products', () => {
     }
   }
 
-  const handleGetReceipt = async (salesid) => {
+  const handleGetReceipt = async (transaction_id) => {
     try {
-      receipt.value = await getReceipt(salesid)
-      return suppliersPrice.value
+      receipt.value = await getReceipt(transaction_id)
+      return receipt.value
     } catch (error) {
       console.error(error)
     }

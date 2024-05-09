@@ -27,11 +27,12 @@
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
         <div class="mb-3 flex flex-col w-full">
           <AuthInput
-            label="Middle Name"
-            :error="false"
+            label="Company Name*"
+            :error="errors.company_name"
+            :errorsMsg="errors.company_name"
             type="text"
-            placeholder="Enter middle Name"
-            v-model="middelName"
+            placeholder="Enter company name"
+            v-model="formData.company_name"
           />
         </div>
         <div class="mb-3 flex flex-col w-full">
@@ -209,6 +210,7 @@ const dob = ref("");
 const formData = reactive({
   firstName: "",
   lastName: "",
+  company_name: "",
   // code: "",
   email: "",
   password: "",
@@ -219,6 +221,7 @@ let loading = ref(false);
 const errors = reactive({
   firstName: false,
   lastName: false,
+  company_name: "",
   // code: false,
   email: false,
   password: false,
@@ -231,6 +234,7 @@ const confirmPassword = ref("");
 const errorsMsg = {
   firstName: "First name is required",
   lastName: "Last name is required",
+  company_name: "Company Name is required",
   // code: "Organisation code is required",
   email: "Email is required",
   password: "Password is required",
@@ -338,6 +342,7 @@ const isFormValid = computed(() => {
     formData.lastName.trim() !== "" &&
     formData.email.trim() !== "" &&
     formData.password.trim() !== "" &&
+    formData.company_name.trim() !== "" &&
     // formData.code.trim() !== "" &&
     confirmPassword.value.trim() !== ""
   );
@@ -347,6 +352,7 @@ const clearInputs = () => {
     (formData.lastName = ""),
     (formData.email = ""),
     (formData.password = "");
+    (formData.company_name = "");
   middelName.value = "";
   phoneNo.value = "";
   // formData.code = "";
@@ -368,6 +374,7 @@ const handleSignup = async () => {
   let payload = {
     first_name: formData.firstName,
     last_name: formData.lastName,
+    company_name: formData.company_name,
     middle_name: middelName.value,
     phone_number: phoneNo.value,
     // organization_code: formData.code,
