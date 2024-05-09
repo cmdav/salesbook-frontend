@@ -551,29 +551,41 @@ const generateReceiptPDF = (receiptData) => {
   // Create a new jsPDF instance
   const doc = new jsPDF();
 
-  // Define receipt content
-  let receiptContent = `
-    Sales Receipt
-    -------------------------
-    Transaction ID: ${receiptData.transaction_details.transaction_id}
-    Date: ${receiptData.transaction_details.created_at}
-    Total Amount: ${receiptData.transaction_details.transaction_amount}
-    `;
+  // Define styles
+  const headerStyle = { fontSize: 24, fontStyle: 'bold', textColor: '#336699' };
+  const sectionHeaderStyle = { fontSize: 16, fontStyle: 'bold', textColor: '#555555' };
+  const itemStyle = { fontSize: 12, textColor: '#333333' };
 
-  // Loop through items and add them to the receipt content
+  // Add header
+  doc.setFont(headerStyle.fontStyle, 'normal');
+  doc.setFontSize(headerStyle.fontSize);
+  doc.setTextColor(headerStyle.textColor);
+  doc.text('Sales Receipt', 105, 20, null, null, 'center');
+
+  // Add transaction details section
+  doc.setFont(sectionHeaderStyle.fontStyle, 'normal');
+  doc.setFontSize(sectionHeaderStyle.fontSize);
+  doc.setTextColor(sectionHeaderStyle.textColor);
+  doc.text(`Transaction ID: ${receiptData.transaction_details.transaction_id}`, 20, 40);
+  doc.text(`Date: ${receiptData.transaction_details.created_at}`, 20, 50);
+  doc.text(`Total Amount: ${receiptData.transaction_details.transaction_amount}`, 20, 60);
+
+  // Add itemized list section
+  let yPosition = 80; // Initial y position
   receiptData.items.forEach((item, index) => {
-    receiptContent += `
-      -------------------------
-      Product: ${item.product_type_name}
-      Price: ${item.amount}
-      Quantity: ${item.quantity}
-      VAT: ${item.vat === 1 ? 'Yes' : 'No'}
-      Amount: ${item.total_price}
-    `;
-  });
+    // Add item details
+    doc.setFont(itemStyle.fontStyle, 'normal');
+    doc.setFontSize(itemStyle.fontSize);
+    doc.setTextColor(itemStyle.textColor);
+    doc.text(`Product: ${item.product_type_name}`, 20, yPosition);
+    doc.text(`Price: ${item.amount}`, 20, yPosition + 10);
+    doc.text(`Quantity: ${item.quantity}`, 20, yPosition + 20);
+    doc.text(`VAT: ${item.vat === 1 ? 'Yes' : 'No'}`, 20, yPosition + 30);
+    doc.text(`Amount: ${item.total_price}`, 20, yPosition + 40);
 
-  // Add receipt content to the PDF document
-  doc.text(receiptContent, 10, 10);
+    // Increase y position for next item
+    yPosition += 60; // Adjust as needed for spacing
+  });
 
 // Convert the PDF document to a data URI
 const pdfDataUri = doc.output('datauristring');
@@ -581,7 +593,6 @@ const pdfDataUri = doc.output('datauristring');
 // Open the PDF in a new browser tab for viewing
 const viewerWindow = window.open();
 viewerWindow.document.write(`<iframe width='100%' height='100%' src='${pdfDataUri}'></iframe>`);
-  
 
   // // Save or download the PDF
   // doc.save('receipt.pdf');
