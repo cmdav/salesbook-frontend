@@ -57,7 +57,6 @@
                     </label>
                     <!-- @@keyup.enter="updateSellingPrice($event.target.value)" -->
                     <input required type="number" v-model="formState.purchases[index].cost_price"
-                      @change="updatePriceId($event.target.value)"
                       class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
                       :readonly="isReadonly" />
                     <!-- Hidden input to hold the actual price_id for submission -->
@@ -191,11 +190,14 @@ const formState = reactive({
 })
 const addPurchases = () => {
   const lastPurchases = formState.purchases[formState.purchases.length - 1]
+  console.log("What is the form state", formState)
   if (lastPurchases.product_type_id.trim() !== '') {
     formState.purchases.push({
       product_type_id: '',
       supplier_id: '',
       price_id: '',
+      selling_price: '',
+      cost_price: '',
       batch_no: '',
       quantity: '',
       product_identifier: '',
@@ -209,6 +211,8 @@ const resetForm = () => {
       product_type_id: '',
       supplier_id: '',
       price_id: '',
+      selling_price: '',
+      cost_price: '',
       batch_no: '',
       quantity: '',
       product_identifier: '',
@@ -295,6 +299,19 @@ const checkDate = (fieldDatabase, value) => {
   }
 }
 
+// const resetFormFields = () => {
+//   formState.purchases.forEach((purchase) => {
+//     purchase.supplier_id = ''
+//   })
+// }
+
+// watch(
+//   () => formState.purchases.length,
+//   () => {
+
+//   }
+// )
+
 // Call this function whenever the related fields change.
 watch(
   () => purchaseFormFields.value.find((field) => field.databaseField === 'expired_at')?.value,
@@ -351,29 +368,29 @@ const fetchSupplierByProductId = async (id) => {
 //   }
 // }
 
-const updatePrice = () => {
+const updatePrice = (index) => {
 
-  console.log("Index", 0)
+  console.log("Index", index)
   console.log("price", getShowSupplierPrice.value)
   console.log("Supplier", suppliersByProductId.value.length)
   console.log("form purchase", formState.purchases)
-  console.log("form with INDEX", formState.purchases[0].price_id)
+  console.log("form with INDEX", formState.purchases[index].price_id)
 
   if (getShowSupplierPrice.value.cost_price !== 0) {
     console.log("Entered the if")
-    formState.purchases[0].price_id = getShowSupplierPrice.value.cost_price
-    formState.purchases[0].cost_price = getShowSupplierPrice.value.cost_price
+    formState.purchases[index].price_id = getShowSupplierPrice.value.cost_price
+    formState.purchases[index].cost_price = getShowSupplierPrice.value.cost_price
   }
   else if (getShowSupplierPrice.value.cost_price === 0) {
     isReadonly.value = false
-    formState.purchases[0].price_id = ''
-    formState.purchases[0].cost_price = ''
+    formState.purchases[index].price_id = ''
+    formState.purchases[index].cost_price = ''
   }
   else {
     console.log("Entered the else")
     isReadonly.value = false
-    formState.purchases[0].price_id = ''
-    formState.purchases[0].cost_price = ''
+    formState.purchases[index].price_id = ''
+    formState.purchases[index].cost_price = ''
   }
 }
 
@@ -412,6 +429,17 @@ const updatePriceId = (costPrice) => {
   }
 }
 
+const updatePriceTypeId = (productTypeId, index) => {
+  const productInfo = allProductTypeName.value.find(product => product.id === productTypeId);
+  if (productInfo) {
+    formState.purchases[index].price_id = ""
+    formState.purchases[index].display_price = ""
+  } else {
+    formState.purchases[index].price_id = "";
+    formState.purchases[index].display_price = "";
+  }
+};
+
 // const updateSellingPrice = (costPrice) => {
 //   console.log("System Selling Price", systemValue.value)
 //   console.log("Cost Price", costPrice)
@@ -441,7 +469,7 @@ const updatePriceId = (costPrice) => {
 
 
 
-const fetchSuppliersPriceByProduct = async (getProductId, supplierId) => {
+const fetchSuppliersPriceByProduct = async (getProductId, supplierId, index) => {
   try {
     loading.value = true
     let response = await apiService.get(`latest-supplier-price/${getProductId}/${supplierId}`)
@@ -451,7 +479,7 @@ const fetchSuppliersPriceByProduct = async (getProductId, supplierId) => {
     loading.value = false
     catchAxiosSuccess(response)
     getShowSupplierPrice.value = response
-    updatePrice()
+    updatePrice(index)
     console.log("Response", response)
     return response
   } catch (error) {
@@ -500,29 +528,63 @@ const fetchAllSuppliers = async () => {
 console.log("All Product", allProductTypeName)
 watch(
   () => formState.purchases.map((p) => p.supplier_id),
-  (supplierId) => {
-    console.log("Supplier ID", supplierId)
-    fetchSuppliersPriceByProduct(getProductId.value, supplierId[0])
-    formState.purchases[0].product_type_id = getProductId.value
-    formState.purchases[0].supplier_id = supplierId[0]
-    // updateSellingPriceWhenPriceSet()
-    console.log("Product, Supplier", getProductId.value, supplierId[0]);
+  (newSupplierId, oldSupplierId) => {
+    newSupplierId.forEach((supplierId, index) => {
+      if (supplierId !== oldSupplierId[index]) {
+        console.log("Supplier ID", supplierId)
+
+        if (supplierId && getProductId.value) {
+          fetchSuppliersPriceByProduct(getProductId.value, supplierId, index)
+        }
+        // formState.purchases[0].product_type_id = getProductId.value
+        // formState.purchases[0].supplier_id = supplierId[0]
+        // updateSellingPriceWhenPriceSet()
+        console.log("Product, Supplier", getProductId.value, supplierId);
+      }
+    })
   },
   { deep: true }
 )
+// watch(
+//   () => formState.purchases.map((p) => p.supplier_id),
+//   (supplierId) => {
+//     console.log("Supplier ID", supplierId)
+//     fetchSuppliersPriceByProduct(getProductId.value, supplierId[0])
+//     // formState.purchases[0].product_type_id = getProductId.value
+//     // formState.purchases[0].supplier_id = supplierId[0]
+//     // updateSellingPriceWhenPriceSet()
+//     console.log("Product, Supplier", getProductId.value, supplierId[0]);
+//   },
+//   { deep: true }
+// )
 
 watch(
   () => formState.purchases.map((p) => p.product_type_id),
   (newProductTypeIds, oldProductTypeIds) => {
     newProductTypeIds.forEach((productTypeId, index) => {
       if (productTypeId !== oldProductTypeIds[index]) {
-        getProductId.value = productTypeId;
         console.log("Product ID", getProductId.value)
-        fetchSupplierByProductId(productTypeId)
+        updatePriceTypeId(productTypeId, index)
+        if (productTypeId) {
+          isReadonly.value = false
+          getProductId.value = productTypeId;
+          fetchSupplierByProductId(productTypeId)
+        }
       }
     })
   },
   { deep: true }
+)
+
+watch(() => formState.purchases.map((p) => p.cost_price),
+  (oldCostPrice) => {
+    oldCostPrice.forEach((costPrice, index) => {
+      if (costPrice !== "") {
+        formState.purchases[index].price_id = costPrice
+        console.log(costPrice)
+      }
+    })
+  }
 )
 
 onMounted(async () => {
