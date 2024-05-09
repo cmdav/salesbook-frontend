@@ -218,6 +218,7 @@
 
 <script setup>
 import { onMounted, watch, ref, reactive } from "vue";
+import jsPDF from 'jspdf';
 import { saleFormFields } from "@/formfields/formFields";
 import SaleFormModal from "@/components/UI/Modal/SalesFormModal.vue";
 import { useSharedComponent } from "@/composable/useSharedComponent";
@@ -507,14 +508,7 @@ watch(() => formState.products.map(p => p.batch_id), (newBatchIds, oldBatchIds) 
   });
 }, { deep: true });
 
-const showReceipt = async (salesid) => {
-    try {
-        let res = await productsStore.handleGetReceipt(salesid);
-        return res;
-    } catch (error) {
-        console.error('Failed to generate receipt:', error);
-    } 
-};
+
 
 const store = useStore();
 const permissions = computed(() => {
@@ -531,8 +525,70 @@ const additionalColumns = computed(() => {
     cols.push({ name: "Delete", action: handleDelete });
   }
   if (permissions.value?.read) {
-    cols.push({ name: "View Receipt", action: (salesid) => showReceipt(salesid) });
+    cols.push({ name: "View Receipt", action: (row) => handleReceipt(row.transaction_id) });
+    // cols.push({ name: "View Receipt", action: (transaction_id) => showReceipt(transaction_id) });
   }
   return cols;
 });
+
+const handleReceipt = async (transactionId) => {
+  console.log(transactionId)
+  try {
+        let receiptInfo = await productsStore.handleGetReceipt(transactionId);   
+        console.log(receiptInfo);
+      if (receiptInfo) {
+        generateReceiptPDF(receiptInfo);
+          return receiptInfo; // Generate PDF receipt using receipt data
+      } else {
+        console.error('Failed to fetch receipt data');
+      }
+    } catch (error) {
+        console.error('Failed to generate receipt:', error);
+    } 
+};
+// Define a method to generate PDF receipt
+const generateReceiptPDF = (receiptData) => {
+  // Create a new jsPDF instance
+  const doc = new jsPDF();
+
+  // Define receipt content
+  let receiptContent = `
+    Sales Receipt
+    -------------------------
+    Transaction ID: ${receiptData.transaction_details.transaction_id}
+    Date: ${receiptData.transaction_details.created_at}
+    Total Amount: ${receiptData.transaction_details.transaction_amount}
+    `;
+
+  // Loop through items and add them to the receipt content
+  receiptData.items.forEach((item, index) => {
+    receiptContent += `
+      -------------------------
+      Product: ${item.product_type_name}
+      Price: ${item.amount}
+      Quantity: ${item.quantity}
+      VAT: ${item.vat === 1 ? 'Yes' : 'No'}
+      Amount: ${item.total_price}
+    `;
+  });
+
+  // Add receipt content to the PDF document
+  doc.text(receiptContent, 10, 10);
+
+// Convert the PDF document to a data URI
+const pdfDataUri = doc.output('datauristring');
+
+// Open the PDF in a new browser tab for viewing
+const viewerWindow = window.open();
+viewerWindow.document.write(`<iframe width='100%' height='100%' src='${pdfDataUri}'></iframe>`);
+  
+
+  // // Save or download the PDF
+  // doc.save('receipt.pdf');
+};
+
+
+
+
+
 </script>
