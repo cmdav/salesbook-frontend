@@ -340,16 +340,16 @@ export const getSupplierByProductTypeId = async (id) => {
   }
 }
 
-export const getReceipt = async (salesid) => {
+export const getReceipt = async (transaction_id) => {
   const token = await getToken()
 
   try {
-    let res = await axios.get(`download-sales-receipt/${salesid}`, {
+    let res = await axios.get(`download-sales-receipts/${transaction_id}`, {
       headers: {
         Authorization: 'Bearer ' + token
       }
     })
-    console.log(res)
+    console.log(res.data)
     catchAxiosSuccess(res)
     return res.data
   } catch (error) {
