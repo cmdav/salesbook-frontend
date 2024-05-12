@@ -41,23 +41,6 @@
         </div>
       </div>
     </SaleFormModal>
-    <!-- <DataTableLayout
-      @toggleModal="showModal = !showModal"
-      :hideToggleButtonLabel="false"
-      :key="forceUpdate"
-      endpoint="job-roles"
-      :additionalColumns="additionalColumns"
-    >
-    </DataTableLayout> -->
-
-    <!-- <FormModal
-      v-if="showModal"
-      @close="closeModal"
-      :formTitle="'Add Purchase'"
-      :fields="purchaseFormFields"
-      @fetchDataForSubCategory="fetchDataForSubCategory"
-      :url="'/job-roles'"
-    ></FormModal> -->
 
     <EditModal
       v-if="showEditModal"
@@ -89,8 +72,6 @@ import { useStore } from "@/stores/user";
 const store = useStore();
 const securityStore = useSecurityStore();
 const { allRoles, allPages, roles, pages, permissions } = storeToRefs(securityStore);
-import SettingsLayoutcopy from "@/components/Layouts/RolesTable.vue";
-// import PermissionFormModalcopy from "@/components/UI/Modal/PermissionFormModalcopy.vue";
 import SaleFormModal from "@/components/UI/Modal/SalesFormModal.vue";
 import { useSharedComponent } from "@/composable/useSharedComponent";
 const emit = defineEmits("forceRefresh");
@@ -101,12 +82,12 @@ const showModal = ref(false);
 const formState = reactive({ role_name: "" });
 const {
   DataTableLayout,
+  usePostComposable,
   useEditComposable,
   EditModal,
   DeleteModal,
   useDeleteComposable,
   defineEmits,
-  usePostComposable
 } = useSharedComponent('job-roles');
 
 const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
@@ -123,14 +104,17 @@ const closeModal = () => {
   showModal.value = !showModal.value;
   formState.role_name = "";
 };
+
 const handleAddRole = async () => {
   loading.value = true;
+
   let payload = {
     role_name: formState.role_name,
   };
+
   try {
     let res = await securityStore.handleAddRole(payload);
-    await securityStore.handleGetRole();
+     await securityStore.handleGetRole();
     loading.value = false;
     return res;
   } catch (error) {
@@ -138,9 +122,11 @@ const handleAddRole = async () => {
   } finally {
     loading.value = false;
     closeModal();
-    formState.role_name = "";
+    forceRefresh()
   }
+
 };
+
 const changePage = async (link) => {
   try {
     await securityStore.handleGetPermissions(
@@ -151,6 +137,7 @@ const changePage = async (link) => {
     //
   }
 };
+
 onMounted(async () => {
   try {
     await securityStore.handleGetAllRole();
