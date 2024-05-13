@@ -11,8 +11,15 @@
     </FormModal>
     <DeleteModal v-if="showDeleteModal" @close="closeDeleteModal" @updated="forceRefresh" :items="itemsId"
       :url="'/currencies'" :modalTitle="modalTitle" />
-    <EditModal v-if="showEditModal" @close="closeEditModal" @updated="forceRefresh" :items="items"
-      :formField="currenciesFormFields" :url="'currencies'" />
+    <EditModal 
+    v-if="showEditModal" 
+    @close="closeEditModal" 
+    :items="items" 
+    @updated="forceRefresh" 
+      :formField="currenciesFormFields" 
+      :url="'currencies'" />
+
+      
     <UploadModal v-if="showUploadModal" @close="closeUploadModal" @updated="forceRefresh" :url="'/currencies'"
       type="Currency" />
   </DashboardLayout>

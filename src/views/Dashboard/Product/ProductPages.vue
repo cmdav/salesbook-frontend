@@ -99,7 +99,7 @@
       :modalTitle="modalTitle"
     />
     <!--Modal to edit  product types-->
-    <EditModal
+    <!-- <EditModal
       v-if="showEditModal"
       @close="closeEditModal"
       @fetchDataForSubCategory="fetchDataForSubCategory"
@@ -107,6 +107,14 @@
       @updated="forceRefresh"
       :formField="dynamicFormFields"
       :url="dynamicUrl"
+    /> -->
+    <EditModal
+      v-if="showEditModal"
+      @close="closeEditModal"
+      :items="items"
+      @updated="forceRefresh"
+      :formField="formFields"
+      :url="'/product-types'"
     />
     <UploadModal
       v-if="showUploadModal"
@@ -160,7 +168,7 @@ const { showModal, showViewModal, forceUpdate, closeModal, closeViewModal } = us
   '/products',
   formFields
 )
-const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit)
+const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable()
 
 // fetchDataForSubCategory is emitted
 const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg } = useSelectComposable(
@@ -282,8 +290,9 @@ const dynamicFormFields = computed(() => {
     // check if product type and product name are the same
     if (items.value.product_name == items.value.product_type_name) {
       console.log('found')
-      return formFields
+     formFields
     }
+    formFields
   }
 
   return productTypeFormFields
