@@ -9,7 +9,7 @@
                 <!-- <div class="icon">
                   <img src="/assets/verifiedusers-5d08be57.svg" alt="" />
                 </div> -->
-                <div
+                <!-- <div
                   class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
                 >
                   <span>Total Products</span>
@@ -18,7 +18,7 @@
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
                 >
                   {{ products?.total }}
-                </div>
+                </div> -->
               </div>
             </div>
 
