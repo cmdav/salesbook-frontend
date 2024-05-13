@@ -113,7 +113,7 @@
       @close="closeEditModal"
       :items="items"
       @updated="forceRefresh"
-      :formField="formFields"
+      :formField="dynamicFormFields"
       :url="'/product-types'"
     />
     <UploadModal
