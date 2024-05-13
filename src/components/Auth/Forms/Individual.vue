@@ -221,7 +221,7 @@ let loading = ref(false);
 const errors = reactive({
   firstName: false,
   lastName: false,
-  company_name: "",
+  company_name: false,
   // code: false,
   email: false,
   password: false,

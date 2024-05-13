@@ -17,18 +17,18 @@ export const useCustomerstore = defineStore('Customer', () => {
   const customerNames = ref({})
 const companyNames = ref({})
 const allCustomersNames = ref({})
+
 const handleAllCustomersName = async () => {
     try {
       allCustomersNames.value = await allCustomersName()
-      console.log('getting names')
+      // console.log('getting names')
      console.log(allCustomersNames.value)
       return allCustomersNames.value
     } catch (error) {
       console.error(error)
     }
-  
     }
-const handleCompanyName = async () => {
+  const handleCompanyName = async () => {
     try {
       companyNames.value = await companyName()
       return companyNames.value
@@ -36,7 +36,17 @@ const handleCompanyName = async () => {
       console.error(error)
     }
   }
-const handleAddCustomer = async (payload) => {
+
+  const handleCustomerName = async () => {
+    try {
+      customerNames.value = await customerName()
+      return customerNames.value
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  
+  const handleAddCustomer = async (payload) => {
   try {
     
     const response = await addCustomer(payload)
@@ -56,20 +66,10 @@ const handleAddCustomer = async (payload) => {
         customer_detail: details
       });
    }
-
-    
     return response
   } catch (error) {
     console.error(error)
   }
-}
-  const handleCustomerName = async () => {
-    try {
-      customerNames.value = await customerName()
-      return customerNames.value
-    } catch (error) {
-      console.error(error)
-    }
   }
 
   const allCustomer = async () => {
