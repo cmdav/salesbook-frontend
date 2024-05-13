@@ -26,7 +26,7 @@ export function useUploadComposable(url, file, type) {
       await fetchPage(url.value, 1)
       loading.value = false
       catchAxiosSuccess(response)
-      forceUpdate.value++
+      // forceUpdate.value++
       return response
     } catch (error) {
       catchAxiosError(error)
