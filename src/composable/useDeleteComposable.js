@@ -10,14 +10,18 @@ export function useDeleteComposable(url, ItemObject) {
   let itemsId = ref('')
   let errorMessage = ref()
   let loading = ref(false)
+  const forceUpdate = ref(0)
 
   const closeDeleteModal = () => {
     showDeleteModal.value = false
     loading.value = false
+    forceUpdate.value++
+
   }
   const handleDelete = (item) => {
     itemsId.value = item
     showDeleteModal.value = true
+    forceUpdate.value++
   }
 
   const deleteForm = async () => {
@@ -30,8 +34,8 @@ export function useDeleteComposable(url, ItemObject) {
       //await fetchPage(url, 1)
 
       loading.value = false
+      forceUpdate.value++
       catchAxiosSuccess(response)
-
       return response
     } catch (error) {
       catchAxiosError(error)
@@ -49,7 +53,7 @@ export function useDeleteComposable(url, ItemObject) {
         console.error(error.message)
         errorMessage.value = error.message
       }
-    }
+    } 
   }
   return {
     handleDelete,
