@@ -73,7 +73,6 @@ const {
   computed,
   UploadModal,
   useUploadComposable,
- 
 
 } = useSharedComponent('measurements');
 
