@@ -2,6 +2,7 @@
   <!-- Display existing image-->
 
   <div class="relative w-full rounded-md object-contain" v-if="newImage">
+<<<<<<< HEAD
     <img :src="newImage" @click="triggerFileInput" class="mb-4 max-h-40 w-full rounded-md object-cover" alt="Current Image" />
     <!-- <button
       type="button"
@@ -17,52 +18,42 @@
       hidden
       @change="handleImageChange(0, $event)"
     />
+=======
+    <img :src="newImage" class="mb-4 max-h-40 w-full rounded-md object-cover" alt="Current Image" />
+    <button type="button" @click="triggerFileInput"
+      class="btn-change text-red-600 font-bold absolute border-red-700 border-[1px] flex items-center rounded-full p-2 py-1 bg-white top-1 right-2">
+      X
+    </button>
+    <input ref="fileInput" type="file" class="hidden" hidden @change="handleImageChange(0, $event)" />
+>>>>>>> d98d6a15cedb2ca3255d87c882adc9fad58dc74a
   </div>
 
   <div v-for="(field, index) in localFields" :key="index" class="mb-4">
-    <label
-      :for="field.id"
-      class="block text-sm font-medium text-gray-700"
-      v-if="!(field.type === 'image' && newImage)"
-    >
+    <label :for="field.id" class="block text-sm font-medium text-gray-700" v-if="!(field.type === 'image' && newImage)">
       {{ field.label }}
       <span v-if="field.required" class="text-red-500">*</span>
     </label>
 
     <!-- Textarea field -->
     <template v-if="field.type === 'textarea'">
-      <textarea
-        :id="field.id"
+      <textarea :id="field.id"
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-        v-model="field.value"
-        :required="field.required"
-        :name="field.databaseField"
-        :placeholder="field.placeholder"
-      ></textarea>
+        v-model="field.value" :required="field.required" :name="field.databaseField"
+        :placeholder="field.placeholder"></textarea>
     </template>
     <!-- Select field -->
     <template v-else-if="field.type === 'select'">
       <!-- <div>{{ field }}</div> -->
-      <select
-        :id="field.id"
+      <select :id="field.id"
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-        v-model="field.value"
-        :required="field.required"
-        :name="field.databaseField"
-        :readonly="field.readonly"
-        @change="handleCategoryChange(field.value, field.databaseField)"
-      >
-        <option
-          v-for="(option, optionIndex) in field.options"
-          :key="optionIndex"
-          :value="option.value"
-        >
+        v-model="field.value" :required="field.required" :name="field.databaseField" :readonly="field.readonly"
+        @change="handleCategoryChange(field.value, field.databaseField)">
+        <option v-for="(option, optionIndex) in field.options" :key="optionIndex" :value="option.value">
           {{ option['label'] }}
         </option>
       </select>
       <span v-if="field.showLoading === true" class="text-sm text-red-500">
-        {{ isLoadingMsg }}</span
-      >
+        {{ isLoadingMsg }}</span>
     </template>
     <!-- search select -->
     <!-- <template v-else-if="field.type === 'select'">
@@ -93,62 +84,36 @@
     </template> -->
     <!-- Image field -->
     <template v-else-if="field.type === 'image'">
-      <input
-        v-if="!newImage"
-        :id="field.id"
-        type="file"
-        :name="field.databaseField"
+      <input v-if="!newImage" :id="field.id" type="file" :name="field.databaseField"
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-        @change="handleImageChange(index, $event)"
-        :required="field.required"
-        :placeholder="field.placeholder"
-      />
+        @change="handleImageChange(index, $event)" :required="field.required" :placeholder="field.placeholder" />
     </template>
 
     <!-- Number field -->
     <template v-else-if="field.type === 'number'">
-      <input
-        :id="field.id"
-        type="number"
+      <input :id="field.id" type="number"
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
         :class="{ 'readonly-background': field.readonly }"
-        @input="$emit('fieldChanged', field.databaseField, parseFloat(field.value) || 0)"
-        v-model.number="field.value"
-        :name="field.databaseField"
-        :required="field.required"
-        :placeholder="field.placeholder"
-        :min="field.min || 0"
-        :readonly="field.readonly"
-      />
+        @input="$emit('fieldChanged', field.databaseField, parseFloat(field.value) || 0)" v-model.number="field.value"
+        :name="field.databaseField" :required="field.required" :placeholder="field.placeholder" :min="field.min || 0"
+        :readonly="field.readonly" />
     </template>
 
     <!-- Date field -->
     <template v-else-if="field.type === 'date'">
-      <input
-        :id="field.id"
-        type="date"
+      <input :id="field.id" type="date"
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
         :class="{ 'readonly-background': field.readonly }"
-        @input="$emit('fieldChanged', field.databaseField, field.value)"
-        v-model="field.value"
-        :required="field.required"
-        :name="field.databaseField"
-        :placeholder="field.placeholder"
-        :min="constantMinDate"
-      />
+        @input="$emit('fieldChanged', field.databaseField, field.value)" v-model="field.value"
+        :required="field.required" :name="field.databaseField" :placeholder="field.placeholder"
+        :min="constantMinDate" />
     </template>
 
     <template v-else>
-      <input
-        :id="field.id"
-        :type="field.type"
+      <input :id="field.id" :type="field.type"
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-        :class="{ 'readonly-background': field.readonly }"
-        v-model="field.value"
-        :required="field.required"
-        :placeholder="field.placeholder"
-        :name="field.databaseField"
-      />
+        :class="{ 'readonly-background': field.readonly }" v-model="field.value" :required="field.required"
+        :placeholder="field.placeholder" :name="field.databaseField" />
     </template>
   </div>
 </template>
@@ -204,10 +169,15 @@ const handleCategoryChange = (value, field_name) => {
   // console.log(selectInput.value);
 
   allProductTypeName.value.find((itemId) => {
+    console.log("Item ID",itemId)
     if (itemId.id == value) {
       localFields.value.find((field) => {
         if (field.label == 'Price') {
           field.value = itemId.cost_price
+
+        }
+        if (field.label == 'Selling Price') {
+          field.value = itemId.selling_price
         }
       })
     }

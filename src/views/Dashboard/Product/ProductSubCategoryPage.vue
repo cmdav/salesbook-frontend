@@ -25,6 +25,7 @@
     <DeleteModal
       v-if="showDeleteModal"
       @close="closeDeleteModal"
+      @updated="forceRefresh"
       :items="itemsId"
       :url="'/product-sub-categories'"
       :modalTitle="modalTitle"
