@@ -319,16 +319,16 @@ watch(
 )
 // Fetch data for select options on component mount
 onMounted(async () => {
-  await fetchDataForSelect('Product Type', '/all-product-type-name', 'id', 'product_type_name')
+  await fetchDataForSelect('Product Type', '/all-product-type', 'id', 'product_type_name')
   // await fetchDataForSelect(;)
 })
-onMounted(async () => {
-  try {
-    await productsStore.handleGetAllProductTypeName()
-  } catch (error) {
-    console.error
-  }
-})
+// onMounted(async () => {
+//   try {
+//     await productsStore.handleGetAllProductTypeName()
+//   } catch (error) {
+//     console.error
+//   }
+// })
 
 const fetchSupplierByProductId = async (id) => {
   try {
@@ -417,17 +417,17 @@ const fetchSystemSellingPrice = async () => {
 }
 
 
-const updatePriceId = (costPrice) => {
-  console.log("System Selling Price", systemValue.value)
-  console.log("Cost Price", costPrice)
-  console.log("Selling Price", formState.purchases[0].selling_price)
-  if (systemValue.value && !isReadonly.value) {
-    // let cost_price = parseFloat(costPrice)
-    formState.purchases[0].price_id = costPrice
+// const updatePriceId = (costPrice) => {
+//   console.log("System Selling Price", systemValue.value)
+//   console.log("Cost Price", costPrice)
+//   console.log("Selling Price", formState.purchases[0].selling_price)
+//   if (systemValue.value && !isReadonly.value) {
+//     // let cost_price = parseFloat(costPrice)
+//     formState.purchases[0].price_id = costPrice
 
-    console.log("Price ID", formState.purchases[0].price_id)
-  }
-}
+//     console.log("Price ID", formState.purchases[0].price_id)
+//   }
+// }
 
 const updatePriceTypeId = (productTypeId, index) => {
   const productInfo = allProductTypeName.value.find(product => product.id === productTypeId);
