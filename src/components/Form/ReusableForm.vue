@@ -2,7 +2,6 @@
   <!-- Display existing image-->
 
   <div class="relative w-full rounded-md object-contain" v-if="newImage">
-<<<<<<< HEAD
     <img :src="newImage" @click="triggerFileInput" class="mb-4 max-h-40 w-full rounded-md object-cover" alt="Current Image" />
     <!-- <button
       type="button"
@@ -18,14 +17,6 @@
       hidden
       @change="handleImageChange(0, $event)"
     />
-=======
-    <img :src="newImage" class="mb-4 max-h-40 w-full rounded-md object-cover" alt="Current Image" />
-    <button type="button" @click="triggerFileInput"
-      class="btn-change text-red-600 font-bold absolute border-red-700 border-[1px] flex items-center rounded-full p-2 py-1 bg-white top-1 right-2">
-      X
-    </button>
-    <input ref="fileInput" type="file" class="hidden" hidden @change="handleImageChange(0, $event)" />
->>>>>>> d98d6a15cedb2ca3255d87c882adc9fad58dc74a
   </div>
 
   <div v-for="(field, index) in localFields" :key="index" class="mb-4">

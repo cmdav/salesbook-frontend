@@ -81,7 +81,7 @@ export function usePostComposable(
       })
 
       showModal.value = false
-      //forceUpdate.value++
+      forceUpdate.value++
       loading.value = false
       emit('close')
       emit('updated');
