@@ -14,14 +14,13 @@ export function useDeleteComposable(url, ItemObject) {
 
   const closeDeleteModal = () => {
     showDeleteModal.value = false
-    loading.value = false
     forceUpdate.value++
-
+    loading.value = false
   }
   const handleDelete = (item) => {
     itemsId.value = item
-    showDeleteModal.value = true
     forceUpdate.value++
+    showDeleteModal.value = true
   }
 
   const deleteForm = async () => {
@@ -30,9 +29,7 @@ export function useDeleteComposable(url, ItemObject) {
       console.log(ItemObject.id)
 
       let response = await apiService.delete(`${url}/${ItemObject.id}`)
-
       //await fetchPage(url, 1)
-
       loading.value = false
       forceUpdate.value++
       catchAxiosSuccess(response)
