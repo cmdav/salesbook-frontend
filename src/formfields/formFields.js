@@ -164,11 +164,11 @@ export const formFields = ref([
     databaseField: 'product_image'
   },
   {
-    label: 'Vat',
+    label: 'VAT',
     type: 'select',
     value: '1',
     required: true,
-    placeholder: 'Select Vat',
+    placeholder: 'Select VAT',
     databaseField: 'vat',
     options: [
       { value: '1', label: 'Yes' },

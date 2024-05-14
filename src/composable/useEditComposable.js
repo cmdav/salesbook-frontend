@@ -9,6 +9,7 @@ export function useEditComposable(formFields, url, itemId, emit) {
   let showEditModal = ref(false)
   let items = ref()
   let errorMessage = ref()
+  const forceUpdate = ref(0)
   let loading = ref(false)
 
   function constructUrl(url, itemId) {
@@ -73,6 +74,7 @@ export function useEditComposable(formFields, url, itemId, emit) {
       emit('close')
       emit('updated')
       catchAxiosSuccess(response)
+      forceUpdate.value++
       return response
     } catch (error) {
       catchAxiosError(error)

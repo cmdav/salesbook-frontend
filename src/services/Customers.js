@@ -32,6 +32,7 @@ export const getAllCompanyCustomers = async () => {
     console.log(error)
   }
 }
+
 export const getSingleCustomer = async (id) => {
    const token = await getToken()
 
@@ -83,9 +84,6 @@ export const addCustomer = async (payload) => {
   }
 }
 
-
-
-
 export const companyName = async () => {
   const token = await getToken()
 
@@ -101,10 +99,6 @@ export const companyName = async () => {
     console.log(error)
   }
 }
-
-
-
-
 
 export const allCustomersName = async () => {
   const token = await getToken()

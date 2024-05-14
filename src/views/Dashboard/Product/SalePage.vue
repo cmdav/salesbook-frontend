@@ -371,7 +371,7 @@ const {
 );
 const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 
-const {  forceUpdate } = usePostComposable(
+const { forceUpdate } = usePostComposable(
   "/sales",
   saleFormFields
 );
@@ -536,12 +536,12 @@ const handleReceipt = async (transactionId) => {
   try {
         let receiptInfo = await productsStore.handleGetReceipt(transactionId);   
         console.log(receiptInfo);
-      if (receiptInfo) {
-        generateReceiptPDF(receiptInfo);
-          return receiptInfo; // Generate PDF receipt using receipt data
-      } else {
-        console.error('Failed to fetch receipt data');
-      }
+      // if (receiptInfo) {
+      //   generateReceiptPDF(receiptInfo);
+      //     return receiptInfo; // Generate PDF receipt using receipt data
+      // } else {
+      //   console.error('Failed to fetch receipt data');
+      // }
     } catch (error) {
         console.error('Failed to generate receipt:', error);
     } 
@@ -577,7 +577,7 @@ const generateReceiptPDF = (receiptData) => {
     doc.setFont(itemStyle.fontStyle, 'normal');
     doc.setFontSize(itemStyle.fontSize);
     doc.setTextColor(itemStyle.textColor);
-    doc.text(`Product: ${item.product_type_name}`, 20, yPosition);
+    doc.text(`Products N ${item.product_type_name}`, 20, yPosition);
     doc.text(`Price: ${item.amount}`, 20, yPosition + 10);
     doc.text(`Quantity: ${item.quantity}`, 20, yPosition + 20);
     doc.text(`VAT: ${item.vat === 1 ? 'Yes' : 'No'}`, 20, yPosition + 30);
@@ -593,13 +593,8 @@ const pdfDataUri = doc.output('datauristring');
 // Open the PDF in a new browser tab for viewing
 const viewerWindow = window.open();
 viewerWindow.document.write(`<iframe width='100%' height='100%' src='${pdfDataUri}'></iframe>`);
-
   // // Save or download the PDF
   // doc.save('receipt.pdf');
 };
-
-
-
-
 
 </script>

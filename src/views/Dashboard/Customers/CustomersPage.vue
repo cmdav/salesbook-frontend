@@ -437,7 +437,6 @@ function getMinDate() {
   // Return the minimum date in the format required by the input[type=date] field
   return minDate.toISOString().split("T")[0];
 }
-
 const redirectToSingleCustomerPage = (id) => {
   router.push({ name: "view-customers", params: { id } });
 };
@@ -559,7 +558,6 @@ const validateAddCompanyForm = () => {
   Object.keys(errorsCom).forEach((key) => {
     errorsCom[key] = false;
   });
-
   // Perform validation before submission
   let isValid = true;
 
@@ -629,7 +627,7 @@ const handleCustomerRegisteration = async () => {
   };
   try {
     let res = await CustomerStore.handleAddCustomer(payload);
-    CustomerStore.handleCustomerName();
+    await CustomerStore.handleCustomerName();
     HandleToggleModal();
     loading.value = false;
     clearInputs();
@@ -640,6 +638,7 @@ const handleCustomerRegisteration = async () => {
     loading.value = false;
   }
 };
+
 const handleCompanyCustomerRegisteration = async () => {
   loading.value = true;
   if (!validateAddCompanyForm()) {
@@ -655,7 +654,8 @@ const handleCompanyCustomerRegisteration = async () => {
   };
   try {
     let res = await CustomerStore.handleAddCustomer(payload);
-    CustomerStore.allCustomer();
+    // await CustomerStore.allCustomer();
+    await CustomerStore.handleCompanyName();
     HandleToggleModal();
     loading.value = false;
     clearInputs();
@@ -666,7 +666,15 @@ const handleCompanyCustomerRegisteration = async () => {
     loading.value = false;
   }
 };
-// xcrops@example.net
+
+watch(customerNames, () => {
+  fetchProducts(Customers.value.current_page);
+});
+
+watch(companyNames, () => {
+  fetchCompanyProducts(companiesCustomers.value.current_page);
+});
+
 const fetchProducts = async (page) => {
   try {
     let res = await CustomerStore.allCustomer(page);
@@ -675,27 +683,35 @@ const fetchProducts = async (page) => {
     console.error("Error fetching products:", error);
   }
 };
+
+const fetchCompanyProducts = async (page) => {
+  try {
+    let res = await CustomerStore.allCompanyCustomers(page);
+    return res;
+  } catch (error) {
+    console.error("Error fetching company customers:", error);
+  }
+};
+
 const setCurrentCustomersPage = (page) => {
   Customers.value.current_page = page;
   fetchProducts(page);
 };
-// function clearSearch() {
-//   sortInput.name = "";
-//   fetchProducts(1);
-// }
 
 onMounted(async () => {
   try {
     await CustomerStore.handleCustomerName();
     await CustomerStore.handleCompanyName();
-    await CustomerStore.allCustomer(
-      Customers?.value?.current_page ? Customers?.value?.current_page : 1
-    );
-    await CustomerStore.allCompanyCustomers(
-      companiesCustomers?.value?.current_page
-        ? companiesCustomers?.value?.current_page
-        : 1
-    );
+    await fetchProducts(Customers.value.current_page);
+    await fetchCompanyProducts(companiesCustomers.value.current_page);
+    // await CustomerStore.allCustomer(
+    //   Customers?.value?.current_page ? Customers?.value?.current_page : 1
+    // );
+    // await CustomerStore.allCompanyCustomers(
+    //   companiesCustomers?.value?.current_page
+    //     ? companiesCustomers?.value?.current_page
+    //     : 1
+    // );
   } catch (error) {
     console.error(error);
   }

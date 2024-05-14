@@ -8,8 +8,11 @@
         endpoint="measurements"
         searchEndpoint="search-measurement"
         :additionalColumns=additionalColumns
+<<<<<<< HEAD
+
+=======
         
-       
+>>>>>>> d98d6a15cedb2ca3255d87c882adc9fad58dc74a
       >
         <button class="btn-brand" @click="closeUploadModal">Upload</button>
       </DataTableLayout>
@@ -75,7 +78,6 @@ const {
   computed,
   UploadModal,
   useUploadComposable,
- 
 
 } = useSharedComponent('measurements');
 
