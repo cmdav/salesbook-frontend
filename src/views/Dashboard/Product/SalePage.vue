@@ -536,12 +536,12 @@ const handleReceipt = async (transactionId) => {
   try {
         let receiptInfo = await productsStore.handleGetReceipt(transactionId);   
         console.log(receiptInfo);
-      if (receiptInfo) {
-        generateReceiptPDF(receiptInfo);
-          return receiptInfo; // Generate PDF receipt using receipt data
-      } else {
-        console.error('Failed to fetch receipt data');
-      }
+      // if (receiptInfo) {
+      //   generateReceiptPDF(receiptInfo);
+      //     return receiptInfo; // Generate PDF receipt using receipt data
+      // } else {
+      //   console.error('Failed to fetch receipt data');
+      // }
     } catch (error) {
         console.error('Failed to generate receipt:', error);
     } 

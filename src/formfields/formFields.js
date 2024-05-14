@@ -272,11 +272,19 @@ export const purchaseFormFields = ref([
   },
   {
     label: 'Price',
-    type: 'text',
+    type: 'number',
     value: '',
     required: true,
     placeholder: 'Enter price',
     databaseField: 'price'
+  },
+  {
+    label: 'Selling Price',
+    type: 'number',
+    value: '',
+    required: true,
+    placeholder: 'Enter Selling Price',
+    databaseField: 'selling_price'
   },
   //{ label: 'Currency', type: 'select', value: '', required: true, placeholder: 'Enter currency ID', databaseField: "currency_id" },
   //{ label: 'Discount', type: 'number', value: 0, required: false, placeholder: 'Enter discount', databaseField: "discount" },
