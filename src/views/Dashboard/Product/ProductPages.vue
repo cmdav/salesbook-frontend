@@ -29,6 +29,7 @@
           'product_id',
           'product_ids',
           'category_ids',
+          'product_category',
           'product_image',
           'sub_category_id',
           'product_type_description'
@@ -112,6 +113,7 @@
       v-if="showEditModal"
       @close="closeEditModal"
       :items="items"
+      @fetchDataForSubCategory="fetchDataForSubCategory"
       @updated="forceRefresh"
       :formField="dynamicFormFields"
       :url="'/product-types'"

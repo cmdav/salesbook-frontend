@@ -2,14 +2,14 @@
   <!-- Display existing image-->
 
   <div class="relative w-full rounded-md object-contain" v-if="newImage">
-    <img :src="newImage" class="mb-4 max-h-40 w-full rounded-md object-cover" alt="Current Image" />
-    <button
+    <img :src="newImage" @click="triggerFileInput" class="mb-4 max-h-40 w-full rounded-md object-cover" alt="Current Image" />
+    <!-- <button
       type="button"
       @click="triggerFileInput"
       class="btn-change text-red-600 font-bold absolute border-red-700 border-[1px] flex items-center rounded-full p-2 py-1 bg-white top-1 right-2"
     >
-      X
-    </button>
+    <UploadOutlined />
+    </button> -->
     <input
       ref="fileInput"
       type="file"
@@ -157,6 +157,7 @@
 import { defineEmits, ref } from 'vue'
 import { useProductStore } from '@/stores/products'
 import { storeToRefs } from 'pinia'
+import { UploadOutlined } from '@ant-design/icons';
 
 const productsStore = useProductStore()
 // Destructure fields from props
