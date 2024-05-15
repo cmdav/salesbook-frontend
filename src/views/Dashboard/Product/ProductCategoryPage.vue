@@ -34,7 +34,7 @@
       @close="closeDeleteModal"
       @updated="forceRefresh"
       :items="itemsId"
-      :url="'/product-categories'"
+      :url="'product-categories'"
       :modalTitle="modalTitle"
     />
     <EditModal
@@ -83,6 +83,7 @@ const { showModal, forceUpdate, closeModal } = usePostComposable(
 );
 const emit = defineEmits("forceRefresh");
 const {  handleEdit,showEditModal, closeEditModal, items } = useEditComposable(emit);
+
 const forceRefresh = () => {
   forceUpdate.value++;
 };
@@ -95,7 +96,6 @@ const {
 
 const store = useStore();
 const permissions = computed(() => {
-    
     return  store.getUser.user.permission.permissions.find(p => p.page_name === "product-categories");
  })
 

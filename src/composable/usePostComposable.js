@@ -79,12 +79,13 @@ export function usePostComposable(
         field.value = field.type === 'file' ? null : ''
       })
 
+      
       showModal.value = false
       //forceUpdate.value++
       loading.value = false
       emit('close')
-      emit('updated');
-      //console.log(response)
+      emit('updated')
+      console.log("Post composable response", response)
       catchAxiosSuccess(response)
       return response
     } catch (error) {
