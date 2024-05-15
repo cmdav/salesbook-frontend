@@ -17,7 +17,6 @@
       @close="closeModal"
       :formTitle="'Product Sub Category'"
       :fields="productSubCategoryFormFields"
-      @fetchDataForSubCategory="fetchDataForSubCategory"
       :isLoadingMsg="isOptionLoadingMsg"
       :url="'/product-sub-categories'"
     >
@@ -53,6 +52,9 @@ import { onMounted } from "vue";
 
 import { productSubCategoryFormFields } from "@/formfields/formFields";
 import { useSharedComponent } from "@/composable/useSharedComponent";
+
+const emit = defineEmits(['update', 'close']);
+
 const {
   DataTableLayout,
   FormModal,
@@ -67,9 +69,11 @@ const {
   useStore,
   computed,
 } = useSharedComponent('product-sub-categories');
-const { showUploadModal, closeUploadModal } = useUploadComposable();
+const { showUploadModal, closeUploadModal } = useUploadComposable(emit);
 
-const emit = defineEmits("forceRefresh");
+// const emit = defineEmits(["forceRefresh",]);
+
+
 const {
   handleDelete,
   showDeleteModal,
@@ -79,7 +83,8 @@ const {
 
 const { showModal, forceUpdate, closeModal } = usePostComposable(
   "/product-sub-categories",
-  productSubCategoryFormFields
+  productSubCategoryFormFields,
+  emit
 );
 const {  handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
 const { fetchDataForSelect } = useSelectComposable(productSubCategoryFormFields);
