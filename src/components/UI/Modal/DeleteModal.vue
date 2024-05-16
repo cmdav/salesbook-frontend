@@ -26,7 +26,7 @@ import { useDeleteComposable } from "@/composable/useDeleteComposable";
 
 const emit = defineEmits(["close", "updated"]);
 const title = ref();
-// const forceUpdate = ref(0)
+const forceUpdate = ref(0)
 
 const props = defineProps({
   items: Object,
@@ -39,6 +39,11 @@ const { deleteForm, loading, showDeleteModal } = useDeleteComposable(
   url.value,
   items.value
 );
+
+const forceRefresh = () => {
+  forceUpdate.value++;
+};
+
 const handleDelete = async () => {
   console.log("Delete botton clicked")
   await deleteForm();
@@ -46,6 +51,7 @@ const handleDelete = async () => {
   if (showDeleteModal.value === false) {
     emit("updated");
     emit("close");
+    forceRefresh()
   }
   // emit("close");
 };

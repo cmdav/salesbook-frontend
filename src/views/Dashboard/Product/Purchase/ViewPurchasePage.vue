@@ -1,0 +1,195 @@
+<template>
+  <DashboardLayout pageTitle="Purchase Page">
+    <div class="actions">
+      <input type="text" v-model="search" placeholder="Search..." class="search-input" />
+      <button class="button upload-btn">Upload</button>
+      <button class="button add-btn">Add</button>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>S.NO</th>
+            <th>PRODUCT TYPE</th>
+            <th>PRODUCT TYPE DESCRIPTION</th>
+            <th>BATCH NO</th>
+            <th>QUANTITY</th>
+            <th>EXPIRY DATE</th>
+            <th>COST PRICE</th>
+            <th>SELLING PRICE</th>
+            <th>CREATED BY</th>
+            <th>UPDATED BY</th>
+            <th>EDIT</th>
+            <th>DELETE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item, index) in filteredData" :key="item.id">
+            <td>{{ index + 1 }}</td>
+            <td>{{ item.product_type_name }}</td>
+            <td>{{ item.product_type_description }}</td>
+            <td>{{ item.batch_no }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.expiry_date }}</td>
+            <td>{{ item.cost_price }}</td>
+            <td>{{ item.selling_price }}</td>
+            <td>{{ item.created_by }}</td>
+            <td>{{ item.updated_by }}</td>
+            <td><button>Edit</button></td>
+            <td><button>Delete</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <DeleteModal v-if="showDeleteModal" @close="closeDeleteModal" @updated="forceRefresh" :items="itemsId"
+      :url="'purchases'" :modalTitle="modalTitle" />
+    <div class="pagination">
+
+
+      <button @click="changePage(currentPage - 1)" :disabled="!pagination.prev_page_url">Previous</button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button @click="changePage(currentPage + 1)" :disabled="!pagination.next_page_url">Next</button>
+    </div>
+  </DashboardLayout>
+</template>
+
+
+
+
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import apiService from '@/services/apiService'
+import { useSharedComponent } from '@/composable/useSharedComponent'
+
+const { useDeleteComposable } = useSharedComponent()
+const { showDeleteModal, itemsId, closeDeleteModal } = useDeleteComposable()
+
+const search = ref('');
+const data = ref([]);
+const pagination = ref({});
+
+const currentPage = ref(1);
+const totalPages = ref(0);
+
+const filteredData = computed(() => {
+  return data.value.filter(item => item.product_type_description.toLowerCase().includes(search.value.toLowerCase()));
+});
+
+//fetch api data
+async function fetchData(page = 1) {
+  try {
+    const response = await apiService.get(`purchases?page=${page}`);
+    data.value = response.data;
+    pagination.value = {
+      next_page_url: response.next_page_url,
+      prev_page_url: response.prev_page_url,
+    };
+    currentPage.value = page;
+    totalPages.value = response.last_page;
+  } catch (error) {
+    console.error("Failed to fetch data:", error);
+  }
+}
+
+function changePage(page) {
+  if (page > 0 && page <= totalPages.value) {
+    fetchData(page);
+  }
+}
+
+onMounted(() => fetchData(currentPage.value));
+</script>
+
+
+<style scoped>
+.actions {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  padding: 8px;
+  width: 30%;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+}
+
+.button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+}
+
+.upload-btn {
+  background-color: #C35214 
+}
+
+.add-btn {
+  background-color: #C35214; 
+}
+
+.table-container {
+  overflow-x: auto;
+  width: 100%;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+  border: 2px solid #C35214; /* Add borders around cells */
+  white-space: nowrap;
+}
+
+
+tbody tr:hover {
+  background-color: #f1f5f9;
+}
+
+
+thead {
+  background-color: #C35214; 
+ 
+}
+
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.pagination button {
+  padding: 8px 16px;
+  background-color: #C35214; 
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+}
+
+.pagination span {
+  padding: 8px 16px;
+  background-color: #C35214;
+  border-radius: 4px;
+  color: white; 
+}
+</style>
+
+
+
+
+
+
+

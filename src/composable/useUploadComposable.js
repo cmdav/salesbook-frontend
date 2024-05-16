@@ -5,7 +5,7 @@ import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
 
 const { fetchPage } = useReadComposable()
 
-export function useUploadComposable(url, file, type) {
+export function useUploadComposable(url, file, type, emit) {
   let showUploadModal = ref(false)
   let errorMessage = ref()
   let loading = ref(false)
@@ -13,7 +13,7 @@ export function useUploadComposable(url, file, type) {
 
   const closeUploadModal = () => {
     showUploadModal.value = !showUploadModal.value
-    loading.value = false
+    // loading.value = false
     forceUpdate.value++
   }
   const uploadForm = async () => {
@@ -21,12 +21,15 @@ export function useUploadComposable(url, file, type) {
     formData.append('file', file.value) // Append uploadedFile to the FormData
     formData.append('type', type.value) // Append other form data as needed
     try {
-      loading.value = true
-      let response = await apiService.post(`process-csv`, formData,)
+      // loading.value = true
+      let response = await apiService.post(`process-csv`, formData)
       await fetchPage(url.value, 1)
-      loading.value = false
       catchAxiosSuccess(response)
-      // forceUpdate.value++
+      showUploadModal.value = false
+      console.log('Show modal is now ', showUploadModal)
+      loading.value = false
+       emit('close')
+       emit('updated')
       return response
     } catch (error) {
       catchAxiosError(error)
