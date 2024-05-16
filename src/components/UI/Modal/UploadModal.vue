@@ -94,8 +94,8 @@ const { uploadForm, loading, showUploadModal } = useUploadComposable(
   uploadedFile,
   type
 );
-const handleUpload = () => {
-  uploadForm();
+const handleUpload = async () => {
+  await uploadForm();
   if (showUploadModal.value === false) {
     emit("updated");
     emit("close");

@@ -7,7 +7,7 @@ export const login = async (data) => {
   //   email,
   //   password,
   //   organization_code,
-  //   code
+  //   code 
   // }
   try {
     let res = await axios.post('login', data)

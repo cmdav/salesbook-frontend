@@ -84,7 +84,7 @@ const {
 } = useDeleteComposable();
 // define other constant
 const productsStore = useProductStore();
-const emit = defineEmits("forceRefresh");
+const emit = defineEmits(["forceRefresh"]);
 const { showModal, forceUpdate, closeModal } = usePostComposable(
   "/measurements",
   measurementFormFields
