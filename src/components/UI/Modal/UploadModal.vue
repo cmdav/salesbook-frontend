@@ -100,8 +100,8 @@ const forceRefresh = () => {
   forceUpdate.value++;
 };
 
-const handleUpload = () => {
-  uploadForm();
+const handleUpload = async () => {
+  await uploadForm();
   console.log()
   if (showUploadModal.value === false) {
     emit("updated");

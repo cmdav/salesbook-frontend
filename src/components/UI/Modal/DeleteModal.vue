@@ -39,13 +39,19 @@ const { deleteForm, loading, showDeleteModal } = useDeleteComposable(
   url.value,
   items.value
 );
-const handleDelete = () => {
+
+const forceRefresh = () => {
+  forceUpdate.value++;
+};
+
+const handleDelete = async () => {
   console.log("Delete botton clicked")
-  deleteForm();
-  forceUpdate.value++
+  await deleteForm();
+  // forceUpdate.value++
   if (showDeleteModal.value === false) {
     emit("updated");
     emit("close");
+    forceRefresh()
   }
   // emit("close");
 };
