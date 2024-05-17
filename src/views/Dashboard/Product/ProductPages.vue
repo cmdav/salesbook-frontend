@@ -164,7 +164,7 @@ const showProductTypeModal = ref(false)
 const showPriceModal = ref(false)
 
 const { handleDelete, showDeleteModal, itemsId, closeDeleteModal } = useDeleteComposable()
-const emit = defineEmits('forceRefresh')
+const emit = defineEmits(['forceRefresh'])
 //const { showModal, showViewModal,**loading, **allError,forceUpdate,**errorMessage,isError,closeModal,closeViewModal,} = usePostComposable('/products', formFields);
 const { showModal, showViewModal, forceUpdate, closeModal, closeViewModal } = usePostComposable(
   '/products',

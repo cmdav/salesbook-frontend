@@ -46,7 +46,9 @@ const forceRefresh = () => {
 
 const handleDelete = async () => {
   console.log("Delete botton clicked")
+  loading.value = true 
   await deleteForm();
+  loading.value = false
   // forceUpdate.value++
   if (showDeleteModal.value === false) {
     emit("updated");
