@@ -23,8 +23,9 @@ import StorePage from '@/views/Dashboard/Product/StorePage.vue'
 import SalePage from '@/views/Dashboard/Product/SalePage.vue'
 //import ProductTypePage from '@/views/Dashboard/Product/ProductTypePage.vue'
 import PricePage from '@/views/Dashboard/Product/PricePage.vue'
-//import PurchasePage from '@/views/Dashboard/Product/Purchase/ViewPurchasePage.vue'
-import PurchasePage from '@/views/Dashboard/Product/PurchasePage.vue'
+import PurchasePage from '@/views/Dashboard/Product/Purchase/ViewPurchasePage.vue'
+import CreatePurchasePage from '@/views/Dashboard/Product/Purchase/CreatePurchasePage.vue'
+//import PurchasePage from '@/views/Dashboard/Product/PurchasePage.vue'
 import MeasurementPage from '@/views/Dashboard/Product/MeasurementPage.vue'
 import SupplierProductsPage from '@/views/Dashboard/SupplierProduct/SupplierProductPage.vue'
 import RolesPage from '@/views/Dashboard/Security/Pages/RolesPage.vue'
@@ -77,6 +78,11 @@ const router = createRouter({
       path: '/forgotten-password',
       name: 'forgotten-password',
       component: ForgottenPasswordVue
+    },
+    {
+      path: '/create-purchase',
+      name: 'create-purchase',
+      component: CreatePurchasePage
     },
     {
       path: '/password-reset/:token',
