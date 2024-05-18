@@ -1,16 +1,24 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
 
-const emit = defineEmits(["changePage"]);
+const emit = defineEmits<{ (event: "changePage", page: number): void }>();
 
-const props = defineProps({
-  currentPage: { type: Number, default: 1 },
-  pageSize: { type: Number, default: 20 },
-  totalPages: { type: Number, default: 1 },
-  alwaysShowNextAndPrevious: { type: Boolean, default: true },
-});
+const props = withDefaults(
+  defineProps<{
+    currentPage?: number;
+    pageSize?: number;
+    totalPages?: number;
+    // alwaysShowNextAndPrevious: boolean; // show back and next buttons even if disabled
+  }>(),
+  {
+    currentPage: 1,
+    pageSize: 20,
+    totalPages: 1,
+    // alwaysShowNextAndPrevious: true,
+  }
+);
 
-const changeCurrentPage = (page) => {
+const changeCurrentPage = (page: number) => {
   if (page === props.currentPage){;
   emit("changePage", page);
   }
@@ -18,7 +26,7 @@ const changeCurrentPage = (page) => {
 
 const hasNextPage = computed(() => props.currentPage < props.totalPages);
 
-const hasPrevPage = computed(() => props.currentPage > 1);
+const hasPrevPage = computed(() => !!(props.currentPage > 1));
 
 // const prevPage = computed(() => {
 //   const prev = [props.currentPage - 1];
@@ -60,7 +68,7 @@ const pagesToDisplay = computed(() => {
   <div class="flex w-fit items-center gap-x-2">
     <!-- Displays the Back Button -->
     <button
-      v-if="hasPrevPage || props.alwaysShowNextAndPrevious"
+      v-if="hasPrevPage"
       :disabled="!hasPrevPage"
       class="text-sm font-medium flex items-center justify-center gap-x-1 rounded px-3 py-2 text-brand ring-[1px] ring-brand disabled:cursor-not-allowed disabled:text-red-200 disabled:ring-red-200"
       @click="() => changeCurrentPage(props.currentPage - 1)"
@@ -134,8 +142,8 @@ const pagesToDisplay = computed(() => {
 
     <!-- Displays the Next Button -->
     <button
-      v-if="hasNextPage || alwaysShowNextAndPrevious"
-      :disabled="!hasNextPage"
+      v-if="hasNextPage"
+      :disabled="currentPage <= totalPages"
       class="text-sm font-medium flex items-center justify-center gap-x-1 rounded px-3 py-2 text-brand ring-[1px] ring-brand disabled:cursor-not-allowed disabled:text-red-200 disabled:ring-red-200"
       @click="() => changeCurrentPage(props.currentPage + 1)"
     >

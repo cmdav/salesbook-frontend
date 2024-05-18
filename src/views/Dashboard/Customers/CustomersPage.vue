@@ -711,10 +711,8 @@ onMounted(async () => {
   try {
     await CustomerStore.handleCustomerName();
     await CustomerStore.handleCompanyName();
-    await fetchProducts(Customers?.value?.current_page ? Customers?.value?.current_page : 1);
-    await fetchCompanyProducts(companiesCustomers?.value?.current_page
-        ? companiesCustomers?.value?.current_page
-        : 1);
+    await fetchProducts(Customers.value.current_page);
+    await fetchCompanyProducts(companiesCustomers.value.current_page);
     // await CustomerStore.allCustomer(
     //   Customers?.value?.current_page ? Customers?.value?.current_page : 1
     // );
