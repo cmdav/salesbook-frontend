@@ -306,7 +306,7 @@ const {
   useSelectComposable,
   defineEmits,
 } = useSharedComponent();
-const emit = defineEmits("forceRefresh");
+const emit = defineEmits(["forceRefresh"]);
 const url = "/all-price-by-product-type";
 const { fetchDataForSelect } = useSelectComposable(saleFormFields, url);
 
