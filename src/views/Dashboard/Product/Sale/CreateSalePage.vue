@@ -169,11 +169,13 @@
 
 <script setup>
 import { ref, reactive, computed, watch, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { useProductStore } from '@/stores/products';
 import { useCustomerstore } from '@/stores/customers';
 import CustomerFormModal from '@/components/UI/Modal/CustomerFormModal.vue';
 import { storeToRefs } from 'pinia';
 
+const router = useRouter();
 const productsStore = useProductStore();
 const customersStore = useCustomerstore();
 const { allCustomersNames } = storeToRefs(customersStore);
@@ -258,6 +260,7 @@ const handleAddSales = async () => {
     let res = await productsStore.handleAddSaless(payload);
     productsStore.handleGetProducts();
     salesLoading.value = false;
+    router.push('/sale'); // Redirect to the sale page after successful submission
     return res;
   } catch (error) {
     console.error('Failed to submit sale:', error);
