@@ -78,7 +78,10 @@ const currentPage = ref(1);
 const totalPages = ref(0);
 
 const filteredData = computed(() => {
-  return data.value.filter(item => item.product_type_description.toLowerCase().includes(search.value.toLowerCase()));
+  return data.value.filter(item => {
+    const description = item.product_type_description || '';
+    return description.toLowerCase().includes(search.value.toLowerCase());
+  });
 });
 
 async function fetchData(page = 1) {
