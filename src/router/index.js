@@ -20,7 +20,10 @@ import ProductCategoryPage from '@/views/Dashboard/Product/ProductCategoryPage.v
 import ProductSubCategoryPage from '@/views/Dashboard/Product/ProductSubCategoryPage.vue'
 import CurrencyPage from '@/views/Dashboard/Product/CurrencyPage.vue'
 import StorePage from '@/views/Dashboard/Product/StorePage.vue'
-import SalePage from '@/views/Dashboard/Product/SalePage.vue'
+import SalePage from '@/views/Dashboard/Product/Sale/ViewSalePage.vue'
+import CreateSalePage from '@/views/Dashboard/Product/Sale/CreateSalePage.vue'
+//import SalePage from '@/views/Dashboard/Product/SalePage.vue'
+
 //import ProductTypePage from '@/views/Dashboard/Product/ProductTypePage.vue'
 import PricePage from '@/views/Dashboard/Product/PricePage.vue'
 import PurchasePage from '@/views/Dashboard/Product/Purchase/ViewPurchasePage.vue'
@@ -79,11 +82,7 @@ const router = createRouter({
       name: 'forgotten-password',
       component: ForgottenPasswordVue
     },
-    {
-      path: '/create-purchase',
-      name: 'create-purchase',
-      component: CreatePurchasePage
-    },
+   
     {
       path: '/password-reset/:token',
       name: 'password-reset',
@@ -192,6 +191,11 @@ const router = createRouter({
       component: SalePage,
       beforeEnter: [middleware.redirectLogin]
     },
+    {
+      path: '/create-sale',
+      name: 'create-sale',
+      component: CreateSalePage
+    },
     // {
     //   path: '/product-type/:id',
     //   name: 'product-type',
@@ -217,6 +221,11 @@ const router = createRouter({
       name: 'purchase',
       component: PurchasePage,
       beforeEnter: [middleware.redirectLogin]
+    },
+    {
+      path: '/create-purchase',
+      name: 'create-purchase',
+      component: CreatePurchasePage
     },
     {
       path: '/supplier-product',
