@@ -9,10 +9,7 @@
         :key="forceUpdate"
         endpoint="stores"
         searchEndpoint="search-stores"
-        :additionalColumns="[
-          { name: 'edit', action: handleEdit },
-          { name: 'delete', action: handleDelete }
-        ]"
+       
       />
     </div>
 
@@ -35,7 +32,7 @@ const {
   DataTableLayout,
   //usePostComposable,
   DeleteModal,
-  useDeleteComposable
+  //useDeleteComposable
 } = useSharedComponent()
 
 //const formTitle = "Add Store";
@@ -44,5 +41,5 @@ const {
 //   showModal,
 
 // } = usePostComposable("/stores", cu);
-const { handleDelete, showDeleteModal, itemsId, closeDeleteModal } = useDeleteComposable()
+//const { handleDelete, showDeleteModal, itemsId, closeDeleteModal } = useDeleteComposable()
 </script>

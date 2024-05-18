@@ -66,6 +66,7 @@ const fetchData = async () => {
 };
 
 const handleSupplierChange = async (index) => {
+ 
   const purchase = purchases.value[index];
   if (!purchase.product_type_id || !purchase.supplier_id) {
     catchAxiosError({ message: 'Please select both supplier and product type.' });

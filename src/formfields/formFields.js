@@ -242,15 +242,6 @@ export const productTypeFormFields = ref([
     placeholder: 'Enter product type description',
     databaseField: 'product_type_description'
   },
-  // { label: 'Organization ID', type: 'text', value: '', required: false, placeholder: 'Enter organization ID', databaseField: "organization_id" },
-  {
-    label: 'Supplier',
-    type: 'select',
-    value: '',
-    required: false,
-    placeholder: 'Enter supplier ID',
-    databaseField: 'supplier_id'
-  }
 ])
 
 export const purchaseFormFields = ref([
