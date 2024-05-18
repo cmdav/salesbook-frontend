@@ -4,7 +4,7 @@
       class="px-5 py-2 mt-8 border-[1px] rounded-t-md lg:items-center gap-6 border-brand/[50%] flex flex-col lg:flex-row justify-between bg-secondary-800/[20%] text-left text-[12px] font-semibold text-gray-600 uppercase tracking-wider">
       <div class="flex flex-row relative w-full lg:w-[40%]">
         <AuthInput :error="false" type="text" v-model="searchQuery" placeholder="Search..." class="w-full !py-1"
-          @input="search" />
+          @input="onSearchInput" />
         <button @click="clear" v-if="searchQuery" class="absolute font-bold text-red-500 text-lg right-2 top-3.5">
           X
         </button>
@@ -42,20 +42,19 @@
               </th>
             </tr>
           </thead>
-          <tbody v-if="searchResults?.length">
+          <tbody v-if="searchQuery && searchResults.length">
             <!-- Loop through products for each row -->
             <tr v-for="(product, index) in searchResults" :key="product.id">
               <td class="px-5 py-5 border-brand border-x-[1px] bg-white text-sm">
-                {{
-          (parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1
-        }}
+                {{ (parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1 }}
               </td>
               <td v-for="key in uniqueKeys" :key="key"
                 class="px-5 py-5 border-b border-r-[1px] border-brand bg-white text-sm">
                 <!-- Check for columns with onclick event -->
                 <template v-if="clickableKeys[key]">
-                  <span @click.prevent="clickableKeys[key](product)" class="text-blue-500 cursor-pointer">{{
-          product[key] }}</span>
+                  <span @click.prevent="clickableKeys[key](product)" class="text-blue-500 cursor-pointer">
+                    {{ product[key] }}
+                  </span>
                 </template>
 
                 <!-- Check if key indicates an image, logo, or file -->
@@ -63,7 +62,6 @@
                   <img :src="product[key]" alt="Media"
                     class="w-10 h-10 bg-slate-500/[30%] rounded-lg mx-auto object-cover" />
                 </template>
-
                 <template v-else>
                   {{ product[key] }}
                 </template>
@@ -78,41 +76,41 @@
                 </td>
               </template>
             </tr>
-          </tbody>
-          <tbody v-if="searchQuery === ''">
-            <!-- Loop through product which represents Items for each row -->
-            <tr v-for="(product, index) in products" :key="product.id">
-              <td class="px-5 py-5 border-brand border-x-[1px] bg-white text-sm">
-                {{
-          (parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1
-        }}
-              </td>
-              <td v-for="key in uniqueKeys" :key="key" class="px-5 py-5 border-brand border-r-[1px] bg-white text-sm">
-                <!-- Check for columns with onclick event. e.g click on product to view on details -->
-                <template v-if="clickableKeys[key]">
-                  <span @click.prevent="clickableKeys[key](product)" class="text-blue-500 cursor-pointer">{{
-          product[key] }}</span>
-                </template>
-
-                <!-- Check if key indicates an image, logo, or file -->
-                <template v-else-if="isMediaKey(key)">
-                  <img :src="product[key]" alt="Media" class="w-10 h-10 bg-slate-500/[30%] rounded-lg object-cover" />
-                </template>
-
-                <template v-else>
-                  {{ product[key] }}
-                </template>
-              </td>
-              <!-- render content for additional code -->
-              <template v-for="(col, index) in additionalColumns" :key="`${index}`">
-                <td class="px-5 py-5 border-b border-x-[1px] border-brand bg-white text-sm">
-                  <button @click="col.action(product)">
-                    {{ formatKey(col.name) }}
-                  </button>
+            </tbody>
+            <tbody v-if="searchQuery === ''">
+              <!-- Loop through product which represents Items for each row -->
+              <tr v-for="(product, index) in products" :key="product.id">
+                <td class="px-5 py-5 border-brand border-x-[1px] bg-white text-sm">
+                  {{
+                  (parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1
+                  }}
                 </td>
-              </template>
-            </tr>
-          </tbody>
+                <td v-for="key in uniqueKeys" :key="key" class="px-5 py-5 border-brand border-r-[1px] bg-white text-sm">
+                  <!-- Check for columns with onclick event. e.g click on product to view on details -->
+                  <template v-if="clickableKeys[key]">
+                    <span @click.prevent="clickableKeys[key](product)" class="text-blue-500 cursor-pointer">{{
+                      product[key] }}</span>
+                  </template>
+
+                  <!-- Check if key indicates an image, logo, or file -->
+                  <template v-else-if="isMediaKey(key)">
+                    <img :src="product[key]" alt="Media" class="w-10 h-10 bg-slate-500/[30%] rounded-lg object-cover" />
+                  </template>
+
+                  <template v-else>
+                    {{ product[key] }}
+                  </template>
+                </td>
+                <!-- render content for additional code -->
+                <template v-for="(col, index) in additionalColumns" :key="`${index}`">
+                  <td class="px-5 py-5 border-b border-x-[1px] border-brand bg-white text-sm">
+                    <button @click="col.action(product)">
+                      {{ formatKey(col.name) }}
+                    </button>
+                  </td>
+                </template>
+              </tr>
+            </tbody>
         </table>
         <div v-if="searchResults?.length === 0 && searchQuery" class="flex justify-center py-10 text-lg">
           <p class="font-light italic">Record not found</p>
@@ -140,22 +138,20 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watchEffect, watch } from "vue";
-import { useReadComposable } from "@/composable/useReadComposable";
-// import { useSearchStore } from "@/composable/useSearchComposable";
-import AuthInput from "@/components/UI/Input/AuthInput.vue";
-// import { storeToRefs } from "pinia";
-import apiService from "@/services/apiService";
+import { ref, watch, onMounted } from 'vue';
+import { useReadComposable } from '@/composable/useReadComposable';
+import AuthInput from '@/components/UI/Input/AuthInput.vue';
+import apiService from '@/services/apiService';
+import { debounce } from 'lodash-es';
 
-//import PaginationComponent from '@/components/UI/Pagination/DataTablePagination.vue';
-let searchQuery = ref("");
+const searchQuery = ref('');
 
 const props = defineProps({
   endpoint: String,
   searchEndpoint: String,
   excludedKeys: {
     type: Array,
-    default: () => ["id"],
+    default: () => ['id'],
   },
   clickableKeys: {
     type: Object,
@@ -167,7 +163,7 @@ const props = defineProps({
   },
   toggleButtonLabel: {
     type: String,
-    default: "Add",
+    default: 'Add',
   },
   hideToggleButtonLabel: {
     type: Boolean,
@@ -188,72 +184,50 @@ const {
   fetchPage,
   paginationArray,
 } = useReadComposable(props);
-// const SearchStore = useSearchStore();
-// const { searchResults } = storeToRefs(SearchStore);
 
-//console.log(products.value)
-onMounted(async () => {
-  await fetchPage(props.endpoint, 1);
-});
-// const filteredProducts = ref([]);
-let searchResults = ref([]);
-// This is the data that will be returned from the API
+const searchResults = ref([]);
 
+// Search function with debounce to limit API calls
 const search = async () => {
   try {
     isLoading.value = true;
-    searchResults.value = await apiService.get(
-      `${props.searchEndpoint}/${searchQuery.value}`
-    );
+    searchResults.value = await apiService.get(`${props.searchEndpoint}/${searchQuery.value}`);
     isLoading.value = false;
-    console.log(searchResults.value);
-    return searchResults.value;
+    console.log(searchResults.value)
+    return searchResults.value
   } catch (error) {
     console.error(error);
     isLoading.value = false;
   }
 };
 
-// const search = () => {
-//   filteredProducts.value = products?.value?.filter((product) => {
-//     return (
-//       Object.values(product).some((value) =>
-//         value.toString().toLowerCase().includes(searchQuery.value.toLowerCase())
-//       ) ||
-//       (product.product_type_id &&
-//         product.product_type_id
-//           .toString()
-//           .toLowerCase()
-//           .includes(searchQuery.value.toLowerCase()))
-//     );
-//   });
-// };
-// watch(searchQuery, () => {
-//   search();
-// });
-
-// Watch for changes in searchQuery
-watch(searchQuery, () => {
-  if (searchQuery.value === "") {
-    // When searchQuery is empty, fetch page again
-    (async () => {
-      searchResults.value = [];
-      isLoading.value = true;
-      await fetchPage(props.endpoint, 1);
-      isLoading.value = false;
-    })();
+const onSearchInput = () => {
+  if (!searchQuery.value) {
+    searchResults.value = [];
+    isLoading.value = true;
+    fetchPage(props.endpoint, 1);
+    isLoading.value = false;
   } else {
     search();
-    // clear();
   }
+};
+
+onMounted(async () => {
+  await fetchPage(props.endpoint, 1);
 });
-watchEffect(async () => {
-  //await fetchPage(props.endpoint, 1);
-});
+
+watch(searchQuery, onSearchInput);
+
 function clear() {
-  searchQuery.value = "";
+  searchQuery.value = '';
+}
+
+// Function to calculate serial number
+function getSerialNumber(index) {
+  return (currentPage.value - 1) * itemsPerPage.value + index + 1;
 }
 </script>
+
 
 <style scoped>
 /* Add any specific styles for your table here */
