@@ -2,8 +2,7 @@
   <DashboardLayout pageTitle="Purchase Page">
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
-      <!-- <button class="button upload-btn">Upload</button> -->
-    <button class="button add-btn"><router-link to="/create-purchase" class="button add-btn">Add</router-link></button>
+      <button class="button add-btn"><router-link to="/create-purchase" class="button add-btn">Add</router-link></button>
     </div>
     <div class="table-container">
       <table>
@@ -19,7 +18,6 @@
             <th>SELLING PRICE</th>
             <th>CREATED BY</th>
             <th>UPDATED BY</th>
-            <!-- <th>EDIT</th> -->
             <th>DELETE</th>
           </tr>
         </thead>
@@ -35,21 +33,18 @@
             <td>{{ item.selling_price }}</td>
             <td>{{ item.created_by }}</td>
             <td>{{ item.updated_by }}</td>
-            <!-- <td><button @click="editItem(item)">Edit</button></td> -->
             <td><button @click="openDeleteModal(item)">Delete</button></td>
           </tr>
         </tbody>
       </table>
     </div>
-    
-    <DeleteModal v-if="showDeleteModal" @close="closeDeleteModal" @updated="forceRefresh" :items="itemToDelete"
-      :url="'purchases'" :modalTitle="modalTitle" 
-    />
+
+    <DeleteModal v-if="showDeleteModal" @close="closeDeleteModal" @updated="forceRefresh" :items="itemToDelete" :url="'purchases'" :modalTitle="modalTitle" />
 
     <div class="pagination">
-        <button @click="changePage(currentPage - 1)" :disabled="!pagination.prev_page_url">Previous</button>
-        <span>Page {{ currentPage }} of {{ totalPages }}</span>
-        <button @click="changePage(currentPage + 1)" :disabled="!pagination.next_page_url">Next</button>
+      <button @click="changePage(currentPage - 1)" :disabled="!pagination.prev_page_url">Previous</button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button @click="changePage(currentPage + 1)" :disabled="!pagination.next_page_url">Next</button>
     </div>
   </DashboardLayout>
 </template>
@@ -70,13 +65,16 @@ const currentPage = ref(1);
 const totalPages = ref(0);
 
 const filteredData = computed(() => {
-  return data.value.filter(item => item.product_type_description.toLowerCase().includes(search.value.toLowerCase()));
+  return data.value.filter(item => {
+    const description = item.product_type_description || '';
+    return description.toLowerCase().includes(search.value.toLowerCase());
+  });
 });
 
 async function fetchData(page = 1) {
   try {
     const response = await apiService.get(`purchases?page=${page}`);
-    data.value = response.data;
+    data.value = response.data || [];
     pagination.value = {
       next_page_url: response.next_page_url,
       prev_page_url: response.prev_page_url,
@@ -134,11 +132,11 @@ onMounted(() => fetchData(currentPage.value));
 }
 
 .upload-btn {
-  background-color: #C35214 
+  background-color: #C35214;
 }
 
 .add-btn {
-  background-color: #C35214; 
+  background-color: #C35214;
 }
 
 .table-container {
@@ -164,7 +162,7 @@ tbody tr:hover {
 }
 
 thead {
-  background-color: #C35214; 
+  background-color: #C35214;
 }
 
 .pagination {
@@ -177,7 +175,7 @@ thead {
 
 .pagination button {
   padding: 8px 16px;
-  background-color: #C35214; 
+  background-color: #C35214;
   border: none;
   border-radius: 4px;
   color: white;
@@ -188,6 +186,6 @@ thead {
   padding: 8px 16px;
   background-color: #C35214;
   border-radius: 4px;
-  color: white; 
+  color: white;
 }
 </style>
