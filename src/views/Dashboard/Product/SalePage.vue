@@ -568,7 +568,7 @@ const generateReceiptPDF = (receiptData) => {
   doc.setTextColor(sectionHeaderStyle.textColor);
   doc.text(`Transaction ID: ${receiptData.transaction_details.transaction_id}`, 20, 40);
   doc.text(`Date: ${receiptData.transaction_details.created_at}`, 20, 50);
-  doc.text(`Total Amount: ${receiptData.transaction_details.transaction_amount}`, 20, 60);
+  doc.text(`Total Amount: NGN${receiptData.transaction_details.transaction_amount}`, 20, 60);
 
   // Add itemized list section
   let yPosition = 80; // Initial y position
@@ -577,12 +577,12 @@ const generateReceiptPDF = (receiptData) => {
     doc.setFont(itemStyle.fontStyle, 'normal');
     doc.setFontSize(itemStyle.fontSize);
     doc.setTextColor(itemStyle.textColor);
-    doc.text(`Products N ${item.product_type_name}`, 20, yPosition);
-    doc.text(`Price: ${item.amount}`, 20, yPosition + 10);
+    doc.text(`Products Name: ${item.product_type_name}`, 20, yPosition);
+    doc.text(`Price: NGN${item.amount}`, 20, yPosition + 10);
     doc.text(`Quantity: ${item.quantity}`, 20, yPosition + 20);
     doc.text(`VAT: ${item.vat === 1 ? 'Yes' : 'No'}`, 20, yPosition + 30);
-    doc.text(`Pament Type: ${item.payment_method}`, 20, yPosition + 30);
-    doc.text(`Amount: ${item.total_price}`, 20, yPosition + 40);
+    doc.text(`Amount: NGN${item.total_price}`, 20, yPosition + 40);
+    doc.text(`Payment Type: ${item.payment_method}`, 20, yPosition + 50);
 
     // Increase y position for next item
     yPosition += 60; // Adjust as needed for spacing
