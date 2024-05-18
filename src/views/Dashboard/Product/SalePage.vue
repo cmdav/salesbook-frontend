@@ -536,12 +536,12 @@ const handleReceipt = async (transactionId) => {
   try {
         let receiptInfo = await productsStore.handleGetReceipt(transactionId);   
         console.log(receiptInfo);
-      // if (receiptInfo) {
-      //   generateReceiptPDF(receiptInfo);
-      //     return receiptInfo; // Generate PDF receipt using receipt data
-      // } else {
-      //   console.error('Failed to fetch receipt data');
-      // }
+      if (receiptInfo) {
+        generateReceiptPDF(receiptInfo);
+          return receiptInfo; 
+      } else {
+        console.error('Failed to fetch receipt data');
+      }
     } catch (error) {
         console.error('Failed to generate receipt:', error);
     } 
@@ -560,7 +560,7 @@ const generateReceiptPDF = (receiptData) => {
   doc.setFont(headerStyle.fontStyle, 'normal');
   doc.setFontSize(headerStyle.fontSize);
   doc.setTextColor(headerStyle.textColor);
-  doc.text('Sales Receipt', 105, 20, null, null, 'center');
+  doc.text('Transaction Receipt', 105, 20, null, null, 'center');
 
   // Add transaction details section
   doc.setFont(sectionHeaderStyle.fontStyle, 'normal');
@@ -581,6 +581,7 @@ const generateReceiptPDF = (receiptData) => {
     doc.text(`Price: ${item.amount}`, 20, yPosition + 10);
     doc.text(`Quantity: ${item.quantity}`, 20, yPosition + 20);
     doc.text(`VAT: ${item.vat === 1 ? 'Yes' : 'No'}`, 20, yPosition + 30);
+    doc.text(`Pament Type: ${item.payment_method}`, 20, yPosition + 30);
     doc.text(`Amount: ${item.total_price}`, 20, yPosition + 40);
 
     // Increase y position for next item

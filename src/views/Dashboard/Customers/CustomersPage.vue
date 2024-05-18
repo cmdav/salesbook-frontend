@@ -130,11 +130,11 @@
               </div>
               <div class="mx-auto w-fit my-5">
                 <Pagination
-                  @changePage="(page) => (companiesCustomers.current_page = page)"
-                  :currentPage="companiesCustomers?.current_page"
+                  @changePage="setCurrentCompaniesPage"
+                  :currentPage="companiesCustomers.value.current_page"
                   :pageSize="companiesCustomers?.per_page"
                   :totalPages="companiesCustomers?.last_page"
-                  :alwaysShowNextAndPrevious="true"
+                 :alwaysShowNextAndPrevious="true"
                 />
               </div>
             </div>
@@ -220,11 +220,11 @@
               </div>
               <div class="mx-auto w-fit my-5">
                 <Pagination
-                  @changePage="setCurrentCustomersPage"
+                  @changePage="setCurrentPage"
                   :currentPage="Customers?.current_page"
                   :pageSize="Customers?.per_page"
                   :totalPages="Customers?.last_page"
-                  :alwaysShowNextAndPrevious="true"
+                 :alwaysShowNextAndPrevious="true"
                 />
               </div>
             </div>
@@ -415,6 +415,7 @@ import Loader from "@/components/UI/Loader.vue";
 // import { useQuery } from "vue-query";
 import { storeToRefs } from "pinia";
 const CustomerStore = useCustomerstore();
+
 const { Customers, companiesCustomers, customerNames, companyNames } = storeToRefs(
   CustomerStore
 );
@@ -693,17 +694,27 @@ const fetchCompanyProducts = async (page) => {
   }
 };
 
-const setCurrentCustomersPage = (page) => {
-  Customers.value.current_page = page;
-  fetchProducts(page);
+// const setCurrentCustomersPage = (page) => {
+//   Customers.value.current_page = page;
+//   fetchProducts(page);
+// };
+
+const setCurrentPage = (page) => {
+  CustomerStore.setCurrentPage(page);
+};
+
+const setCurrentCompaniesPage = (page) => {
+  CustomerStore.setCurrentCompaniesPage(page);
 };
 
 onMounted(async () => {
   try {
     await CustomerStore.handleCustomerName();
     await CustomerStore.handleCompanyName();
-    await fetchProducts(Customers.value.current_page);
-    await fetchCompanyProducts(companiesCustomers.value.current_page);
+    await fetchProducts(Customers?.value?.current_page ? Customers?.value?.current_page : 1);
+    await fetchCompanyProducts(companiesCustomers?.value?.current_page
+        ? companiesCustomers?.value?.current_page
+        : 1);
     // await CustomerStore.allCustomer(
     //   Customers?.value?.current_page ? Customers?.value?.current_page : 1
     // );
