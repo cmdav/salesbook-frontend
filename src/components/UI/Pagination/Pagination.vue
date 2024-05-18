@@ -8,35 +8,34 @@ const props = withDefaults(
     currentPage?: number;
     pageSize?: number;
     totalPages?: number;
-    // alwaysShowNextAndPrevious: boolean; // show back and next buttons even if disabled
+    alwaysShowNextAndPrevious: boolean; // show back and next buttons even if disabled
   }>(),
   {
     currentPage: 1,
     pageSize: 20,
     totalPages: 1,
-    // alwaysShowNextAndPrevious: true,
+    alwaysShowNextAndPrevious: true,
   }
 );
 
 const changeCurrentPage = (page: number) => {
-  if (page === props.currentPage){;
+  if (page === props.currentPage) return;
   emit("changePage", page);
-  }
 };
 
 const hasNextPage = computed(() => props.currentPage < props.totalPages);
 
-const hasPrevPage = computed(() => !!(props.currentPage > 1));
+const hasPrevPage = computed(() => !!(props.currentPage - 1));
 
-// const prevPage = computed(() => {
-//   const prev = [props.currentPage - 1];
-//   return prev.filter((page) => page > 0);
-// });
+const prevPage = computed(() => {
+  const prev = [props.currentPage - 1];
+  return prev.filter((page) => page > 0);
+});
 
-// const nextPage = computed(() => {
-//   const next = [props.currentPage + 1];
-//   return next.filter((page) => page <= lastPage.value);
-// });
+const nextPage = computed(() => {
+  const next = [props.currentPage + 1];
+  return next.filter((page) => page <= lastPage.value);
+});
 
 // const prevTwoPages = computed(() => {
 //   const prevTwo = [props.currentPage - 1, props.currentPage - 2];
@@ -50,26 +49,19 @@ const hasPrevPage = computed(() => !!(props.currentPage > 1));
 
 const lastPage = computed(() => props.totalPages);
 
-// const pagesToDisplay = computed(() => [
-//   ...prevPage.value,
-//   props.currentPage,
-//   ...nextPage.value,
-// ]);
-const pagesToDisplay = computed(() => {
-  const pages = [];
-  for (let i = Math.max(1, props.currentPage - 1); i <= Math.min(props.totalPages, props.currentPage + 1); i++) {
-    pages.push(i);
-  }
-  return pages;
-});
+const pagesToDisplay = computed(() => [
+  ...prevPage.value,
+  props.currentPage,
+  ...nextPage.value,
+]);
 </script>
 
 <template>
   <div class="flex w-fit items-center gap-x-2">
     <!-- Displays the Back Button -->
     <button
-      v-if="hasPrevPage"
-      :disabled="!hasPrevPage"
+      v-if="hasPrevPage || props.alwaysShowNextAndPrevious"
+      :disabled="props.currentPage === 1"
       class="text-sm font-medium flex items-center justify-center gap-x-1 rounded px-3 py-2 text-brand ring-[1px] ring-brand disabled:cursor-not-allowed disabled:text-red-200 disabled:ring-red-200"
       @click="() => changeCurrentPage(props.currentPage - 1)"
     >
@@ -90,7 +82,7 @@ const pagesToDisplay = computed(() => {
 
     <!-- Displays the First Page before the ellipses (not on mobile) -->
     <button
-      v-if="props.currentPage > 4"
+      v-if="props.currentPage != 1 && props.currentPage - 1 >= 4"
       class="hidden text-sm font-medium sm:flex items-center justify-center rounded px-3 py-2 text-brand ring-[1px] ring-brand"
       @click="() => changeCurrentPage(1)"
     >
@@ -99,7 +91,7 @@ const pagesToDisplay = computed(() => {
 
     <!-- Displays the ellipses for the First Page (not on mobile) -->
     <div
-      v-if="props.currentPage > 4"
+      v-if="props.currentPage != 1 && props.currentPage - 1 >= 4"
       class="hidden text-sm font-medium sm:flex items-center justify-center rounded px-3 py-2 text-brand ring-[1px] ring-brand"
     >
       ...
@@ -110,7 +102,7 @@ const pagesToDisplay = computed(() => {
       v-for="number in pagesToDisplay"
       :key="number"
       :class="
-        number == props.currentPage ? 'bg-brand text-white ring-brand' : 'text-brand ring-brand'
+        currentPage == number ? 'bg-brand text-white ring-brand' : 'text-brand ring-brand'
       "
       class="text-sm font-medium flex items-center justify-center rounded px-3 py-2 ring-[1px]"
       @click="() => changeCurrentPage(number)"
@@ -120,7 +112,7 @@ const pagesToDisplay = computed(() => {
 
     <!-- Displays the ellipses for the Last Page (not on mobile) -->
     <div
-      v-if="props.totalPages - props.currentPage >= 3"
+      v-if="lastPage - props.currentPage >= 3"
       class="hidden text-sm font-medium sm:flex items-center justify-center rounded px-3 py-2 text-brand ring-[1px] ring-brand"
     >
       ...
@@ -128,9 +120,9 @@ const pagesToDisplay = computed(() => {
 
     <!-- Displays the lastPage After Ellipses (not on mobile) -->
     <button
-      v-if="props.totalPages - props.currentPage >= 3"
+      v-if="lastPage - props.currentPage >= 3"
       :class="
-        props.currentPage == props.totalPages
+        props.currentPage == lastPage
           ? 'bg-brand text-white ring-brand'
           : 'text-brand ring-brand'
       "
@@ -142,10 +134,10 @@ const pagesToDisplay = computed(() => {
 
     <!-- Displays the Next Button -->
     <button
-      v-if="hasNextPage"
-      :disabled="currentPage <= totalPages"
+      v-if="hasNextPage || props.alwaysShowNextAndPrevious"
+      :disabled="props.currentPage >= props.totalPages"
       class="text-sm font-medium flex items-center justify-center gap-x-1 rounded px-3 py-2 text-brand ring-[1px] ring-brand disabled:cursor-not-allowed disabled:text-red-200 disabled:ring-red-200"
-      @click="() => changeCurrentPage(props.currentPage + 1)"
+      @click="() => changeCurrentPage(currentPage + 1)"
     >
       <span class="inline-block">Next</span>
       <svg
