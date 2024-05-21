@@ -188,7 +188,7 @@ const {
 const searchResults = ref([]);
 
 // Search function with debounce to limit API calls
-const search = async () => {
+const search = debounce( async () => {
   try {
     isLoading.value = true;
     searchResults.value = await apiService.get(`${props.searchEndpoint}/${searchQuery.value}`);
@@ -199,7 +199,7 @@ const search = async () => {
     console.error(error);
     isLoading.value = false;
   }
-};
+}, 300);
 
 const onSearchInput = () => {
   if (!searchQuery.value) {
