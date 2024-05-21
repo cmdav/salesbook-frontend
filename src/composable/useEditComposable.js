@@ -32,8 +32,8 @@ export function useEditComposable(formFields, url, itemId, emit) {
   const handleEdit = (item = '') => {
     // console.log('before value')
     // console.log(showEditModal.value)
-    console.log(item)
     items.value = item
+    console.log(`Item : ${item}`)
     showEditModal.value = true
     // console.log('after value')
     // console.log(showEditModal.value)

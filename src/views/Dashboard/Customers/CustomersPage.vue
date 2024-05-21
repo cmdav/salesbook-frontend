@@ -129,13 +129,15 @@
                 </table>
               </div>
               <div class="mx-auto w-fit my-5">
-                <Pagination
+                <!-- <Pagination
                   @changePage="(page) => (companiesCustomers.current_page = page)"
                   :currentPage="companiesCustomers?.current_page"
                   :pageSize="companiesCustomers?.per_page"
                   :totalPages="companiesCustomers?.last_page"
                   :alwaysShowNextAndPrevious="true"
-                />
+                /> -->
+
+              <Pagination v-if="showCompanyPagination" />
               </div>
             </div>
 
@@ -219,13 +221,14 @@
                 </table>
               </div>
               <div class="mx-auto w-fit my-5">
-                <Pagination
+                <!-- <Pagination
                   @changePage="setCurrentCustomersPage"
                   :currentPage="Customers?.current_page"
                   :pageSize="Customers?.per_page"
                   :totalPages="Customers?.last_page"
                   :alwaysShowNextAndPrevious="true"
-                />
+                /> -->
+                  <Pagination v-if="showIndividualPagination" />
               </div>
             </div>
           </div>
@@ -409,7 +412,7 @@ import { useCustomerstore } from "@/stores/customers";
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import CenteredModalLarge from "@/components/UI/CenteredModalLarge.vue";
 import AuthInput from "@/components/UI/Input/AuthInput.vue";
-import Pagination from "@/components/UI/Pagination/Pagination.vue";
+import Pagination from "@/components/UI/Pagination/customerPagination.vue";
 import Loader from "@/components/UI/Loader.vue";
 
 // import { useQuery } from "vue-query";
@@ -473,6 +476,7 @@ const filteredCustomer = computed(() => {
 
   return filtered; // Return the filtered array
 });
+
 const filteredCompany = computed(() => {
   // Create a shallow copy of the jobs array
   let filtered = companyNames.value?.data;
@@ -610,6 +614,16 @@ function HandleToggleModal() {
   clearInputs();
 }
 
+const pageSize = 20;
+
+const showIndividualPagination = computed(() => {
+  return filteredCustomer.value && filteredCustomer.value.length > pageSize;
+});
+
+const showCompanyPagination = computed(() => {
+  return filteredCompany.value && filteredCompany.value.length > pageSize;
+});
+  
 const handleCustomerRegisteration = async () => {
   loading.value = true;
   if (!validateForm()) {
