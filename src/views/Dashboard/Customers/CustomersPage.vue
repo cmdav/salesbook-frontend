@@ -129,15 +129,13 @@
                 </table>
               </div>
               <div class="mx-auto w-fit my-5">
-                <!-- <Pagination
+                <Pagination
                   @changePage="(page) => (companiesCustomers.current_page = page)"
                   :currentPage="companiesCustomers?.current_page"
                   :pageSize="companiesCustomers?.per_page"
                   :totalPages="companiesCustomers?.last_page"
                   :alwaysShowNextAndPrevious="true"
-                /> -->
-
-              <Pagination v-if="showCompanyPagination" />
+                />
               </div>
             </div>
 
@@ -221,14 +219,13 @@
                 </table>
               </div>
               <div class="mx-auto w-fit my-5">
-                <!-- <Pagination
+                <Pagination
                   @changePage="setCurrentCustomersPage"
                   :currentPage="Customers?.current_page"
                   :pageSize="Customers?.per_page"
                   :totalPages="Customers?.last_page"
                   :alwaysShowNextAndPrevious="true"
-                /> -->
-                  <Pagination v-if="showIndividualPagination" />
+                />
               </div>
             </div>
           </div>
@@ -412,7 +409,7 @@ import { useCustomerstore } from "@/stores/customers";
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import CenteredModalLarge from "@/components/UI/CenteredModalLarge.vue";
 import AuthInput from "@/components/UI/Input/AuthInput.vue";
-import Pagination from "@/components/UI/Pagination/customerPagination.vue";
+import Pagination from "@/components/UI/Pagination/Pagination.vue";
 import Loader from "@/components/UI/Loader.vue";
 
 // import { useQuery } from "vue-query";
@@ -440,6 +437,7 @@ function getMinDate() {
   // Return the minimum date in the format required by the input[type=date] field
   return minDate.toISOString().split("T")[0];
 }
+
 const redirectToSingleCustomerPage = (id) => {
   router.push({ name: "view-customers", params: { id } });
 };
@@ -476,7 +474,6 @@ const filteredCustomer = computed(() => {
 
   return filtered; // Return the filtered array
 });
-
 const filteredCompany = computed(() => {
   // Create a shallow copy of the jobs array
   let filtered = companyNames.value?.data;
@@ -562,6 +559,7 @@ const validateAddCompanyForm = () => {
   Object.keys(errorsCom).forEach((key) => {
     errorsCom[key] = false;
   });
+
   // Perform validation before submission
   let isValid = true;
 
@@ -614,16 +612,6 @@ function HandleToggleModal() {
   clearInputs();
 }
 
-const pageSize = 20;
-
-const showIndividualPagination = computed(() => {
-  return filteredCustomer.value && filteredCustomer.value.length > pageSize;
-});
-
-const showCompanyPagination = computed(() => {
-  return filteredCompany.value && filteredCompany.value.length > pageSize;
-});
-  
 const handleCustomerRegisteration = async () => {
   loading.value = true;
   if (!validateForm()) {
@@ -641,7 +629,7 @@ const handleCustomerRegisteration = async () => {
   };
   try {
     let res = await CustomerStore.handleAddCustomer(payload);
-    await CustomerStore.handleCustomerName();
+    CustomerStore.handleCustomerName();
     HandleToggleModal();
     loading.value = false;
     clearInputs();
@@ -652,7 +640,6 @@ const handleCustomerRegisteration = async () => {
     loading.value = false;
   }
 };
-
 const handleCompanyCustomerRegisteration = async () => {
   loading.value = true;
   if (!validateAddCompanyForm()) {
@@ -668,8 +655,7 @@ const handleCompanyCustomerRegisteration = async () => {
   };
   try {
     let res = await CustomerStore.handleAddCustomer(payload);
-    // await CustomerStore.allCustomer();
-    await CustomerStore.handleCompanyName();
+    CustomerStore.allCustomer();
     HandleToggleModal();
     loading.value = false;
     clearInputs();
@@ -680,15 +666,7 @@ const handleCompanyCustomerRegisteration = async () => {
     loading.value = false;
   }
 };
-
-watch(customerNames, () => {
-  fetchProducts(Customers.value.current_page);
-});
-
-watch(companyNames, () => {
-  fetchCompanyProducts(companiesCustomers.value.current_page);
-});
-
+// xcrops@example.net
 const fetchProducts = async (page) => {
   try {
     let res = await CustomerStore.allCustomer(page);
@@ -697,35 +675,27 @@ const fetchProducts = async (page) => {
     console.error("Error fetching products:", error);
   }
 };
-
-const fetchCompanyProducts = async (page) => {
-  try {
-    let res = await CustomerStore.allCompanyCustomers(page);
-    return res;
-  } catch (error) {
-    console.error("Error fetching company customers:", error);
-  }
-};
-
 const setCurrentCustomersPage = (page) => {
   Customers.value.current_page = page;
   fetchProducts(page);
 };
+// function clearSearch() {
+//   sortInput.name = "";
+//   fetchProducts(1);
+// }
 
 onMounted(async () => {
   try {
     await CustomerStore.handleCustomerName();
     await CustomerStore.handleCompanyName();
-    await fetchProducts(Customers.value.current_page);
-    await fetchCompanyProducts(companiesCustomers.value.current_page);
-    // await CustomerStore.allCustomer(
-    //   Customers?.value?.current_page ? Customers?.value?.current_page : 1
-    // );
-    // await CustomerStore.allCompanyCustomers(
-    //   companiesCustomers?.value?.current_page
-    //     ? companiesCustomers?.value?.current_page
-    //     : 1
-    // );
+    await CustomerStore.allCustomer(
+      Customers?.value?.current_page ? Customers?.value?.current_page : 1
+    );
+    await CustomerStore.allCompanyCustomers(
+      companiesCustomers?.value?.current_page
+        ? companiesCustomers?.value?.current_page
+        : 1
+    );
   } catch (error) {
     console.error(error);
   }
