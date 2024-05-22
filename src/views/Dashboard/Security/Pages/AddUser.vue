@@ -19,7 +19,7 @@
       </button>
     </SettingsLayoutcopy> -->
     <!-- <PermissionFormModalcopy v-if="showModal" @close="toggleAddPermissionModal" /> -->
-    <FormModal v-if="showModal" @close="toggleAddPermissionModal" :formTitle="'Add User'" :fields="userFormFields"
+    <FormModal v-if="showModal" @close="closeModal" :key="forceUpdate" :formTitle="'Add User'" :fields="userFormFields"
       @fetchDataForSubCategory="fetchDataForSubCategory" :isLoadingMsg="isOptionLoadingMsg" :url="'sale-users'">
     </FormModal>
   </div>
@@ -39,7 +39,7 @@ const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg, }
   = useSelectComposable(userFormFields, 'user', "role_id", "", "");
 
 
-const { showModal, forceUpdate } = usePostComposable("/settings", formFields);
+const { showModal, forceUpdate, closeModal} = usePostComposable("/settings", userFormFields);
 const store = useStore();
 const roles = computed(() => {
 
@@ -61,9 +61,9 @@ const {
   closeDeleteModal
 } = useDeleteComposable();
 
-const toggleAddPermissionModal = async () => {
-  showModal.value = !showModal.value;
-};
+// const toggleAddPermissionModal = async () => {
+//   showModal.value = !showModal.value;
+// };
 
 const forceRefresh = () => {
   forceUpdate.value++;
