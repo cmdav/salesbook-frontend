@@ -6,7 +6,7 @@ export const getAllCustomer = async () => {
   const token = await getToken()
 
   try {
-    let res = await axios.get(`users?type=customer`, {
+    let res = await axios.get(`customers?type=individual`, {
       headers: {
         Authorization: 'Bearer ' + token
       }
@@ -21,7 +21,7 @@ export const getAllCompanyCustomers = async () => {
   const token = await getToken()
 
   try {
-    let res = await axios.get(`users?type=company_customer`, {
+    let res = await axios.get(`customers?type=company`, {
       headers: {
         Authorization: 'Bearer ' + token
       }
@@ -50,7 +50,6 @@ export const getSingleCustomer = async (id) => {
 }
 export const customerName = async () => {
    const token = await getToken()
-
   try {
     let res = await axios.get(`customers?type=individual`, {
       headers: {
@@ -58,16 +57,15 @@ export const customerName = async () => {
       }
     })
    // catchAxiosSuccess(res.data)
+   console.log(res.data)
     return res.data
   } catch (error) {
     console.log(error)
   }
 }
 export const addCustomer = async (payload) => {
- 
   //console.log(payload);
   const token = await getToken()
-
   try {
     let res = await axios.post(`customers`, payload, {
       headers: {
@@ -115,3 +113,4 @@ export const allCustomersName = async () => {
     console.log(error)
   }
 }
+
