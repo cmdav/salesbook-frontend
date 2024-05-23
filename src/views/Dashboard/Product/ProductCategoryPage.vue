@@ -6,6 +6,7 @@
         :key="forceUpdate"
         endpoint="product-categories"
         searchEndpoint="search-product-categories"
+        :pageName="'product-categories'"
         :additionalColumns=additionalColumns
       >
         <button class="btn-brand" @click="closeUploadModal">Upload</button>

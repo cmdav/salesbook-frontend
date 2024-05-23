@@ -1,7 +1,11 @@
 <template>
   <DashboardLayout pageTitle="Currency Page">
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
-      <DataTableLayout @toggleModal="showModal = !showModal" :key="forceUpdate" endpoint="currencies"
+      <DataTableLayout 
+          @toggleModal="showModal = !showModal" 
+          :key="forceUpdate"
+           endpoint="currencies"
+           :pageName="'currencies'"
         searchEndpoint="search-currency" :additionalColumns=additionalColumns>
         <button class="btn-brand" @click="closeUploadModal">Upload</button>
       </DataTableLayout>
@@ -71,8 +75,8 @@ const permissions = computed(() => {
   return store.getUser.user.permission.permissions.find(p => p.page_name === "currencies");
 })
 
-console.log(store.getUser.user.permission.permissions)
-console.log(permissions.value)
+// console.log(store.getUser.user.permission.permissions)
+// console.log(permissions.value)
 const additionalColumns = computed(() => {
   const cols = [];
   if (permissions.value?.update) {
