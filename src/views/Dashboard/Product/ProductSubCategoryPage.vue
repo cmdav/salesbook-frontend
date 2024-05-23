@@ -7,6 +7,7 @@
         endpoint="product-sub-categories"
         searchEndpoint="search-product-sub-categories"
         :excludedKeys="['id', 'sub_category_id']"
+        :pageName="'product-sub-categories'"
         :additionalColumns=additionalColumns
       >
         <button class="btn-brand" @click="closeUploadModal">Upload</button>

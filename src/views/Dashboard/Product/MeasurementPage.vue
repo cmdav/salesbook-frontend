@@ -7,6 +7,7 @@
         :key="forceUpdate"
         endpoint="measurements"
         searchEndpoint="search-measurement"
+        :pageName="'measurements'"
         :additionalColumns=additionalColumns
       >
         <button class="btn-brand" @click="closeUploadModal">Upload</button>

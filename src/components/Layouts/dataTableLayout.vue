@@ -10,7 +10,7 @@
         </button>
       </div>
       <slot></slot>
-      <div v-if="hideToggleButtonLabel">
+      <div v-if="permissions">
         <button @click="$emit('toggleModal')" class="btn-brand !px-4">
           {{ props?.toggleButtonLabel }}
         </button>
@@ -138,17 +138,21 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, computed } from 'vue';
 import { useReadComposable } from '@/composable/useReadComposable';
 import AuthInput from '@/components/UI/Input/AuthInput.vue';
 import apiService from '@/services/apiService';
 import { debounce } from 'lodash-es';
+import { useStore } from "@/stores/user";
+
+
 
 const searchQuery = ref('');
 
 const props = defineProps({
   endpoint: String,
   searchEndpoint: String,
+  pageName: String,
   excludedKeys: {
     type: Array,
     default: () => ['id'],
@@ -169,6 +173,7 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+
 });
 
 const {
@@ -226,6 +231,14 @@ function clear() {
 function getSerialNumber(index) {
   return (currentPage.value - 1) * itemsPerPage.value + index + 1;
 }
+// Check if user have permission to view
+// Check if user has permission to view
+const store = useStore();
+const permissions = computed(() => {
+  const perm = store.getUser.user.permission.permissions.find(p => p.page_name === props.pageName);
+  return perm && perm.write == 1; 
+});
+
 </script>
 
 

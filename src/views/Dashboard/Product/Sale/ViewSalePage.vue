@@ -2,9 +2,11 @@
   <DashboardLayout pageTitle="Sales Page">
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
+      <div v-if="permissions">
       <button class="button add-btn">
         <router-link to="/create-sale" class="button add-btn">Add</router-link>
       </button>
+      </div>
     </div>
     <div class="table-container">
       <table>
@@ -66,6 +68,7 @@ import { ref, computed, onMounted } from 'vue';
 import jsPDF from 'jspdf';
 import apiService from '@/services/apiService';
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue';
+import { useStore } from "@/stores/user";
 
 const search = ref('');
 const data = ref([]); // Initialize as an empty array
@@ -171,6 +174,13 @@ const generateReceiptPDF = (receiptData) => {
 };
 
 onMounted(() => fetchData(currentPage.value));
+
+const store = useStore();
+const permissions = computed(() => {
+  const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'sales');
+  return perm && perm.write == 1; 
+});
+
 </script>
 
 <style scoped>

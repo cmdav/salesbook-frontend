@@ -18,6 +18,7 @@
       <DataTableLayout
         :key="forceUpdate"
         endpoint="product-types"
+        :pageName="'product-types'"
         @toggleModal="showModal = !showModal"
         toggleButtonLabel="Add Product"
         :excludedKeys="[
