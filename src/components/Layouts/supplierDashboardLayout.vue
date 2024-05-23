@@ -1,5 +1,5 @@
 <script setup>
-import BaseSidebar from "@/components/SideBar/indexPage.vue";
+import BaseSidebar from "@/components/SideBar/supplierSideBar.vue";
 import { ref, onMounted } from "vue";
 import "animate.css";
 const closeNav = ref(false);

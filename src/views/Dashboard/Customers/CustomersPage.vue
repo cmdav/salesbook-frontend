@@ -418,12 +418,10 @@ const CustomerStore = useCustomerstore();
 const { Customers, companiesCustomers, customerNames, companyNames } = storeToRefs(
   CustomerStore
 );
-import { register } from "@/services/Auth";
 import { useRouter } from "vue-router";
 const router = useRouter();
 import { useStore } from "@/stores/user";
 const store = useStore();
-const { userProfileDetails } = storeToRefs(store);
 
 const dobError = ref(false);
 const dobErrorMsg = ref("date of birth is lower than 18");
