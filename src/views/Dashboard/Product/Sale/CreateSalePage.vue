@@ -1,10 +1,16 @@
+
 <template>
+  <!-- Main layout component for the Add Sale page -->
   <DashboardLayout pageTitle="Add Sale">
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
+      <!-- Navigation buttons at the top -->
       <div class="top-buttons">
         <router-link to="/sale" class="button back-btn">Back</router-link>
       </div>
+
+      <!-- Form for adding a new sale -->
       <form @submit.prevent="handleAddSales">
+        <!-- Section for selecting whether to print a receipt -->
         <div class="form-group">
           <span class="font-medium text-gray-700">Print Receipt:</span>
           <label class="radio-label">
@@ -17,12 +23,10 @@
           </label>
         </div>
 
+        <!-- Section for selecting a customer if printing a receipt -->
         <div v-if="printReceipt === 'yes'" class="form-group flex items-center">
           <div class="flex-grow">
-            <select
-              v-model="formState.customer_id"
-              class="select-input"
-            >
+            <select v-model="formState.customer_id" class="select-input">
               <option v-for="name in allCustomersNames" :key="name.id" :value="name.id">
                 {{ name.customer_detail }}
               </option>
@@ -31,13 +35,10 @@
           <button type="button" class="button btn-brand ml-4" @click="addNewCustomer">Add Customer</button>
         </div>
 
+        <!-- Section for selecting a payment method -->
         <div class="form-group">
           <label class="block text-sm font-medium text-gray-700">Payment method</label>
-          <select
-            required
-            v-model="formState.payment_method"
-            class="select-input"
-          >
+          <select required v-model="formState.payment_method" class="select-input">
             <option
               v-for="option in [
                 { value: 'cash', label: 'Cash' },
@@ -52,6 +53,7 @@
           </select>
         </div>
 
+        <!-- Section for adding products to the sale -->
         <div class="my-8">
           <div class="form-group flex justify-end">
             <span class="font-medium text-gray-700">Total Price: <span v-html="'&#8358;'"></span> {{ totalPrice }}</span>
@@ -64,27 +66,23 @@
             </button>
           </div>
 
+          <!-- Loop through each product added to the sale and display input fields for each product's details -->
           <div
             v-for="(product, index) in formState.products"
             :key="index"
             class="product-group flex justify-between items-end mt-4"
           >
+            <!-- Product type selection -->
             <div class="input-group">
               <label class="block text-sm font-medium text-gray-700">Product</label>
-              <select
-                v-model="formState.products[index].product_type_id"
-                class="select-input"
-              >
-                <option
-                  v-for="name in allProductTypeName"
-                  :key="name.id"
-                  :value="name.id"
-                >
+              <select v-model="formState.products[index].product_type_id" class="select-input">
+                <option v-for="name in allProductTypeName" :key="name.id" :value="name.id">
                   {{ name.product_type_name }}
                 </option>
               </select>
             </div>
 
+            <!-- Product batch selection -->
             <div class="input-group">
               <label class="block text-sm font-medium text-gray-700">Product Batch</label>
               <select
@@ -103,53 +101,35 @@
               </select>
             </div>
 
+            <!-- Display available quantity left in the selected batch -->
             <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Qty left</label>
-              <input
-                type="number"
-                :value="formState.products[index].available_qty"
-                class="input"
-                readonly
-              />
+              <input type="number" :value="formState.products[index].available_qty" class="input readonly-input" readonly />
             </div>
 
+            <!-- Input field for the selling price of the product -->
             <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Price</label>
-              <input
-                required
-                v-model="formState.products[index].price_sold_at"
-                type="number"
-                class="input"
-                readonly
-              />
+              <input required v-model="formState.products[index].price_sold_at" type="number" class="input" />
             </div>
 
+            <!-- Input field for the quantity of the product being sold -->
             <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Qty Sold</label>
-              <input
-                required
-                v-model="formState.products[index].quantity"
-                type="number"
-                class="input"
-              />
+              <input required v-model="formState.products[index].quantity" type="number" class="input" min="1" />
             </div>
 
+            <!-- Selection for VAT applicability -->
             <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">VAT</label>
-              <select
-                v-model="formState.products[index].vat"
-                class="select-input"
-              >
-                <option
-                  v-for="option in vatOptions"
-                  :key="option.id"
-                  :value="option.value"
-                >
+              <select v-model="formState.products[index].vat" class="select-input">
+                <option v-for="option in vatOptions" :key="option.id" :value="option.value">
                   {{ option.label }}
                 </option>
               </select>
             </div>
 
+            <!-- Display the calculated amount for the product -->
             <div class="input-group flex-1">
               <label class="block text-sm font-medium text-gray-700">Amount</label>
               <span>
@@ -159,15 +139,18 @@
           </div>
         </div>
 
+        <!-- Submit button for the form -->
         <button type="submit" class="button submit-button">Submit</button>
       </form>
     </div>
 
+    <!-- Modal for adding a new customer -->
     <CustomerFormModal v-if="showModal" @close="closeModal" />
   </DashboardLayout>
 </template>
 
 <script setup>
+// Import necessary functions and components from Vue and other dependencies
 import { ref, reactive, computed, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useProductStore } from '@/stores/products';
@@ -175,27 +158,43 @@ import { useCustomerstore } from '@/stores/customers';
 import CustomerFormModal from '@/components/UI/Modal/CustomerFormModal.vue';
 import { storeToRefs } from 'pinia';
 
+// Initialize the router for navigation
 const router = useRouter();
+
+// Access product and customer stores
 const productsStore = useProductStore();
 const customersStore = useCustomerstore();
+
+// Extract data from the stores
 const { allCustomersNames } = storeToRefs(customersStore);
 const { allProductTypeName } = storeToRefs(productsStore);
 
+// Reactive state for modal visibility
 const showModal = ref(false);
+
+// Function to open the customer form modal
 const addNewCustomer = () => {
   showModal.value = true;
 };
+
+// Function to close the customer form modal
 const closeModal = () => {
   showModal.value = false;
 };
+
+// Reactive state for sales loading status
 const salesLoading = ref(false);
+
+// Reactive state for whether to print a receipt
 const printReceipt = ref('no');
 
+// Options for VAT selection
 const vatOptions = reactive([
   { id: 'yes', value: 'yes', label: 'Yes' },
   { id: 'no', value: 'no', label: 'No' }
 ]);
 
+// Reactive state for form data
 const formState = reactive({
   customer_id: "",
   payment_method: "cash",
@@ -212,6 +211,7 @@ const formState = reactive({
   ],
 });
 
+// Function to add a new product to the form
 const addProducts = () => {
   const lastProduct = formState.products[formState.products.length - 1];
   if (lastProduct.product_type_id.trim() !== "" && lastProduct.quantity > 0 && lastProduct.price_sold_at > 0) {
@@ -227,6 +227,7 @@ const addProducts = () => {
   }
 };
 
+// Function to reset the form
 const resetForm = () => {
   formState.customer_id = "";
   formState.payment_method = "";
@@ -240,6 +241,7 @@ const resetForm = () => {
   ];
 };
 
+// Function to handle form submission
 const handleAddSales = async () => {
   salesLoading.value = true;
   let products = formState.products.filter(product => product.amount > 0).map(product => ({
@@ -270,12 +272,14 @@ const handleAddSales = async () => {
   }
 };
 
+// Computed property to calculate the total price
 const totalPrice = computed(() => {
   return formState.products.reduce((sum, product, index) => {
     return sum + calculateAmount(index);
   }, 0).toFixed(2);
 });
 
+// Function to check if a batch is already selected
 const isBatchSelected = (productId, batchId, currentIndex) => {
   return formState.products.some((product, index) => {
     return index !== currentIndex &&
@@ -284,6 +288,7 @@ const isBatchSelected = (productId, batchId, currentIndex) => {
   });
 };
 
+// Function to update product details based on selected product type
 const updatePriceId = (productTypeId, index) => {
   const productInfo = allProductTypeName.value.find(product => product.id === productTypeId);
   if (productInfo) {
@@ -295,6 +300,7 @@ const updatePriceId = (productTypeId, index) => {
   }
 };
 
+// Function to update batch details based on selected batch
 const updateBatchDetails = (batchId, index) => {
   const productInfo = allProductTypeName.value.find(p => p.batches.some(b => b.id === batchId));
   const batchInfo = productInfo ? productInfo.batches.find(batch => batch.id === batchId) : null;
@@ -311,6 +317,7 @@ const updateBatchDetails = (batchId, index) => {
   }
 };
 
+// Function to calculate the amount for each product
 const calculateAmount = (index) => {
   const product = formState.products[index];
   if (!product || product.price_sold_at === null || product.quantity === null || product.price_sold_at === "" || product.quantity === "") {
@@ -328,6 +335,7 @@ const calculateAmount = (index) => {
   return amount;
 };
 
+// Watchers to update the form state and calculate amounts when relevant fields change
 watch(() => formState.products.map(p => p.product_type_id), (newProductTypeIds, oldProductTypeIds) => {
   newProductTypeIds.forEach((productTypeId, index) => {
     if (productTypeId !== oldProductTypeIds[index]) {
@@ -371,6 +379,7 @@ watch(() => formState.products.map(product => product.price_sold_at), (newPrices
   });
 }, { deep: true });
 
+// Fetch initial data when the component is mounted
 onMounted(async () => {
   try {
     await customersStore.handleAllCustomersName();
@@ -382,31 +391,37 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+/* Container styling */
 .container {
   padding: 20px;
 }
 
+/* Styling for top navigation buttons */
 .top-buttons {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
 }
 
+/* Styling for form groups */
 .form-group {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
 }
 
+/* Styling for radio button labels */
 .radio-label {
   margin-left: 10px;
 }
 
+/* Styling for input groups */
 .input-group {
   flex: 1;
   margin-right: 20px;
 }
 
+/* Styling for select inputs and text inputs */
 .select-input,
 .input {
   display: block;
@@ -416,10 +431,17 @@ onMounted(async () => {
   border-radius: 4px;
 }
 
+/* Styling for readonly inputs to have a different color */
+.readonly-input {
+  background-color: #f5f5f5;
+}
+
+/* Styling for buttons */
 button {
   margin-right: 10px;
 }
 
+/* Styling for submit button */
 .submit-button {
   background-color: #28a745;
   color: #fff;
@@ -429,10 +451,12 @@ button {
   cursor: pointer;
 }
 
+/* Hover effect for submit button */
 .submit-button:hover {
   background-color: #218838;
 }
 
+/* Styling for brand buttons */
 .btn-brand {
   background-color: #007bff;
   color: #fff;
@@ -442,16 +466,19 @@ button {
   cursor: pointer;
 }
 
+/* Disabled state styling for brand buttons */
 .btn-brand:disabled {
   background-color: #007bff;
   cursor: not-allowed;
   opacity: 0.65;
 }
 
+/* Hover effect for enabled brand buttons */
 .btn-brand:hover:not(:disabled) {
   background-color: #0056b3;
 }
 
+/* Styling for back button */
 .back-btn {
   background-color: #6c757d;
   color: #fff;
@@ -461,13 +488,17 @@ button {
   cursor: pointer;
 }
 
+/* Hover effect for back button */
 .back-btn:hover {
   background-color: #5a6268;
 }
 
+/* Styling for product groups */
 .product-group {
   display: flex;
   gap: 20px;
   margin-bottom: 20px;
 }
+
+
 </style>

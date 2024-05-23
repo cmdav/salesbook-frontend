@@ -14,9 +14,9 @@
             <th>PRODUCT TYPE</th>
             <th>PRODUCT TYPE DESCRIPTION</th>
             <th>COST PRICE</th>
-            <th>PRICE SOLD AT</th>
+            <th>PRICE SOLD AT(NGN)</th>
             <th>QUANTITY</th>
-            <th>TOTAL PRICE</th>
+            <th>TOTAL PRICE(NGN)</th>
             <th>PAYMENT METHOD</th>
             <th>CREATED AT</th>
             <th>TRANSACTION ID</th>

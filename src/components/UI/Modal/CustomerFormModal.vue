@@ -75,6 +75,7 @@ const emits = defineEmits(["close"]);
       { label: 'Phone Number', type: 'text', databaseField: 'phone_number', placeholder: 'Enter phone number', required: true, value:'' },
       // { label: 'Date of Birth', type: 'date', databaseField: 'dob', required: false },
       { label: 'Email', type: 'email', databaseField: 'email', placeholder: 'Enter email', required: true },
+      { label: 'Address', type: 'text', databaseField: 'address', placeholder: 'Enter customer address', required: false},
       {  type: 'hidden', databaseField: 'type_id', placeholder: 'Enter email', required: true, value:'individual'}
     ];
 
@@ -82,7 +83,8 @@ const emits = defineEmits(["close"]);
       { label: 'Company Name', type: 'text', databaseField: 'company_name', placeholder: 'Enter company name', required: true , value:''},
       { label: 'Contact Person', type: 'text', databaseField: 'contact_person', placeholder: 'Enter contact person', required: true , value:''},
       { label: 'Phone Number', type: 'text', databaseField: 'phone_number', placeholder: 'Enter phone number', required: true, value:'' },
-      { label: 'Email', type: 'email', databaseField: 'email', placeholder: 'Enter email', required: true, value:'' },
+      { label: 'Email', type: 'email', databaseField: 'email', placeholder: 'Enter email', required: true },
+      { label: 'Address', type: 'text', databaseField: 'address', placeholder: 'Enter customer address', required: false},
       {  type: 'hidden', databaseField: 'type_id', placeholder: 'Enter email', required: true, value:'company'}
     ];
 

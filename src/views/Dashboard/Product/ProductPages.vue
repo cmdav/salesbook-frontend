@@ -36,7 +36,7 @@
         }"
         :additionalColumns="additionalColumns"
       >
-        <button @click="togglePriceModal" class="btn-brand !text-sm !px-1.5">Add Price</button>
+        <!-- <button @click="togglePriceModal" class="btn-brand !text-sm !px-1.5">Add Price</button> -->
         <button @click="toggleProductTypeModal" class="btn-brand !px-1.5 !text-[14px]">
           Add Product Type
         </button>
@@ -127,7 +127,7 @@ const {
   useDeleteComposable,
   ViewModal,
   ViewModalDetail,
-  defineEmits,
+  //defineEmits,
   DeleteModal,
   UploadModal,
   useUploadComposable,
@@ -143,7 +143,7 @@ const showProductTypeModal = ref(false)
 const showPriceModal = ref(false)
 
 const { handleDelete, showDeleteModal, itemsId, closeDeleteModal } = useDeleteComposable()
-const emit = defineEmits(['forceRefresh'])
+//const emit = defineEmits(['forceRefresh'])
 const { showModal, showViewModal, forceUpdate, closeModal, closeViewModal } = usePostComposable(
   '/products',
   formFields
@@ -220,6 +220,7 @@ onMounted(async () => {
 })
 
 const updateSellingPrice = (fieldDatabase, value) => {
+  console.log(value)
   if (fieldDatabase === 'auto_generated_selling_price' || fieldDatabase === 'cost_price') {
     const costPrice =
       parseFloat(
