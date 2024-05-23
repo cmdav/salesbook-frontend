@@ -68,9 +68,11 @@ const forceRefresh = () => {
 const store = useStore();
 const permissions = computed(() => {
 
-  return store.getUser.user.permission.permissions.find(p => p.page_name === "measurements");
+  return store.getUser.user.permission.permissions.find(p => p.page_name === "currencies");
 })
 
+console.log(store.getUser.user.permission.permissions)
+console.log(permissions.value)
 const additionalColumns = computed(() => {
   const cols = [];
   if (permissions.value?.update) {
@@ -82,3 +84,4 @@ const additionalColumns = computed(() => {
   return cols;
 });
 </script>
+
