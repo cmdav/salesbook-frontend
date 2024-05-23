@@ -1,168 +1,3 @@
-<script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import apiService from '@/services/apiService';
-import { catchAxiosError, catchAxiosSuccess } from '@/services/Response';
-
-const router = useRouter();
-const suppliers = ref([]);
-const productTypes = ref([]);
-const batchNo = ref('');
-const isLoading = ref(false);
-const error = ref(null);
-const purchases = ref([
-  {
-    supplier_id: '',
-    product_type_id: '',
-    price_id: '',
-    cost_price: '',
-    selling_price: '',
-    batch_no: '',
-    quantity: '',
-    product_identifier: '',
-    expiry_date: '',
-    isCostPriceReadonly: false,
-    isSellingPriceReadonly: false
-  }
-]);
-
-const minExpiryDate = new Date().toISOString().split('T')[0];
-
-const fetchData = async () => {
-  try {
-    isLoading.value = true;
-    const [suppliersResponse, productTypesResponse, lastBatchNumberResponse] = await Promise.all([
-      apiService.get('all-suppliers'),
-      apiService.get('all-product-type'),
-      apiService.get('last-batch-number')
-    ]);
-
-    if (suppliersResponse.data) {
-      suppliers.value = suppliersResponse.data;
-      purchases.value[0].supplier_id = suppliers.value[0].id;
-    } else {
-      error.value = 'No suppliers found';
-    }
-
-    if (productTypesResponse.data) {
-      productTypes.value = productTypesResponse.data;
-    } else {
-      error.value = 'No product types found';
-    }
-
-    if (lastBatchNumberResponse.data && lastBatchNumberResponse.data.batch_no) {
-      const lastBatchNo = parseInt(lastBatchNumberResponse.data.batch_no);
-      batchNo.value = String(lastBatchNo + 1).padStart(5, '0');
-      purchases.value.forEach(purchase => purchase.batch_no = batchNo.value);
-    } else {
-      batchNo.value = '00001';
-      purchases.value.forEach(purchase => purchase.batch_no = batchNo.value);
-    }
-  } catch (err) {
-    catchAxiosError(err);
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-const handleSupplierChange = async (index) => {
- 
-  const purchase = purchases.value[index];
-  if (!purchase.product_type_id || !purchase.supplier_id) {
-    catchAxiosError({ message: 'Please select both supplier and product type.' });
-    return;
-  }
-  try {
-    const response = await apiService.get(`latest-supplier-price/${purchase.product_type_id}/${purchase.supplier_id}`);
-    if (response.data) {
-      purchase.price_id = response.data.id;
-      purchase.cost_price = response.data.cost_price;
-      purchase.selling_price = response.data.selling_price;
-      //purchase.batch_no = response.data.batch_no ? String(parseInt(response.data.batch_no) + 1).padStart(5, '0') : batchNo.value;
-      purchase.isCostPriceReadonly = true;
-      purchase.isSellingPriceReadonly = true;
-    } else {
-      purchase.price_id = '';
-      purchase.cost_price = '';
-      purchase.selling_price = '';
-      //purchase.batch_no = batchNo.value;
-      purchase.isCostPriceReadonly = false;
-      purchase.isSellingPriceReadonly = false;
-    }
-  } catch (err) {
-    catchAxiosError(err);
-  }
-};
-
-const addPurchase = () => {
-  const lastPurchase = purchases.value[purchases.value.length - 1];
-  if (lastPurchase.supplier_id && lastPurchase.product_type_id && lastPurchase.quantity && lastPurchase.cost_price && lastPurchase.selling_price) {
-    purchases.value.push({
-      supplier_id: suppliers.value.length > 0 ? suppliers.value[0].id : '',
-      product_type_id: '',
-      price_id: '',
-      cost_price: '',
-      selling_price: '',
-      batch_no: batchNo.value,
-      quantity: '',
-      product_identifier: '',
-      expiry_date: '',
-      isCostPriceReadonly: false,
-      isSellingPriceReadonly: false
-    });
-  } else {
-    catchAxiosError({ message: 'Please fill out all required fields before adding a new purchase.' });
-  }
-};
-
-const isDuplicatePurchase = (supplier_id, product_type_id) => {
-  return purchases.value.some(purchase => purchase.supplier_id === supplier_id && purchase.product_type_id === product_type_id);
-};
-
-const handleSellingPriceChange = (index) => {
-  const purchase = purchases.value[index];
-  if (purchase.selling_price < purchase.cost_price) {
-    purchase.selling_price = '';
-  }
-};
-
-const handleSubmit = async () => {
-  // Remove last row if not completely filled
-  const lastPurchase = purchases.value[purchases.value.length - 1];
-  if (!lastPurchase.supplier_id || !lastPurchase.product_type_id || !lastPurchase.quantity || !lastPurchase.cost_price || !lastPurchase.selling_price) {
-    purchases.value.pop();
-  }
-
-  // Handle form submission
-  try {
-    const formattedPurchases = purchases.value.map(purchase => {
-      if (purchase.price_id) {
-        return {
-          ...purchase,
-          cost_price: undefined, // Remove cost_price if price_id is present
-          selling_price: undefined // Remove selling_price if price_id is present
-        };
-      } else {
-        return {
-          ...purchase,
-          price_id: undefined // Remove price_id if it's not present
-        };
-      }
-    });
-
-    const response = await apiService.post('purchases', { purchases: formattedPurchases });
-    catchAxiosSuccess(response);
-    router.push('/purchase'); // Redirect to the view purchase page if the submission is successful
-  } catch (err) {
-    catchAxiosError(err);
-  }
-};
-
-onMounted(() => {
-  fetchData();
-});
-</script>
-
 <template>
   <DashboardLayout pageTitle="Add Purchase">
     <div class="container">
@@ -199,11 +34,11 @@ onMounted(() => {
             </div>
             <div>
               <label for="cost_price">Cost Price <span class="required">*</span></label>
-              <input type="number" v-model="purchase.cost_price" :readonly="purchase.isCostPriceReadonly" maxlength="9" required />
+              <input type="number" v-model="purchase.cost_price" maxlength="9" required />
             </div>
             <div>
               <label for="selling_price">Selling Price <span class="required">*</span></label>
-              <input type="number" v-model="purchase.selling_price" @change="handleSellingPriceChange(index)" maxlength="9" :readonly="purchase.isSellingPriceReadonly" required />
+              <input type="number" v-model="purchase.selling_price" @change="handleSellingPriceChange(index)" maxlength="9" required />
             </div>
             <div>
               <label for="quantity">Qty <span class="required">*</span></label>
@@ -227,7 +62,196 @@ onMounted(() => {
   </DashboardLayout>
 </template>
 
+<script setup>
+// Import necessary functions and components from Vue and other dependencies
+import { ref, reactive, watch, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import apiService from '@/services/apiService';
+import { catchAxiosError, catchAxiosSuccess } from '@/services/Response';
 
+// Initialize the router for navigation
+const router = useRouter();
+
+// Reactive variables for data and state
+const suppliers = ref([]);
+const productTypes = ref([]);
+const batchNo = ref('');
+const isLoading = ref(false);
+const error = ref(null);
+
+// Reactive variable for purchases array
+const purchases = reactive([
+  {
+    supplier_id: '',
+    product_type_id: '',
+    price_id: '',
+    cost_price: '',
+    selling_price: '',
+    batch_no: '',
+    quantity: '',
+    product_identifier: '',
+    expiry_date: '',
+    original_selling_price: null // To track the original selling price
+  }
+]);
+
+// Set minimum expiry date to today's date
+const minExpiryDate = new Date().toISOString().split('T')[0];
+
+// Function to fetch data from the API
+const fetchData = async () => {
+  try {
+    isLoading.value = true; // Set loading state to true
+    const [suppliersResponse, productTypesResponse, lastBatchNumberResponse] = await Promise.all([
+      apiService.get('all-suppliers'),
+      apiService.get('all-product-type'),
+      apiService.get('last-batch-number')
+    ]);
+
+    // Handle suppliers response
+    if (suppliersResponse.data) {
+      suppliers.value = suppliersResponse.data;
+      purchases[0].supplier_id = suppliers.value[0].id;
+    } else {
+      error.value = 'No suppliers found';
+    }
+
+    // Handle product types response
+    if (productTypesResponse.data) {
+      productTypes.value = productTypesResponse.data;
+    } else {
+      error.value = 'No product types found';
+    }
+
+    // Handle last batch number response
+    if (lastBatchNumberResponse.data && lastBatchNumberResponse.data.batch_no) {
+      const lastBatchNo = parseInt(lastBatchNumberResponse.data.batch_no);
+      batchNo.value = String(lastBatchNo + 1).padStart(5, '0');
+      purchases.forEach(purchase => purchase.batch_no = batchNo.value);
+    } else {
+      batchNo.value = '00001';
+      purchases.forEach(purchase => purchase.batch_no = batchNo.value);
+    }
+  } catch (err) {
+    catchAxiosError(err); // Handle error
+  } finally {
+    isLoading.value = false; // Set loading state to false
+  }
+};
+
+// Function to handle supplier change and fetch latest supplier price
+const handleSupplierChange = async (index) => {
+  const purchase = purchases[index];
+  if (!purchase.product_type_id || !purchase.supplier_id) {
+    catchAxiosError({ message: 'Please select both supplier and product type.' });
+    return;
+  }
+  try {
+    const response = await apiService.get(`latest-supplier-price/${purchase.product_type_id}/${purchase.supplier_id}`);
+    if (response.data) {
+      purchase.price_id = response.data.id;
+      purchase.cost_price = response.data.cost_price;
+      purchase.selling_price = response.data.selling_price;
+      purchase.original_selling_price = response.data.selling_price; // Track the original selling price
+    } else {
+      purchase.price_id = '';
+      purchase.cost_price = '';
+      purchase.selling_price = '';
+      purchase.original_selling_price = null;
+    }
+  } catch (err) {
+    catchAxiosError(err); // Handle error
+  }
+};
+
+// Function to add a new purchase row
+const addPurchase = () => {
+  const lastPurchase = purchases[purchases.length - 1];
+  if (lastPurchase.supplier_id && lastPurchase.product_type_id && lastPurchase.quantity && lastPurchase.cost_price && lastPurchase.selling_price) {
+    purchases.push({
+      supplier_id: suppliers.value.length > 0 ? suppliers.value[0].id : '',
+      product_type_id: '',
+      price_id: '',
+      cost_price: '',
+      selling_price: '',
+      batch_no: batchNo.value,
+      quantity: '',
+      product_identifier: '',
+      expiry_date: '',
+      original_selling_price: null
+    });
+  } else {
+    catchAxiosError({ message: 'Please fill out all required fields before adding a new purchase.' });
+  }
+};
+
+// Function to check for duplicate purchases
+const isDuplicatePurchase = (supplier_id, product_type_id) => {
+  return purchases.some(purchase => purchase.supplier_id === supplier_id && purchase.product_type_id === product_type_id);
+};
+
+// Watcher to track changes in selling price
+watch(
+  purchases,
+  (newPurchases) => {
+    newPurchases.forEach((purchase) => {
+      if (purchase.selling_price !== purchase.original_selling_price) {
+        purchase.price_id = ''; // Clear the price_id if selling price changes
+      }
+    });
+  },
+  { deep: true }
+);
+
+// Function to handle selling price change
+const handleSellingPriceChange = (index) => {
+  const purchase = purchases[index];
+  if (purchase.selling_price < purchase.cost_price) {
+    purchase.selling_price = '';
+    catchAxiosError({ message: 'Selling price cannot be lower than cost price.' });
+  }
+};
+
+// Function to handle form submission
+const handleSubmit = async () => {
+  // Remove last row if not completely filled
+  const lastPurchase = purchases[purchases.length - 1];
+  if (!lastPurchase.supplier_id || !lastPurchase.product_type_id || !lastPurchase.quantity || !lastPurchase.cost_price || !lastPurchase.selling_price) {
+    purchases.pop();
+  }
+
+  // Handle form submission
+  try {
+    const formattedPurchases = purchases.map(purchase => {
+      if (purchase.price_id && purchase.selling_price === purchase.original_selling_price) {
+        // If price_id is present and selling price hasn't changed
+        return {
+          ...purchase,
+          cost_price: undefined, // Remove cost_price if price_id is present
+          selling_price: undefined // Remove selling_price if price_id is present
+        };
+      } else {
+        // If price_id is not present or selling price has changed
+        return {
+          ...purchase,
+          price_id: undefined // Remove price_id if it's not present or selling price has changed
+        };
+      }
+    });
+
+    const response = await apiService.post('purchases', { purchases: formattedPurchases });
+    catchAxiosSuccess(response);
+    router.push('/purchase'); // Redirect to the view purchase page if the submission is successful
+  } catch (err) {
+    catchAxiosError(err); // Handle error
+  }
+};
+
+// Fetch initial data when the component is mounted
+onMounted(() => {
+  fetchData();
+});
+</script>
 
 <style scoped>
 .container {
@@ -246,7 +270,7 @@ onMounted(() => {
   margin-bottom: 20px;
 }
 
-.batch-container input {
+batch-container input {
   flex: 1;
   margin-right: 10px;
 }
@@ -285,11 +309,6 @@ input[type="number"] {
 
 input[type="date"].expiry-date {
   width: 120px;
-}
-
-input[readonly] {
-  background-color: #f0f0f0;
-  cursor: not-allowed;
 }
 
 button {
@@ -355,4 +374,3 @@ button {
   margin-bottom: 20px;
 }
 </style>
-

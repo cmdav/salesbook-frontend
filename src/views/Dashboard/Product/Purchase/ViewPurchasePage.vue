@@ -14,8 +14,8 @@
             <th>BATCH NO</th>
             <th>QUANTITY</th>
             <th>EXPIRY DATE</th>
-            <th>COST PRICE</th>
-            <th>SELLING PRICE</th>
+            <th>COST PRICE(NGN)</th>
+            <th>SELLING PRICE(NGN)</th>
             <th>CREATED BY</th>
             <th>UPDATED BY</th>
             <th>DELETE</th>
