@@ -59,6 +59,9 @@
                     <input required type="number" v-model="formState.purchases[index].cost_price"
                       class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
                       :readonly="isReadonly" />
+                    <label class="priceView"> &#8358; {{ formState.purchases[index].cost_price ?
+  parseFloat(formState.purchases[index].cost_price).toLocaleString() :
+                      '0.00'}}</label>
                     <!-- Hidden input to hold the actual price_id for submission -->
                     <input type="hidden" v-model="formState.purchases[index].price_id" />
                   </div>
@@ -608,3 +611,13 @@ const additionalColumns = computed(() => {
   return cols
 })
 </script>
+<style scoped>
+.priceView {
+  font-size: 0.8m;
+  border: 2px solid rgb(195 82 20 / 50%);
+  background-color: rgb(195 82 20 / 50%);
+  color: #fff;
+  padding: 0.3%;
+  border-radius: 4px;
+}
+</style>

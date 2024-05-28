@@ -161,11 +161,23 @@ table {
   table-layout: auto;
 }
 
-th, td {
+th{
   padding: 8px;
   text-align: left;
-  border: 2px solid #C35214; /* Add borders around cells */
+  border: 1px solid #fff; /* Add borders around cells */
   white-space: nowrap;
+  color: #fff;
+  font-size: 0.95em;
+}
+
+td{
+  padding: 8px;
+  text-align: left;
+  border: 1px solid #C35214;;
+  /* Add borders around cells */
+  white-space: nowrap;
+  color: #C35214;
+  font-size: 0.9em;
 }
 
 tbody tr:hover {
