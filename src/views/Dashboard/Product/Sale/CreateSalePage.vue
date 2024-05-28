@@ -39,15 +39,11 @@
         <div class="form-group">
           <label class="block text-sm font-medium text-gray-700">Payment method</label>
           <select required v-model="formState.payment_method" class="select-input">
-            <option
-              v-for="option in [
+            <option v-for="option in [
                 { value: 'cash', label: 'Cash' },
                 { value: 'pos', label: 'Pos' },
                 { value: 'bank-transfer', label: 'Bank Transfer' },
-              ]"
-              :key="option.value"
-              :value="option.value"
-            >
+              ]" :key="option.value" :value="option.value">
               {{ option.label }}
             </option>
           </select>
@@ -56,22 +52,16 @@
         <!-- Section for adding products to the sale -->
         <div class="my-8">
           <div class="form-group flex justify-end">
-            <span class="font-medium text-gray-700">Total Price: <span v-html="'&#8358;'"></span> {{ totalPrice }}</span>
-            <button
-              type="button"
-              @click="addProducts"
-              class="button btn-brand !bg-brand/[20%] !text-black !px-3 ml-4"
-            >
+            <span class="font-medium text-gray-700">Total Price: <span v-html="'&#8358;'"></span> {{ totalPrice
+              }}</span>
+            <button type="button" @click="addProducts" class="button btn-brand !bg-brand/[20%] !text-black !px-3 ml-4">
               Add product
             </button>
           </div>
 
           <!-- Loop through each product added to the sale and display input fields for each product's details -->
-          <div
-            v-for="(product, index) in formState.products"
-            :key="index"
-            class="product-group flex justify-between items-end mt-4"
-          >
+          <div v-for="(product, index) in formState.products" :key="index"
+            class="product-group flex justify-between items-end mt-4">
             <!-- Product type selection -->
             <div class="input-group">
               <label class="block text-sm font-medium text-gray-700">Product</label>
@@ -85,17 +75,10 @@
             <!-- Product batch selection -->
             <div class="input-group">
               <label class="block text-sm font-medium text-gray-700">Product Batch</label>
-              <select
-                v-model="formState.products[index].batch_id"
-                @change="updateBatchDetails(formState.products[index].batch_id, index)"
-                class="select-input"
-              >
-                <option
-                  v-for="batch in formState.products[index].batches"
-                  :key="batch.id"
-                  :value="batch.id"
-                  :disabled="isBatchSelected(formState.products[index].product_type_id, batch.id, index)"
-                >
+              <select v-model="formState.products[index].batch_id"
+                @change="updateBatchDetails(formState.products[index].batch_id, index)" class="select-input">
+                <option v-for="batch in formState.products[index].batches" :key="batch.id" :value="batch.id"
+                  :disabled="isBatchSelected(formState.products[index].product_type_id, batch.id, index)">
                   {{ batch.batch_no }}
                 </option>
               </select>
@@ -104,13 +87,17 @@
             <!-- Display available quantity left in the selected batch -->
             <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Qty left</label>
-              <input type="number" :value="formState.products[index].available_qty" class="input readonly-input" readonly />
+              <input type="number" :value="formState.products[index].available_qty" class="input readonly-input"
+                readonly />
             </div>
 
             <!-- Input field for the selling price of the product -->
             <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Price</label>
               <input required v-model="formState.products[index].price_sold_at" type="number" class="input" />
+              <label class="priceView"> &#8358; {{ formState.products[index].price_sold_at ?
+  parseFloat(formState.products[index].price_sold_at).toLocaleString() :
+                '0.00' }}</label>
             </div>
 
             <!-- Input field for the quantity of the product being sold -->
@@ -419,6 +406,7 @@ onMounted(async () => {
 .input-group {
   flex: 1;
   margin-right: 20px;
+  height: 100px;
 }
 
 /* Styling for select inputs and text inputs */
@@ -500,5 +488,13 @@ button {
   margin-bottom: 20px;
 }
 
+.priceView {
+  font-size: 0.8em;
+  border: 2px solid rgb(195 82 20 / 50%);
+  background-color: rgb(195 82 20 / 50%);
+  color: #fff;
+  padding: 0.3%;
+  border-radius: 4px;
+}
 
 </style>

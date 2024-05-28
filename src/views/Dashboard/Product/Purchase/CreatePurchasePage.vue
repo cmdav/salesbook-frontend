@@ -27,7 +27,8 @@
             <div>
               <label for="product_type_id">Product Type <span class="required">*</span></label>
               <select v-model="purchase.product_type_id" @change="() => handleSupplierChange(index)">
-                <option v-for="productType in productTypes" :key="productType.id" :value="productType.id" :disabled="isDuplicatePurchase(purchase.supplier_id, productType.id)">
+                <option v-for="productType in productTypes" :key="productType.id" :value="productType.id"
+                  :disabled="isDuplicatePurchase(purchase.supplier_id, productType.id)">
                   {{ productType.product_type_name }}
                 </option>
               </select>
@@ -35,10 +36,17 @@
             <div>
               <label for="cost_price">Cost Price <span class="required">*</span></label>
               <input type="number" v-model="purchase.cost_price" maxlength="9" required />
+              <label class="priceView"> &#8358; {{ purchase.cost_price ?
+                parseFloat(purchase.cost_price).toLocaleString() :
+                '0.00'}}</label>
             </div>
             <div>
               <label for="selling_price">Selling Price <span class="required">*</span></label>
-              <input type="number" v-model="purchase.selling_price" @change="handleSellingPriceChange(index)" maxlength="9" required />
+              <input type="number" v-model="purchase.selling_price" @change="handleSellingPriceChange(index)"
+                maxlength="9" required />
+              <label class="priceView"> &#8358; {{ purchase.selling_price ?
+                parseFloat(purchase.selling_price).toLocaleString() :
+                '0.00'}}</label>
             </div>
             <div>
               <label for="quantity">Qty <span class="required">*</span></label>
@@ -316,7 +324,7 @@ button {
 }
 
 .add-purchase-button {
-  background-color: #007bff;
+  background-color: #C35214;
   color: #fff;
   padding: 10px 20px;
   border: none;
@@ -326,17 +334,17 @@ button {
 }
 
 .add-purchase-button:disabled {
-  background-color: #007bff;
+  background-color: #e86925;
   cursor: not-allowed;
   opacity: 0.65;
 }
 
 .add-purchase-button:hover:not(:disabled) {
-  background-color: #0056b3;
+  background-color: #e86925;
 }
 
 .submit-button {
-  background-color: #28a745;
+  background-color: #C35214;
   color: #fff;
   padding: 10px 20px;
   border: none;
@@ -345,7 +353,7 @@ button {
 }
 
 .submit-button:hover {
-  background-color: #218838;
+  background-color: #e86925;
 }
 
 .back-btn {
@@ -372,5 +380,14 @@ button {
   border-top: 1px solid #ccc;
   margin-top: 20px;
   margin-bottom: 20px;
+}
+
+.priceView {
+  font-size: 0.8em;
+  border: 2px solid rgb(195 82 20 / 50%);
+  background-color: rgb(195 82 20 / 50%);
+  color: #fff;
+  padding: 0.3%;
+  border-radius: 4px;
 }
 </style>
