@@ -66,7 +66,7 @@ const permissions = computed(() => {
 const menuItems = computed(() => {
   const allItems = [
   { name: "Dashboard", route: "/dashboard", icon: homeIcon, backendKey:"dashboards"},
-  { name: "Organisation", route: "/organisation", icon: StoreIcon , backendKey:"organizations"},
+  // { name: "Organisation", route: "/organisation", icon: StoreIcon , backendKey:"organizations"},
   { name: "Measurement", route: "/measurement", icon: MeasurementIcon , backendKey:"measurements"},
   { name: "Currency", route: "/currency", icon: FireIcon, backendKey:"currencies" },
   { name: "Product Category", route: "/product-category", icon: CategoryIcon, backendKey:"product-categories"},
@@ -86,11 +86,11 @@ const menuItems = computed(() => {
 
 return allItems.filter(item => {
   if (item.backendKey === null) {
-      return true; 
+      return true;
     } else {
-     
+
       const perm = permissions.value.find(p => p.page_name == item.backendKey);
-      return perm && perm.read == 1; 
+      return perm && perm.read == 1;
     }
 });
 });
