@@ -22,12 +22,13 @@
     <FormModal v-if="showModal" @close="closeModal" :key="forceUpdate" :formTitle="'Add User'" :fields="userFormFields"
       @fetchDataForSubCategory="fetchDataForSubCategory" :isLoadingMsg="isOptionLoadingMsg" :url="'sale-users'">
     </FormModal>
+
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { formFields, userFormFields } from "@/formfields/formFields";
+import { userFormFields } from "@/formfields/formFields";
 import { useSharedComponent } from "@/composable/useSharedComponent";
 
 const { useSelectComposable, DataTableLayout, usePostComposable, useStore, DeleteModal, useDeleteComposable, FormModal, computed } = useSharedComponent("sale-users");
@@ -39,7 +40,7 @@ const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg, }
   = useSelectComposable(userFormFields, 'user', "role_id", "", "");
 
 
-const { showModal, forceUpdate, closeModal} = usePostComposable("/settings", userFormFields);
+const { showModal, forceUpdate, closeModal } = usePostComposable("/settings", userFormFields);
 const store = useStore();
 const roles = computed(() => {
 
