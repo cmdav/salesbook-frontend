@@ -6,35 +6,22 @@
     <!-- <SettingsLayoutcopy @changePage="changePage" :products="roles">
       <button class="btn-brand !px-2 !text-[14px]" @click="closeModal">Add Role</button>
     </SettingsLayoutcopy> -->
-    <DataTableLayout
-      @toggleModal="showModal = !showModal"
-      :key="forceUpdate"
-      endpoint="job-roles"
-      toggleButtonLabel="Add Role"
-      :additionalColumns="[{ name: 'edit', action: handleEdit}, { name: 'delete', action: handleDelete },]"
-    >
-    <!-- <button class="btn-brand !px-2 !text-[14px]" @click="closeModal">Add Role</button> -->
+    <DataTableLayout @toggleModal="showModal = !showModal" :key="forceUpdate" endpoint="job-roles"
+      toggleButtonLabel="Add Role" :pageName="'settings'"
+      :additionalColumns="[{ name: 'edit', action: handleEdit}, { name: 'delete', action: handleDelete },]">
+      <!-- <button class="btn-brand !px-2 !text-[14px]" @click="closeModal">Add Role</button> -->
     </DataTableLayout>
     <!-- <PermissionFormModalcopy v-if="showModal" @close="toggleAddPermissionModal" /> -->
-    <SaleFormModal
-      v-if="showModal"
-      :buttonLable="'submit'"
-      :loading="loading"
-      @close="closeModal"
-      @submitForm="handleAddRole"
-      title="Add Role"
-    >
+    <SaleFormModal v-if="showModal" :buttonLable="'submit'" :loading="loading" @close="closeModal"
+      @submitForm="handleAddRole" title="Add Role">
       <div class="my-8 flex flex-col gap-2">
         <div class="overflow-y-auto flex flex-col gap-2 max-h-[340px]">
           <div class="flex flex-col gap-2">
             <div class="flex flex-col gap-2">
               <div class="w-full">
                 <label class="block text-sm font-medium text-gray-700"> Role name </label>
-                <input
-                  v-model="formState.role_name"
-                  type="text"
-                  class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-                />
+                <input v-model="formState.role_name" type="text"
+                  class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm" />
               </div>
             </div>
           </div>
@@ -42,23 +29,11 @@
       </div>
     </SaleFormModal>
 
-    <EditModal
-      v-if="showEditModal"
-      @close="closeEditModal"
-      :items="items"
-      :formField="roleFormFields"
-      @updated="forceRefresh"
-      :url="'/job-roles'"
-    />
+    <EditModal v-if="showEditModal" @close="closeEditModal" :items="items" :formField="roleFormFields"
+      @updated="forceRefresh" :url="'/job-roles'" />
 
-    <DeleteModal
-      v-if="showDeleteModal"
-      @close="closeDeleteModal"
-      @updated="forceRefresh"
-      :items="itemsId"
-      :url="'/job-roles'"
-      :modalTitle="modalTitle"
-    />
+    <DeleteModal v-if="showDeleteModal" @close="closeDeleteModal" @updated="forceRefresh" :items="itemsId"
+      :url="'/job-roles'" :modalTitle="modalTitle" />
   </div>
   <!-- </DashboardLayout> -->
 </template>
