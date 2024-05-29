@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import apiService from '@/services/apiService';
 import { catchAxiosError, catchAxiosSuccess } from '@/services/Response';
+import { getDb, setDb, getAllDb } from '@/utils/db.js'
 
 const router = useRouter();
 const suppliers = ref([]);
@@ -28,9 +29,12 @@ const purchases = ref([
 
 const minExpiryDate = new Date().toISOString().split('T')[0];
 
+const isOnline = () => navigator.onLine;
+
 const fetchData = async () => {
   try {
     isLoading.value = true;
+    if(isOnline()) {
     const [suppliersResponse, productTypesResponse, lastBatchNumberResponse] = await Promise.all([
       apiService.get('all-suppliers'),
       apiService.get('all-product-type'),
@@ -39,6 +43,7 @@ const fetchData = async () => {
 
     if (suppliersResponse.data) {
       suppliers.value = suppliersResponse.data;
+      suppliers.value.forEach(supplier => setDb('suppliers', supplier))
       purchases.value[0].supplier_id = suppliers.value[0].id;
     } else {
       error.value = 'No suppliers found';
@@ -46,6 +51,7 @@ const fetchData = async () => {
 
     if (productTypesResponse.data) {
       productTypes.value = productTypesResponse.data;
+      productTypes.value.forEach(productType => setDb('productTypes', productType))
     } else {
       error.value = 'No product types found';
     }
@@ -54,10 +60,19 @@ const fetchData = async () => {
       const lastBatchNo = parseInt(lastBatchNumberResponse.data.batch_no);
       batchNo.value = String(lastBatchNo + 1).padStart(5, '0');
       purchases.value.forEach(purchase => purchase.batch_no = batchNo.value);
+      await setDb('batchNumbers', { batch_no: batchNo.value });
     } else {
       batchNo.value = '00001';
       purchases.value.forEach(purchase => purchase.batch_no = batchNo.value);
+      await setDb('batchNumbers', { batch_no: batchNo.value });
     }
+  } else {
+    suppliers.value = await getAllDb('suppliers');
+    productTypes.value = await getAllDb('productTypes');
+    const batchNumber = await getDb('batchNumbers', 'batch_no');
+    batchNo.value = batchNumber ? batchNumber.batch_no : '00001';
+    purchases.value.forEach(purchase => purchase.batch_no = batchNo.value);
+  }
   } catch (err) {
     catchAxiosError(err);
   } finally {
@@ -72,6 +87,7 @@ const handleSupplierChange = async (index) => {
     catchAxiosError({ message: 'Please select both supplier and product type.' });
     return;
   }
+  if (isOnline()){
   try {
     const response = await apiService.get(`latest-supplier-price/${purchase.product_type_id}/${purchase.supplier_id}`);
     if (response.data) {
@@ -81,6 +97,11 @@ const handleSupplierChange = async (index) => {
       //purchase.batch_no = response.data.batch_no ? String(parseInt(response.data.batch_no) + 1).padStart(5, '0') : batchNo.value;
       purchase.isCostPriceReadonly = true;
       purchase.isSellingPriceReadonly = true;
+
+      await setDb('latesstSupplierPrices', {
+        id: `${purchase.product_type_id}-${purchase.supplier_id}`, 
+        ...response.data
+      });
     } else {
       purchase.price_id = '';
       purchase.cost_price = '';
@@ -92,6 +113,20 @@ const handleSupplierChange = async (index) => {
   } catch (err) {
     catchAxiosError(err);
   }
+} else {
+  const cachedData = await getDb('latestSupplierPrices', `${purchase.product_type_id}-${purchase.supplier_id}`);
+  if (cachedData){
+    purchase.price_id = cachedData.id;
+    purchase.isCostPriceReadonly = true;
+    purchase.isSellingPriceReadonly = true;
+  } else {
+    purchase.price_id = '';
+    purchase.cost_price = '';
+    purchase.selling_price = '';
+    purchase.isCostPriceReadonly = false;
+    purchase.isSellingPriceReadonly = false;
+  }
+ }
 };
 
 const addPurchase = () => {
@@ -127,32 +162,32 @@ const handleSellingPriceChange = (index) => {
 };
 
 const handleSubmit = async () => {
-  // Remove last row if not completely filled
+  
   const lastPurchase = purchases.value[purchases.value.length - 1];
   if (!lastPurchase.supplier_id || !lastPurchase.product_type_id || !lastPurchase.quantity || !lastPurchase.cost_price || !lastPurchase.selling_price) {
     purchases.value.pop();
   }
 
-  // Handle form submission
+
   try {
     const formattedPurchases = purchases.value.map(purchase => {
       if (purchase.price_id) {
         return {
           ...purchase,
-          cost_price: undefined, // Remove cost_price if price_id is present
-          selling_price: undefined // Remove selling_price if price_id is present
+          cost_price: undefined, 
+          selling_price: undefined
         };
       } else {
         return {
           ...purchase,
-          price_id: undefined // Remove price_id if it's not present
+          price_id: undefined
         };
       }
     });
 
     const response = await apiService.post('purchases', { purchases: formattedPurchases });
     catchAxiosSuccess(response);
-    router.push('/purchase'); // Redirect to the view purchase page if the submission is successful
+    router.push('/purchase'); 
   } catch (err) {
     catchAxiosError(err);
   }

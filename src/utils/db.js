@@ -2,7 +2,8 @@ import { openDB } from "idb";
 
 const dBPromise = openDB('isales-database', 1, {
     upgrade(dB){
-        dB.createObjectStore('sales', { keyPath: "id" });
+        // dB.createObjectStore('sales', { keyPath: "id" });
+        dB.createObjectStore('purchases', { keyPath: 'id', autoIncrement: true });
         dB.createObjectStore('sync-queue',{ keyPath: 'id', autoIncrement: true});
     },
 });

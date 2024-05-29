@@ -1,37 +1,75 @@
 import axios from '../axios'
 import { catchAxiosError, catchAxiosSuccess } from './Response'
-import { getToken } from './Auth'
+import { getToken } from './Auth';
+import { setDb, getDb, getAllDb, deleteDb } from '@/utils/db';
+
+
+const isOnline = () => navigator.onLine;
 
 export const getProductCategories = async () => {
-  const token = await getToken()
+  const token = await getToken();
 
   try {
-    let res = await axios.get(`product-categories`, {
-      headers: {
-        Authorization: 'Bearer ' + token
-      }
-    })
-    catchAxiosSuccess(res)
-    return res.data
+    if (isOnline()) {
+      let res = await axios.get('product-categories', {
+        headers: {
+          Authorization: 'Bearer ' + token
+        }
+      });
+      catchAxiosSuccess(res);
+      res.data.forEach(category => setDb('product-categories', category));
+      return res.data;
+    } else {
+      return await getAllDb('product-categories');
+    }
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
+
+// export const addProductCategories = async (payload) => {
+//   const token = await getToken()
+
+//   try {
+//     let res = await axios.post(`product-categories`, payload, {
+//       headers: {
+//         Authorization: 'Bearer ' + token
+//       }
+//     })
+//     catchAxiosSuccess(res)
+//     return res.data
+//   } catch (error) {
+//     console.log(error)
+//   }
+// }
+
 export const addProductCategories = async (payload) => {
-  const token = await getToken()
+  const token = await getToken();
 
   try {
-    let res = await axios.post(`product-categories`, payload, {
-      headers: {
-        Authorization: 'Bearer ' + token
-      }
-    })
-    catchAxiosSuccess(res)
-    return res.data
+    if (isOnline()) {
+      let res = await axios.post('product-categories', payload, {
+        headers: {
+          Authorization: 'Bearer ' + token
+        }
+      });
+      catchAxiosSuccess(res);
+      return res.data;
+    } else {
+      await setDb('sync-queue', {
+        url: 'product-categories',
+        method: 'POST',
+        data: payload,
+        headers: {
+          Authorization: 'Bearer ' + token
+        }
+      });
+      return payload;
+    }
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
 export const getProductSubCategories = async () => {
   const token = await getToken()
