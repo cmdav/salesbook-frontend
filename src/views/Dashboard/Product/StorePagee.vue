@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import apiService from '@/services/apiService';
-import { getDb, setDb } from '@/utils/indexedDB';
+import { getDb, setDb } from '@/utils/db';
 
 const search = ref('');
 const data = ref([]);
@@ -20,22 +20,30 @@ const filteredData = computed(() => {
 async function fetchData(page = 1) {
   try {
     const response = await apiService.get(`stores?page=${page}`);
-    data.value = response.data || [];
+    data.value = response.data.data || []; // Adjust if API response is nested differently
     pagination.value = {
-      next_page_url: response.next_page_url,
-      prev_page_url: response.prev_page_url,
+      next_page_url: response.data.next_page_url,
+      prev_page_url: response.data.prev_page_url,
     };
     currentPage.value = page;
-    totalPages.value = response.last_page;
+    totalPages.value = response.data.last_page;
 
     // Cache the data in IndexedDB
     await setDb('stores', { id: `page-${page}`, data: data.value });
+    console.log(`Data from API cached for page ${page}`);
   } catch (error) {
     console.error("Failed to fetch data:", error);
     // Retrieve data from IndexedDB if fetch fails
     const cachedData = await getDb('stores', `page-${page}`);
     if (cachedData) {
       data.value = cachedData.data;
+      console.log(`Data retrieved from IndexedDB for page ${page}`);
+      pagination.value = {
+        next_page_url: currentPage.value < totalPages.value ? `stores?page=${currentPage.value + 1}` : null,
+        prev_page_url: currentPage.value > 1 ? `stores?page=${currentPage.value - 1}` : null,
+      };
+    } else {
+      console.log(`No cached data found for page ${page}`);
     }
   }
 };

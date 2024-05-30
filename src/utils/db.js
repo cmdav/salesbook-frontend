@@ -1,40 +1,4 @@
-// import { openDB } from "idb";
 
-// const dBPromise = openDB('isales-database', 1, {
-//     upgrade(dB){
-//         // dB.createObjectStore('sales', { keyPath: "id" });
-//         dB.createObjectStore('purchases', { keyPath: 'id', autoIncrement: true });
-//         dB.createObjectStore('sync-queue',{ keyPath: 'id', autoIncrement: true});
-//         dB.createObjectStore('suppliers', { keyPath: 'id' });
-//         dB.createObjectStore('productTypes', { keyPath: 'id' });
-//         dB.createObjectStore('batchNumbers', { keyPath: 'batch_no' });
-//         dB.createObjectStore('sales', { keyPath: 'id' });
-//         dB.createObjectStore('customers', { keyPath: 'id', autoIncrement: true });
-//     },
-// });
-
-// export const getDb = async (storeName, key) => {
-//     const db = await dBPromise;
-//     return db.transaction(storeName).objectStore(storeName).get(key);
-// };
-
-// export const getAllDb = async (storeName) => {
-//     const db = await dBPromise;
-//     return db.transaction(storeName).objectStore(storeName).getAll();
-// };
-
-// export const setDb = async (storeName, value) => {
-//     const db = await dBPromise;
-//     const tx = db.transaction(storeName, 'readwrite');
-//     tx.objectStore(storeName).put(value);
-//     return tx.done;
-// };
-
-// export const deleteDb = async (storeName, key) => {
-//     const db = await dBPromise;
-//     const tx = db.transaction(storeName, 'readwrite');
-//     tx.objectStore(storeName).delete(key);
-// };
 
 import { openDB } from "idb";
 
@@ -61,6 +25,9 @@ const dBPromise = openDB('isales-database', 1, {
         }
         if (!db.objectStoreNames.contains('customers')) {
             db.createObjectStore('customers', { keyPath: 'id', autoIncrement: true });
+        }
+        if (!db.objectStoreNames.contains('stores')) {
+            db.createObjectStore('stores', { keyPath: 'id' });
         }
     },
 });
@@ -104,3 +71,6 @@ export const deleteDb = async (storeName, key) => {
         console.error('Failed to delete data from IndexedDB:', error);
     }
 };
+
+
+
