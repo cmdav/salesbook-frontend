@@ -15,6 +15,11 @@
           {{ props?.toggleButtonLabel }}
         </button>
       </div>
+        <!-- <div>
+        <button @click="$emit('toggleModal')" class="btn-brand !px-4">
+          {{ props?.toggleButtonLabel }}
+        </button>
+      </div> -->
     </div>
 
     <!-- Section for the  table -->
@@ -231,11 +236,18 @@ function clear() {
 function getSerialNumber(index) {
   return (currentPage.value - 1) * itemsPerPage.value + index + 1;
 }
+
 // Check if user have permission to view
 // Check if user has permission to view
 const store = useStore();
+
+let st =store.getUser.user.permission.permissions.find(p => p)
+
+console.log('Permision', st)
+
 const permissions = computed(() => {
   const perm = store.getUser.user.permission.permissions.find(p => p.page_name === props.pageName);
+  console.log("PErmision Check", perm && perm.write == 1)
   return perm && perm.write == 1; 
 });
 
