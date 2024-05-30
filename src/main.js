@@ -17,6 +17,7 @@ import CenteredModalLarge from '@/components/UI/CenteredModalLarge.vue'
 import Loader from '@/components/UI/Loader.vue'
 import CloudUploadIcon from '@/components/icons/cloudUploadIcon.vue'
 import { registerSW } from 'virtual:pwa-register';
+import syncData from '@/utils/sync';
 
 const app = createApp(App)
 
@@ -31,7 +32,7 @@ const updateSW = registerSW({
     },
     onOfflineReady() {
       console.log('App is ready to work offline.');
-      toast.info('ready for work offline mode')
+      toast.info('Ready for work offline mode')
     },
   });
 
@@ -48,5 +49,7 @@ app.component('AngleRight', AngleRight)
 app.use(VueTelInput)
 app.use(Toast, { position: POSITION.TOP_RIGHT })
 app.use(VueQueryPlugin)
+
+syncData();
 
 app.mount('#app')

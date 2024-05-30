@@ -38,7 +38,7 @@ async function fetchData(page = 1) {
       data.value = cachedData.data;
     }
   }
-}
+};
 
 function changePage(page) {
   if (page > 0 && page <= totalPages.value) {
