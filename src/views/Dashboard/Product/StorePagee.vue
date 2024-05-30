@@ -6,7 +6,6 @@ const search = ref('');
 const data = ref([]);
 const pagination = ref({});
 
-
 const currentPage = ref(1);
 const totalPages = ref(0);
 
@@ -20,7 +19,7 @@ const filteredData = computed(() => {
 async function fetchData(page = 1) {
   try {
     // const response = await apiService.get(`purchases?page=${page}`);
-    const response = await apiService.get('stores');
+    const response = await apiService.get(`stores?page=${page}`);
     console.log(response.data)
     data.value = response.data || [];
     pagination.value = {
@@ -44,7 +43,7 @@ onMounted(() => fetchData(currentPage.value));
 </script>
 
 <template>
-    <DashboardLayout pageTitle="Purchase Page">
+    <DashboardLayout pageTitle="Store Page">
       <div class="actions">
         <input type="text" v-model="search" placeholder="Search..." class="search-input" />
         <!-- <button class="button add-btn"><router-link to="/create-purchase" class="button add-btn">Add</router-link></button> -->

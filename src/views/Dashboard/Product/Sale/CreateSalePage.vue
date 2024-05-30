@@ -174,12 +174,15 @@ import { useProductStore } from '@/stores/products';
 import { useCustomerstore } from '@/stores/customers';
 import CustomerFormModal from '@/components/UI/Modal/CustomerFormModal.vue';
 import { storeToRefs } from 'pinia';
+import { getDb, getAllDb, setDb } from '@/utils/db'
 
 const router = useRouter();
 const productsStore = useProductStore();
 const customersStore = useCustomerstore();
 const { allCustomersNames } = storeToRefs(customersStore);
 const { allProductTypeName } = storeToRefs(productsStore);
+
+const isOnline = () => navigator.onLine;
 
 const showModal = ref(false);
 const addNewCustomer = () => {
@@ -372,12 +375,33 @@ watch(() => formState.products.map(product => product.price_sold_at), (newPrices
 }, { deep: true });
 
 onMounted(async () => {
-  try {
-    await customersStore.handleAllCustomersName();
-    await productsStore.handleGetAllProductTypeName();
-  } catch (error) {
-    console.error;
-  }
+  // try {
+  //   await customersStore.handleAllCustomersName();
+  //   await productsStore.handleGetAllProductTypeName();
+  // } catch (error) {
+  //   console.error;
+  // }
+    try {
+      const [customers, productTypes] = await Promise.all([
+        customersStore.handleAllCustomersName().catch(async (error) => {
+          console.error('Fetching customers failed, retrieving from cache:', error);
+          return await getDb('customers', 'all');
+        }),
+        productsStore.handleGetAllProductTypeName().catch(async (error) => {
+          console.error('Fetching product types failed, retrieving from cache:', error);
+          return await getDb('productTypes', 'all');
+        }),
+      ]);
+  
+      if (customers) {
+        await setDb('customers', { id: 'all', data: customers });
+      }
+      if (productTypes) {
+        await setDb('productTypes', { id: 'all', data: productTypes });
+      }
+    } catch (error) {
+      console.error('Failed to initialize data:', error);
+    }
 });
 </script>
 

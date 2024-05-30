@@ -66,6 +66,7 @@ import { ref, computed, onMounted } from 'vue';
 import jsPDF from 'jspdf';
 import apiService from '@/services/apiService';
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue';
+import { getAllDb, setDb } from '@/utils/db';
 
 const search = ref('');
 const data = ref([]); // Initialize as an empty array
@@ -84,8 +85,11 @@ const filteredData = computed(() => {
   });
 });
 
+const isOnline = () => navigator.onLine;
+
 async function fetchData(page = 1) {
   try {
+    if (isOnline()){
     const response = await apiService.get(`sales?page=${page}`);
     data.value = response.data || []; // Ensure it’s always an array
     pagination.value = {
@@ -94,6 +98,11 @@ async function fetchData(page = 1) {
     };
     currentPage.value = response.data.current_page;
     totalPages.value = response.data.last_page;
+
+    data.value.forEach(sale => setDb('sales', sale))
+  } else {
+    data.value = await getAllDb('sales');
+  }
   } catch (error) {
     console.error("Failed to fetch data:", error);
   }
