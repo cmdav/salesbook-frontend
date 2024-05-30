@@ -2,9 +2,9 @@
   <DashboardLayout pageTitle="Purchase Page">
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
-        <div v-if="permissions">
-          <button class="button add-btn"><router-link to="/create-purchase" class="button add-btn">Add</router-link></button>
-        </div>
+      <div v-if="permissions">
+        <button class="button add-btn"><router-link to="/create-purchase" class="button add-btn">Add</router-link></button>
+      </div>
     </div>
     <div class="table-container">
       <table>
@@ -24,8 +24,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, index) in filteredData" :key="item.id">
-            <td>{{ index + 1 }}</td>
+          <tr v-for="(item, index) in data" :key="item.id">
+            <td>{{ serialNumber(index) }}</td>
             <td>{{ item.product_type_name }}</td>
             <td>{{ item.product_type_description }}</td>
             <td>{{ item.batch_no }}</td>
@@ -43,21 +43,22 @@
 
     <DeleteModal v-if="showDeleteModal" @close="closeDeleteModal" @updated="forceRefresh" :items="itemToDelete" :url="'purchases'" :modalTitle="modalTitle" />
 
-    <div class="pagination">
-      <button @click="changePage(currentPage - 1)" :disabled="!pagination.prev_page_url">Previous</button>
-      <span>Page {{ currentPage }} of {{ totalPages }}</span>
-      <button @click="changePage(currentPage + 1)" :disabled="!pagination.next_page_url">Next</button>
-    </div>
+    <div v-if="!isSearching" class="mx-auto w-fit my-5">
+  <Pagination :currentPage="currentPage" :totalPages="totalPages" @changePage="changePage" />
+</div>
   </DashboardLayout>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import apiService from '@/services/apiService';
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue';
+import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
 import { useStore } from "@/stores/user";
 
 const search = ref('');
+const isSearching = ref(false);
+
 const data = ref([]);
 const pagination = ref({});
 const showDeleteModal = ref(false);
@@ -67,11 +68,25 @@ const modalTitle = "Delete Purchase";
 const currentPage = ref(1);
 const totalPages = ref(0);
 
-const filteredData = computed(() => {
-  return data.value.filter(item => {
-    const description = item.product_type_description || '';
-    return description.toLowerCase().includes(search.value.toLowerCase());
-  });
+watch(search, async (newSearch) => {
+  if (newSearch) {
+    isSearching.value = true;
+    try {
+
+      console.log('seraching')
+      const response = await apiService.get(`search-purchases/${newSearch}`);
+      console.log(response)
+      data.value = response;
+      return data.value;
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+    }
+  }else{
+    console.log('seraching')
+
+    isSearching.value = false;
+    fetchData();
+  }
 });
 
 async function fetchData(page = 1) {
@@ -95,6 +110,13 @@ function changePage(page) {
   }
 }
 
+function serialNumber(index) {
+ console.log(index)
+ 
+  return currentPage.value
+}
+
+
 function openDeleteModal(item) {
   itemToDelete.value = item;
   showDeleteModal.value = true;
@@ -117,7 +139,6 @@ const permissions = computed(() => {
   const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'purchases');
   return perm && perm.write == 1; 
 });
-
 </script>
 
 <style scoped>
@@ -186,29 +207,5 @@ tbody tr:hover {
 
 thead {
   background-color: #C35214;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.pagination button {
-  padding: 8px 16px;
-  background-color: #C35214;
-  border: none;
-  border-radius: 4px;
-  color: white;
-  cursor: pointer;
-}
-
-.pagination span {
-  padding: 8px 16px;
-  background-color: #C35214;
-  border-radius: 4px;
-  color: white;
 }
 </style>
