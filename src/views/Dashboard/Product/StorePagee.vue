@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import apiService from '@/services/apiService';
+import { getDb, setDb } from '@/utils/indexedDB';
 
 const search = ref('');
 const data = ref([]);
@@ -18,9 +19,7 @@ const filteredData = computed(() => {
 
 async function fetchData(page = 1) {
   try {
-    // const response = await apiService.get(`purchases?page=${page}`);
     const response = await apiService.get(`stores?page=${page}`);
-    console.log(response.data)
     data.value = response.data || [];
     pagination.value = {
       next_page_url: response.next_page_url,
@@ -28,8 +27,16 @@ async function fetchData(page = 1) {
     };
     currentPage.value = page;
     totalPages.value = response.last_page;
+
+    // Cache the data in IndexedDB
+    await setDb('stores', { id: `page-${page}`, data: data.value });
   } catch (error) {
     console.error("Failed to fetch data:", error);
+    // Retrieve data from IndexedDB if fetch fails
+    const cachedData = await getDb('stores', `page-${page}`);
+    if (cachedData) {
+      data.value = cachedData.data;
+    }
   }
 }
 
