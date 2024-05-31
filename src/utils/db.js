@@ -8,26 +8,26 @@ const dBPromise = openDB('isales-database', 1, {
         if (!db.objectStoreNames.contains('sales')) {
             db.createObjectStore('sales', { keyPath: "id" });
         }
-        if (!db.objectStoreNames.contains('purchases')) {
-            db.createObjectStore('purchases', { keyPath: 'id', autoIncrement: true });
-        }
-        if (!db.objectStoreNames.contains('sync-queue')) {
-            db.createObjectStore('sync-queue', { keyPath: 'id', autoIncrement: true });
-        }
-        if (!db.objectStoreNames.contains('suppliers')) {
-            db.createObjectStore('suppliers', { keyPath: 'id' });
-        }
-        if (!db.objectStoreNames.contains('productTypes')) {
-            db.createObjectStore('productTypes', { keyPath: 'id' });
-        }
-        if (!db.objectStoreNames.contains('batchNumbers')) {
-            db.createObjectStore('batchNumbers', { keyPath: 'batch_no' });
-        }
+        // if (!db.objectStoreNames.contains('purchases')) {
+        //     db.createObjectStore('purchases', { keyPath: 'id', autoIncrement: true });
+        // }
+        // if (!db.objectStoreNames.contains('suppliers')) {
+        //     db.createObjectStore('suppliers', { keyPath: 'id' });
+        // }
+        // if (!db.objectStoreNames.contains('productTypes')) {
+        //     db.createObjectStore('productTypes', { keyPath: 'id' });
+        // }
+        // if (!db.objectStoreNames.contains('batchNumbers')) {
+        //     db.createObjectStore('batchNumbers', { keyPath: 'batch_no' });
+        // }
         if (!db.objectStoreNames.contains('customers')) {
             db.createObjectStore('customers', { keyPath: 'id', autoIncrement: true });
         }
         if (!db.objectStoreNames.contains('stores')) {
             db.createObjectStore('stores', { keyPath: 'id' });
+        }
+        if (!db.objectStoreNames.contains('sync-queue')) {
+            db.createObjectStore('sync-queue', { keyPath: 'id', autoIncrement: true });
         }
     },
 });
