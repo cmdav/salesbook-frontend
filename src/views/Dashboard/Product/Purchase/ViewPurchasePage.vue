@@ -73,7 +73,7 @@ watch(search, async (newSearch) => {
     isSearching.value = true;
     try {
 
-      console.log('seraching')
+     
       const response = await apiService.get(`search-purchases/${newSearch}`);
       console.log(response)
       data.value = response;
