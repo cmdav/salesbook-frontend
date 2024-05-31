@@ -66,7 +66,9 @@
                   </thead>
                   <tbody>
                     <tr v-for="(i, index) in data" :key="i.id" class="border-b text-[14px]">
-                      <td class="py-4 pl-4 border-x">{{ serialNumber(index) }}</td>
+                      <td class="py-4 pl-4 border-x">  
+                        {{(parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1}}
+                  </td>
                       <td class="text-left p-4 pr-0 pl-6 border-x capitalize">
                         <button @click="redirectToSingleCustomerPage(i.id)" class="">
                           {{ i.first_name }} {{ i.last_name }}
@@ -104,6 +106,7 @@ const isSearching = ref(false);
 
 const currentPage = ref(1);
 const totalPages = ref(0);
+const itemsPerPage = ref(0);
 const totalIndividuals = ref(0);
 const totalCompanies = ref(0);
 
@@ -166,6 +169,7 @@ watch(() => sortInput.search, async (newSearch) => {
 async function fetchData(page = 1, type = 'individual', search = '') {
   try {
     const response = await apiService.get(`customers?type=${type}&page=${page}&search=${search}`);
+    console.log(response)
     data.value = response.data;
     if (type === 'individual') {
       totalIndividuals.value = response.total;
@@ -174,15 +178,18 @@ async function fetchData(page = 1, type = 'individual', search = '') {
     }
     currentPage.value = response.current_page;
     totalPages.value = response.last_page;
+    itemsPerPage.value = response.per_page
+    console.log(itemsPerPage.value)
   } catch (error) {
     console.error('Failed to fetch data:', error);
   }
 }
 
-function serialNumber(index) {
-  console.log(index)
-  return currentPage.value;
-}
+// function serialNumber(index) {
+//   console.log(index)
+//   return (parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1 
+//   //return currentPage.value;
+// }
 
 onMounted(() => {
   fetchData();

@@ -30,12 +30,14 @@
   
   // Methods to handle page changes
   function prevPage() {
+   
     if (hasPrevPage.value) {
       emit('changePage', props.currentPage - 1);
     }
   }
   
   function nextPage() {
+   
     if (hasNextPage.value) {
       emit('changePage', props.currentPage + 1);
     }
