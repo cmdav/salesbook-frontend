@@ -2,11 +2,13 @@ import axios from '../axios'
 import { catchAxiosError, catchAxiosSuccess } from './Response'
 import { getToken } from './Auth'
 
-export const getAllSupplier = async () => {
+export const getAllSupplier = async (page) => {
       const token = await getToken()
 
   try {
-    let res = await axios.get(`users?type=supplier`, {
+    let url =`users?type=supplier&page=${page}`
+    console.log(url)
+    let res = await axios.get(url, {
       headers: {
         Authorization: 'Bearer ' + token
       }
@@ -129,6 +131,6 @@ export const updateSupplierPriceStatus = async (id, payload) => {
   } catch (error) {
     catchAxiosError(error)
     throw error
-    console.log(error)
+    
   }
 }

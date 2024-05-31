@@ -25,7 +25,7 @@
         </thead>
         <tbody>
           <tr v-for="(item, index) in data" :key="item.id">
-            <td>{{ serialNumber(index) }}</td>
+            <td>{{(parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1}}</td>
             <td>{{ item.product_type_name }}</td>
             <td>{{ item.product_type_description }}</td>
             <td>{{ item.batch_no }}</td>
@@ -67,6 +67,7 @@ const modalTitle = "Delete Purchase";
 
 const currentPage = ref(1);
 const totalPages = ref(0);
+const itemsPerPage = ref(0);
 
 watch(search, async (newSearch) => {
   if (newSearch) {
@@ -99,6 +100,7 @@ async function fetchData(page = 1) {
     };
     currentPage.value = page;
     totalPages.value = response.last_page;
+    itemsPerPage.value = response.per_page
   } catch (error) {
     console.error("Failed to fetch data:", error);
   }
@@ -110,11 +112,11 @@ function changePage(page) {
   }
 }
 
-function serialNumber(index) {
- console.log(index)
+// function serialNumber(index) {
+//  console.log(index)
  
-  return currentPage.value
-}
+//   return currentPage.value
+// }
 
 
 function openDeleteModal(item) {
