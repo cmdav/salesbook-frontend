@@ -10,7 +10,9 @@
         :pageName="'measurements'"
         :additionalColumns=additionalColumns
       >
+      <div v-if="canUploadPermission">
         <button class="btn-brand" @click="closeUploadModal">Upload</button>
+      </div>
       </DataTableLayout>
     </div>
     <FormModal
@@ -117,7 +119,11 @@ const additionalColumns = computed(() => {
     }
     return cols;
   });
+//uploadPermission
+const canUploadPermission = computed(() => {
 
+  return permissions.value?.write == 1;
+});
 onMounted(async () => {
   try {
     await productsStore.handleGetMeasurements();

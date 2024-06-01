@@ -199,6 +199,15 @@ const searchResults = ref([]);
 
 // Search function with debounce to limit API calls
 const search = debounce( async () => {
+
+  if (!props.searchEndpoint) {
+    searchResults.value = products.value.filter(product =>
+      product.role_name.toLowerCase().includes(searchQuery.value.toLowerCase())
+    );
+    console.log(searchResults.value);
+    return searchResults.value;
+  }
+  
   try {
     isLoading.value = true;
     searchResults.value = await apiService.get(`${props.searchEndpoint}/${searchQuery.value}`);
@@ -212,8 +221,10 @@ const search = debounce( async () => {
 }, 300);
 
 const onSearchInput = () => {
+ 
   if (!searchQuery.value) {
     searchResults.value = [];
+    console.log(searchQuery.value)
     isLoading.value = true;
     fetchPage(props.endpoint, 1);
     isLoading.value = false;
@@ -232,10 +243,6 @@ function clear() {
   searchQuery.value = '';
 }
 
-// Function to calculate serial number
-function getSerialNumber(index) {
-  return (currentPage.value - 1) * itemsPerPage.value + index + 1;
-}
 
 // Check if user have permission to view
 // Check if user has permission to view
@@ -266,12 +273,7 @@ td {
   padding: 8px;
   text-align: left;
   border-bottom: 1px solid #fff;
-  @apply border-b-[1px] border-b-brand;
-}
-
-tbody,
-tr {
-  @apply border-x-brand hover:bg-brand/[70%] hover:text-white;
+  
 }
 
 tbody,
@@ -282,9 +284,7 @@ td {
   @apply bg-white text-brand border-b-[1px] border-b-brand;
 }
 
-tr {
-  @apply hover:bg-brand/[70%] hover:text-white;
-}
+
 
 thead,
 tr,
