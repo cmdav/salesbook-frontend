@@ -1,0 +1,284 @@
+<template>
+  <DashboardLayout pageTitle="Add Subscribers">
+    <div class="container">
+      <div class="top-buttons">
+        <router-link to="/subscriptions" class="button back-btn">Back</router-link>
+      </div>
+      <div v-if="isLoading" class="loading-icon">Loading...</div>
+      <form v-else @submit.prevent="handleSubmit">
+        <!-- <div class="batch-container">
+          <label for="batch_no">Batch No</label>
+          <input type="text" v-model="batchNo" readonly />
+        </div> -->
+        <div v-for="(subscriber, index) in subscribers" :key="index" class="purchase-form">
+          <!-- <div v-if="index !== 0" class="top-buttons">
+            <button type="button" @click="addPurchase" class="button add-purchase-button">Add Purchase</button>
+          </div> -->
+          <div class="form-row">
+            <div>
+              <label for="supplier_id">Subscribers<span class="required">*</span></label>
+              <select v-model="subscriber.supplier_id" @change="() => handleSupplierChange(index)">
+                <option v-for="subscriber in subscriberResponse" :key="subscriber.id" :value="subscriber.id">
+                  {{ subscriber.plan_name }}
+                </option>
+              </select>
+            </div>
+            <div>
+              <label for="product_type_id">Organization<span class="required">*</span></label>
+              <select v-model="subscriber.product_type_id" @change="() => purc(index)">
+                <option v-for="organization in organizationResponse" :key="organization.id" :value="organization.id"
+                  :disabled="isDuplicatePurchase(subscriber.supplier_id, organization.id)">
+                  {{ organization.organization_name }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <hr class="separator" />
+        </div>
+        <button type="submit" class="button submit-button">Submit</button>
+      </form>
+    </div>
+  </DashboardLayout>
+</template>
+
+<script setup>
+// Import necessary functions and components from Vue and other dependencies
+import { ref, reactive, watch, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import apiService from '@/services/apiService';
+import { catchAxiosError, catchAxiosSuccess } from '@/services/Response';
+
+// Initialize the router for navigation
+const router = useRouter();
+
+// Reactive variables for data and state
+const organizations = ref([]);
+const organization = ref([]);
+const batchNo = ref('');
+const isLoading = ref(false);
+const error = ref(null);
+
+// Reactive variable for subscribers array
+const subscribers = reactive([
+  {
+    status: '',
+    subscription_plan_name: '',
+    subscription_description: '',
+    organization_name: '',
+    start_time: '',
+    end_time: '',
+  }
+]);
+
+// Set minimum expiry date to today's date
+const minExpiryDate = new Date().toISOString().split('T')[0];
+
+// Function to fetch data from the API
+const fetchData = async () => {
+  try {
+    isLoading.value = true; // Set loading state to true
+    const [organizationResponse, subscriberResponse] = await Promise.all([
+      apiService.get('all-organizations'),
+      apiService.get('all-subscriptions'),
+    ]);
+
+    // Handle suppliers response
+    if (subscriberResponse.data) {
+      organizations.value = subscriberResponse.data;
+      console.log(organizationResponse)
+      // subscribers[0].supplier_id = suppliers.value[0].id;
+    } else {
+      error.value = 'No subscribers found';
+    }
+
+    // Handle product types response
+    if (organizationResponse.data) {
+      organization.value = organizationResponse.data;
+    } else {
+      error.value = 'No Organizations found';
+    }
+
+    // Handle last batch number response
+  } catch (err) {
+    catchAxiosError(err); // Handle error
+  } finally {
+    isLoading.value = false; // Set loading state to false
+  }
+};
+
+// Function to handle supplier change and fetch latest supplier price
+
+// Function to add a new purchase row
+// const addPurchase = () => {
+//   const lastPurchase = purchases[purchases.length - 1];
+//   if (lastPurchase.supplier_id && lastPurchase.product_type_id && lastPurchase.quantity && lastPurchase.cost_price && lastPurchase.selling_price) {
+//     purchases.push({
+//       supplier_id: suppliers.value.length > 0 ? suppliers.value[0].id : '',
+//       product_type_id: '',
+//       price_id: '',
+//       cost_price: '',
+//       selling_price: '',
+//       batch_no: batchNo.value,
+//       quantity: '',
+//       product_identifier: '',
+//       expiry_date: '',
+//       original_selling_price: null
+//     });
+//   } else {
+//     catchAxiosError({ message: 'Please fill out all required fields before adding a new purchase.' });
+//   }
+// };
+
+// // Function to check for duplicate purchases
+// const isDuplicatePurchase = (supplier_id, product_type_id) => {
+//   return purchases.some(purchase => purchase.supplier_id === supplier_id && purchase.product_type_id === product_type_id);
+// };
+
+// Function to handle form submission
+const handleSubmit = async () => {
+  // Handle form submission
+  try {
+    const response = await apiService.post('purchases', subscribers);
+    catchAxiosSuccess(response);
+    router.push('/purchase'); // Redirect to the view purchase page if the submission is successful
+  } catch (err) {
+    catchAxiosError(err); // Handle error
+  }
+};
+
+// Fetch initial data when the component is mounted
+onMounted(() => {
+  fetchData();
+});
+</script>
+
+<style scoped>
+.container {
+  padding: 20px;
+}
+
+.top-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.batch-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+batch-container input {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.purchase-form {
+  margin-bottom: 20px;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.required {
+  color: red;
+}
+
+input, select {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+input[type="number"] {
+  width: 100px;
+}
+
+input[type="date"].expiry-date {
+  width: 120px;
+}
+
+button {
+  margin-right: 10px;
+}
+
+.add-purchase-button {
+  background-color: #C35214;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.add-purchase-button:disabled {
+  background-color: #e86925;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.add-purchase-button:hover:not(:disabled) {
+  background-color: #e86925;
+}
+
+.submit-button {
+  background-color: #C35214;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.submit-button:hover {
+  background-color: #e86925;
+}
+
+.back-btn {
+  background-color: #6c757d;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.back-btn:hover {
+  background-color: #5a6268;
+}
+
+.loading-icon {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.separator {
+  border: 0;
+  border-top: 1px solid #ccc;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.priceView {
+  font-size: 0.8em;
+  border: 2px solid rgb(195 82 20 / 50%);
+  background-color: rgb(195 82 20 / 50%);
+  color: #fff;
+  padding: 0.3%;
+  border-radius: 4px;
+}
+</style>
