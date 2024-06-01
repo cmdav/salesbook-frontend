@@ -90,7 +90,7 @@ const { showModal } = usePostComposable("subscriptions", usePostComposable);
 
 const fetchSubscriptions = async () => {
     await subscriptionsStore.handleGetAllSubscriptions()
-    data.value.push(subscriptionsStore.allSubscriptions.data)
+    data.value = subscriptionsStore.allSubscriptions.data.data
     console.log(data.value)
 }
 
