@@ -52,6 +52,25 @@ export const userFormFields = ref([
   }
 ])
 
+export const subscriptionFormFields = ref([
+  {
+    label: 'Plan Name',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter a Plan',
+    databaseField: 'plan_name'
+  },
+  {
+    label: 'Description',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter a Description',
+    databaseField: 'description'
+  },
+])
+
 export const measurementFormFields = ref([
   {
     label: 'Measurement Name',
