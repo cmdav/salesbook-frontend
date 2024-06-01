@@ -4,9 +4,13 @@
     <!-- Button to Open Modal -->
     <!-- <button @click="showModal = true" class="btn btn-primary">Add Store</button> -->
 
-    <DataTableLayout :key="forceUpdate" @toggleModal="showModal = !showModal" :endpoint="url" :pageName="'settings'"
-      searchEndpoint="search-users" :additionalColumns=additionalColumns>
-      <button class="btn-brand" @click="closeUploadModal">Upload</button>
+    <DataTableLayout 
+      :key="forceUpdate"
+       @toggleModal="showModal = !showModal" 
+       :endpoint="url" :pageName="'settings'"
+      searchEndpoint="search-users" 
+      :additionalColumns=additionalColumns>
+      <!-- <button class="btn-brand" @click="closeUploadModal">Upload</button> -->
     </DataTableLayout>
 
     <DeleteModal v-if="showDeleteModal" @close="closeDeleteModal" @updated="forceRefresh" :items="itemsId"
@@ -37,7 +41,7 @@ const modalTitle = "user_name ";
 const url = ref("users?type=sales_personnel");
 
 const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg, }
-  = useSelectComposable(userFormFields, 'user', "role_id", "", "");
+  = useSelectComposable(userFormFields, 'users', "role_id", "", "");
 
 
 const { showModal, forceUpdate, closeModal } = usePostComposable("/settings", userFormFields);

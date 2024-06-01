@@ -38,12 +38,16 @@
         :additionalColumns="additionalColumns"
       >
         <!-- <button @click="togglePriceModal" class="btn-brand !text-sm !px-1.5">Add Price</button> -->
+        <div v-if="canUploadPermission">
         <button @click="toggleProductTypeModal" class="btn-brand !px-1.5 !text-[14px]">
           Add Product Type
         </button>
+      </div>
+        <div v-if="canUploadPermission">
         <button class="btn-brand !px-1.5 !text-[14px]" @click="closeUploadModal">
           Upload Product
         </button>
+      </div>
       </DataTableLayout>
     </div>
     <!--Modal to add product-->
@@ -288,4 +292,10 @@ const additionalColumns = computed(() => {
   }
   return cols
 })
+
+//check upload permission
+const canUploadPermission = computed(() => {
+
+return permissions.value?.write == 1;
+});
 </script>

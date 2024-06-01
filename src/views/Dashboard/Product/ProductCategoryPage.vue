@@ -9,7 +9,9 @@
         :pageName="'product-categories'"
         :additionalColumns=additionalColumns
       >
+      <div v-if="canUploadPermission">
         <button class="btn-brand" @click="closeUploadModal">Upload</button>
+       </div>
       </DataTableLayout>
     </div>
     <FormModal
@@ -110,4 +112,10 @@ const additionalColumns = computed(() => {
     }
     return cols;
   });
+
+  //check upload permission
+const canUploadPermission = computed(() => {
+
+return permissions.value?.write == 1;
+});
 </script>
