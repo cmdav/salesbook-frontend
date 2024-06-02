@@ -19,6 +19,7 @@
         :key="forceUpdate"
         endpoint="product-types"
         :pageName="'product-types'"
+        searchEndpoint="search-product-types"
         @toggleModal="showModal = !showModal"
         toggleButtonLabel="Add Product"
         :excludedKeys="[
