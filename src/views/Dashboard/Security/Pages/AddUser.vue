@@ -23,7 +23,12 @@
       </button>
     </SettingsLayoutcopy> -->
     <!-- <PermissionFormModalcopy v-if="showModal" @close="toggleAddPermissionModal" /> -->
-    <FormModal v-if="showModal" @close="closeModal" :key="forceUpdate" :formTitle="'Add User'" :fields="userFormFields"
+    <FormModal 
+        v-if="showModal"
+         @close="closeModal"
+        :key="forceUpdate" 
+        :formTitle="'Add User'"
+         :fields="userFormFields"
       @fetchDataForSubCategory="fetchDataForSubCategory" :isLoadingMsg="isOptionLoadingMsg" :url="'sale-users'">
     </FormModal>
 

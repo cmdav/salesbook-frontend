@@ -75,6 +75,18 @@
         @change="handleImageChange(index, $event)" :required="field.required" :placeholder="field.placeholder" />
     </template>
 
+    <template v-else-if="field.type === 'password'">
+      <div class="relative">
+        <input :id="field.id" :type="field.showPassword ? 'text' : 'password'"
+          class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+          :class="{ 'readonly-background': field.readonly }" v-model="field.value" :required="field.required"
+          :placeholder="field.placeholder" :name="field.databaseField" />
+        <button type="button" class="absolute right-2 top-2" @click="togglePassword(field)">
+          {{ field.showPassword ? 'Hide' : 'Show' }}
+        </button>
+      </div>
+    </template>
+
     <!-- Number field -->
     <template v-else-if="field.type === 'number'">
       <input :id="field.id" type="number"
@@ -109,7 +121,7 @@
 import { defineEmits, ref } from 'vue'
 import { useProductStore } from '@/stores/products'
 import { storeToRefs } from 'pinia'
-import { UploadOutlined } from '@ant-design/icons';
+//import { UploadOutlined } from '@ant-design/icons';
 
 const productsStore = useProductStore()
 // Destructure fields from props
@@ -202,6 +214,11 @@ const triggerFileInput = () => {
     console.error('File input is not correctly referenced.')
   }
 }
+
+const togglePassword = (field) => {
+  field.showPassword = !field.showPassword;
+}
+
 </script>
 <style scoped>
 .readonly-background {
