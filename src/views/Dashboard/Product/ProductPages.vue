@@ -284,15 +284,18 @@ const permissions = computed(() => {
 })
 
 const additionalColumns = computed(() => {
-  const cols = []
-  if (permissions.value?.update) {
-    cols.push({ name: 'Edit', action: handleEdit })
+  const cols = [];
+  if (permissions.value?.update == 1 ) {
+   
+    cols.push({ name: 'Edit', action: handleEdit });
   }
-  if (permissions.value?.del) {
-    cols.push({ name: 'Delete', action: handleDelete })
+  if (permissions.value?.del  == 1) {
+    
+    cols.push({ name: 'Delete', action: handleDelete });
   }
-  return cols
-})
+ 
+  return cols;
+});
 
 //check upload permission
 const canUploadPermission = computed(() => {
