@@ -2,7 +2,7 @@
   <DashboardLayout pageTitle="Sales Page">
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
-      <div v-if="permissions">
+      <div v-if="addPermissions">
       <button class="button add-btn">
         <router-link to="/create-sale" class="button add-btn">Add</router-link>
       </button>
@@ -27,7 +27,11 @@
             <th>CREATED BY</th>
             <th>UPDATED BY</th>
             <th>RECEIPT</th>
+<<<<<<< HEAD
             <th v-if="permissions">DELETE</th>
+=======
+            <th v-if="delPermissions">DELETE</th>
+>>>>>>> Hotfix/28_fixed_bug_in_the_setting_page
           </tr>
         </thead>
         <tbody>
@@ -192,11 +196,14 @@ const generateReceiptPDF = (receiptData) => {
 onMounted(() => fetchData(currentPage.value));
 
 const store = useStore();
-const permissions = computed(() => {
+const delPermissions = computed(() => {
   const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'sales');
   return perm.value?.del == 1; 
 });
-
+const addPermissions = computed(() => {
+  const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'sales');
+  return perm.write == 1; 
+});
 </script>
 
 <style scoped>

@@ -97,7 +97,7 @@ return allItems.filter(item => {
 });
 });
 
-const perm = permissions.value.find(p => console.log(p.page_name));
+//const perm = permissions.value.find(p => console.log(p.page_name));
 //console.log(menuItems.value)
 
 </script>
