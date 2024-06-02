@@ -19,7 +19,7 @@ export const userFormFields = ref([
   },
   {
     label: 'Email',
-    type: 'text',
+    type: 'email',
     value: '',
     required: true,
     placeholder: 'Enter email',
