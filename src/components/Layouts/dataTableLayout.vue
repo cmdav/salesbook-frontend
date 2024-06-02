@@ -201,11 +201,13 @@ const searchResults = ref([]);
 const search = debounce( async () => {
 
   if (!props.searchEndpoint) {
+    //console.log('no search endpoint')
+    
     searchResults.value = products.value.filter(product =>
       product.role_name.toLowerCase().includes(searchQuery.value.toLowerCase())
     );
-    console.log(searchResults.value);
-    return searchResults.value;
+    
+   return searchResults.value;
   }
   
   try {
