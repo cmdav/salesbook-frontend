@@ -20,11 +20,7 @@
             <th>SELLING PRICE(NGN)</th>
             <th>CREATED BY</th>
             <th>UPDATED BY</th>
-<<<<<<< HEAD
-            <th v-if="permissions">DELETE</th>
-=======
             <th v-if="delPermissions">DELETE</th>
->>>>>>> Hotfix/28_fixed_bug_in_the_setting_page
           </tr>
         </thead>
         <tbody>
