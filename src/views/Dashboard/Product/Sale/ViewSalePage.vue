@@ -2,7 +2,7 @@
   <DashboardLayout pageTitle="Sales Page">
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
-      <div v-if="permissions">
+      <div v-if="addPermissions">
       <button class="button add-btn">
         <router-link to="/create-sale" class="button add-btn">Add</router-link>
       </button>
@@ -27,7 +27,7 @@
             <th>CREATED BY</th>
             <th>UPDATED BY</th>
             <th>RECEIPT</th>
-            <th>DELETE</th>
+            <th v-if="delPermissions">DELETE</th>
           </tr>
         </thead>
         <tbody>
@@ -47,7 +47,7 @@
             <td>{{ item.created_by }}</td>
             <td>{{ item.updated_by }}</td>
             <td><button @click="generateReceipt(item.transaction_id)">Receipt</button></td>
-            <td><button @click="openDeleteModal(item)">Delete</button></td>
+            <td v-if="permissions"><button @click="openDeleteModal(item)">Delete</button></td>
           </tr>
         </tbody>
       </table>
@@ -192,11 +192,14 @@ const generateReceiptPDF = (receiptData) => {
 onMounted(() => fetchData(currentPage.value));
 
 const store = useStore();
-const permissions = computed(() => {
+const delPermissions = computed(() => {
   const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'sales');
-  return perm && perm.write == 1; 
+  return perm.value?.del == 1; 
 });
-
+const addPermissions = computed(() => {
+  const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'sales');
+  return perm.write == 1; 
+});
 </script>
 
 <style scoped>

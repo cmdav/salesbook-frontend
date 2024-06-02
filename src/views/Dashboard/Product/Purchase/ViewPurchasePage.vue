@@ -2,7 +2,7 @@
   <DashboardLayout pageTitle="Purchase Page">
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
-      <div v-if="permissions">
+      <div v-if="addPermissions">
         <button class="button add-btn"><router-link to="/create-purchase" class="button add-btn">Add</router-link></button>
       </div>
     </div>
@@ -20,7 +20,7 @@
             <th>SELLING PRICE(NGN)</th>
             <th>CREATED BY</th>
             <th>UPDATED BY</th>
-            <th>DELETE</th>
+            <th v-if="delPermissions">DELETE</th>
           </tr>
         </thead>
         <tbody>
@@ -35,7 +35,7 @@
             <td>{{ item.selling_price }}</td>
             <td>{{ item.created_by }}</td>
             <td>{{ item.updated_by }}</td>
-            <td><button @click="openDeleteModal(item)">Delete</button></td>
+            <td v-if="permissions"><button @click="openDeleteModal(item)">Delete</button></td>
           </tr>
         </tbody>
       </table>
@@ -137,9 +137,16 @@ onMounted(() => fetchData(currentPage.value));
 
 
 const store = useStore();
-const permissions = computed(() => {
+const delPermissions = computed(() => {
   const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'purchases');
-  return perm && perm.write == 1; 
+  console.log(perm.value)
+  console.log(perm.value?.del)
+  return perm.value?.del == 1; 
+});
+const addPermissions = computed(() => {
+  const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'purchases');
+  console.log(perm.write)
+  return perm.write == 1; 
 });
 </script>
 
