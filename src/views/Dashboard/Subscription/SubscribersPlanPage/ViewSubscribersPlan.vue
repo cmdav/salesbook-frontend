@@ -88,27 +88,27 @@ const { showModal } = usePostComposable("subscriptions", usePostComposable);
 //   })
 // })
 
-const fetchSubscriptions = async () => {
-    await subscriptionsStore.handleGetAllSubscriptions()
-    data.value = subscriptionsStore.allSubscriptions.data.data
-    console.log(data.value)
-}
-
-// async function fetchData(page = 1) {
-//   try {
-//     const response = await apiService.get(`all-subscriptions`)
-//     data.value = response.data.data || []
-//     console.log(`Subscribers Response ${response}`)
-//     pagination.value = {
-//       next_page_url: response.next_page_url,
-//       prev_page_url: response.prev_page_url
-//     }
-//     currentPage.value = page
-//     totalPages.value = response.last_page
-//   } catch (error) {
-//     console.error('Failed to fetch data:', error)
-//   }
+// const fetchSubscriptions = async () => {
+//     await subscriptionsStore.handleGetAllSubscriptions()
+//     data.value = subscriptionsStore.allSubscriptions.data.data
+//     console.log(data.value)
 // }
+
+async function fetchData(page = 1) {
+  try {
+    const response = await apiService.get(`all-subscriptions`)
+    data.value = response.data || []
+    console.log(data.value)
+    pagination.value = {
+      next_page_url: response.next_page_url,
+      prev_page_url: response.prev_page_url
+    }
+    currentPage.value = page
+    totalPages.value = response.last_page
+  } catch (error) {
+    console.error('Failed to fetch data:', error)
+  }
+}
 
 // const handleAddRole = async () => {
 //     loading.value = true;
@@ -159,10 +159,12 @@ function closeDeleteModal() {
 }
 
 function forceRefresh() {
-  fetchSubscriptions()
+  fetchData(currentPage.value);
 }
 
-onMounted(() => fetchSubscriptions())
+
+onMounted(() => fetchData(currentPage.value));
+// onMounted(() => fetchSubscriptions())
 
 const store = useStore()
 const permissions = computed(() => {
