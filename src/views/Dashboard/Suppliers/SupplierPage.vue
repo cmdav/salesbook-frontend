@@ -79,7 +79,7 @@
             <div class="flex lg:flex-row flex-col gap-3 px-4 justify-between mb-4">
               <div class="flex lg:flex-row flex-col justify-between w-full gap-2">
                 <div class="w-[40%]">
-                  <AuthInput :error="false" type="text" placeholder="search" />
+                  <!-- <AuthInput :error="false" type="text" placeholder="search" /> -->
                 </div>
                 <div class="flex flex-row gap-[12px]">
                   <button
