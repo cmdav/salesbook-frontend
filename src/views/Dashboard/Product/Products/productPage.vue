@@ -17,7 +17,7 @@
       <DataTable @toggleModal="toggleModal" />
   
       <!-- Modals -->
-      <AddProductForm v-if="showModal.addProduct" @close="toggleModal('addProduct')" />
+      <!-- <AddProductForm v-if="showModal.addProduct"/> -->
       <ProductTypeForm v-if="showModal.addProductType" @close="toggleModal('addProductType')" />
       <PriceForm v-if="showModal.addPrice" @close="toggleModal('addPrice')" />
       <UploadProductModal v-if="showModal.uploadProduct" @close="toggleModal('uploadProduct')" />

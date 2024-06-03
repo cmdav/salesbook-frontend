@@ -19,9 +19,9 @@ export const useSupplierStore = defineStore('Supplier', () => {
   const supplierProducts = ref({})
   const supplierPrice = ref({})
 
-  const allSupplier = async () => {
+  const allSupplier = async (page=1) => {
     try {
-      Supplier.value = await getAllSupplier()
+      Supplier.value = await getAllSupplier(page)
       return Supplier.value
     } catch (error) {
       console.error(error)
