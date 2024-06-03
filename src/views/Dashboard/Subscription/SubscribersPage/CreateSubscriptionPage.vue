@@ -17,15 +17,15 @@
           <div class="form-row">
             <div>
               <label>Subscribers<span class="required">*</span></label>
-              <select v-model="subscrib.subscription_plan_name">
-                <option v-for="subscriber_plan in subscriberPlan" :key="subscriber_plan.id" :value="subscriber_plan.id">
+              <select v-model="subscrib.plan_id">
+                <option v-for="subscriber_plan in subscriberPlan" :key="subscriber_plan.id" :value="subscriber_plan.id.toString()">
                   {{ subscriber_plan.plan_name }}
                 </option>
               </select>
             </div>
             <div>
               <label>Organization<span class="required">*</span></label>
-              <select v-model="subscrib.organization_name">
+              <select v-model="subscrib.organization_id">
                 <option v-for="organization_type in organization" :key="organization_type.id"
                   :value="organization_type.id">
                   {{ organization_type.organization_name }}
@@ -76,9 +76,8 @@ const setEndDate = ref(null);
 // Reactive variable for subscribers array
 const subscribers = reactive([
   {
-    subscription_plan_name: '',
-    subscription_description: '',
-    organization_name: '',
+    plan_id: '',
+    organization_id: '',
     start_time: '',
     end_time: '',
   }
@@ -91,7 +90,6 @@ const minExpiryDate = new Date().toISOString().split('T')[0];
 // let constantMinDate = hasMinDate ? minDate : defaultMinDate
 
 const selectedDate = (start_time) =>{
-  getMinEndTime(start_time)
   console.log(`Subscriber  Start Time:`, subscribers[0].start_time);
   console.log(setEndDate.value)
   console.log(subscribers)
@@ -172,18 +170,37 @@ const fetchData = async () => {
 const handleSubmit = async () => {
   // Handle form submission
   try {
-    const response = await apiService.post('purchases', subscribers);
+    const response = await apiService.post('subscription-statuses', subscribers[0]);
     catchAxiosSuccess(response);
-    router.push('/purchase'); // Redirect to the view purchase page if the submission is successful
+    router.push('/subscriptions'); // Redirect to the view purchase page if the submission is successful
   } catch (err) {
     catchAxiosError(err); // Handle error
   }
 };
 
 watch(
-    () => subscribers.start_time,
+    () => subscribers[0].start_time,
     (newTime) => {
-      console.log(`Subscriber Start Time:`, newTime);
+      getMinEndTime(newTime)
+      const newStartDate = new Date(newTime)
+      const endDate = new Date(subscribers[0].end_time)
+      const equalStartDate = new Date(subscribers[0].end_time)
+
+      console.log('Watch endDate', setEndDate.value)
+      console.log(newStartDate, endDate)
+
+      console.log('equal start date', equalStartDate, endDate)
+      // console.log(equalS ===   endDate)
+
+      if (newStartDate.toISOString().slice(0, 10) === subscribers[0].end_time) {
+        subscribers[0].end_time = setEndDate.value
+        console.log('In the Equal statement')
+      }
+      if (newStartDate > endDate) {
+        subscribers[0].end_time = ""
+        console.log('In the if statement')
+      }
+      
     }
   );
 
