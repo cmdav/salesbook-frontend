@@ -1,7 +1,7 @@
 <template>
   <DashboardLayout pageTitle="Profile Page">
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
-      <p class="text-xl font-bold pb-5"><router-link to="/">Back</router-link></p>
+      <button class="text-xl font-bold pb-5" @click="goBack">Back</button>
       <div
         class="w-full bg-secondary-800/[30%] rounded-lg flex flex-col justify-center items-center p-4"
       >
@@ -81,6 +81,11 @@ const openFileInput = () => {
     fileInput.click();
   }
 };
+
+const goBack = () => {
+  router.back()
+}
+
 const handleFileUpload = (event) => {
   selectedFile.value = event.target.files[0];
   if (selectedFile.value) {
