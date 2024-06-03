@@ -10,27 +10,41 @@
           <label for="batch_no">Batch No</label>
           <input type="text" v-model="batchNo" readonly />
         </div> -->
-        <div v-for="(subscriber, index) in subscribers" :key="index" class="purchase-form">
+        <div v-for="(subscrib, index) in subscribers" :key="index" class="purchase-form">
           <!-- <div v-if="index !== 0" class="top-buttons">
             <button type="button" @click="addPurchase" class="button add-purchase-button">Add Purchase</button>
           </div> -->
           <div class="form-row">
             <div>
-              <label for="supplier_id">Subscribers<span class="required">*</span></label>
-              <select v-model="subscriber.supplier_id" @change="() => handleSupplierChange(index)">
-                <option v-for="subscriber in subscriberResponse" :key="subscriber.id" :value="subscriber.id">
-                  {{ subscriber.plan_name }}
+              <label>Subscribers<span class="required">*</span></label>
+              <select v-model="subscrib.plan_id">
+                <option v-for="subscriber_plan in subscriberPlan" :key="subscriber_plan.id" :value="subscriber_plan.id.toString()">
+                  {{ subscriber_plan.plan_name }}
                 </option>
               </select>
             </div>
             <div>
-              <label for="product_type_id">Organization<span class="required">*</span></label>
-              <select v-model="subscriber.product_type_id" @change="() => purc(index)">
-                <option v-for="organization in organizationResponse" :key="organization.id" :value="organization.id"
-                  :disabled="isDuplicatePurchase(subscriber.supplier_id, organization.id)">
-                  {{ organization.organization_name }}
+              <label>Organization<span class="required">*</span></label>
+              <select v-model="subscrib.organization_id">
+                <option v-for="organization_type in organization" :key="organization_type.id"
+                  :value="organization_type.id">
+                  {{ organization_type.organization_name }}
                 </option>
               </select>
+            </div>
+            <div>
+              <label>Start Date<span class="required">*</span></label>
+              <input id="" type="date"
+                class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+                required name="start-date" placeholder="Start Date" :min="minExpiryDate" v-model="subscrib.start_time"
+                @change="selectedDate(subscrib.start_time)" />
+            </div>
+            <div>
+              <label>End Time<span class="required">*</span></label>
+              <input id="" type="date"
+                class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+                required name="end-date" placeholder="End Date" :min="setEndDate"
+                v-model="subscrib.end_time" @change="selectedDate()" />
             </div>
           </div>
           <hr class="separator" />
@@ -52,19 +66,18 @@ import { catchAxiosError, catchAxiosSuccess } from '@/services/Response';
 const router = useRouter();
 
 // Reactive variables for data and state
-const organizations = ref([]);
+const subscriberPlan = ref([]);
 const organization = ref([]);
 const batchNo = ref('');
 const isLoading = ref(false);
 const error = ref(null);
+const setEndDate = ref(null);
 
 // Reactive variable for subscribers array
 const subscribers = reactive([
   {
-    status: '',
-    subscription_plan_name: '',
-    subscription_description: '',
-    organization_name: '',
+    plan_id: '',
+    organization_id: '',
     start_time: '',
     end_time: '',
   }
@@ -73,19 +86,37 @@ const subscribers = reactive([
 // Set minimum expiry date to today's date
 const minExpiryDate = new Date().toISOString().split('T')[0];
 
+// const defaultMinDate = ref('1900-01-01')
+// let constantMinDate = hasMinDate ? minDate : defaultMinDate
+
+const selectedDate = (start_time) =>{
+  console.log(`Subscriber  Start Time:`, subscribers[0].start_time);
+  console.log(setEndDate.value)
+  console.log(subscribers)
+}
+
+ const getMinEndTime = (startTime) => {
+    if (!startTime) return '';
+      const start = new Date(startTime);
+      const minEnd = new Date(start);
+      minEnd.setDate(start.getDate() + 1);
+      setEndDate.value = minEnd.toISOString().slice(0, 10);
+      return minEnd.toISOString().slice(0, 16);
+    };
+    
 // Function to fetch data from the API
 const fetchData = async () => {
   try {
     isLoading.value = true; // Set loading state to true
     const [organizationResponse, subscriberResponse] = await Promise.all([
       apiService.get('all-organizations'),
-      apiService.get('all-subscriptions'),
+      apiService.get('all-subscription-p'),
     ]);
 
     // Handle suppliers response
     if (subscriberResponse.data) {
-      organizations.value = subscriberResponse.data;
-      console.log(organizationResponse)
+      subscriberPlan.value = subscriberResponse.data;
+      console.log(subscriberResponse)
       // subscribers[0].supplier_id = suppliers.value[0].id;
     } else {
       error.value = 'No subscribers found';
@@ -94,6 +125,7 @@ const fetchData = async () => {
     // Handle product types response
     if (organizationResponse.data) {
       organization.value = organizationResponse.data;
+      console.log('Organization Value', organization.value)
     } else {
       error.value = 'No Organizations found';
     }
@@ -138,13 +170,39 @@ const fetchData = async () => {
 const handleSubmit = async () => {
   // Handle form submission
   try {
-    const response = await apiService.post('purchases', subscribers);
+    const response = await apiService.post('subscription-statuses', subscribers[0]);
     catchAxiosSuccess(response);
-    router.push('/purchase'); // Redirect to the view purchase page if the submission is successful
+    router.push('/subscriptions'); // Redirect to the view purchase page if the submission is successful
   } catch (err) {
     catchAxiosError(err); // Handle error
   }
 };
+
+watch(
+    () => subscribers[0].start_time,
+    (newTime) => {
+      getMinEndTime(newTime)
+      const newStartDate = new Date(newTime)
+      const endDate = new Date(subscribers[0].end_time)
+      const equalStartDate = new Date(subscribers[0].end_time)
+
+      console.log('Watch endDate', setEndDate.value)
+      console.log(newStartDate, endDate)
+
+      console.log('equal start date', equalStartDate, endDate)
+      // console.log(equalS ===   endDate)
+
+      if (newStartDate.toISOString().slice(0, 10) === subscribers[0].end_time) {
+        subscribers[0].end_time = setEndDate.value
+        console.log('In the Equal statement')
+      }
+      if (newStartDate > endDate) {
+        subscribers[0].end_time = ""
+        console.log('In the if statement')
+      }
+      
+    }
+  );
 
 // Fetch initial data when the component is mounted
 onMounted(() => {
