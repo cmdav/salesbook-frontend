@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, defineProps, defineEmits } from "vue";
+import { computed, onMounted, defineProps, defineEmits } from "vue";
 const emit = defineEmits(["closeDropdown", "clickedItem"]);
 
 const onClickOutside = (element, callback) => {
@@ -43,7 +43,7 @@ const props = defineProps({
   class: String,
   link: Boolean,
 });
-const dropdown = ref(null);
+//const dropdown = ref(null);
 
 const showFeaturesDropdown = computed(() => props.showDropdown);
 
