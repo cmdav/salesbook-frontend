@@ -2,7 +2,7 @@
   <DashboardLayout pageTitle="Sales Page">
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
-      <div v-if="permissions">
+      <div v-if="addPermissions">
       <button class="button add-btn">
         <router-link to="/create-sale" class="button add-btn">Add</router-link>
       </button>
@@ -27,12 +27,12 @@
             <th>CREATED BY</th>
             <th>UPDATED BY</th>
             <th>RECEIPT</th>
-            <th>DELETE</th>
+            <th v-if="delPermissions">DELETE</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, index) in filteredData" :key="item.id">
-            <td>{{ index + 1 }}</td>
+          <tr v-for="(item, index) in data" :key="item.id">
+            <td>{{(parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1}}</td>
             <td>{{ item.product_type_name }}</td>
             <td>{{ item.product_type_description }}</td>
             <td>{{ item.cost_price }}</td>
@@ -47,30 +47,30 @@
             <td>{{ item.created_by }}</td>
             <td>{{ item.updated_by }}</td>
             <td><button @click="generateReceipt(item.transaction_id)">Receipt</button></td>
-            <td><button @click="openDeleteModal(item)">Delete</button></td>
+            <td v-if="permissions"><button @click="openDeleteModal(item)">Delete</button></td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <DeleteModal v-if="showDeleteModal" @close="closeDeleteModal" @updated="forceRefresh" :items="itemToDelete" :url="'purchases'" :modalTitle="modalTitle" />
-
-    <div class="pagination">
-      <button @click="changePage(currentPage - 1)" :disabled="!pagination.prev_page_url">Previous</button>
-      <span>Page {{ currentPage }} of {{ totalPages }}</span>
-      <button @click="changePage(currentPage + 1)" :disabled="!pagination.next_page_url">Next</button>
-    </div>
+    <div v-if="!isSearching" class="mx-auto w-fit my-5">
+  <Pagination :currentPage="currentPage" :totalPages="totalPages" @changePage="changePage" />
+</div>
   </DashboardLayout>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import jsPDF from 'jspdf';
 import apiService from '@/services/apiService';
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue';
+import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
 import { useStore } from "@/stores/user";
 
 const search = ref('');
+const isSearching = ref(false);
+
 const data = ref([]); // Initialize as an empty array
 const pagination = ref({});
 const showDeleteModal = ref(false);
@@ -79,12 +79,24 @@ const modalTitle = "Delete Sale";
 
 const currentPage = ref(1);
 const totalPages = ref(0);
+const itemsPerPage = ref(0);
 
-const filteredData = computed(() => {
-  return data.value.filter(item => {
-    const description = item.product_type_description || '';
-    return description.toLowerCase().includes(search.value.toLowerCase());
-  });
+watch(search, async (newSearch) => {
+  if (newSearch) {
+    isSearching.value = true;
+    try {
+
+      const response = await apiService.get(`search-sales/${newSearch}`);
+      console.log(response)
+      data.value = response;
+      return data.value;
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+    }
+  }else{
+    isSearching.value = false;
+    fetchData();
+  }
 });
 
 async function fetchData(page = 1) {
@@ -92,17 +104,20 @@ async function fetchData(page = 1) {
     const response = await apiService.get(`sales?page=${page}`);
     data.value = response.data || []; // Ensure it’s always an array
     pagination.value = {
-      next_page_url: response.data.next_page_url,
-      prev_page_url: response.data.prev_page_url,
+      next_page_url: response.next_page_url,
+      prev_page_url: response.prev_page_url,
     };
-    currentPage.value = response.data.current_page;
-    totalPages.value = response.data.last_page;
+    currentPage.value = response.current_page;
+    totalPages.value = response.last_page;
+    itemsPerPage.value = response.per_page
   } catch (error) {
     console.error("Failed to fetch data:", error);
   }
 }
 
 function changePage(page) {
+  
+  
   if (page > 0 && page <= totalPages.value) {
     fetchData(page);
   }
@@ -121,6 +136,7 @@ function closeDeleteModal() {
 function forceRefresh() {
   fetchData(currentPage.value);
 }
+
 
 const generateReceipt = async (transactionId) => {
   try {
@@ -176,11 +192,14 @@ const generateReceiptPDF = (receiptData) => {
 onMounted(() => fetchData(currentPage.value));
 
 const store = useStore();
-const permissions = computed(() => {
+const delPermissions = computed(() => {
   const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'sales');
-  return perm && perm.write == 1; 
+  return perm.value?.del == 1; 
 });
-
+const addPermissions = computed(() => {
+  const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'sales');
+  return perm.write == 1; 
+});
 </script>
 
 <style scoped>

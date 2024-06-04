@@ -79,7 +79,7 @@
             <div class="flex lg:flex-row flex-col gap-3 px-4 justify-between mb-4">
               <div class="flex lg:flex-row flex-col justify-between w-full gap-2">
                 <div class="w-[40%]">
-                  <AuthInput :error="false" type="text" placeholder="search" />
+                  <!-- <AuthInput :error="false" type="text" placeholder="search" /> -->
                 </div>
                 <div class="flex flex-row gap-[12px]">
                   <button
@@ -103,11 +103,11 @@
                   <thead class="bg-[#F9FBFF] text-[#A8AABC] text-[14px]">
                     <tr class="border-y">
                       <th class="py-4 pl-4 flex border-x">S/N</th>
-                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">name</th>
-                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">Bank</th>
+                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">First Name</th>
+                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">Last Name</th>
                       <th class="text-left p-4 pr-0 px-6 border-x capitalize">Email</th>
-                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">state</th>
-                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">account</th>
+                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">Phone Number</th>
+                      <!-- <th class="text-left p-4 pr-0 px-6 border-x capitalize">account</th> -->
                       <!-- <th class="text-left p-4 pr-0 px-6 capitalize">expiring Date</th> -->
                     </tr>
                   </thead>
@@ -119,25 +119,25 @@
                     >
                       <td class="py-4 border-x pl-4">
                         <!-- <input class="mr-2 outline-none" type="checkbox" value="1" /> -->
-                        {{ index + 1 }}
+                        {{(parseInt(Supplier?.current_page, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1}}
                       </td>
                       <td class="text-left p-4 border-x pr-0 pl-6 capitalize">
                         <button @click="redirectToSingleSupplierPage(i.user_id)" class="">
-                          {{ i.first_name }} {{ i.last_name }}
+                          {{ i.first_name }}
                         </button>
                       </td>
                       <td class="text-left p-4 border-x pr-0 pl-6 capitalize">
-                        {{ i.bank_name }}
+                        {{ i.last_name }}
                       </td>
                       <td class="text-left p-4 pr-0 pl-6 border-x capitalize">
                         {{ i.email }}
                       </td>
                       <td class="text-left p-4 pr-0 pl-6 border-x capitalize">
-                        {{ i.state }}
+                        {{ i.phone_number }}
                       </td>
-                      <td class="text-left p-4 pr-0 pl-6 border-x capitalize">
+                      <!-- <td class="text-left p-4 pr-0 pl-6 border-x capitalize">
                         {{ i.account_number }}
-                      </td>
+                      </td> -->
                       <!-- <td class="text-left p-4 pr-0 pl-6 capitalize">Basic</td> -->
                     </tr>
                   </tbody>
@@ -146,13 +146,18 @@
               </div>
             </div>
             <div class="mx-auto w-fit mt-5">
-              <Pagination
+              <!-- <Pagination
                 @changePage="(page) => (Supplier.current_page = page)"
                 :currentPage="Supplier?.current_page"
                 :pageSize="Supplier?.per_page"
                 :totalPages="Supplier?.last_page"
                 :alwaysShowNextAndPrevious="true"
-              />
+              /> -->
+              <Pagination 
+                          :currentPage="Supplier?.current_page"
+                          :totalPages="totalPages"
+                          @changePage="changePage"
+                            />
             </div>
           </div>
         </div>
@@ -322,7 +327,7 @@ import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import CenteredModalLarge from "@/components/UI/CenteredModalLarge.vue";
 import AuthInput from "@/components/UI/Input/AuthInput.vue";
 import DisabledInput from "@/components/UI/Input/DisabledInput.vue";
-import Pagination from "@/components/UI/Pagination/Pagination.vue";
+import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
 import Loader from "@/components/UI/Loader.vue";
 const store = useStore();
 import { storeToRefs } from "pinia";
@@ -351,6 +356,24 @@ let loading = ref(false);
 let sortInput = reactive({
   name: "",
 });
+
+//const currentPage = ref(1);
+const totalPages = ref(1);
+ const itemsPerPage = ref(0);
+// const totalIndividuals = ref(0);
+// const totalCompanies = ref(0);
+
+const changePage = async (page) =>{
+ 
+
+  if (page > 0 && page <= totalPages.value) {
+   
+    let k = await supplierStore.allSupplier(page);
+    console.log(k)
+    //fetchData(page, userType.value);
+  }
+}
+
 const filteredSupplier = computed(() => {
   // Create a shallow copy of the jobs array
   let filtered = Supplier.value?.data;
@@ -444,9 +467,12 @@ const handleSupplierInvite = async () => {
   }
 };
 onMounted(async () => {
-  await supplierStore.allSupplier();
+  let response= await supplierStore.allSupplier();
   await store.handleUserProfile();
+  totalPages.value = response.last_page;
+  itemsPerPage.value = response.per_page
 
+  console.log(itemsPerPage.value)
   formData.orgId = userProfileDetails.value?.organization_id;
   // console.log(userProfileDetails.value?.organization_id)
 });

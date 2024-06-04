@@ -15,6 +15,11 @@
           {{ props?.toggleButtonLabel }}
         </button>
       </div>
+        <!-- <div>
+        <button @click="$emit('toggleModal')" class="btn-brand !px-4">
+          {{ props?.toggleButtonLabel }}
+        </button>
+      </div> -->
     </div>
 
     <!-- Section for the  table -->
@@ -194,6 +199,17 @@ const searchResults = ref([]);
 
 // Search function with debounce to limit API calls
 const search = debounce( async () => {
+
+  if (!props.searchEndpoint) {
+    //console.log('no search endpoint')
+    
+    searchResults.value = products.value.filter(product =>
+      product.role_name.toLowerCase().includes(searchQuery.value.toLowerCase())
+    );
+    
+   return searchResults.value;
+  }
+  
   try {
     isLoading.value = true;
     searchResults.value = await apiService.get(`${props.searchEndpoint}/${searchQuery.value}`);
@@ -207,8 +223,10 @@ const search = debounce( async () => {
 }, 300);
 
 const onSearchInput = () => {
+ 
   if (!searchQuery.value) {
     searchResults.value = [];
+    console.log(searchQuery.value)
     isLoading.value = true;
     fetchPage(props.endpoint, 1);
     isLoading.value = false;
@@ -227,15 +245,18 @@ function clear() {
   searchQuery.value = '';
 }
 
-// Function to calculate serial number
-function getSerialNumber(index) {
-  return (currentPage.value - 1) * itemsPerPage.value + index + 1;
-}
+
 // Check if user have permission to view
 // Check if user has permission to view
 const store = useStore();
+
+let st =store.getUser.user.permission.permissions.find(p => p)
+
+console.log('Permision', st)
+
 const permissions = computed(() => {
   const perm = store.getUser.user.permission.permissions.find(p => p.page_name === props.pageName);
+  console.log("PErmision Check", perm && perm.write == 1)
   return perm && perm.write == 1; 
 });
 
@@ -254,12 +275,7 @@ td {
   padding: 8px;
   text-align: left;
   border-bottom: 1px solid #fff;
-  @apply border-b-[1px] border-b-brand;
-}
-
-tbody,
-tr {
-  @apply border-x-brand hover:bg-brand/[70%] hover:text-white;
+  
 }
 
 tbody,
@@ -270,9 +286,7 @@ td {
   @apply bg-white text-brand border-b-[1px] border-b-brand;
 }
 
-tr {
-  @apply hover:bg-brand/[70%] hover:text-white;
-}
+
 
 thead,
 tr,

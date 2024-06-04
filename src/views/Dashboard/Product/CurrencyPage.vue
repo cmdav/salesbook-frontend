@@ -6,8 +6,11 @@
           :key="forceUpdate"
            endpoint="currencies"
            :pageName="'currencies'"
-        searchEndpoint="search-currency" :additionalColumns=additionalColumns>
+          searchEndpoint="search-currency" 
+        :additionalColumns=additionalColumns>
+        <div v-if="canUploadPermission">
         <button class="btn-brand" @click="closeUploadModal">Upload</button>
+      </div>
       </DataTableLayout>
     </div>
     <FormModal v-if="showModal" @close="closeModal" :formTitle="'Add Currency'" :fields="currenciesFormFields"
@@ -76,16 +79,24 @@ const permissions = computed(() => {
 })
 
 // console.log(store.getUser.user.permission.permissions)
-// console.log(permissions.value)
+ //console.log(permissions.value)
 const additionalColumns = computed(() => {
   const cols = [];
-  if (permissions.value?.update) {
+  if (permissions.value?.update == 1 ) {
+   
     cols.push({ name: 'Edit', action: handleEdit });
   }
-  if (permissions.value?.del) {
+  if (permissions.value?.del  == 1) {
+    
     cols.push({ name: 'Delete', action: handleDelete });
   }
+ 
   return cols;
+});
+//check upload permission
+const canUploadPermission = computed(() => {
+
+return permissions.value?.write == 1;
 });
 </script>
 

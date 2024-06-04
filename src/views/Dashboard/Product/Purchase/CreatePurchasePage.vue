@@ -38,7 +38,7 @@
               <input type="number" v-model="purchase.cost_price" maxlength="9" required />
               <label class="priceView"> &#8358; {{ purchase.cost_price ?
                 parseFloat(purchase.cost_price).toLocaleString() :
-                '0.00'}}</label>
+                '0.00' }}</label>
             </div>
             <div>
               <label for="selling_price">Selling Price <span class="required">*</span></label>
@@ -46,7 +46,7 @@
                 maxlength="9" required />
               <label class="priceView"> &#8358; {{ purchase.selling_price ?
                 parseFloat(purchase.selling_price).toLocaleString() :
-                '0.00'}}</label>
+                '0.00' }}</label>
             </div>
             <div>
               <label for="quantity">Qty <span class="required">*</span></label>
@@ -302,7 +302,8 @@ label {
   color: red;
 }
 
-input, select {
+input,
+select {
   display: block;
   width: 100%;
   margin-bottom: 10px;

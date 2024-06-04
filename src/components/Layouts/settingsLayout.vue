@@ -320,27 +320,21 @@ td {
   padding: 8px;
   text-align: left;
   border-bottom: 1px solid #fff;
-  @apply border-b-[1px] border-b-brand;
+ 
 }
 tbody,
-tr {
-  @apply border-x-brand hover:bg-brand/[70%] hover:text-white;
-}
+
 tbody,
 tr,
 td {
   padding: 8px;
   text-align: left;
-  @apply bg-white text-brand border-b-[1px] border-b-brand;
+ 
 }
-tr {
-  @apply hover:bg-brand/[70%] hover:text-white;
-}
+
 thead,
 tr,
-th {
-  @apply bg-brand/[50%] text-white;
-}
+
 .flex {
   display: flex;
   overflow-x: auto;
