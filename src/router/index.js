@@ -22,9 +22,11 @@ import CurrencyPage from '@/views/Dashboard/Product/CurrencyPage.vue'
 import StorePage from '@/views/Dashboard/Product/StorePage.vue'
 import SalePage from '@/views/Dashboard/Product/Sale/ViewSalePage.vue'
 import CreateSalePage from '@/views/Dashboard/Product/Sale/CreateSalePage.vue'
-import Subscriptions from '@/views/Dashboard/Subscription/SubscriptionDefaultPage.vue'
-import SubscriptionPlan from '@/views/Dashboard/Subscription/SubscribersPlanPage/ViewSubscribersPlan.vue'
-import CreateSubscriptionPage from '@/views/Dashboard/Subscription/SubscribersPage/CreateSubscriptionPage.vue'
+import Subscriptions from '@/views/Dashboard/Subscriptions/SubscriptionDefaultPage.vue'
+import SubscriptionPlan from '@/views/Dashboard/Subscriptions/SubscribersPlanPage/ViewSubscribersPlan.vue'
+import CreateSubscriptionPage from '@/views/Dashboard/Subscriptions/SubscribersPage/CreateSubscriptionPage.vue'
+
+import ViewCustomerSubscriptionPage from '@/views/Dashboard/CustomerSubscription/ViewCustomerSubscriptionPage.vue'
 
 //import SalePage from '@/views/Dashboard/Product/SalePage.vue'
 
@@ -241,6 +243,12 @@ const router = createRouter({
       path: '/subscriptions',
       name: 'subscriptions',
       component: Subscriptions,
+      beforeEnter: [middleware.redirectLogin]
+    },
+    {
+      path: '/c-subscriptions',
+      name: 'customer subscriptions',
+      component: ViewCustomerSubscriptionPage,
       beforeEnter: [middleware.redirectLogin]
     },
     {
