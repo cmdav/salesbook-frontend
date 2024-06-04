@@ -573,6 +573,7 @@ const generateReceiptPDF = (receiptData) => {
   // Add itemized list section
   let yPosition = 80; // Initial y position
   receiptData.items.forEach((item, index) => {
+    console.log(index)
     // Add item details
     doc.setFont(itemStyle.fontStyle, 'normal');
     doc.setFontSize(itemStyle.fontSize);

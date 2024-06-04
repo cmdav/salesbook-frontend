@@ -2,7 +2,8 @@
   <!-- Display existing image-->
 
   <div class="relative w-full rounded-md object-contain" v-if="newImage">
-    <img :src="newImage" @click="triggerFileInput" class="mb-4 max-h-40 w-full rounded-md object-cover" alt="Current Image" />
+    <img :src="newImage" @click="triggerFileInput" class="mb-4 max-h-40 w-full rounded-md object-cover"
+      alt="Current Image" />
     <!-- <button
       type="button"
       @click="triggerFileInput"
@@ -10,13 +11,7 @@
     >
     <UploadOutlined />
     </button> -->
-    <input
-      ref="fileInput"
-      type="file"
-      class="hidden"
-      hidden
-      @change="handleImageChange(0, $event)"
-    />
+    <input ref="fileInput" type="file" class="hidden" hidden @change="handleImageChange(0, $event)" />
   </div>
 
   <div v-for="(field, index) in localFields" :key="index" class="mb-4">
@@ -80,14 +75,27 @@
         @change="handleImageChange(index, $event)" :required="field.required" :placeholder="field.placeholder" />
     </template>
 
+    <template v-else-if="field.type === 'password'">
+      <div class="relative">
+        <input :id="field.id" :type="field.showPassword ? 'text' : 'password'"
+          class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+          :class="{ 'readonly-background': field.readonly }" v-model="field.value" :required="field.required"
+          :placeholder="field.placeholder" :name="field.databaseField" />
+        <button type="button" class="absolute right-2 top-2" @click="togglePassword(field)">
+          {{ field.showPassword ? 'Hide' : 'Show' }}
+        </button>
+      </div>
+    </template>
+
     <!-- Number field -->
     <template v-else-if="field.type === 'number'">
       <input :id="field.id" type="number"
         class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
         :class="{ 'readonly-background': field.readonly }"
-        @input="$emit('fieldChanged', field.databaseField, parseFloat(field.value) || 0)" v-model.number="field.value"
-        :name="field.databaseField" :required="field.required" :placeholder="field.placeholder" :min="field.min || 0"
-        :readonly="field.readonly" />
+        @input="$emit('fieldChanged', field.databaseField, parseFloat(field.value).toLocaleString() || 0)"
+        v-model.number="field.value" :name="field.databaseField" :required="field.required"
+        :placeholder="field.placeholder" :min="field.min || 0" :readonly="field.readonly" />
+      <label class="priceView"> &#8358; {{ field.value ? parseFloat(field.value).toLocaleString() : '0.00'}}</label>
     </template>
 
     <!-- Date field -->
@@ -113,7 +121,7 @@
 import { defineEmits, ref } from 'vue'
 import { useProductStore } from '@/stores/products'
 import { storeToRefs } from 'pinia'
-import { UploadOutlined } from '@ant-design/icons';
+//import { UploadOutlined } from '@ant-design/icons';
 
 const productsStore = useProductStore()
 // Destructure fields from props
@@ -206,9 +214,22 @@ const triggerFileInput = () => {
     console.error('File input is not correctly referenced.')
   }
 }
+
+const togglePassword = (field) => {
+  field.showPassword = !field.showPassword;
+}
+
 </script>
 <style scoped>
 .readonly-background {
   background-color: #f0f0f0;
+}
+.priceView{
+  font-size: 1em;
+  border: 2px solid rgb(195 82 20 / 50%); 
+  background-color: rgb(195 82 20 / 50%);
+  color: #fff;
+  padding: 0.3%;
+  border-radius: 4px;
 }
 </style>

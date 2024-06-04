@@ -18,6 +18,8 @@
       <DataTableLayout
         :key="forceUpdate"
         endpoint="product-types"
+        :pageName="'product-types'"
+        searchEndpoint="search-product-types"
         @toggleModal="showModal = !showModal"
         toggleButtonLabel="Add Product"
         :excludedKeys="[
@@ -36,13 +38,17 @@
         }"
         :additionalColumns="additionalColumns"
       >
-        <button @click="togglePriceModal" class="btn-brand !text-sm !px-1.5">Add Price</button>
+        <!-- <button @click="togglePriceModal" class="btn-brand !text-sm !px-1.5">Add Price</button> -->
+        <div v-if="canUploadPermission">
         <button @click="toggleProductTypeModal" class="btn-brand !px-1.5 !text-[14px]">
           Add Product Type
         </button>
+      </div>
+        <div v-if="canUploadPermission">
         <button class="btn-brand !px-1.5 !text-[14px]" @click="closeUploadModal">
           Upload Product
         </button>
+      </div>
       </DataTableLayout>
     </div>
     <!--Modal to add product-->
@@ -127,7 +133,7 @@ const {
   useDeleteComposable,
   ViewModal,
   ViewModalDetail,
-  defineEmits,
+  //defineEmits,
   DeleteModal,
   UploadModal,
   useUploadComposable,
@@ -143,7 +149,7 @@ const showProductTypeModal = ref(false)
 const showPriceModal = ref(false)
 
 const { handleDelete, showDeleteModal, itemsId, closeDeleteModal } = useDeleteComposable()
-const emit = defineEmits(['forceRefresh'])
+//const emit = defineEmits(['forceRefresh'])
 const { showModal, showViewModal, forceUpdate, closeModal, closeViewModal } = usePostComposable(
   '/products',
   formFields
@@ -220,6 +226,7 @@ onMounted(async () => {
 })
 
 const updateSellingPrice = (fieldDatabase, value) => {
+  console.log(value)
   if (fieldDatabase === 'auto_generated_selling_price' || fieldDatabase === 'cost_price') {
     const costPrice =
       parseFloat(
@@ -277,13 +284,22 @@ const permissions = computed(() => {
 })
 
 const additionalColumns = computed(() => {
-  const cols = []
-  if (permissions.value?.update) {
-    cols.push({ name: 'Edit', action: handleEdit })
+  const cols = [];
+  if (permissions.value?.update == 1 ) {
+   
+    cols.push({ name: 'Edit', action: handleEdit });
   }
-  if (permissions.value?.del) {
-    cols.push({ name: 'Delete', action: handleDelete })
+  if (permissions.value?.del  == 1) {
+    
+    cols.push({ name: 'Delete', action: handleDelete });
   }
-  return cols
-})
+ 
+  return cols;
+});
+
+//check upload permission
+const canUploadPermission = computed(() => {
+
+return permissions.value?.write == 1;
+});
 </script>

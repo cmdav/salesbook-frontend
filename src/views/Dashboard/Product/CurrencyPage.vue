@@ -1,9 +1,16 @@
 <template>
   <DashboardLayout pageTitle="Currency Page">
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
-      <DataTableLayout @toggleModal="showModal = !showModal" :key="forceUpdate" endpoint="currencies"
-        searchEndpoint="search-currency" :additionalColumns=additionalColumns>
+      <DataTableLayout 
+          @toggleModal="showModal = !showModal" 
+          :key="forceUpdate"
+           endpoint="currencies"
+           :pageName="'currencies'"
+          searchEndpoint="search-currency" 
+        :additionalColumns=additionalColumns>
+        <div v-if="canUploadPermission">
         <button class="btn-brand" @click="closeUploadModal">Upload</button>
+      </div>
       </DataTableLayout>
     </div>
     <FormModal v-if="showModal" @close="closeModal" :formTitle="'Add Currency'" :fields="currenciesFormFields"
@@ -68,17 +75,28 @@ const forceRefresh = () => {
 const store = useStore();
 const permissions = computed(() => {
 
-  return store.getUser.user.permission.permissions.find(p => p.page_name === "measurements");
+  return store.getUser.user.permission.permissions.find(p => p.page_name === "currencies");
 })
 
+// console.log(store.getUser.user.permission.permissions)
+ //console.log(permissions.value)
 const additionalColumns = computed(() => {
   const cols = [];
-  if (permissions.value?.update) {
+  if (permissions.value?.update == 1 ) {
+   
     cols.push({ name: 'Edit', action: handleEdit });
   }
-  if (permissions.value?.del) {
+  if (permissions.value?.del  == 1) {
+    
     cols.push({ name: 'Delete', action: handleDelete });
   }
+ 
   return cols;
 });
+//check upload permission
+const canUploadPermission = computed(() => {
+
+return permissions.value?.write == 1;
+});
 </script>
+

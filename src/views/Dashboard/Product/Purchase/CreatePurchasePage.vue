@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
@@ -198,6 +199,8 @@ onMounted(() => {
 });
 </script>
 
+=======
+>>>>>>> a02762d210c984d004043b80fa4d6a0f488ea4d0
 <template>
   <DashboardLayout pageTitle="Add Purchase">
     <div class="container">
@@ -227,18 +230,26 @@ onMounted(() => {
             <div>
               <label for="product_type_id">Product Type <span class="required">*</span></label>
               <select v-model="purchase.product_type_id" @change="() => handleSupplierChange(index)">
-                <option v-for="productType in productTypes" :key="productType.id" :value="productType.id" :disabled="isDuplicatePurchase(purchase.supplier_id, productType.id)">
+                <option v-for="productType in productTypes" :key="productType.id" :value="productType.id"
+                  :disabled="isDuplicatePurchase(purchase.supplier_id, productType.id)">
                   {{ productType.product_type_name }}
                 </option>
               </select>
             </div>
             <div>
               <label for="cost_price">Cost Price <span class="required">*</span></label>
-              <input type="number" v-model="purchase.cost_price" :readonly="purchase.isCostPriceReadonly" maxlength="9" required />
+              <input type="number" v-model="purchase.cost_price" maxlength="9" required />
+              <label class="priceView"> &#8358; {{ purchase.cost_price ?
+                parseFloat(purchase.cost_price).toLocaleString() :
+                '0.00' }}</label>
             </div>
             <div>
               <label for="selling_price">Selling Price <span class="required">*</span></label>
-              <input type="number" v-model="purchase.selling_price" @change="handleSellingPriceChange(index)" maxlength="9" :readonly="purchase.isSellingPriceReadonly" required />
+              <input type="number" v-model="purchase.selling_price" @change="handleSellingPriceChange(index)"
+                maxlength="9" required />
+              <label class="priceView"> &#8358; {{ purchase.selling_price ?
+                parseFloat(purchase.selling_price).toLocaleString() :
+                '0.00' }}</label>
             </div>
             <div>
               <label for="quantity">Qty <span class="required">*</span></label>
@@ -262,7 +273,196 @@ onMounted(() => {
   </DashboardLayout>
 </template>
 
+<script setup>
+// Import necessary functions and components from Vue and other dependencies
+import { ref, reactive, watch, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import apiService from '@/services/apiService';
+import { catchAxiosError, catchAxiosSuccess } from '@/services/Response';
 
+// Initialize the router for navigation
+const router = useRouter();
+
+// Reactive variables for data and state
+const suppliers = ref([]);
+const productTypes = ref([]);
+const batchNo = ref('');
+const isLoading = ref(false);
+const error = ref(null);
+
+// Reactive variable for purchases array
+const purchases = reactive([
+  {
+    supplier_id: '',
+    product_type_id: '',
+    price_id: '',
+    cost_price: '',
+    selling_price: '',
+    batch_no: '',
+    quantity: '',
+    product_identifier: '',
+    expiry_date: '',
+    original_selling_price: null // To track the original selling price
+  }
+]);
+
+// Set minimum expiry date to today's date
+const minExpiryDate = new Date().toISOString().split('T')[0];
+
+// Function to fetch data from the API
+const fetchData = async () => {
+  try {
+    isLoading.value = true; // Set loading state to true
+    const [suppliersResponse, productTypesResponse, lastBatchNumberResponse] = await Promise.all([
+      apiService.get('all-suppliers'),
+      apiService.get('all-product-type'),
+      apiService.get('last-batch-number')
+    ]);
+
+    // Handle suppliers response
+    if (suppliersResponse.data) {
+      suppliers.value = suppliersResponse.data;
+      purchases[0].supplier_id = suppliers.value[0].id;
+    } else {
+      error.value = 'No suppliers found';
+    }
+
+    // Handle product types response
+    if (productTypesResponse.data) {
+      productTypes.value = productTypesResponse.data;
+    } else {
+      error.value = 'No product types found';
+    }
+
+    // Handle last batch number response
+    if (lastBatchNumberResponse.data && lastBatchNumberResponse.data.batch_no) {
+      const lastBatchNo = parseInt(lastBatchNumberResponse.data.batch_no);
+      batchNo.value = String(lastBatchNo + 1).padStart(5, '0');
+      purchases.forEach(purchase => purchase.batch_no = batchNo.value);
+    } else {
+      batchNo.value = '00001';
+      purchases.forEach(purchase => purchase.batch_no = batchNo.value);
+    }
+  } catch (err) {
+    catchAxiosError(err); // Handle error
+  } finally {
+    isLoading.value = false; // Set loading state to false
+  }
+};
+
+// Function to handle supplier change and fetch latest supplier price
+const handleSupplierChange = async (index) => {
+  const purchase = purchases[index];
+  if (!purchase.product_type_id || !purchase.supplier_id) {
+    catchAxiosError({ message: 'Please select both supplier and product type.' });
+    return;
+  }
+  try {
+    const response = await apiService.get(`latest-supplier-price/${purchase.product_type_id}/${purchase.supplier_id}`);
+    if (response.data) {
+      purchase.price_id = response.data.id;
+      purchase.cost_price = response.data.cost_price;
+      purchase.selling_price = response.data.selling_price;
+      purchase.original_selling_price = response.data.selling_price; // Track the original selling price
+    } else {
+      purchase.price_id = '';
+      purchase.cost_price = '';
+      purchase.selling_price = '';
+      purchase.original_selling_price = null;
+    }
+  } catch (err) {
+    catchAxiosError(err); // Handle error
+  }
+};
+
+// Function to add a new purchase row
+const addPurchase = () => {
+  const lastPurchase = purchases[purchases.length - 1];
+  if (lastPurchase.supplier_id && lastPurchase.product_type_id && lastPurchase.quantity && lastPurchase.cost_price && lastPurchase.selling_price) {
+    purchases.push({
+      supplier_id: suppliers.value.length > 0 ? suppliers.value[0].id : '',
+      product_type_id: '',
+      price_id: '',
+      cost_price: '',
+      selling_price: '',
+      batch_no: batchNo.value,
+      quantity: '',
+      product_identifier: '',
+      expiry_date: '',
+      original_selling_price: null
+    });
+  } else {
+    catchAxiosError({ message: 'Please fill out all required fields before adding a new purchase.' });
+  }
+};
+
+// Function to check for duplicate purchases
+const isDuplicatePurchase = (supplier_id, product_type_id) => {
+  return purchases.some(purchase => purchase.supplier_id === supplier_id && purchase.product_type_id === product_type_id);
+};
+
+// Watcher to track changes in selling price
+watch(
+  purchases,
+  (newPurchases) => {
+    newPurchases.forEach((purchase) => {
+      if (purchase.selling_price !== purchase.original_selling_price) {
+        purchase.price_id = ''; // Clear the price_id if selling price changes
+      }
+    });
+  },
+  { deep: true }
+);
+
+// Function to handle selling price change
+const handleSellingPriceChange = (index) => {
+  const purchase = purchases[index];
+  if (purchase.selling_price < purchase.cost_price) {
+    purchase.selling_price = '';
+    catchAxiosError({ message: 'Selling price cannot be lower than cost price.' });
+  }
+};
+
+// Function to handle form submission
+const handleSubmit = async () => {
+  // Remove last row if not completely filled
+  const lastPurchase = purchases[purchases.length - 1];
+  if (!lastPurchase.supplier_id || !lastPurchase.product_type_id || !lastPurchase.quantity || !lastPurchase.cost_price || !lastPurchase.selling_price) {
+    purchases.pop();
+  }
+
+  // Handle form submission
+  try {
+    const formattedPurchases = purchases.map(purchase => {
+      if (purchase.price_id && purchase.selling_price === purchase.original_selling_price) {
+        // If price_id is present and selling price hasn't changed
+        return {
+          ...purchase,
+          cost_price: undefined, // Remove cost_price if price_id is present
+          selling_price: undefined // Remove selling_price if price_id is present
+        };
+      } else {
+        // If price_id is not present or selling price has changed
+        return {
+          ...purchase,
+          price_id: undefined // Remove price_id if it's not present or selling price has changed
+        };
+      }
+    });
+
+    const response = await apiService.post('purchases', { purchases: formattedPurchases });
+    catchAxiosSuccess(response);
+    router.push('/purchase'); // Redirect to the view purchase page if the submission is successful
+  } catch (err) {
+    catchAxiosError(err); // Handle error
+  }
+};
+
+// Fetch initial data when the component is mounted
+onMounted(() => {
+  fetchData();
+});
+</script>
 
 <style scoped>
 .container {
@@ -281,7 +481,7 @@ onMounted(() => {
   margin-bottom: 20px;
 }
 
-.batch-container input {
+batch-container input {
   flex: 1;
   margin-right: 10px;
 }
@@ -305,7 +505,8 @@ label {
   color: red;
 }
 
-input, select {
+input,
+select {
   display: block;
   width: 100%;
   margin-bottom: 10px;
@@ -322,17 +523,12 @@ input[type="date"].expiry-date {
   width: 120px;
 }
 
-input[readonly] {
-  background-color: #f0f0f0;
-  cursor: not-allowed;
-}
-
 button {
   margin-right: 10px;
 }
 
 .add-purchase-button {
-  background-color: #007bff;
+  background-color: #C35214;
   color: #fff;
   padding: 10px 20px;
   border: none;
@@ -342,17 +538,17 @@ button {
 }
 
 .add-purchase-button:disabled {
-  background-color: #007bff;
+  background-color: #e86925;
   cursor: not-allowed;
   opacity: 0.65;
 }
 
 .add-purchase-button:hover:not(:disabled) {
-  background-color: #0056b3;
+  background-color: #e86925;
 }
 
 .submit-button {
-  background-color: #28a745;
+  background-color: #C35214;
   color: #fff;
   padding: 10px 20px;
   border: none;
@@ -361,7 +557,7 @@ button {
 }
 
 .submit-button:hover {
-  background-color: #218838;
+  background-color: #e86925;
 }
 
 .back-btn {
@@ -389,5 +585,13 @@ button {
   margin-top: 20px;
   margin-bottom: 20px;
 }
-</style>
 
+.priceView {
+  font-size: 0.8em;
+  border: 2px solid rgb(195 82 20 / 50%);
+  background-color: rgb(195 82 20 / 50%);
+  color: #fff;
+  padding: 0.3%;
+  border-radius: 4px;
+}
+</style>

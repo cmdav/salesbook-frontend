@@ -19,7 +19,7 @@ export const userFormFields = ref([
   },
   {
     label: 'Email',
-    type: 'text',
+    type: 'email',
     value: '',
     required: true,
     placeholder: 'Enter email',
@@ -41,15 +41,34 @@ export const userFormFields = ref([
     required: true,
     placeholder: 'Enter password',
     databaseField: 'password'
+  },
+  {
+    label: 'Confirm Password',
+    type: 'password',
+    value: '',
+    required: true,
+    placeholder: 'Confirm password',
+    databaseField: 'password_confirmation'
   }
-  // {
-  //   label: 'Confirm Password',
-  //   type: 'password',
-  //   value: '',
-  //   required: true,
-  //   placeholder: 'Confirm password',
-  //   databaseField: 'password_confirmation'
-  // }
+])
+
+export const subscriptionFormFields = ref([
+  {
+    label: 'Plan Name',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter a Plan',
+    databaseField: 'plan_name'
+  },
+  {
+    label: 'Description',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter a Description',
+    databaseField: 'description'
+  },
 ])
 
 export const measurementFormFields = ref([

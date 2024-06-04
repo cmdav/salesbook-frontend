@@ -299,19 +299,6 @@ const checkDate = (fieldDatabase, value) => {
   }
 }
 
-// const resetFormFields = () => {
-//   formState.purchases.forEach((purchase) => {
-//     purchase.supplier_id = ''
-//   })
-// }
-
-// watch(
-//   () => formState.purchases.length,
-//   () => {
-
-//   }
-// )
-
 // Call this function whenever the related fields change.
 watch(
   () => purchaseFormFields.value.find((field) => field.databaseField === 'expired_at')?.value,
@@ -320,15 +307,8 @@ watch(
 // Fetch data for select options on component mount
 onMounted(async () => {
   await fetchDataForSelect('Product Type', '/all-product-type', 'id', 'product_type_name')
-  // await fetchDataForSelect(;)
 })
-// onMounted(async () => {
-//   try {
-//     await productsStore.handleGetAllProductTypeName()
-//   } catch (error) {
-//     console.error
-//   }
-// })
+
 
 const fetchSupplierByProductId = async (id) => {
   try {
@@ -345,28 +325,6 @@ const fetchSupplierByProductId = async (id) => {
     console.error("Error fetching products:", error);
   }
 };
-// const fetchSuppliersPrice = async (productId, supplierId) => {
-//   try {
-//     let res = await productsStore.handleGetSuppliersPrice(productId, supplierId)
-//     return res;
-//   } catch (error) {
-//     console.error("Error fetching products:", error);
-//   }
-// }
-
-// const updatePriceId = (productTypeId, index) => {
-//   const productInfo = allProductTypeName.value.find((product) => product.id === productTypeId)
-
-//   // console.log("supplier by product, ID", suppliersByProductId.value)
-//   console.log('Product info', productInfo)
-//   if (productInfo) {
-//     formState.purchases[index].price_id = productInfo.price_id
-//     formState.purchases[index].cost_price = productInfo.cost_price
-//   } else {
-//     formState.purchases[index].price_id = ''
-//     formState.purchases[index].cost_price = ''
-//   }
-// }
 
 const updatePrice = (index) => {
 

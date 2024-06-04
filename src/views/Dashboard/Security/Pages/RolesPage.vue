@@ -1,20 +1,15 @@
 <template>
   <!-- <DashboardLayout pageTitle="Roles Page"> -->
   <div class="">
+
     <!-- Button to Open Modal -->
     <!-- <button @click="showModal = true" class="btn btn-primary">Add Store</button> -->
-    <DataTableLayout 
-    @toggleModal="showModal = !showModal" 
-    :hideToggleButtonLabel="false" :key="forceUpdate"
-    endpoint="job-roles" 
-    :additionalColumns="[{ name: 'delete', action: showDeleteModal }]">
+    <DataTableLayout @toggleModal="showModal = !showModal" :hideToggleButtonLabel="false" :key="forceUpdate"
+     endpoint="job-roles"
+      :additionalColumns="[{ name: 'delete', action: showDeleteModal }]">
     </DataTableLayout>
-    <FormModal v-if="showModal" 
-    @close="closeModal" 
-    :formTitle="'Add Purchase'" 
-    :fields="purchaseFormFields"
-      @fetchDataForSubCategory="fetchDataForSubCategory" 
-      :url="'/job-roles'"></FormModal>
+    <FormModal v-if="showModal" @close="closeModal" :formTitle="'Add Purchase'" :fields="purchaseFormFields"
+      @fetchDataForSubCategory="fetchDataForSubCategory" :url="'/job-roles'"></FormModal>
 
     <DeleteModal v-if="showDeleteModal" @close="closeDeleteModal" @updated="forceRefresh" :items="itemsId"
       :url="'/job-roles'" :modalTitle="modalTitle" />

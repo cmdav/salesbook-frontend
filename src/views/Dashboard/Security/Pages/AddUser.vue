@@ -4,9 +4,13 @@
     <!-- Button to Open Modal -->
     <!-- <button @click="showModal = true" class="btn btn-primary">Add Store</button> -->
 
-    <DataTableLayout :key="forceUpdate" @toggleModal="showModal = !showModal" :endpoint="url"
-      searchEndpoint="search-users" :additionalColumns=additionalColumns>
-      <button class="btn-brand" @click="closeUploadModal">Upload</button>
+    <DataTableLayout 
+      :key="forceUpdate"
+       @toggleModal="showModal = !showModal" 
+       :endpoint="url" :pageName="'settings'"
+      searchEndpoint="search-users" 
+      :additionalColumns=additionalColumns>
+      <!-- <button class="btn-brand" @click="closeUploadModal">Upload</button> -->
     </DataTableLayout>
 
     <DeleteModal v-if="showDeleteModal" @close="closeDeleteModal" @updated="forceRefresh" :items="itemsId"
@@ -19,15 +23,21 @@
       </button>
     </SettingsLayoutcopy> -->
     <!-- <PermissionFormModalcopy v-if="showModal" @close="toggleAddPermissionModal" /> -->
-    <FormModal v-if="showModal" @close="toggleAddPermissionModal" :formTitle="'Add User'" :fields="userFormFields"
+    <FormModal 
+        v-if="showModal"
+         @close="closeModal"
+        :key="forceUpdate" 
+        :formTitle="'Add User'"
+         :fields="userFormFields"
       @fetchDataForSubCategory="fetchDataForSubCategory" :isLoadingMsg="isOptionLoadingMsg" :url="'sale-users'">
     </FormModal>
+
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { formFields, userFormFields } from "@/formfields/formFields";
+import { userFormFields } from "@/formfields/formFields";
 import { useSharedComponent } from "@/composable/useSharedComponent";
 
 const { useSelectComposable, DataTableLayout, usePostComposable, useStore, DeleteModal, useDeleteComposable, FormModal, computed } = useSharedComponent("sale-users");
@@ -36,10 +46,10 @@ const modalTitle = "user_name ";
 const url = ref("users?type=sales_personnel");
 
 const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg, }
-  = useSelectComposable(userFormFields, 'user', "role_id", "", "");
+  = useSelectComposable(userFormFields, 'users', "role_id", "", "");
 
 
-const { showModal, forceUpdate } = usePostComposable("/settings", formFields);
+const { showModal, forceUpdate, closeModal } = usePostComposable("/settings", userFormFields);
 const store = useStore();
 const roles = computed(() => {
 
@@ -61,9 +71,9 @@ const {
   closeDeleteModal
 } = useDeleteComposable();
 
-const toggleAddPermissionModal = async () => {
-  showModal.value = !showModal.value;
-};
+// const toggleAddPermissionModal = async () => {
+//   showModal.value = !showModal.value;
+// };
 
 const forceRefresh = () => {
   forceUpdate.value++;

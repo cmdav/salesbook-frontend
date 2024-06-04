@@ -54,6 +54,7 @@ import MeasurementIcon from "@/components/icons/MeasurementIcon.vue";
 import FireIcon from "@/components/icons/FireIcon.vue";
 import SalesIcon from "@/components/icons/SalesIcon.vue";
 import PurchaseIcon from "@/components/icons/PurchaseIcon.vue";
+import SubscriptionIcon from "@/components/icons/subscriptionIcon.vue";
 
 const route = useRoute();
 const store = useStore();
@@ -66,7 +67,7 @@ const permissions = computed(() => {
 const menuItems = computed(() => {
   const allItems = [
   { name: "Dashboard", route: "/dashboard", icon: homeIcon, backendKey:"dashboards"},
-  { name: "Organisation", route: "/organisation", icon: StoreIcon , backendKey:"organizations"},
+  // { name: "Organisation", route: "/organisation", icon: StoreIcon , backendKey:"organizations"},
   { name: "Measurement", route: "/measurement", icon: MeasurementIcon , backendKey:"measurements"},
   { name: "Currency", route: "/currency", icon: FireIcon, backendKey:"currencies" },
   { name: "Product Category", route: "/product-category", icon: CategoryIcon, backendKey:"product-categories"},
@@ -80,21 +81,24 @@ const menuItems = computed(() => {
   { name: "Supplier Product", route: "/supplier-product", icon: ProductIcon, backendKey:"supplier-products"},
   { name: "Records", route: "/", icon: recordsIcon , backendKey:"records"},
   { name: "Reports", route: "/", icon: reportsIcon, backendKey:"reports"},
+  { name: "Subscription", route: "/c-subscriptions", icon: SubscriptionIcon, backendKey: "subscriptions" },
+  { name: "Subscribers", route: "/subscriptions", icon: SubscriptionIcon, backendKey: "subscriptions" },
   { name: "Settings", route: "/settings", icon: SettingsIcon , backendKey:"permissions"},
   { name: "Log Out", route: "/logout", icon: logoutIcon, backendKey:""},
   ];
 
 return allItems.filter(item => {
   if (item.backendKey === null) {
-      return true; 
+      return true;
     } else {
-     
+
       const perm = permissions.value.find(p => p.page_name == item.backendKey);
-      return perm && perm.read == 1; 
+      return perm && perm.read == 1;
     }
 });
 });
 
+//const perm = permissions.value.find(p => console.log(p.page_name));
 //console.log(menuItems.value)
 
 </script>

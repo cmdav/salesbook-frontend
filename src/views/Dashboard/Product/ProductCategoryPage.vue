@@ -6,9 +6,12 @@
         :key="forceUpdate"
         endpoint="product-categories"
         searchEndpoint="search-product-categories"
+        :pageName="'product-categories'"
         :additionalColumns=additionalColumns
       >
+      <div v-if="canUploadPermission">
         <button class="btn-brand" @click="closeUploadModal">Upload</button>
+       </div>
       </DataTableLayout>
     </div>
     <FormModal
@@ -99,14 +102,23 @@ const permissions = computed(() => {
     return  store.getUser.user.permission.permissions.find(p => p.page_name === "product-categories");
  })
 
-const additionalColumns = computed(() => {
-    const cols = [];
-    if (permissions.value?.update) {
-      cols.push({ name: 'Edit', action: handleEdit });
-    }
-    if (permissions.value?.del) {
-      cols.push({ name: 'Delete', action: handleDelete });
-    }
-    return cols;
-  });
+ const additionalColumns = computed(() => {
+  const cols = [];
+  if (permissions.value?.update == 1 ) {
+   
+    cols.push({ name: 'Edit', action: handleEdit });
+  }
+  if (permissions.value?.del  == 1) {
+    
+    cols.push({ name: 'Delete', action: handleDelete });
+  }
+ 
+  return cols;
+});
+
+  //check upload permission
+const canUploadPermission = computed(() => {
+
+return permissions.value?.write == 1;
+});
 </script>

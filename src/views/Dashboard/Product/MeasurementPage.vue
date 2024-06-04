@@ -7,9 +7,12 @@
         :key="forceUpdate"
         endpoint="measurements"
         searchEndpoint="search-measurement"
+        :pageName="'measurements'"
         :additionalColumns=additionalColumns
       >
+      <div v-if="canUploadPermission">
         <button class="btn-brand" @click="closeUploadModal">Upload</button>
+      </div>
       </DataTableLayout>
     </div>
     <FormModal
@@ -106,17 +109,24 @@ const permissions = computed(() => {
     return  store.getUser.user.permission.permissions.find(p => p.page_name === "measurements");
  })
 
-const additionalColumns = computed(() => {
-    const cols = [];
-    if (permissions.value?.update) {
-      cols.push({ name: 'Edit', action: handleEdit });
-    }
-    if (permissions.value?.del) {
-      cols.push({ name: 'Delete', action: handleDelete });
-    }
-    return cols;
-  });
+ const additionalColumns = computed(() => {
+  const cols = [];
+  if (permissions.value?.update == 1 ) {
+   
+    cols.push({ name: 'Edit', action: handleEdit });
+  }
+  if (permissions.value?.del  == 1) {
+    
+    cols.push({ name: 'Delete', action: handleDelete });
+  }
+ 
+  return cols;
+});
+//uploadPermission
+const canUploadPermission = computed(() => {
 
+  return permissions.value?.write == 1;
+});
 onMounted(async () => {
   try {
     await productsStore.handleGetMeasurements();
