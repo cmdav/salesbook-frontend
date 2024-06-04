@@ -1,5 +1,5 @@
 <template>
-    <DashboardLayout pageTitle="Settings Page">
+    <DashboardLayout pageTitle="Subscription Page">
         <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
             <Tab>
                 <template #tab1> Subscribers </template>
