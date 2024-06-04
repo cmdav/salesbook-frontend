@@ -107,7 +107,6 @@ async function fetchData(page = 1) {
       next_page_url: response.next_page_url,
       prev_page_url: response.prev_page_url,
     };
-<<<<<<< HEAD
     currentPage.value = response.data.current_page;
     totalPages.value = response.data.last_page;
 
@@ -115,11 +114,6 @@ async function fetchData(page = 1) {
   } else {
     data.value = await getAllDb('sales');
   }
-=======
-    currentPage.value = response.current_page;
-    totalPages.value = response.last_page;
-    itemsPerPage.value = response.per_page
->>>>>>> a02762d210c984d004043b80fa4d6a0f488ea4d0
   } catch (error) {
     console.error("Failed to fetch data:", error);
   }
