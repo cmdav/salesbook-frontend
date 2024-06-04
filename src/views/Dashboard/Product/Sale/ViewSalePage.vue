@@ -65,20 +65,10 @@ import { ref, computed, onMounted, watch } from 'vue';
 import jsPDF from 'jspdf';
 import apiService from '@/services/apiService';
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue';
-<<<<<<< HEAD
 import { getAllDb, setDb } from '@/utils/db';
 
 const search = ref('');
 const data = ref([]); 
-=======
-import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
-import { useStore } from "@/stores/user";
-
-const search = ref('');
-const isSearching = ref(false);
-
-const data = ref([]); // Initialize as an empty array
->>>>>>> a02762d210c984d004043b80fa4d6a0f488ea4d0
 const pagination = ref({});
 const showDeleteModal = ref(false);
 const itemToDelete = ref(null);
