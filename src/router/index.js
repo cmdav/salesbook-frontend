@@ -22,9 +22,9 @@ import CurrencyPage from '@/views/Dashboard/Product/CurrencyPage.vue'
 import StorePage from '@/views/Dashboard/Product/StorePage.vue'
 import SalePage from '@/views/Dashboard/Product/Sale/ViewSalePage.vue'
 import CreateSalePage from '@/views/Dashboard/Product/Sale/CreateSalePage.vue'
-//import Subscriptions from '@/views/Dashboard/Subscription/SubscriptionDefaultPage.vue'
-//import SubscriptionPlan from '@/views/Dashboard/Subscription/SubscribersPlanPage/ViewSubscribersPlan.vue'
-//import CreateSubscriptionPage from '@/views/Dashboard/Subscription/SubscribersPage/CreateSubscriptionPage.vue'
+import Subscriptions from '@/views/Dashboard/Subscription/SubscriptionDefaultPage.vue'
+import SubscriptionPlan from '@/views/Dashboard/Subscription/SubscribersPlanPage/ViewSubscribersPlan.vue'
+import CreateSubscriptionPage from '@/views/Dashboard/Subscription/SubscribersPage/CreateSubscriptionPage.vue'
 
 //import SalePage from '@/views/Dashboard/Product/SalePage.vue'
 
@@ -237,23 +237,23 @@ const router = createRouter({
       component: SupplierProductsPage,
       beforeEnter: [middleware.redirectLogin]
     },
-    // {
-    //   path: '/subscriptions',
-    //   name: 'subscriptions',
-    //   component: Subscriptions,
-    //   beforeEnter: [middleware.redirectLogin]
-    // },
-    // {
-    //   path: '/subscriptionPlan',
-    //   name: 'subscription-plan',
-    //   component: SubscriptionPlan,
-    //   beforeEnter: [middleware.redirectLogin]
-    // },
-    // {
-    //   path: '/create-subscription',
-    //   name: 'create-subscription',
-    //   component: CreateSubscriptionPage
-    // },
+    {
+      path: '/subscriptions',
+      name: 'subscriptions',
+      component: Subscriptions,
+      beforeEnter: [middleware.redirectLogin]
+    },
+    {
+      path: '/subscriptionPlan',
+      name: 'subscription-plan',
+      component: SubscriptionPlan,
+      beforeEnter: [middleware.redirectLogin]
+    },
+    {
+      path: '/create-subscription',
+      name: 'create-subscription',
+      component: CreateSubscriptionPage
+    },
     {
       path: '/customers/:id',
       name: 'view-customers',

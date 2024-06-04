@@ -54,7 +54,7 @@ import MeasurementIcon from "@/components/icons/MeasurementIcon.vue";
 import FireIcon from "@/components/icons/FireIcon.vue";
 import SalesIcon from "@/components/icons/SalesIcon.vue";
 import PurchaseIcon from "@/components/icons/PurchaseIcon.vue";
-//import SubscriptionIcon from "@/components/icons/subscriptionIcon.vue";
+import SubscriptionIcon from "@/components/icons/subscriptionIcon.vue";
 
 const route = useRoute();
 const store = useStore();
@@ -81,7 +81,7 @@ const menuItems = computed(() => {
   { name: "Supplier Product", route: "/supplier-product", icon: ProductIcon, backendKey:"supplier-products"},
   { name: "Records", route: "/", icon: recordsIcon , backendKey:"records"},
   { name: "Reports", route: "/", icon: reportsIcon, backendKey:"reports"},
-  //{ name: "Subscription", route: "/subscriptions", icon: SubscriptionIcon, backendKey: "reports" },
+  { name: "Subscription", route: "/subscriptions", icon: SubscriptionIcon, backendKey: "subscriptions" },
   { name: "Settings", route: "/settings", icon: SettingsIcon , backendKey:"permissions"},
   { name: "Log Out", route: "/logout", icon: logoutIcon, backendKey:""},
   ];
