@@ -57,34 +57,40 @@
                   <thead class="bg-[#F9FBFF] border-y text-[#A8AABC] text-[14px]">
                     <tr>
                       <th class="py-4 pl-4 flex border-x">S/N</th>
-                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">Name</th>
-                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">Company Name</th>
-                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">Company Representative</th>
+                      <th v-if="userType === 'individual'" class="text-left p-4 pr-0 px-6 border-x capitalize">Full Name</th>
+                      <th v-if="userType === 'company'" class="text-left p-4 pr-0 px-6 border-x capitalize">Company Name</th>
+                      <th v-if="userType === 'company'" class="text-left p-4 pr-0 px-6 border-x capitalize">Contact Person</th>
                       <th class="text-left p-4 pr-0 px-6 border-x capitalize">Email</th>
-                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">Contact</th>
+                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">Phone Number</th>
+                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">Address</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="(i, index) in data" :key="i.id" class="border-b text-[14px]">
                       <td class="py-4 pl-4 border-x">  
                         {{(parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1}}
-                  </td>
-                      <td class="text-left p-4 pr-0 pl-6 border-x capitalize">
+                      </td>
+                      <td v-if="userType === 'individual'" class="text-left p-4 pr-0 pl-6 border-x capitalize">
                         <button @click="redirectToSingleCustomerPage(i.id)" class="">
                           {{ i.first_name }} {{ i.last_name }}
                         </button>
                       </td>
-                      <td class="text-left p-4 pr-0 pl-6 border-x capitalize">{{ i.company_name }}</td>
-                      <td class="text-left p-4 pr-0 pl-6 border-x">{{ i.contact_person }}</td>
+                      <td v-if="userType === 'company'" class="text-left p-4 pr-0 pl-6 border-x capitalize">
+                        <button @click="redirectToSingleCustomerPage(i.id)" class="">
+                          {{ i.company_name }}
+                        </button>
+                      </td>
+                      <td v-if="userType === 'company'" class="text-left p-4 pr-0 pl-6 border-x">{{ i.contact_person }}</td>
                       <td class="text-left p-4 pr-0 pl-6 border-x">{{ i.email }}</td>
                       <td class="text-left p-4 pr-0 pl-6 capitalize border-x">{{ i.phone_number }}</td>
+                      <td class="text-left p-4 pr-0 pl-6 capitalize border-x">{{ i.address }}</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
               <div v-if="!isSearching" class="mx-auto w-fit my-5">
-              <Pagination :currentPage="currentPage" :totalPages="totalPages" @changePage="changePage" />
-            </div>
+                <Pagination :currentPage="currentPage" :totalPages="totalPages" @changePage="changePage" />
+              </div>
             </div>
           </div>
         </div>
@@ -92,6 +98,7 @@
     </div>
   </DashboardLayout>
 </template>
+
 
 <script setup>
 import { ref, reactive, watch, onMounted } from 'vue';
@@ -116,7 +123,6 @@ const userType = ref('individual');
 let sortInput = reactive({
   search: ''
 });
-
 
 const data = ref([]);
 
@@ -144,57 +150,62 @@ function changePage(page) {
   }
 }
 
-
 watch(() => sortInput.search, async (newSearch) => {
   if (newSearch) {
     isSearching.value = true;
     try {
-
       const response = await apiService.get(`search-customer/${newSearch}`);
-      console.log(response)
+      console.log(response);
       data.value = response;
       return data.value;
     } catch (error) {
       console.error('Failed to fetch data:', error);
     }
-  }else{
+  } else {
     isSearching.value = false;
     fetchData();
   }
 });
 
-
-
-
 async function fetchData(page = 1, type = 'individual', search = '') {
   try {
     const response = await apiService.get(`customers?type=${type}&page=${page}&search=${search}`);
-    console.log(response)
-    data.value = response.data;
+    console.log(response);
     if (type === 'individual') {
+      data.value = response.data.map((i) => ({
+        id: i.id,
+        first_name: i.first_name,
+        last_name: i.last_name,
+        email: i.email,
+        phone_number: i.phone_number,
+        address: i.address
+      }));
       totalIndividuals.value = response.total;
     } else {
+      data.value = response.data.map((i) => ({
+        id: i.id,
+        company_name: i.company_name,
+        contact_person: i.contact_person,
+        email: i.email,
+        phone_number: i.phone_number,
+        address: i.address
+      }));
       totalCompanies.value = response.total;
     }
     currentPage.value = response.current_page;
     totalPages.value = response.last_page;
-    itemsPerPage.value = response.per_page
-    console.log(itemsPerPage.value)
+    itemsPerPage.value = response.per_page;
+    console.log(itemsPerPage.value);
   } catch (error) {
     console.error('Failed to fetch data:', error);
   }
 }
 
-// function serialNumber(index) {
-//   console.log(index)
-//   return (parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1 
-//   //return currentPage.value;
-// }
-
 onMounted(() => {
   fetchData();
 });
 </script>
+
 
 <style scoped>
 .actions {
