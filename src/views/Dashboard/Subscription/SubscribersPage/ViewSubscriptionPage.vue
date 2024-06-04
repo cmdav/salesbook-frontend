@@ -136,7 +136,7 @@ onMounted(() => fetchData(currentPage.value));
 const store = useStore();
 const permissions = computed(() => {
   const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'purchases');
-  return perm && perm.write == 1; 
+  return perm && perm.write == 1;
 });
 
 </script>
@@ -182,19 +182,21 @@ table {
   table-layout: auto;
 }
 
-th{
+th {
   padding: 8px;
   text-align: left;
-  border: 1px solid #fff; /* Add borders around cells */
+  border: 1px solid #fff;
+  /* Add borders around cells */
   white-space: nowrap;
   color: #fff;
   font-size: 0.95em;
 }
 
-td{
+td {
   padding: 8px;
   text-align: left;
-  border: 1px solid #C35214;;
+  border: 1px solid #C35214;
+  ;
   /* Add borders around cells */
   white-space: nowrap;
   color: #C35214;
