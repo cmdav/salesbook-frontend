@@ -1,51 +1,51 @@
 <template>
-    <div class="actions">
-        <!-- <input type="text" v-model="search" placeholder="Search..." class="search-input" /> -->
-        <div v-if="permissions">
-            <button class="button add-btn" @click="openModal()">
-                Add
-                <!-- <router-link to=" /create-subscription" class="button add-btn">Add</router-link> -->
-            </button>
-        </div>
+  <div class="actions">
+    <!-- <input type="text" v-model="search" placeholder="Search..." class="search-input" /> -->
+    <div v-if="permissions">
+      <button class="button add-btn" @click="openModal()">
+        Add
+        <!-- <router-link to=" /create-subscription" class="button add-btn">Add</router-link> -->
+      </button>
     </div>
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>S.NO</th>
-                    <th>PLAN NAME</th>
-                    <!-- <th>DESCRIPTION</th> -->
-                    <!-- <th>EDIT</th> -->
-                    <th>DELETE</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="(item, index) in data" :key="item.id">
-                    <td>{{ index + 1 }}</td>
-                    <td>{{ item.plan_name }}</td>
-                    <!-- <td>{{ item.description }}</td> -->
-                    <!-- <td><button @click="openDeleteModal(item)">Edit</button></td> -->
-                    <td><button @click="openDeleteModal(item)">Delete</button></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+  </div>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>S.NO</th>
+          <th>PLAN NAME</th>
+          <!-- <th>DESCRIPTION</th> -->
+          <!-- <th>EDIT</th> -->
+          <th>DELETE</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(item, index) in data" :key="item.id">
+          <td>{{ index + 1 }}</td>
+          <td>{{ item.plan_name }}</td>
+          <!-- <td>{{ item.description }}</td> -->
+          <!-- <td><button @click="openDeleteModal(item)">Edit</button></td> -->
+          <td><button @click="openDeleteModal(item)">Delete</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-    <DeleteModal v-if="showDeleteModal" @close="closeDeleteModal" @updated="forceRefresh" :items="itemToDelete"
-        :url="'subscriptions'" :modalTitle="modalTitle" />
+  <DeleteModal v-if="showDeleteModal" @close="closeDeleteModal" @updated="forceRefresh" :items="itemToDelete"
+    :url="'subscriptions'" :modalTitle="modalTitle" />
 
-    <FormModal v-if="showModal" @close="closeModal" @updated="forceRefresh" :key="forceRefresh"
-        :formTitle="'Add Subscription Plan'" :fields="subscriptionFormFields" :isLoadingMsg="isOptionLoadingMsg"
-        :url="'subscriptions'">
-    </FormModal>
+  <FormModal v-if="showModal" @close="closeModal" @updated="forceRefresh" :key="forceRefresh"
+    :formTitle="'Add Subscription Plan'" :fields="subscriptionFormFields" :isLoadingMsg="isOptionLoadingMsg"
+    :url="'subscriptions'">
+  </FormModal>
 
-    <div class="pagination">
-        <button @click="changePage(currentPage - 1)" :disabled="!pagination.prev_page_url">
-            Previous
-        </button>
-        <span>Page {{ currentPage }} of {{ totalPages }}</span>
-        <button @click="changePage(currentPage + 1)" :disabled="!pagination.next_page_url">Next</button>
-    </div>
+  <div class="pagination">
+    <button @click="changePage(currentPage - 1)" :disabled="!pagination.prev_page_url">
+      Previous
+    </button>
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+    <button @click="changePage(currentPage + 1)" :disabled="!pagination.next_page_url">Next</button>
+  </div>
 </template>
 
 <script setup>
@@ -54,8 +54,8 @@ import apiService from '@/services/apiService'
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue'
 import { useSharedComponent } from '@/composable/useSharedComponent'
 import { useStore } from '@/stores/user'
-import { useSubscriptions  } from '@/stores/subscriptions'
-import { subscriptionFormFields }  from '@/formfields/formFields'
+import { useSubscriptions } from '@/stores/subscriptions'
+import { subscriptionFormFields } from '@/formfields/formFields'
 
 
 const subscriptionsStore = useSubscriptions()
@@ -72,12 +72,12 @@ const modalTitle = 'Delete Purchase'
 const currentPage = ref(1)
 const totalPages = ref(0)
 const formState = reactive(
-    { 
-        plan_name: "",
-        description:"",
-    });
+  {
+    plan_name: "",
+    description: "",
+  });
 
-const { usePostComposable,  FormModal } = useSharedComponent("subscriptions");
+const { usePostComposable, FormModal } = useSharedComponent("subscriptions");
 const { showModal } = usePostComposable("subscriptions", usePostComposable);
 
 
@@ -139,13 +139,13 @@ async function fetchData(page = 1) {
 // }
 
 const closeModal = () => {
-    showModal.value = false
-    formState.plan_name = "";
-    formState.description = "";
+  showModal.value = false
+  formState.plan_name = "";
+  formState.description = "";
 };
 
 function openModal() {
-    showModal.value = true
+  showModal.value = true
 }
 
 function openDeleteModal(item) {
