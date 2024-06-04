@@ -18,7 +18,7 @@
             <div>
               <label>Subscribers<span class="required">*</span></label>
               <select v-model="subscrib.plan_id">
-                <option v-for="subscriber_plan in subscriberPlan" :key="subscriber_plan.id" :value="subscriber_plan.id.toString()">
+                <option v-for="subscriber_plan in subscriberPlan" :key="subscriber_plan.id" :value="subscriber_plan.id">
                   {{ subscriber_plan.plan_name }}
                 </option>
               </select>
@@ -110,13 +110,13 @@ const fetchData = async () => {
     isLoading.value = true; // Set loading state to true
     const [organizationResponse, subscriberResponse] = await Promise.all([
       apiService.get('all-organizations'),
-      apiService.get('all-subscription-p'),
+      apiService.get('all-subscription'),
     ]);
 
     // Handle suppliers response
     if (subscriberResponse.data) {
-      subscriberPlan.value = subscriberResponse.data;
-      console.log(subscriberResponse)
+      subscriberPlan.value = subscriberResponse.data.data;
+      console.log('subscription response',subscriberResponse)
       // subscribers[0].supplier_id = suppliers.value[0].id;
     } else {
       error.value = 'No subscribers found';
