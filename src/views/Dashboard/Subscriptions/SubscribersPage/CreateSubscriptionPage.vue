@@ -116,7 +116,7 @@ const fetchData = async () => {
 
         // Handle suppliers response
         if (subscriberResponse.data) {
-            subscriberPlan.value = subscriberResponse.data.data;
+            subscriberPlan.value = subscriberResponse.data;
             console.log(subscriberResponse)
             // subscribers[0].supplier_id = suppliers.value[0].id;
         } else {
