@@ -35,22 +35,22 @@
             </div>
             <div>
               <label for="cost_price">Cost Price <span class="required">*</span></label>
-              <input type="number" v-model="purchase.cost_price" @blur="handleCostPriceBlur(index)" maxlength="9"/>
+              <input type="number" v-model="purchase.cost_price" maxlength="9" required />
               <label class="priceView"> &#8358; {{ purchase.cost_price ?
                 parseFloat(purchase.cost_price).toLocaleString() :
-                '0.00'}}</label>
+                '0.00' }}</label>
             </div>
             <div>
               <label for="selling_price">Selling Price <span class="required">*</span></label>
-              <input type="number" v-model="purchase.selling_price" @blur="handleSellingPriceBlur(index)"
-                maxlength="9"  />
+              <input type="number" v-model="purchase.selling_price" @change="handleSellingPriceChange(index)"
+                maxlength="9" required />
               <label class="priceView"> &#8358; {{ purchase.selling_price ?
                 parseFloat(purchase.selling_price).toLocaleString() :
-                '0.00'}}</label>
+                '0.00' }}</label>
             </div>
             <div>
               <label for="quantity">Qty <span class="required">*</span></label>
-              <input type="number" v-model="purchase.quantity" maxlength="5"  />
+              <input type="number" v-model="purchase.quantity" maxlength="5" required />
             </div>
             <div>
               <label for="product_identifier">Product Identifier</label>
@@ -69,9 +69,10 @@
     </div>
   </DashboardLayout>
 </template>
+
 <script setup>
 // Import necessary functions and components from Vue and other dependencies
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import apiService from '@/services/apiService';
 import { catchAxiosError, catchAxiosSuccess } from '@/services/Response';
@@ -92,15 +93,13 @@ const purchases = reactive([
     supplier_id: '',
     product_type_id: '',
     price_id: '',
-    original_price_id: '', // Backup of the original price_id
     cost_price: '',
-    original_cost_price: null, // To track the original cost price
     selling_price: '',
-    original_selling_price: null, // To track the original selling price
     batch_no: '',
     quantity: '',
     product_identifier: '',
-    expiry_date: ''
+    expiry_date: '',
+    original_selling_price: null // To track the original selling price
   }
 ]);
 
@@ -159,16 +158,12 @@ const handleSupplierChange = async (index) => {
     const response = await apiService.get(`latest-supplier-price/${purchase.product_type_id}/${purchase.supplier_id}`);
     if (response.data) {
       purchase.price_id = response.data.id;
-      purchase.original_price_id = response.data.id; // Backup the original price_id
       purchase.cost_price = response.data.cost_price;
-      purchase.original_cost_price = response.data.cost_price; // Track the original cost price
       purchase.selling_price = response.data.selling_price;
       purchase.original_selling_price = response.data.selling_price; // Track the original selling price
     } else {
       purchase.price_id = '';
-      purchase.original_price_id = ''; // Reset the original price_id
       purchase.cost_price = '';
-      purchase.original_cost_price = null;
       purchase.selling_price = '';
       purchase.original_selling_price = null;
     }
@@ -185,15 +180,13 @@ const addPurchase = () => {
       supplier_id: suppliers.value.length > 0 ? suppliers.value[0].id : '',
       product_type_id: '',
       price_id: '',
-      original_price_id: '',
       cost_price: '',
-      original_cost_price: null,
       selling_price: '',
-      original_selling_price: null,
       batch_no: batchNo.value,
       quantity: '',
       product_identifier: '',
-      expiry_date: ''
+      expiry_date: '',
+      original_selling_price: null
     });
   } else {
     catchAxiosError({ message: 'Please fill out all required fields before adding a new purchase.' });
@@ -205,30 +198,25 @@ const isDuplicatePurchase = (supplier_id, product_type_id) => {
   return purchases.some(purchase => purchase.supplier_id === supplier_id && purchase.product_type_id === product_type_id);
 };
 
-// Function to handle cost price blur event
-const handleCostPriceBlur = (index) => {
-  const purchase = purchases[index];
-  if (purchase.cost_price !== purchase.original_cost_price) {
-    purchase.price_id = ''; // Clear price_id if cost price is different
-  } else if (purchase.selling_price !== purchase.original_selling_price) {
-    purchase.price_id = ''; // Clear price_id if selling price is different
-  } else {
-    purchase.price_id = purchase.original_price_id; // Restore original price_id if both prices are the same
-  }
-};
+// Watcher to track changes in selling price
+watch(
+  purchases,
+  (newPurchases) => {
+    newPurchases.forEach((purchase) => {
+      if (purchase.selling_price !== purchase.original_selling_price) {
+        purchase.price_id = ''; // Clear the price_id if selling price changes
+      }
+    });
+  },
+  { deep: true }
+);
 
-// Function to handle selling price blur event
-const handleSellingPriceBlur = (index) => {
+// Function to handle selling price change
+const handleSellingPriceChange = (index) => {
   const purchase = purchases[index];
   if (purchase.selling_price < purchase.cost_price) {
     purchase.selling_price = '';
     catchAxiosError({ message: 'Selling price cannot be lower than cost price.' });
-  } else if (purchase.selling_price !== purchase.original_selling_price) {
-    purchase.price_id = ''; // Clear price_id if selling price is different
-  } else if (purchase.cost_price !== purchase.original_cost_price) {
-    purchase.price_id = ''; // Clear price_id if cost price is different
-  } else {
-    purchase.price_id = purchase.original_price_id; // Restore original price_id if both prices are the same
   }
 };
 
@@ -243,24 +231,18 @@ const handleSubmit = async () => {
   // Handle form submission
   try {
     const formattedPurchases = purchases.map(purchase => {
-      if (purchase.price_id && purchase.selling_price === purchase.original_selling_price && purchase.cost_price === purchase.original_cost_price) {
-        // If price_id is present and neither selling price nor cost price has changed
+      if (purchase.price_id && purchase.selling_price === purchase.original_selling_price) {
+        // If price_id is present and selling price hasn't changed
         return {
           ...purchase,
-          original_price_id: undefined, // Exclude original_price_id
-          original_cost_price: undefined, // Exclude original_cost_price
-          original_selling_price: undefined, // Exclude original_selling_price
           cost_price: undefined, // Remove cost_price if price_id is present
           selling_price: undefined // Remove selling_price if price_id is present
         };
       } else {
-        // If price_id is not present or either selling price or cost price has changed
+        // If price_id is not present or selling price has changed
         return {
           ...purchase,
-          original_price_id: undefined, // Exclude original_price_id
-          original_cost_price: undefined, // Exclude original_cost_price
-          original_selling_price: undefined, // Exclude original_selling_price
-          price_id: undefined // Remove price_id if it's not present or prices have changed
+          price_id: undefined // Remove price_id if it's not present or selling price has changed
         };
       }
     });
@@ -320,7 +302,8 @@ label {
   color: red;
 }
 
-input, select {
+input,
+select {
   display: block;
   width: 100%;
   margin-bottom: 10px;
