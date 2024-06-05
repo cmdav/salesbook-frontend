@@ -65,13 +65,10 @@ import { ref, computed, onMounted, watch } from 'vue';
 import jsPDF from 'jspdf';
 import apiService from '@/services/apiService';
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue';
-import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
-import { useStore } from "@/stores/user";
+import { getAllDb, setDb } from '@/utils/db';
 
 const search = ref('');
-const isSearching = ref(false);
-
-const data = ref([]); // Initialize as an empty array
+const data = ref([]); 
 const pagination = ref({});
 const showDeleteModal = ref(false);
 const itemToDelete = ref(null);
@@ -99,17 +96,24 @@ watch(search, async (newSearch) => {
   }
 });
 
+const isOnline = () => navigator.onLine;
+
 async function fetchData(page = 1) {
   try {
+    if (isOnline()){
     const response = await apiService.get(`sales?page=${page}`);
-    data.value = response.data || []; // Ensure it’s always an array
+    data.value = response.data || []; 
     pagination.value = {
       next_page_url: response.next_page_url,
       prev_page_url: response.prev_page_url,
     };
-    currentPage.value = response.current_page;
-    totalPages.value = response.last_page;
-    itemsPerPage.value = response.per_page
+    currentPage.value = response.data.current_page;
+    totalPages.value = response.data.last_page;
+
+    data.value.forEach(sale => setDb('sales', sale));
+  } else {
+    data.value = await getAllDb('sales');
+  }
   } catch (error) {
     console.error("Failed to fetch data:", error);
   }

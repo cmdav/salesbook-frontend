@@ -2,7 +2,7 @@
   <DashboardLayout pageTitle="Store Page">
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
       <!-- Button to Open Modal -->
-      <!-- <button @click="showModal = true" class="btn btn-primary">Add Store</button> -->
+      <button @click="showModal = true" class="btn btn-primary">Add Store</button> 
       <DataTableLayout
         @toggleModal="showModal = !showModal"
         :hideToggleButtonLabel="false"
@@ -41,5 +41,5 @@ const {
 //   showModal,
 
 // } = usePostComposable("/stores", cu);
-//const { handleDelete, showDeleteModal, itemsId, closeDeleteModal } = useDeleteComposable()
+// const { handleDelete, showDeleteModal, itemsId, closeDeleteModal } = useDeleteComposable()
 </script>
