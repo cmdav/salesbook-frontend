@@ -247,7 +247,7 @@ const router = createRouter({
     },
     {
       path: '/c-subscriptions',
-      name: 'customer subscriptions',
+      name: 'c-subscriptions',
       component: ViewCustomerSubscriptionPage,
       beforeEnter: [middleware.redirectLogin]
     },
