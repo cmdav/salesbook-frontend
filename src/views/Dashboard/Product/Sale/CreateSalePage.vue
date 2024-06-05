@@ -157,12 +157,7 @@ const customersStore = useCustomerstore();
 const { allCustomersNames } = storeToRefs(customersStore);
 const { allProductTypeName } = storeToRefs(productsStore);
 
-<<<<<<< HEAD
-const isOnline = () => navigator.onLine;
-
-=======
-// Reactive state for modal visibility
->>>>>>> a02762d210c984d004043b80fa4d6a0f488ea4d0
+// const isOnline = () => navigator.onLine;
 const showModal = ref(false);
 
 // Function to open the customer form modal
