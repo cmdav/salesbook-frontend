@@ -1,6 +1,5 @@
-
+<!-- Main layout component for the Add Sale page -->
 <template>
-  <!-- Main layout component for the Add Sale page -->
   <DashboardLayout pageTitle="Add Sale">
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
       <!-- Navigation buttons at the top -->
@@ -61,7 +60,7 @@
 
           <!-- Loop through each product added to the sale and display input fields for each product's details -->
           <div v-for="(product, index) in formState.products" :key="index"
-            class="product-group flex justify-between items-end mt-4">
+            class="product-group flex items-end mt-4">
             <!-- Product type selection -->
             <div class="input-group">
               <label class="block text-sm font-medium text-gray-700">Product</label>
@@ -123,6 +122,13 @@
                 {{ formState.products[index].amount ? formState.products[index].amount.toFixed(2) : '0.00' }}
               </span>
             </div>
+
+            <!-- Remove button for each product row except the first one -->
+            <div class="input-group">
+              <button v-if="index > 0" type="button" class="button btn-danger remove-btn ml-2" @click="removeProduct(index)">
+                Remove
+              </button>
+            </div>
           </div>
         </div>
 
@@ -137,52 +143,38 @@
 </template>
 
 <script setup>
-// Import necessary functions and components from Vue and other dependencies
 import { ref, reactive, computed, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useProductStore } from '@/stores/products';
 import { useCustomerstore } from '@/stores/customers';
 import CustomerFormModal from '@/components/UI/Modal/CustomerFormModal.vue';
 import { storeToRefs } from 'pinia';
-import { getDb, getAllDb, setDb } from '@/utils/db'
 
-// Initialize the router for navigation
 const router = useRouter();
-
-// Access product and customer stores
 const productsStore = useProductStore();
 const customersStore = useCustomerstore();
 
-// Extract data from the stores
 const { allCustomersNames } = storeToRefs(customersStore);
 const { allProductTypeName } = storeToRefs(productsStore);
 
-// const isOnline = () => navigator.onLine;
 const showModal = ref(false);
 
-// Function to open the customer form modal
 const addNewCustomer = () => {
   showModal.value = true;
 };
 
-// Function to close the customer form modal
 const closeModal = () => {
   showModal.value = false;
 };
 
-// Reactive state for sales loading status
 const salesLoading = ref(false);
-
-// Reactive state for whether to print a receipt
 const printReceipt = ref('no');
 
-// Options for VAT selection
 const vatOptions = reactive([
   { id: 'yes', value: 'yes', label: 'Yes' },
   { id: 'no', value: 'no', label: 'No' }
 ]);
 
-// Reactive state for form data
 const formState = reactive({
   customer_id: "",
   payment_method: "cash",
@@ -199,7 +191,6 @@ const formState = reactive({
   ],
 });
 
-// Function to add a new product to the form
 const addProducts = () => {
   const lastProduct = formState.products[formState.products.length - 1];
   if (lastProduct.product_type_id.trim() !== "" && lastProduct.quantity > 0 && lastProduct.price_sold_at > 0) {
@@ -215,7 +206,13 @@ const addProducts = () => {
   }
 };
 
-// Function to reset the form
+// Function to remove a product from the formState.products array
+const removeProduct = (index) => {
+  if (index > 0) {
+    formState.products.splice(index, 1);
+  }
+};
+
 const resetForm = () => {
   formState.customer_id = "";
   formState.payment_method = "";
@@ -229,7 +226,6 @@ const resetForm = () => {
   ];
 };
 
-// Function to handle form submission
 const handleAddSales = async () => {
   salesLoading.value = true;
   let products = formState.products.filter(product => product.amount > 0).map(product => ({
@@ -250,7 +246,7 @@ const handleAddSales = async () => {
     let res = await productsStore.handleAddSaless(payload);
     productsStore.handleGetProducts();
     salesLoading.value = false;
-    router.push('/sale'); // Redirect to the sale page after successful submission
+    router.push('/sale');
     return res;
   } catch (error) {
     console.error('Failed to submit sale:', error);
@@ -260,14 +256,12 @@ const handleAddSales = async () => {
   }
 };
 
-// Computed property to calculate the total price
 const totalPrice = computed(() => {
   return formState.products.reduce((sum, product, index) => {
     return sum + calculateAmount(index);
   }, 0).toFixed(2);
 });
 
-// Function to check if a batch is already selected
 const isBatchSelected = (productId, batchId, currentIndex) => {
   return formState.products.some((product, index) => {
     return index !== currentIndex &&
@@ -276,7 +270,6 @@ const isBatchSelected = (productId, batchId, currentIndex) => {
   });
 };
 
-// Function to update product details based on selected product type
 const updatePriceId = (productTypeId, index) => {
   const productInfo = allProductTypeName.value.find(product => product.id === productTypeId);
   if (productInfo) {
@@ -288,7 +281,6 @@ const updatePriceId = (productTypeId, index) => {
   }
 };
 
-// Function to update batch details based on selected batch
 const updateBatchDetails = (batchId, index) => {
   const productInfo = allProductTypeName.value.find(p => p.batches.some(b => b.id === batchId));
   const batchInfo = productInfo ? productInfo.batches.find(batch => batch.id === batchId) : null;
@@ -305,7 +297,6 @@ const updateBatchDetails = (batchId, index) => {
   }
 };
 
-// Function to calculate the amount for each product
 const calculateAmount = (index) => {
   const product = formState.products[index];
   if (!product || product.price_sold_at === null || product.quantity === null || product.price_sold_at === "" || product.quantity === "") {
@@ -323,7 +314,6 @@ const calculateAmount = (index) => {
   return amount;
 };
 
-// Watchers to update the form state and calculate amounts when relevant fields change
 watch(() => formState.products.map(p => p.product_type_id), (newProductTypeIds, oldProductTypeIds) => {
   newProductTypeIds.forEach((productTypeId, index) => {
     if (productTypeId !== oldProductTypeIds[index]) {
@@ -367,71 +357,42 @@ watch(() => formState.products.map(product => product.price_sold_at), (newPrices
   });
 }, { deep: true });
 
-// Fetch initial data when the component is mounted
 onMounted(async () => {
-  // try {
-  //   await customersStore.handleAllCustomersName();
-  //   await productsStore.handleGetAllProductTypeName();
-  // } catch (error) {
-  //   console.error;
-  // }
-    try {
-      const [customers, productTypes] = await Promise.all([
-        customersStore.handleAllCustomersName().catch(async (error) => {
-          console.error('Fetching customers failed, retrieving from cache:', error);
-          return await getDb('customers', 'all');
-        }),
-        productsStore.handleGetAllProductTypeName().catch(async (error) => {
-          console.error('Fetching product types failed, retrieving from cache:', error);
-          return await getDb('productTypes', 'all');
-        }),
-      ]);
-  
-      if (customers) {
-        await setDb('customers', { id: 'all', data: customers });
-      }
-      if (productTypes) {
-        await setDb('productTypes', { id: 'all', data: productTypes });
-      }
-    } catch (error) {
-      console.error('Failed to initialize data:', error);
-    }
+  try {
+    await customersStore.handleAllCustomersName();
+    await productsStore.handleGetAllProductTypeName();
+  } catch (error) {
+    console.error;
+  }
 });
 </script>
-
 <style scoped>
-/* Container styling */
 .container {
   padding: 20px;
 }
 
-/* Styling for top navigation buttons */
 .top-buttons {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
 }
 
-/* Styling for form groups */
 .form-group {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
 }
 
-/* Styling for radio button labels */
 .radio-label {
   margin-left: 10px;
 }
 
-/* Styling for input groups */
 .input-group {
   flex: 1;
   margin-right: 20px;
   height: 100px;
 }
 
-/* Styling for select inputs and text inputs */
 .select-input,
 .input {
   display: block;
@@ -441,17 +402,14 @@ onMounted(async () => {
   border-radius: 4px;
 }
 
-/* Styling for readonly inputs to have a different color */
 .readonly-input {
   background-color: #f5f5f5;
 }
 
-/* Styling for buttons */
 button {
   margin-right: 10px;
 }
 
-/* Styling for submit button */
 .submit-button {
   background-color: #28a745;
   color: #fff;
@@ -461,12 +419,10 @@ button {
   cursor: pointer;
 }
 
-/* Hover effect for submit button */
 .submit-button:hover {
   background-color: #218838;
 }
 
-/* Styling for brand buttons */
 .btn-brand {
   background-color: #007bff;
   color: #fff;
@@ -476,19 +432,16 @@ button {
   cursor: pointer;
 }
 
-/* Disabled state styling for brand buttons */
 .btn-brand:disabled {
   background-color: #007bff;
   cursor: not-allowed;
   opacity: 0.65;
 }
 
-/* Hover effect for enabled brand buttons */
 .btn-brand:hover:not(:disabled) {
   background-color: #0056b3;
 }
 
-/* Styling for back button */
 .back-btn {
   background-color: #6c757d;
   color: #fff;
@@ -498,12 +451,10 @@ button {
   cursor: pointer;
 }
 
-/* Hover effect for back button */
 .back-btn:hover {
   background-color: #5a6268;
 }
 
-/* Styling for product groups */
 .product-group {
   display: flex;
   gap: 20px;
@@ -519,4 +470,18 @@ button {
   border-radius: 4px;
 }
 
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top:1em
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
 </style>
+

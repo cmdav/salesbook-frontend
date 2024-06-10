@@ -61,6 +61,9 @@
               <input type="date" v-model="purchase.expiry_date" :min="minExpiryDate" class="expiry-date" />
             </div>
             <input type="hidden" v-model="purchase.price_id" />
+            <div v-if="index !== 0" class="remove-button">
+              <button type="button" @click="removePurchase(index)" class="button remove-purchase-button">Remove</button>
+            </div>
           </div>
           <hr class="separator" />
         </div>
@@ -191,6 +194,11 @@ const addPurchase = () => {
   } else {
     catchAxiosError({ message: 'Please fill out all required fields before adding a new purchase.' });
   }
+};
+
+// Function to remove a purchase row
+const removePurchase = (index) => {
+  purchases.splice(index, 1);
 };
 
 // Function to check for duplicate purchases
@@ -390,5 +398,19 @@ button {
   color: #fff;
   padding: 0.3%;
   border-radius: 4px;
+}
+
+.remove-purchase-button {
+  background-color: #d9534f;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 1.5rem;
+}
+
+.remove-purchase-button:hover {
+  background-color: #c9302c;
 }
 </style>
