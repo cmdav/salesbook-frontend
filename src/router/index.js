@@ -25,6 +25,8 @@ import CreateSalePage from '@/views/Dashboard/Product/Sale/CreateSalePage.vue'
 import Subscriptions from '@/views/Dashboard/Subscriptions/SubscriptionDefaultPage.vue'
 import SubscriptionPlan from '@/views/Dashboard/Subscriptions/SubscribersPlanPage/ViewSubscribersPlan.vue'
 import CreateSubscriptionPage from '@/views/Dashboard/Subscriptions/SubscribersPage/CreateSubscriptionPage.vue'
+import EditSubscriptionPage from '@/views/Dashboard/Subscriptions/SubscribersPage/EditSubscriptionPage.vue'
+
 
 import ViewCustomerSubscriptionPage from '@/views/Dashboard/CustomerSubscription/ViewCustomerSubscriptionPage.vue'
 
@@ -261,6 +263,11 @@ const router = createRouter({
       path: '/create-subscription',
       name: 'create-subscription',
       component: CreateSubscriptionPage
+    },
+    {
+      path: '/edit-subscription',
+      name: 'edit-subscription',
+      component: EditSubscriptionPage
     },
     {
       path: '/customers/:id',

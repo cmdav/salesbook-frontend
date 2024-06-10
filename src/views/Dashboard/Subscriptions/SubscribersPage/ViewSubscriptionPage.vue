@@ -17,7 +17,7 @@
                     <th>START DATE</th>
                     <th>END DATE</th>
                     <th>STATUS</th>
-                    <!-- <th>EDIT</th> -->
+                    <th>EDIT</th>
                     <th>DELETE</th>
                 </tr>
             </thead>
@@ -30,7 +30,8 @@
                     <td>{{ item.start_time }}</td>
                     <td>{{ item.end_time }}</td>
                     <td>{{ item.status }}</td>
-                    <!-- <td><button @click="openDeleteModal(item)">Edit</button></td> -->
+                    <td><button><router-link to="/edit-subscription">Edit</router-link></button>
+                    </td>
                     <td><button @click="openDeleteModal(item)">Delete</button></td>
                 </tr>
             </tbody>
