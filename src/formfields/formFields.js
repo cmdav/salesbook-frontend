@@ -61,14 +61,14 @@ export const subscriptionFormFields = ref([
     placeholder: 'Enter a Plan',
     databaseField: 'plan_name'
   },
-  {
-    label: 'Description',
-    type: 'text',
-    value: '',
-    required: true,
-    placeholder: 'Enter a Description',
-    databaseField: 'description'
-  },
+  // {
+  //   label: 'Description',
+  //   type: 'text',
+  //   value: '',
+  //   required: true,
+  //   placeholder: 'Enter a Description',
+  //   databaseField: 'description'
+  // },
 ])
 
 export const measurementFormFields = ref([
