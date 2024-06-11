@@ -69,7 +69,7 @@ const router = useRouter();
 // Reactive variables for data and state
 const subscriberPlan = ref([]);
 const organization = ref([]);
-const batchNo = ref('');
+
 const isLoading = ref(false);
 const error = ref(null);
 const setEndDate = ref(null);
@@ -86,15 +86,6 @@ const subscribers = reactive([
 
 // Set minimum expiry date to today's date
 const minExpiryDate = new Date().toISOString().split('T')[0];
-
-// const defaultMinDate = ref('1900-01-01')
-// let constantMinDate = hasMinDate ? minDate : defaultMinDate
-
-const selectedDate = (start_time) => {
-    console.log(`Subscriber  Start Time:`, subscribers[0].start_time);
-    console.log(setEndDate.value)
-    console.log(subscribers)
-}
 
 const getMinEndTime = (startTime) => {
     if (!startTime) return '';
@@ -138,34 +129,6 @@ const fetchData = async () => {
         isLoading.value = false; // Set loading state to false
     }
 };
-
-// Function to handle supplier change and fetch latest supplier price
-
-// Function to add a new purchase row
-// const addPurchase = () => {
-//   const lastPurchase = purchases[purchases.length - 1];
-//   if (lastPurchase.supplier_id && lastPurchase.product_type_id && lastPurchase.quantity && lastPurchase.cost_price && lastPurchase.selling_price) {
-//     purchases.push({
-//       supplier_id: suppliers.value.length > 0 ? suppliers.value[0].id : '',
-//       product_type_id: '',
-//       price_id: '',
-//       cost_price: '',
-//       selling_price: '',
-//       batch_no: batchNo.value,
-//       quantity: '',
-//       product_identifier: '',
-//       expiry_date: '',
-//       original_selling_price: null
-//     });
-//   } else {
-//     catchAxiosError({ message: 'Please fill out all required fields before adding a new purchase.' });
-//   }
-// };
-
-// // Function to check for duplicate purchases
-// const isDuplicatePurchase = (supplier_id, product_type_id) => {
-//   return purchases.some(purchase => purchase.supplier_id === supplier_id && purchase.product_type_id === product_type_id);
-// };
 
 // Function to handle form submission
 const handleSubmit = async () => {

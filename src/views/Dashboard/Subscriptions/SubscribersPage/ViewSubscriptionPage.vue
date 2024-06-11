@@ -59,9 +59,9 @@ import { ref, computed, onMounted } from 'vue';
 import apiService from '@/services/apiService';
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue';
 import { useStore } from "@/stores/user";
-import { useSubscriptions } from '@/stores/subscriptions'
+// import { useSubscriptions } from '@/stores/subscriptions'
 
-const subscriptionsStore = useSubscriptions()
+// const subscriptionsStore = useSubscriptions()
 const search = ref('');
 const data = ref([]);
 const pagination = ref({});
@@ -71,20 +71,6 @@ const modalTitle = "Delete Purchase";
 
 const currentPage = ref(1);
 const totalPages = ref(0);
-
-// const filteredData = computed(() => {
-//   return data.value.filter(item => {
-//     const description = item.product_type_description || '';
-//     return description.toLowerCase().includes(search.value.toLowerCase());
-//   });
-// });
-
-
-// const fetchSubscribers = async () => {
-//   await subscriptionsStore.handleGetAllSubscribers()
-//   data.value = subscriptionsStore.allSubscribers
-//   console.log(data.value)
-// }
 
 const filteredData = computed(() => {
     return data.value.filter(item => {
