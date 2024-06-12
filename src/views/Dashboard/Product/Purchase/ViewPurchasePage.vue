@@ -18,6 +18,7 @@
             <th>EXPIRY DATE</th>
             <th>COST PRICE(NGN)</th>
             <th>SELLING PRICE(NGN)</th>
+            <th>SUPPLIER</th>
             <th>CREATED BY</th>
             <th>UPDATED BY</th>
             <th v-if="delPermissions">DELETE</th>
@@ -33,6 +34,7 @@
             <td>{{ item.expiry_date }}</td>
             <td>{{ item.cost_price }}</td>
             <td>{{ item.selling_price }}</td>
+            <td>{{ item.supplier}}</td>
             <td>{{ item.created_by }}</td>
             <td>{{ item.updated_by }}</td>
             <td v-if="permissions"><button @click="openDeleteModal(item)">Delete</button></td>

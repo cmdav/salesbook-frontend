@@ -15,6 +15,7 @@
             <th>S.NO</th>
             <th>PRODUCT TYPE</th>
             <th>PRODUCT TYPE DESCRIPTION</th>
+            <th>BATCH NO</th>
             <th>COST PRICE</th>
             <th>PRICE SOLD AT(NGN)</th>
             <th>QUANTITY</th>
@@ -35,6 +36,7 @@
             <td>{{(parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1}}</td>
             <td>{{ item.product_type_name }}</td>
             <td>{{ item.product_type_description }}</td>
+            <td>{{ item.batch_no }}</td>
             <td>{{ item.cost_price }}</td>
             <td>{{ item.price_sold_at }}</td>
             <td>{{ item.quantity }}</td>
