@@ -27,6 +27,7 @@ import Subscriptions from '@/views/Dashboard/Subscriptions/SubscriptionDefaultPa
 import SubscriptionPlan from '@/views/Dashboard/Subscriptions/SubscribersPlanPage/ViewSubscribersPlan.vue'
 import CreateSubscriptionPage from '@/views/Dashboard/Subscriptions/SubscribersPage/CreateSubscriptionPage.vue'
 import EditSubscriptionPage from '@/views/Dashboard/Subscriptions/SubscribersPage/EditSubscriptionPage.vue'
+import NotFound from '@/views/Auth/NotFound.vue'
 
 
 import ViewCustomerSubscriptionPage from '@/views/Dashboard/CustomerSubscription/ViewCustomerSubscriptionPage.vue'
@@ -288,7 +289,7 @@ const router = createRouter({
     },
     {
       path: '/:catchAll(.*)',
-      component: Login
+      component: NotFound
     }
   ],
   scrollBehavior(to, from, savedPosition) {
