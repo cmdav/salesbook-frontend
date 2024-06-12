@@ -266,7 +266,7 @@ const router = createRouter({
       component: CreateSubscriptionPage
     },
     {
-      path: '/edit-subscription',
+      path: '/edit-subscription/:organization_id',
       name: 'edit-subscription',
       component: EditSubscriptionPage
     },

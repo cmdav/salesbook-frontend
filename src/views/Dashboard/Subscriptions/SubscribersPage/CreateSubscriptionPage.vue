@@ -134,6 +134,7 @@ const fetchData = async () => {
 const handleSubmit = async () => {
     // Handle form submission
     try {
+        console.log(subscribers[0])
         const response = await apiService.post('subscription-statuses', subscribers[0]);
         catchAxiosSuccess(response);
         router.push('/subscriptions'); // Redirect to the view purchase page if the submission is successful

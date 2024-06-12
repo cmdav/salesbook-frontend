@@ -11,37 +11,36 @@
                         <div>
                             <label>Subscription Plan<span class="required">*</span></label>
                             <select v-model="subscriber.plan_id">
-                                <option v-for="subscriber_plan in subscriberPlan" :key="subscriber_plan.id"
-                                    :value="subscriber_plan.id.toString()">
+                                <option v-for="subscriber_plan in subscriberPlans" :key="subscriber_plan.id"
+                                        :value="subscriber_plan.id.toString()">
                                     {{ subscriber_plan.plan_name }}
                                 </option>
                             </select>
                         </div>
                         <div>
                             <label>Organization<span class="required">*</span></label>
-                            <select v-model="subscriber.organization_id">
-                                <option v-for="organization_type in organization" :key="organization_type.id"
-                                    :value="organization_type.id">
-                                    {{ organization_type.organization_name }}
+                            <select v-model="subscriber.organization_id" disabled>
+                                <option v-for="organization in organizations" :key="organization.id"
+                                        :value="organization.id">
+                                    {{ organization.organization_name }}
                                 </option>
                             </select>
                         </div>
                         <div>
                             <label>Start Date<span class="required">*</span></label>
-                            <input id="" type="date"
-                                class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-                                required name="start-date" placeholder="Start Date" :min="minExpiryDate"
-                                v-model="subscriber.start_time" @change="selectedDate(subscriber.start_time)" />
+                            <input type="date"
+                                   class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+                                   required name="start-date" placeholder="Start Date" :min="minExpiryDate"
+                                   v-model="subscriber.start_time" @change="selectedDate(subscriber.start_time)" />
                         </div>
                         <div>
                             <label>End Time<span class="required">*</span></label>
-                            <input id="" type="date"
-                                class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
-                                required name="end-date" placeholder="End Date" :min="setEndDate"
-                                v-model="subscriber.end_time" @change="selectedDate()" />
+                            <input type="date"
+                                   class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+                                   required name="end-date" placeholder="End Date" :min="setEndDate"
+                                   v-model="subscriber.end_time" @change="selectedDate()" />
                         </div>
                     </div>
-                    <hr class="separator" />
                 </div>
                 <button type="submit" class="button submit-button">Submit</button>
             </form>
@@ -50,28 +49,35 @@
 </template>
 
 <script setup>
+// Import necessary functions and components from Vue and other dependencies
 import { ref, reactive, watch, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import apiService from '@/services/apiService';
 import { catchAxiosError, catchAxiosSuccess } from '@/services/Response';
 
+// Initialize the router for navigation
 const router = useRouter();
 const route = useRoute();
 
-const subscriberPlan = ref([]);
-const organization = ref([]);
+// Reactive variables for data and state
+const subscriberPlans = ref([]);
+const organizations = ref([]);
 const isLoading = ref(false);
 const error = ref(null);
 const setEndDate = ref(null);
-
+const organizationId = ref(route.params.organization_id);
+const planId = ref(route.params.planId);
+const startTime = ref(route.params.startTime);
+const endTime = ref(route.params.endTime);
+// Reactive variable for the subscriber
 const subscriber = reactive({
-    id: '',
-    plan_id: '',
-    organization_id: '',
-    start_time: '',
-    end_time: ''
+    plan_id: planId.value,
+    organization_id: organizationId.value,
+    start_time: startTime.value,
+    end_time: endTime.value,
 });
 
+// Set minimum expiry date to today's date
 const minExpiryDate = new Date().toISOString().split('T')[0];
 
 const getMinEndTime = (startTime) => {
@@ -83,47 +89,86 @@ const getMinEndTime = (startTime) => {
     return minEnd.toISOString().slice(0, 16);
 };
 
+// Function to fetch data from the API
 const fetchData = async () => {
     try {
-        isLoading.value = true;
-        const [organizationResponse, subscriberResponse, subscriberDetailResponse] = await Promise.all([
+        isLoading.value = true; // Set loading state to true
+        const [organizationResponse, subscriberResponse] = await Promise.all([
             apiService.get('all-organizations'),
             apiService.get('all-subscriptions'),
-            apiService.get(`subscription-statuses/${route.params.id}`)
+            apiService.get(`subscription-statuses/${organizationId.value}`),
         ]);
 
+        //Handle subscriber plans response
         if (subscriberResponse.data) {
-            subscriberPlan.value = subscriberResponse.data;
+            subscriberPlans.value = subscriberResponse.data;
         } else {
-            error.value = 'No subscribers found';
+            error.value = 'No subscriber plans found';
         }
 
+        // organization response
         if (organizationResponse.data) {
-            organization.value = organizationResponse.data;
+            organizations.value = organizationResponse.data;
         } else {
-            error.value = 'No Organizations found';
+            error.value = 'No organizations found';
         }
-
-        if (subscriberDetailResponse.data) {
-            Object.assign(subscriber, subscriberDetailResponse.data);
-        } else {
-            error.value = 'Subscriber details not found';
-        }
-
     } catch (err) {
-        catchAxiosError(err);
+        catchAxiosError(err); // Handle error
     } finally {
-        isLoading.value = false;
+        isLoading.value = false; // Set loading state to false
     }
 };
 
+// const fetchData = async () => {
+//     try {
+//         isLoading.value = true; // Set loading state to true
+
+//         // Fetch organization data
+//         const organizationResponse = await apiService.get(`organization/${organizationId.value}`);
+        
+//         // Fetch subscription data
+//         const subscriptionResponse = await apiService.get(`subscription-statuses/${organizationId.value}`);
+        
+//         // Fetch list of available plans
+//         const plansResponse = await apiService.get('all-subscriptions');
+
+//         if (organizationResponse.data && subscriptionResponse.data && plansResponse.data) {
+//             const organizationData = organizationResponse.data;
+//             const subscriptionData = subscriptionResponse.data;
+//             const plansData = plansResponse.data;
+
+//             // Set organization ID
+//             subscriber.organization_id = organizationData.id;
+
+//             // Set plan ID
+//             subscriber.plan_id = subscriptionData.plan_id;
+
+//             // Set start and end times
+//             subscriber.start_time = subscriptionData.start_time;
+//             subscriber.end_time = subscriptionData.end_time;
+
+//             // Populate plan options
+//             subscriberPlans.value = plansData;
+
+//         } else {
+//             error.value = 'Data not found';
+//         }
+//     } catch (err) {
+//         catchAxiosError(err); // Handle error
+//     } finally {
+//         isLoading.value = false; // Set loading state to false
+//     }
+// };
+
+
+// Function to handle form submission
 const handleSubmit = async () => {
     try {
-        const response = await apiService.put(`subscription-statuses/${subscriber.id}`, subscriber);
+        const response = await apiService.update(`subscription-statuses/${organizationId.value}`, subscriber);
         catchAxiosSuccess(response);
-        router.push('/subscriptions');
+        router.push('/subscriptions'); // Redirect to the subscriptions page if the update is successful
     } catch (err) {
-        catchAxiosError(err);
+        catchAxiosError(err); // Handle error
     }
 };
 
@@ -133,7 +178,6 @@ watch(
         getMinEndTime(newTime);
         const newStartDate = new Date(newTime);
         const endDate = new Date(subscriber.end_time);
-        // const equalStartDate = new Date(subscriber.end_time);
 
         if (newStartDate.toISOString().slice(0, 10) === subscriber.end_time) {
             subscriber.end_time = setEndDate.value;
@@ -144,8 +188,10 @@ watch(
     }
 );
 
+// Fetch initial data when the component is mounted
 onMounted(() => {
-    fetchData();
+    fetchData(organizationId.value);
+    console.log(organizationId.value)
 });
 </script>
 

@@ -1,7 +1,8 @@
 <template>
     <div class="actions">
         <!-- <input type="text" v-model="search" placeholder="Search..." class="search-input" /> -->
-        <div v-if="permissions">
+        <!-- <div v-if="permissions"> -->
+        <div>
             <button class="button add-btn" @click="openModal()">
                 Add
                 <!-- <router-link to=" /create-subscription" class="button add-btn">Add</router-link> -->
@@ -14,7 +15,7 @@
                 <tr>
                     <th>S.NO</th>
                     <th>PLAN NAME</th>
-                    <!-- <th>DESCRIPTION</th> -->
+                    <th>DESCRIPTION</th>
                     <th>EDIT</th>
                     <th>DELETE</th>
                 </tr>
@@ -23,7 +24,7 @@
                 <tr v-for="(item, index) in data" :key="item.id">
                     <td>{{ index + 1 }}</td>
                     <td>{{ item.plan_name }}</td>
-                    <!-- <td>{{ item.description }}</td> -->
+                    <td>{{ item.description }}</td>
                     <td><button @click="openEditModal(item)">Edit</button></td>
                     <td><button @click="openDeleteModal(item)">Delete</button></td>
                 </tr>

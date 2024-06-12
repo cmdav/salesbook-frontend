@@ -1,9 +1,9 @@
 <template>
     <div class="actions">
         <input type="text" v-model="search" placeholder="Search..." class="search-input" />
-        <div v-if="permissions">
-            <button class="button add-btn"><router-link to="/create-subscription"
-                    class="button add-btn">Add</router-link></button>
+       
+        <div>
+            <button class="button add-btn"><router-link to="/create-subscription" class="button add-btn">Add</router-link></button>
         </div>
     </div>
     <div class="table-container">
@@ -30,14 +30,12 @@
                     <td>{{ item.start_time }}</td>
                     <td>{{ item.end_time }}</td>
                     <td>{{ item.status }}</td>
-                    <td><button><router-link to="/edit-subscription">Edit</router-link></button>
-                    </td>
+                    <td><button @click="editSubscriber(item.organization_id)">Edit</button></td>
                     <td><button @click="openDeleteModal(item)">Delete</button></td>
                 </tr>
             </tbody>
         </table>
     </div>
-
 
     <FormModal v-if="showModal" @close="closeModal" @updated="forceRefresh" :key="forceRefresh"
         :formTitle="'Add Subscription Plan'" :fields="subscriptionFormFields" :isLoadingMsg="isOptionLoadingMsg"
@@ -56,12 +54,11 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import apiService from '@/services/apiService';
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue';
 import { useStore } from "@/stores/user";
-// import { useSubscriptions } from '@/stores/subscriptions'
 
-// const subscriptionsStore = useSubscriptions()
 const search = ref('');
 const data = ref([]);
 const pagination = ref({});
@@ -83,7 +80,6 @@ async function fetchData(page = 1) {
     try {
         const response = await apiService.get(`subscription-statuses`)
         data.value = response.data || []
-        console.log(data.value)
         pagination.value = {
             next_page_url: response.next_page_url,
             prev_page_url: response.prev_page_url
@@ -117,16 +113,22 @@ function forceRefresh() {
 
 onMounted(() => fetchData(currentPage.value));
 
-// onMounted(() => fetchSubscribers());
+// const store = useStore();
+// const permissions = computed(() => {
+//     const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'purchases');
+//     return perm && perm.write == 1;
+// });
+
+const router = useRouter();
+function editSubscriber(organizationId) {
+    router.push(`/edit-subscription/${organizationId}`);
+}
 
 
-const store = useStore();
-const permissions = computed(() => {
-    const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'purchases');
-    return perm && perm.write == 1;
-});
+console.log(editSubscriber)
 
 </script>
+
 
 <style scoped>
 .actions {
