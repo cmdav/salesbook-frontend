@@ -66,15 +66,16 @@ const isLoading = ref(false);
 const error = ref(null);
 const setEndDate = ref(null);
 const organizationId = ref(route.params.organization_id);
-const planId = ref(route.params.planId);
-const startTime = ref(route.params.startTime);
-const endTime = ref(route.params.endTime);
+console.log(organizationId.value)
+// const planId = ref(route.params.planId);
+// const startTime = ref(route.params.startTime);
+// const endTime = ref(route.params.endTime);
 // Reactive variable for the subscriber
 const subscriber = reactive({
-    plan_id: planId.value,
-    organization_id: organizationId.value,
-    start_time: startTime.value,
-    end_time: endTime.value,
+    plan_id: '',
+    organization_id: '',
+    start_time: '',
+    end_time: '',
 });
 
 // Set minimum expiry date to today's date
@@ -90,35 +91,35 @@ const getMinEndTime = (startTime) => {
 };
 
 // Function to fetch data from the API
-const fetchData = async () => {
-    try {
-        isLoading.value = true; // Set loading state to true
-        const [organizationResponse, subscriberResponse] = await Promise.all([
-            apiService.get('all-organizations'),
-            apiService.get('all-subscriptions'),
-            apiService.get(`subscription-statuses/${organizationId.value}`),
-        ]);
+// const fetchData = async () => {
+//     try {
+//         isLoading.value = true; // Set loading state to true
+//         const [organizationResponse, subscriberResponse] = await Promise.all([
+//             apiService.get('all-organizations'),
+//             apiService.get('all-subscriptions'),
+//             apiService.get(`subscription-statuses/${organizationId.value}`),
+//         ]);
 
-        //Handle subscriber plans response
-        if (subscriberResponse.data) {
-            subscriberPlans.value = subscriberResponse.data;
-        } else {
-            error.value = 'No subscriber plans found';
-        }
+//         //Handle subscriber plans response
+//         if (subscriberResponse.data) {
+//             subscriberPlans.value = subscriberResponse.data;
+//         } else {
+//             error.value = 'No subscriber plans found';
+//         }
 
-        // organization response
-        if (organizationResponse.data) {
-            organizations.value = organizationResponse.data;
-        } else {
-            error.value = 'No organizations found';
-        }
-    } catch (err) {
-        catchAxiosError(err); // Handle error
-    } finally {
-        isLoading.value = false; // Set loading state to false
-    }
-};
-
+//         // organization response
+//         if (organizationResponse.data) {
+//             organizations.value = organizationResponse.data;
+//         } else {
+//             error.value = 'No organizations found';
+//         }
+//     } catch (err) {
+//         catchAxiosError(err); // Handle error
+//     } finally {
+//         isLoading.value = false; // Set loading state to false
+//     }
+// };
+// 2
 // const fetchData = async () => {
 //     try {
 //         isLoading.value = true; // Set loading state to true
@@ -160,6 +161,56 @@ const fetchData = async () => {
 //     }
 // };
 
+const fetchData = async () => {
+    try {
+        isLoading.value = true; // Set loading state to true
+
+        // Fetch organization data
+         const organizationResponse = await apiService.get(`all-organizations`);
+        // console.log(organizationResponse)
+        // Fetch subscription data
+        const subscriptionResponse = await apiService.get(`subscription-statuses/${organizationId.value}`);
+        // console.log(subscriptionResponse)
+        // Fetch list of available plans
+        const plansResponse = await apiService.get('all-subscriptions');
+        // console.log(plansResponse)
+        if ( organizationResponse && subscriptionResponse && plansResponse.data) {
+            // const organizationData = organizationResponse.data;
+            const subscriptionData = subscriptionResponse;
+            const plansData = plansResponse.data;
+
+            
+            subscriber.start_time = subscriptionData.start_time;
+            subscriber.end_time = subscriptionData.end_time;
+            subscriber.organization_id = subscriptionData.organization_id;
+            subscriber.plan_id = subscriptionData.subscription_plan_name;
+            // Populate plan options
+            subscriberPlans.value = plansData;
+
+        } else {
+            error.value = 'Data not found';
+        }
+         //Handle subscriber plans response
+        if (plansResponse.data) {
+            subscriberPlans.value = plansResponse.data;
+        } else {
+            error.value = 'No subscriber plans found';
+        }
+
+        // organization response
+        if (organizationResponse.data) {
+            organizations.value = organizationResponse.data;
+        } else {
+            error.value = 'No organizations found';
+        }
+    } catch (err) {
+        catchAxiosError(err); // Handle error
+    } finally {
+        isLoading.value = false; // Set loading state to false
+    }
+};
+
+
 
 // Function to handle form submission
 const handleSubmit = async () => {
@@ -190,7 +241,7 @@ watch(
 
 // Fetch initial data when the component is mounted
 onMounted(() => {
-    fetchData(organizationId.value);
+    fetchData();
     console.log(organizationId.value)
 });
 </script>
