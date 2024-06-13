@@ -102,7 +102,7 @@ const { showModal } = usePostComposable("subscriptions", usePostComposable);
 
 async function fetchData(page = 1) {
     try {
-        const response = await apiService.get(`all-subscriptions`)
+        const response = await apiService.get(`subscriptions`)
         data.value = response.data || []
         console.log('Data Value',data.value)
         pagination.value = {
