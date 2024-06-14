@@ -73,13 +73,15 @@ const router = createRouter({
     {
       path: '/new-supplier/:token',
       name: 'register-supplier',
-      component: RegisterSupplierPage
+      component: RegisterSupplierPage,
       // beforeEnter: [middleware.redirectDashboard]
+      beforeEnter: [middleware.redirectSupplierDashboard]
     },
     {
       path: '/existing-supplier/:token',
       name: 'existing-supplier',
-      component: VerifySupplier
+      component: VerifySupplier,
+      beforeEnter: [middleware.redirectSupplierDashboard]
       // beforeEnter: [middleware.redirectDashboard]
     },
     {
