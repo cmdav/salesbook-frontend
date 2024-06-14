@@ -20,7 +20,9 @@ const filteredData = computed(() => {
 async function fetchData(page = 1) {
   try {
     const response = await apiService.get(`stores?page=${page}`);
-    data.value = response.data.data || []; // Adjust if API response is nested differently
+    // console.log(response.data)
+    // console.log(response.data.data)
+    data.value = response.data || []; // Adjust if API response is nested differently
     pagination.value = {
       next_page_url: response.data.next_page_url,
       prev_page_url: response.data.prev_page_url,
