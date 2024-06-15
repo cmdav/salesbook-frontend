@@ -125,7 +125,7 @@
 
             <!-- Remove button for each product row except the first one -->
             <div class="input-group">
-              <button v-if="index > 0" type="button" class="button btn-danger remove-btn ml-2" @click="removeProduct(index)">
+              <button v-if="index >= 0" type="button" class="button btn-danger remove-btn ml-2" @click="removeProduct(index)">
                 Remove
               </button>
             </div>
