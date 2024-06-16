@@ -90,13 +90,12 @@ const handleAddRole = async () => {
 
   try {
     let res = await securityStore.handleAddRole(payload);
-     await securityStore.handleGetRole();
+     await securityStore.handleGetAllRole();
     loading.value = false;
     return res;
   } catch (error) {
     console.log(error);
   } finally {
-    loading.value = false;
     closeModal();
     forceRefresh()
   }
