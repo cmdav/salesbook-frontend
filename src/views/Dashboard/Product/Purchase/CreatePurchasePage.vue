@@ -67,7 +67,7 @@
           </div>
           <hr class="separator" />
         </div>
-        <button type="submit" class="button submit-button">Submit</button>
+        <button type="submit" class="button submit-button" :disabled="isSubmitting">{{ isSubmitting ? 'Please wait...' : 'Submit' }}</button>
       </form>
     </div>
   </DashboardLayout>
@@ -89,6 +89,7 @@ const productTypes = ref([]);
 const batchNo = ref('');
 const isLoading = ref(false);
 const error = ref(null);
+const isSubmitting = ref(false); // Reactive variable for submission state
 
 // Reactive variable for purchases array
 const purchases = reactive([
@@ -238,6 +239,7 @@ const handleSubmit = async () => {
 
   // Handle form submission
   try {
+    isSubmitting.value = true; // Set submitting state to true
     const formattedPurchases = purchases.map(purchase => {
       if (purchase.price_id && purchase.selling_price === purchase.original_selling_price) {
         // If price_id is present and selling price hasn't changed
@@ -260,6 +262,8 @@ const handleSubmit = async () => {
     router.push('/purchase'); // Redirect to the view purchase page if the submission is successful
   } catch (err) {
     catchAxiosError(err); // Handle error
+  } finally {
+    isSubmitting.value = false; // Set submitting state to false
   }
 };
 
@@ -361,7 +365,13 @@ button {
   cursor: pointer;
 }
 
-.submit-button:hover {
+.submit-button:disabled {
+  background-color: #e86925;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.submit-button:hover:not(:disabled) {
   background-color: #e86925;
 }
 
