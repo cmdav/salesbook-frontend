@@ -62,13 +62,21 @@
   </DashboardLayout>
 </template>
 
-<script setup>
+<!-- <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import apiService from '@/services/apiService';
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue';
 import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
 import { useStore } from "@/stores/user";
+import { storeToRefs } from 'pinia';
+const store = useStore();
+const { userProfileDetails } = storeToRefs(store);
+console.log(userProfileDetails?.value.company_name)
+console.log(userProfileDetails?.value.company_address)
+console.log(userProfileDetails?.value.email)
+console.log(userProfileDetails?.value.phone_number)
 
 const search = ref('');
 const isSearching = ref(false);
@@ -87,15 +95,14 @@ watch(search, async (newSearch) => {
   if (newSearch) {
     isSearching.value = true;
     try {
-
       const response = await apiService.get(`search-sales/${newSearch}`);
-      console.log(response)
+      console.log(response);
       data.value = response;
       return data.value;
     } catch (error) {
       console.error('Failed to fetch data:', error);
     }
-  }else{
+  } else {
     isSearching.value = false;
     fetchData();
   }
@@ -104,6 +111,7 @@ watch(search, async (newSearch) => {
 async function fetchData(page = 1) {
   try {
     const response = await apiService.get(`sales?page=${page}`);
+    console.log(response.data)
     data.value = response.data || []; // Ensure it’s always an array
     pagination.value = {
       next_page_url: response.next_page_url,
@@ -111,15 +119,13 @@ async function fetchData(page = 1) {
     };
     currentPage.value = response.current_page;
     totalPages.value = response.last_page;
-    itemsPerPage.value = response.per_page
+    itemsPerPage.value = response.per_page;
   } catch (error) {
     console.error("Failed to fetch data:", error);
   }
 }
 
 function changePage(page) {
-  
-  
   if (page > 0 && page <= totalPages.value) {
     fetchData(page);
   }
@@ -139,10 +145,10 @@ function forceRefresh() {
   fetchData(currentPage.value);
 }
 
-
 const generateReceipt = async (transactionId) => {
   try {
     const response = await apiService.get(`download-sales-receipts/${transactionId}`);
+    console.log(response.data)
     if (response.data) {
       generateReceiptPDF(response.data);
     } else {
@@ -153,38 +159,54 @@ const generateReceipt = async (transactionId) => {
   }
 };
 
-const generateReceiptPDF = (receiptData) => {
+const generateReceiptPDF = (receiptData, userProfileDetails) => {
   const doc = new jsPDF();
 
-  const headerStyle = { fontSize: 24, fontStyle: 'bold', textColor: '#336699' };
-  const sectionHeaderStyle = { fontSize: 16, fontStyle: 'bold', textColor: '#555555' };
-  const itemStyle = { fontSize: 12, textColor: '#333333' };
+  const headerStyle = { fontSize: 24, fontStyle: 'bold' };
+  const sectionHeaderStyle = { fontSize: 16, fontStyle: 'bold' };
+  const itemStyle = { fontSize: 12 };
 
   doc.setFont(headerStyle.fontStyle, 'normal');
   doc.setFontSize(headerStyle.fontSize);
-  doc.setTextColor(headerStyle.textColor);
-  doc.text('Transaction Receipt', 105, 20, null, null, 'center');
+  doc.text(`${userProfileDetails?.value.company_name}`, 105, 20, null, null, 'center');
+  doc.text(`${userProfileDetails?.value.company_address}`, 105, 25, null, null, 'center');
+  doc.text(`Email: ${userProfileDetails?.value.email}`, 105, 30, null, null, 'center');
+  doc.text(`Phone No: ${userProfileDetails?.value.phone_number}`, 105, 35, null, null, 'center');
+  doc.text('RECEIPT', 105, 42, null, null, 'center'); // Adjusted y-position
 
   doc.setFont(sectionHeaderStyle.fontStyle, 'normal');
   doc.setFontSize(sectionHeaderStyle.fontSize);
-  doc.setTextColor(sectionHeaderStyle.textColor);
-  doc.text(`Transaction ID: ${receiptData.transaction_details.transaction_id}`, 20, 40);
-  doc.text(`Date: ${receiptData.transaction_details.created_at}`, 20, 50);
-  doc.text(`Total Amount: NGN${receiptData.transaction_details.transaction_amount}`, 20, 60);
+  doc.text(`Transaction ID: ${receiptData.transaction_details.transaction_id}`, 20, 50);
+  doc.text(`Date: ${receiptData.transaction_details.created_at}`, 20, 60);
 
-  let yPosition = 80;
+  const tableColumn = ["Product Name", "Quantity", "VAT", "Price (NGN)", "Payment Method", "Total Price (NGN)"];
+  const tableRows = [];
+
   receiptData.items.forEach((item) => {
-    doc.setFont(itemStyle.fontStyle, 'normal');
-    doc.setFontSize(itemStyle.fontSize);
-    doc.setTextColor(itemStyle.textColor);
-    doc.text(`Product Name: ${item.product_type_name}`, 20, yPosition);
-    doc.text(`Price: NGN${item.amount}`, 20, yPosition + 10);
-    doc.text(`Quantity: ${item.quantity}`, 20, yPosition + 20);
-    doc.text(`VAT: ${item.vat === 1 ? 'Yes' : 'No'}`, 20, yPosition + 30);
-    doc.text(`Amount: NGN${item.total_price}`, 20, yPosition + 40);
-    doc.text(`Payment Type: ${item.payment_method}`, 20, yPosition + 50);
-    yPosition += 60;
+    const itemData = [
+      item.product_type_name,
+      item.quantity,
+      item.vat === 1 ? 'Yes' : 'No',
+      ` ${item.amount}`,
+      item.payment_method,
+      ` ${item.total_price}`
+    ];
+    tableRows.push(itemData);
   });
+
+  doc.autoTable({
+    head: [tableColumn],
+    body: tableRows,
+    startY: 80,
+    styles: { fontSize: itemStyle.fontSize },
+    theme: 'plain',
+    tableLineColor: [0, 0, 0], // Set table line color to black
+    tableLineWidth: 0.1, // Set the line width
+  });
+
+  let finalY = doc.autoTable.previous.finalY + 10;
+  doc.setFontSize(sectionHeaderStyle.fontSize);
+  doc.text(`Total Amount: NGN ${receiptData.transaction_details.transaction_amount}`, 200, finalY, null, null, 'right');
 
   const pdfDataUri = doc.output('datauristring');
   const viewerWindow = window.open();
@@ -193,7 +215,188 @@ const generateReceiptPDF = (receiptData) => {
 
 onMounted(() => fetchData(currentPage.value));
 
+
+const delPermissions = computed(() => {
+  const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'sales');
+  return perm.value?.del == 1; 
+});
+const addPermissions = computed(() => {
+  const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'sales');
+  return perm.write == 1; 
+});
+</script> -->
+
+<script setup>
+import { ref, computed, onMounted, watch } from 'vue';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import apiService from '@/services/apiService';
+import DeleteModal from '@/components/UI/Modal/DeleteModals.vue';
+import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
+import { useStore } from "@/stores/user";
+import { storeToRefs } from 'pinia';
+
 const store = useStore();
+const { userProfileDetails } = storeToRefs(store);
+
+const search = ref('');
+const isSearching = ref(false);
+
+const data = ref([]); // Initialize as an empty array
+const pagination = ref({});
+const showDeleteModal = ref(false);
+const itemToDelete = ref(null);
+const modalTitle = "Delete Sale";
+
+const currentPage = ref(1);
+const totalPages = ref(0);
+const itemsPerPage = ref(0);
+
+watch(search, async (newSearch) => {
+  if (newSearch) {
+    isSearching.value = true;
+    try {
+      const response = await apiService.get(`search-sales/${newSearch}`);
+      data.value = response;
+      return data.value;
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+    }
+  } else {
+    isSearching.value = false;
+    fetchData();
+  }
+});
+
+async function fetchData(page = 1) {
+  try {
+    const response = await apiService.get(`sales?page=${page}`);
+    data.value = response.data || []; // Ensure it’s always an array
+    pagination.value = {
+      next_page_url: response.next_page_url,
+      prev_page_url: response.prev_page_url,
+    };
+    currentPage.value = response.current_page;
+    totalPages.value = response.last_page;
+    itemsPerPage.value = response.per_page;
+  } catch (error) {
+    console.error("Failed to fetch data:", error);
+  }
+}
+
+function changePage(page) {
+  if (page > 0 && page <= totalPages.value) {
+    fetchData(page);
+  }
+}
+
+function openDeleteModal(item) {
+  itemToDelete.value = item;
+  showDeleteModal.value = true;
+}
+
+function closeDeleteModal() {
+  showDeleteModal.value = false;
+  itemToDelete.value = null;
+}
+
+function forceRefresh() {
+  fetchData(currentPage.value);
+}
+
+const generateReceipt = async (transactionId) => {
+  try {
+    const response = await apiService.get(`download-sales-receipts/${transactionId}`);
+    console.log(response.data)
+    if (response.data) {
+      generateReceiptPDF(response.data, userProfileDetails.value);
+    } else {
+      console.error('Failed to fetch receipt data');
+    }
+  } catch (error) {
+    console.error('Failed to generate receipt:', error);
+  }
+};
+
+const formatNumber = (amount) => {
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+};
+
+
+const generateReceiptPDF = (receiptData, userProfileDetails) => {
+  const doc = new jsPDF();
+
+  const headerStyle = { fontSize: 20, fontStyle: 'bold' };
+  const invoiceStyle = { fontSize: 18, fontStyle: 'bold' };
+  const sectionHeaderStyle = { fontSize: 16, fontStyle: 'bold' };
+  const companyDetailsStyle = { fontSize: 16, fontStyle: 'normal' };
+  const itemStyle = { fontSize: 12 };
+
+  doc.setFont(headerStyle.fontStyle, 'normal');
+  doc.setFontSize(headerStyle.fontSize);
+  doc.text(`${userProfileDetails?.company_name}`, 105, 20, null, null, 'center');
+
+
+  doc.setFont(companyDetailsStyle.fontStyle, 'normal');
+  doc.setFontSize(companyDetailsStyle.fontSize);
+  doc.text(`Address ${userProfileDetails?.company_address}`, 105, 27, null, null, 'center');
+  doc.text(`Email: ${userProfileDetails?.email}`, 105, 35, null, null, 'center');
+  doc.text(`Phone No: ${userProfileDetails?.phone_number}`, 105, 46, null, null, 'center');
+
+  doc.setFont(invoiceStyle.fontStyle, 'normal');
+  doc.setFontSize(invoiceStyle.fontSize);
+  doc.text('RECEIPT', 105, 60, null, null, 'center'); // Adjusted y-position
+
+  doc.setFont(sectionHeaderStyle.fontStyle, 'normal');
+  doc.setFontSize(sectionHeaderStyle.fontSize);
+  doc.text(`Customer Name: ${receiptData.transaction_details.customer_detail}`, 20, 75);
+  doc.text(`Customer PhoneNum: ${receiptData.transaction_details.suctomer_phone_number}`, 20, 82);
+  doc.text(`Transaction ID: ${receiptData.transaction_details.transaction_id}`, 20, 90);
+  doc.text(`Date: ${receiptData.transaction_details.created_at}`, 20, 97);
+
+  const tableColumn = ["Product Name", "Quantity", "VAT", "Price (NGN)", "Payment Method", "Total Price (NGN)"];
+  const tableRows = [];
+
+  receiptData.items.forEach((item) => {
+    const itemData = [
+      item.product_type_name,
+      item.quantity,
+      item.vat === 1 ? 'Yes' : 'No',
+      `${item.amount}`,
+      item.payment_method,
+      `${item.total_price}`
+    ];
+    tableRows.push(itemData);
+  });
+
+  doc.autoTable({
+    head: [tableColumn],
+    body: tableRows,
+    startY: 106,
+    styles: { fontSize: itemStyle.fontSize },
+    theme: 'plain',
+    tableLineColor: [0, 0, 0], // Set table line color to black
+    tableLineWidth: 0.1, // Set the line width
+  });
+
+  let finalY = doc.autoTable.previous.finalY + 10;
+  doc.setFontSize(sectionHeaderStyle.fontSize);
+  doc.text(`Total Amount (NGN): ${formatNumber(receiptData.transaction_details.transaction_amount)}`, doc.internal.pageSize.width - 20, finalY, null, null, 'right');
+
+   // Add "Thanks for your patronage" at the bottom
+  doc.setFontSize(itemStyle.fontSize);
+  doc.text('Thanks for your patronage!', 105, finalY + 20, null, null, 'center');
+
+  const pdfDataUri = doc.output('datauristring');
+  const viewerWindow = window.open();
+  viewerWindow.document.write(`<iframe width='100%' height='100%' src='${pdfDataUri}'></iframe>`);
+};
+
+onMounted(() => fetchData(currentPage.value));
+
 const delPermissions = computed(() => {
   const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'sales');
   return perm.value?.del == 1; 

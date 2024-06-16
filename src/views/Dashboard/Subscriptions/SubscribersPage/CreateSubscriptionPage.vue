@@ -19,7 +19,7 @@
                             <label>Subscription Plan<span class="required">*</span></label>
                             <select v-model="subscrib.plan_id">
                                 <option v-for="subscriber_plan in subscriberPlan" :key="subscriber_plan.id"
-                                    :value="subscriber_plan.id">
+                                    :value="subscriber_plan.id" >
                                     {{ subscriber_plan.plan_name }}
                                 </option>
                             </select>
