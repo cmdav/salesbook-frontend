@@ -357,7 +357,7 @@ const generateReceiptPDF = (receiptData, userProfileDetails) => {
   doc.text(`Transaction ID: ${receiptData.transaction_details.transaction_id}`, 20, 90);
   doc.text(`Date: ${receiptData.transaction_details.created_at}`, 20, 97);
 
-  const tableColumn = ["Product Name", "Quantity", "VAT", "Price (NGN)", "Payment Method", "Total Price (NGN)"];
+  const tableColumn = ["Product Name", "Quantity", "VAT", "Payment Method", "Total Price (NGN)"];
   const tableRows = [];
 
   receiptData.items.forEach((item) => {
@@ -365,7 +365,6 @@ const generateReceiptPDF = (receiptData, userProfileDetails) => {
       item.product_type_name,
       item.quantity,
       item.vat === 1 ? 'Yes' : 'No',
-      `${item.amount}`,
       item.payment_method,
       `${item.total_price}`
     ];
