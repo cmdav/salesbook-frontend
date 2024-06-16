@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import Tab from "@/components/UI/Tab/Tab.vue";
+import Tab from "@/components/UI/Tab/TabComponent.vue";
 import SubscribersPage from "@/views/Dashboard/Subscriptions/SubscribersPage/ViewSubscriptionPage.vue";
 import SubscribersPlan from "@/views/Dashboard/Subscriptions/SubscribersPlanPage/ViewSubscribersPlan.vue";
 </script>

@@ -6,7 +6,7 @@
         <template #tab2> Permissions </template>
         <template #tab3> Users </template>
         
-        <template #view1><RolesPage /></template>
+         <template #view1><RolesPage /></template>
         <template #view2><Permissions /></template>
         <template #view3><AddUser /></template>
         
@@ -16,8 +16,8 @@
 </template>
 
 <script setup>
-import Tab from "@/components/UI/Tab/Tab.vue";
-import RolesPage from "@/views/Dashboard/Security/Pages/RolesPagecopy.vue";
+import Tab from "@/components/UI/Tab/TabComponent.vue";
+ import RolesPage from "@/views/Dashboard/Security/Pages/RolesPagecopy.vue";
 import AddUser from "@/views/Dashboard/Security/Pages/AddUser.vue";
 import Permissions from "@/views/Dashboard/Security/Pages/PermissionSetting.vue";
 </script>
