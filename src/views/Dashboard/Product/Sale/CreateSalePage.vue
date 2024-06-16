@@ -1,4 +1,3 @@
-<!-- Main layout component for the Add Sale page -->
 <template>
   <DashboardLayout pageTitle="Add Sale">
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
@@ -51,16 +50,14 @@
         <!-- Section for adding products to the sale -->
         <div class="my-8">
           <div class="form-group flex justify-end">
-            <span class="font-medium text-gray-700">Total Price: <span v-html="'&#8358;'"></span> {{ totalPrice
-              }}</span>
+            <span class="font-medium text-gray-700">Total Price: <span v-html="'&#8358;'"></span> {{ totalPrice }}</span>
             <button type="button" @click="addProducts" class="button btn-brand !bg-brand/[20%] !text-black !px-3 ml-4">
               Add product
             </button>
           </div>
 
           <!-- Loop through each product added to the sale and display input fields for each product's details -->
-          <div v-for="(product, index) in formState.products" :key="index"
-            class="product-group flex items-end mt-4">
+          <div v-for="(product, index) in formState.products" :key="index" class="product-group flex items-end mt-4">
             <!-- Product type selection -->
             <div class="input-group">
               <label class="block text-sm font-medium text-gray-700">Product</label>
@@ -74,10 +71,8 @@
             <!-- Product batch selection -->
             <div class="input-group">
               <label class="block text-sm font-medium text-gray-700">Product Batch</label>
-              <select v-model="formState.products[index].batch_id"
-                @change="updateBatchDetails(formState.products[index].batch_id, index)" class="select-input">
-                <option v-for="batch in formState.products[index].batches" :key="batch.id" :value="batch.id"
-                  :disabled="isBatchSelected(formState.products[index].product_type_id, batch.id, index)">
+              <select v-model="formState.products[index].batch_id" @change="updateBatchDetails(formState.products[index].batch_id, index)" class="select-input">
+                <option v-for="batch in formState.products[index].batches" :key="batch.id" :value="batch.id" :disabled="isBatchSelected(formState.products[index].product_type_id, batch.id, index)">
                   {{ batch.batch_no }}
                 </option>
               </select>
@@ -86,17 +81,14 @@
             <!-- Display available quantity left in the selected batch -->
             <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Qty left</label>
-              <input type="number" :value="formState.products[index].available_qty" class="input readonly-input"
-                readonly />
+              <input type="number" :value="formState.products[index].available_qty" class="input readonly-input" readonly />
             </div>
 
             <!-- Input field for the selling price of the product -->
             <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Price</label>
               <input required v-model="formState.products[index].price_sold_at" type="number" class="input" />
-              <label class="priceView"> &#8358; {{ formState.products[index].price_sold_at ?
-  parseFloat(formState.products[index].price_sold_at).toLocaleString() :
-                '0.00' }}</label>
+              <label class="priceView"> &#8358; {{ formState.products[index].price_sold_at ? parseFloat(formState.products[index].price_sold_at).toLocaleString() : '0.00' }}</label>
             </div>
 
             <!-- Input field for the quantity of the product being sold -->
@@ -133,7 +125,7 @@
         </div>
 
         <!-- Submit button for the form -->
-        <button type="submit" class="button submit-button">Submit</button>
+        <button type="submit" class="button submit-button" :disabled="isSubmitting">{{ isSubmitting ? 'Submitting...' : 'Submit' }}</button>
       </form>
     </div>
 
@@ -158,6 +150,7 @@ const { allCustomersNames } = storeToRefs(customersStore);
 const { allProductTypeName } = storeToRefs(productsStore);
 
 const showModal = ref(false);
+const isSubmitting = ref(false); // Reactive variable for submission state
 
 const addNewCustomer = () => {
   showModal.value = true;
@@ -167,7 +160,7 @@ const closeModal = () => {
   showModal.value = false;
 };
 
-const salesLoading = ref(false);
+//const salesLoading = ref(false);
 const printReceipt = ref('no');
 
 const vatOptions = reactive([
@@ -227,7 +220,7 @@ const resetForm = () => {
 };
 
 const handleAddSales = async () => {
-  salesLoading.value = true;
+  isSubmitting.value = true; // Set submitting state to true
   let products = formState.products.filter(product => product.amount > 0).map(product => ({
     product_type_id: product.product_type_id,
     batch_no: product.batch_no,
@@ -245,13 +238,12 @@ const handleAddSales = async () => {
   try {
     let res = await productsStore.handleAddSaless(payload);
     productsStore.handleGetProducts();
-    salesLoading.value = false;
     router.push('/sale');
     return res;
   } catch (error) {
     console.error('Failed to submit sale:', error);
   } finally {
-    salesLoading.value = false;
+    isSubmitting.value = false; // Set submitting state to false
     resetForm();
   }
 };
@@ -366,6 +358,7 @@ onMounted(async () => {
   }
 });
 </script>
+
 <style scoped>
 .container {
   padding: 20px;
@@ -419,8 +412,10 @@ button {
   cursor: pointer;
 }
 
-.submit-button:hover {
+.submit-button:disabled {
   background-color: #218838;
+  cursor: not-allowed;
+  opacity: 0.65;
 }
 
 .btn-brand {
@@ -477,11 +472,10 @@ button {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin-top:1em
+  margin-top: 1em;
 }
 
 .btn-danger:hover {
   background-color: #c82333;
 }
 </style>
-
