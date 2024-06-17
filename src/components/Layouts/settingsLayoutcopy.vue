@@ -181,17 +181,17 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed, watchEffect, watch } from "vue";
+import { ref,  watchEffect } from "vue";
 // import { useReadComposable } from "@/composable/useReadComposable";
 // import { useSearchStore } from "@/composable/useSearchComposable";
 import AuthInput from "@/components/UI/Input/AuthInput.vue";
 // import { storeToRefs } from "pinia";
 // import apiService from "@/services/apiService";
-let isLoading = ref(false);
+//let isLoading = ref(false);
 //import PaginationComponent from '@/components/UI/Pagination/DataTablePagination.vue';
 let searchQuery = ref("");
 
-const props = defineProps({
+ defineProps({
   endpoint: String,
   searchEndpoint: String,
   excludedKeys: {
@@ -225,7 +225,7 @@ const props = defineProps({
 // });
 
 // const filteredProducts = ref([]);
-let searchResults = ref([]);
+//let searchResults = ref([]);
 // This is the data that will be returned from the API
 
 // const search = async () => {

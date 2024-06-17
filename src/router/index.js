@@ -41,7 +41,7 @@ import CreatePurchasePage from '@/views/Dashboard/Product/Purchase/CreatePurchas
 //import PurchasePage from '@/views/Dashboard/Product/PurchasePage.vue'
 import MeasurementPage from '@/views/Dashboard/Product/MeasurementPage.vue'
 import SupplierProductsPage from '@/views/Dashboard/SupplierProduct/SupplierProductPage.vue'
-import RolesPage from '@/views/Dashboard/Security/Pages/RolesPage.vue'
+import RolesPage from '@/views/Dashboard/Security/Pages/RolesPagecopy.vue'
 import DefultPage from '@/views/Dashboard/Security/DefultPage.vue'
 import ResetPassword from '@/views/Auth/ResetPassword.vue'
 import ProfilePage from '@/views/Dashboard/Profile/ProfilePage.vue'
