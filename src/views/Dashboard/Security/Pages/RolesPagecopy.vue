@@ -85,7 +85,7 @@ const handleAddRole = async () => {
   loading.value = true;
 
   let payload = {
-    role_name: formState.role_name,
+  role_name: formState.role_name,
   };
 
   try {
@@ -96,7 +96,6 @@ const handleAddRole = async () => {
   } catch (error) {
     console.log(error);
   } finally {
-    loading.value = false;
     closeModal();
     forceRefresh()
   }
