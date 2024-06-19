@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full bg-cover">
+  <div class="h-full w-full bg-cover">
     <apexchart
       class="pl-[10px] h-auto pr-[18px]"
       type="line"
@@ -9,20 +9,22 @@
     />
   </div>
 </template>
+
 <script>
 import VueApexCharts from "vue3-apexcharts";
 import dayjs from "dayjs";
+
 export default {
   components: {
     Apexchart: VueApexCharts,
   },
-  props: { title: String, chartData: Object },
+  props: { title: String, chartData: Array },
   data() {
     return {
       series: [
         {
-          name: `${this.title}`,
-          data: null,
+          name: this.title,
+          data: [],
           color: "#7A4504",
         },
       ],
@@ -41,19 +43,8 @@ export default {
           curve: "smooth",
           width: 3,
         },
-        // fill: {
-        //   type: "gradient",
-        //   gradient: {
-        //     shadeIntensity: 1,
-        //     inverseColors: false,
-        //     opacityFrom: 0.5,
-        //     opacityTo: 0,
-        //     stops: [0, 90, 100],
-        //   },
-        // },
         yaxis: {
           min: 0,
-          // tickAmount: 5,
           labels: {
             formatter: function (value) {
               let si = [
@@ -73,10 +64,9 @@ export default {
                 }
               }
               return (value / si[i].value).toFixed(0).replace(rx, "$1") + si[i].symbol;
-              // return value.toFixed(0) + "k"; // Replace 'Prefix' with your desired prefix
             },
             style: {
-              cssClass: "!font-primary font-bold !text-[#97A6A899] !text-[16px] ", // Add your custom font class name here
+              cssClass: "!font-primary font-bold !text-[#97A6A899] !text-[16px]",
             },
           },
         },
@@ -85,10 +75,6 @@ export default {
           align: "left",
         },
         grid: {
-          // row: {
-          //   colors: ["#FDE8CD", "transparent"], // takes an array which will be repeated on columns
-          //   opacity: 0.5,
-          // },
           show: true,
           borderColor: "#C35214",
           strokeDashArray: 2,
@@ -100,7 +86,7 @@ export default {
           },
           yaxis: {
             lines: {
-              show: false,
+              show: true,
             },
           },
           row: {
@@ -119,11 +105,11 @@ export default {
           },
         },
         xaxis: {
-          categories: null,
+          categories: [],
           tickAmount: 8,
           labels: {
             style: {
-              cssClass: "!font-primary font-bold !text-[#97A6A899] !text-[14px] ", // Add your custom font class name here
+              cssClass: "!font-primary font-bold !text-[#97A6A899] !text-[14px]",
             },
           },
         },
@@ -131,31 +117,27 @@ export default {
       },
     };
   },
-  computed: {
-    getMonth() {
-      return {
-        number: dayjs().format("M"),
-        month: dayjs().format("MMM"),
-      };
-    },
-  },
-  methods: {},
-  beforeUnmount() {},
   mounted() {
-    const Data = this.chartData;
-    const dataValues = Data?.map((item) => item?.daily_sales);
-    // const dateValues = Data?.map((item) => item?.day);
-    const dateValues = Data?.map((item) => {
-      const date = new Date(item.day);
+  if (this.chartData && Array.isArray(this.chartData)) {
+    const graphData = this.chartData;
+    const dataValues = graphData?.map((item) => parseInt(item.daily_sales));
+    const dateValues = graphData?.map((item) => {
+      const date = new Date(item.day.split(" ")[0]);
       const options = { day: "2-digit", month: "short", weekday: "short" };
-      const dayOfWeek = new Intl.DateTimeFormat("en-US", options).format(date);
-      return `${dayOfWeek}`;
+      return new Intl.DateTimeFormat("en-US", options).format(date);
     });
-    console.log(dateValues, this.chartData);
 
-    console.log(dataValues, this.chartData);
     this.series[0].data = dataValues;
     this.chartOptions.xaxis.categories = dateValues;
-  },
+  } else {
+    console.error("chartData is not defined or not an array.");
+  }
+},
+
 };
 </script>
+
+
+
+
+
