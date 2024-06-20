@@ -123,7 +123,7 @@ export default {
     const dataValues = graphData?.map((item) => parseInt(item.daily_sales));
     const dateValues = graphData?.map((item) => {
       const date = new Date(item.day.split(" ")[0]);
-      const options = { day: "2-digit", month: "short", weekday: "short" };
+      const options = { day: "2-digit", month: "short" };
       return new Intl.DateTimeFormat("en-US", options).format(date);
     });
 

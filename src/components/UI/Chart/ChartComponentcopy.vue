@@ -124,7 +124,7 @@ export default {
           tickAmount: 8,
           labels: {
             style: {
-              cssClass: "!font-primary font-bold !text-[#97A6A899] !text-[14px]", // Add your custom font class name here
+              cssClass: "!font-primary font-bold !text-[#97A6A899] !text-[14px]", 
             },
           },
         },
@@ -140,7 +140,7 @@ export default {
     const dataValues = graphData?.map((item) => parseInt(item.daily_profit));
     const dateValues = graphData?.map((item) => {
       const date = new Date(item.day.split(" ")[0]);
-      const options = { day: "2-digit", month: "short", weekday: "short" };
+      const options = { day: "2-digit", month: "short", };
       return new Intl.DateTimeFormat("en-US", options).format(date);
     });
 

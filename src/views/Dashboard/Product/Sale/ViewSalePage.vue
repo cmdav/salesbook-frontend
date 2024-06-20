@@ -332,7 +332,7 @@ const generateReceiptPDF = (receiptData, userProfileDetails) => {
   const headerStyle = { fontSize: 20, fontStyle: 'bold' };
   const invoiceStyle = { fontSize: 18, fontStyle: 'bold' };
   const sectionHeaderStyle = { fontSize: 16, fontStyle: 'bold' };
-  const companyDetailsStyle = { fontSize: 16, fontStyle: 'normal' };
+  const companyDetailsStyle = { fontSize: 14, fontStyle: 'normal' };
   const itemStyle = { fontSize: 12 };
 
   doc.setFont(headerStyle.fontStyle, 'normal');
@@ -342,20 +342,20 @@ const generateReceiptPDF = (receiptData, userProfileDetails) => {
 
   doc.setFont(companyDetailsStyle.fontStyle, 'normal');
   doc.setFontSize(companyDetailsStyle.fontSize);
-  doc.text(`Address ${userProfileDetails?.company_address}`, 105, 27, null, null, 'center');
-  doc.text(`Email: ${userProfileDetails?.email}`, 105, 35, null, null, 'center');
-  doc.text(`Phone No: ${userProfileDetails?.phone_number}`, 105, 46, null, null, 'center');
+  doc.text(`Address ${userProfileDetails?.company_address}`, 105, 28, null, null, 'center');
+  doc.text(`Email: ${userProfileDetails?.email}`, 105, 36, null, null, 'center');
+  doc.text(`Phone No: ${userProfileDetails?.phone_number}`, 105, 44, null, null, 'center');
 
   doc.setFont(invoiceStyle.fontStyle, 'normal');
   doc.setFontSize(invoiceStyle.fontSize);
-  doc.text('RECEIPT', 105, 60, null, null, 'center'); // Adjusted y-position
+  doc.text('RECEIPT', 105, 55, null, null, 'center'); 
 
   doc.setFont(sectionHeaderStyle.fontStyle, 'normal');
   doc.setFontSize(sectionHeaderStyle.fontSize);
-  doc.text(`Customer Name: ${receiptData.transaction_details.customer_detail}`, 20, 75);
-  doc.text(`Customer PhoneNum: ${receiptData.transaction_details.suctomer_phone_number}`, 20, 82);
-  doc.text(`Transaction ID: ${receiptData.transaction_details.transaction_id}`, 20, 90);
-  doc.text(`Date: ${receiptData.transaction_details.created_at}`, 20, 97);
+  doc.text(`Customer Name: ${receiptData.transaction_details.customer_detail}`, 20, 70);
+  doc.text(`Customer PhoneNum: ${receiptData.transaction_details.customer_phone_number}`, 20, 78);
+  doc.text(`Transaction ID: ${receiptData.transaction_details.transaction_id}`, 20, 86);
+  doc.text(`Date: ${receiptData.transaction_details.created_at}`, 20, 94);
 
   const tableColumn = ["Product Name", "Quantity", "VAT", "Payment Method", "Total Price (NGN)"];
   const tableRows = [];
@@ -364,7 +364,7 @@ const generateReceiptPDF = (receiptData, userProfileDetails) => {
     const itemData = [
       item.product_type_name,
       item.quantity,
-      item.vat === 1 ? 'Yes' : 'No',
+      item.vat === "1" ? 'Yes' : 'No',
       item.payment_method,
       `${item.total_price}`
     ];
@@ -377,17 +377,17 @@ const generateReceiptPDF = (receiptData, userProfileDetails) => {
     startY: 106,
     styles: { fontSize: itemStyle.fontSize },
     theme: 'plain',
-    tableLineColor: [0, 0, 0], // Set table line color to black
-    tableLineWidth: 0.1, // Set the line width
+    tableLineColor: [0, 0, 0], 
+    tableLineWidth: 0.1, 
   });
 
   let finalY = doc.autoTable.previous.finalY + 10;
   doc.setFontSize(sectionHeaderStyle.fontSize);
   doc.text(`Total Amount (NGN): ${formatNumber(receiptData.transaction_details.transaction_amount)}`, doc.internal.pageSize.width - 20, finalY, null, null, 'right');
 
-   // Add "Thanks for your patronage" at the bottom
+   
   doc.setFontSize(itemStyle.fontSize);
-  doc.text('Thanks for your patronage!', 105, finalY + 20, null, null, 'center');
+  doc.text('Thanks for your patronage!', 105, finalY + 15, null, null, 'center');
 
   const pdfDataUri = doc.output('datauristring');
   const viewerWindow = window.open();
