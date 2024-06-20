@@ -68,6 +68,8 @@ const router = useRouter();
 
 // Reactive variables for data and state
 const subscriberPlan = ref([]);
+console.log(subscriberPlan)
+
 const organization = ref([]);
 
 const isLoading = ref(false);
@@ -96,19 +98,27 @@ const getMinEndTime = (startTime) => {
     return minEnd.toISOString().slice(0, 16);
 };
 
-// Function to fetch data from the API
+
 const fetchData = async () => {
     try {
-        isLoading.value = true; // Set loading state to true
+        isLoading.value = true; 
         const [organizationResponse, subscriberResponse] = await Promise.all([
             apiService.get('all-organizations'),
             apiService.get('all-subscriptions'),
         ]);
+         console.log(subscriberResponse)
+         console.log(subscriberResponse.data)
+         console.log(subscriberResponse.data.data)
 
-        // Handle suppliers response
+         console.log(organizationResponse)
+         console.log(organizationResponse.data)
+         console.log(organizationResponse.data.data)
+
+
+       
         if (subscriberResponse.data) {
             subscriberPlan.value = subscriberResponse.data;
-            console.log(subscriberResponse)
+            // console.log(subscriberResponse)
             // subscribers[0].supplier_id = suppliers.value[0].id;
         } else {
             error.value = 'No subscribers found';
