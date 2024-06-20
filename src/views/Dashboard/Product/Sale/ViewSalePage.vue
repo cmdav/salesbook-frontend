@@ -235,6 +235,7 @@ import DeleteModal from '@/components/UI/Modal/DeleteModals.vue';
 import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
 import { useStore } from "@/stores/user";
 import { storeToRefs } from 'pinia';
+import { invalidateTypeCache } from 'vue/compiler-sfc';
 
 const store = useStore();
 const { userProfileDetails } = storeToRefs(store);
@@ -329,10 +330,10 @@ const formatNumber = (amount) => {
 const generateReceiptPDF = (receiptData, userProfileDetails) => {
   const doc = new jsPDF();
 
-  const headerStyle = { fontSize: 20, fontStyle: 'bold' };
-  const invoiceStyle = { fontSize: 18, fontStyle: 'bold' };
-  const sectionHeaderStyle = { fontSize: 16, fontStyle: 'bold' };
-  const companyDetailsStyle = { fontSize: 14, fontStyle: 'normal' };
+  const headerStyle = { fontSize: 18, fontStyle: 'bold' };
+  const invoiceStyle = { fontSize: 15, fontStyle: 'bold' };
+  const sectionHeaderStyle = { fontSize: 12, fontStyle: 'bold' };
+  const companyDetailsStyle = { fontSize: 12, fontStyle: 'normal' };
   const itemStyle = { fontSize: 12 };
 
   doc.setFont(headerStyle.fontStyle, 'normal');
@@ -355,17 +356,18 @@ const generateReceiptPDF = (receiptData, userProfileDetails) => {
   doc.text(`Customer Name: ${receiptData.transaction_details.customer_detail}`, 20, 70);
   doc.text(`Customer PhoneNum: ${receiptData.transaction_details.customer_phone_number}`, 20, 78);
   doc.text(`Transaction ID: ${receiptData.transaction_details.transaction_id}`, 20, 86);
-  doc.text(`Date: ${receiptData.transaction_details.created_at}`, 20, 94);
+  doc.text(`Payment Method: ${receiptData.transaction_details.payment_method}`, 20, 94);
+  doc.text(`Date: ${receiptData.transaction_details.created_at}`, 20, 102);
 
-  const tableColumn = ["Product Name", "Quantity", "VAT", "Payment Method", "Total Price (NGN)"];
+  const tableColumn = ["Product Name", "Price(NGN)", "Quantity", "VAT(NGN)", "Total Price(NGN)"];
   const tableRows = [];
 
   receiptData.items.forEach((item) => {
     const itemData = [
       item.product_type_name,
+      item.price_sold_at,
       item.quantity,
-      item.vat === "1" ? 'Yes' : 'No',
-      item.payment_method,
+      item.vat,
       `${item.total_price}`
     ];
     tableRows.push(itemData);
@@ -374,7 +376,7 @@ const generateReceiptPDF = (receiptData, userProfileDetails) => {
   doc.autoTable({
     head: [tableColumn],
     body: tableRows,
-    startY: 106,
+    startY: 115,
     styles: { fontSize: itemStyle.fontSize },
     theme: 'plain',
     tableLineColor: [0, 0, 0], 
@@ -382,7 +384,8 @@ const generateReceiptPDF = (receiptData, userProfileDetails) => {
   });
 
   let finalY = doc.autoTable.previous.finalY + 10;
-  doc.setFontSize(sectionHeaderStyle.fontSize);
+  doc.setFont(invoiceStyle.fontStyle)
+  doc.setFontSize(invoiceStyle.fontSize);
   doc.text(`Total Amount (NGN): ${formatNumber(receiptData.transaction_details.transaction_amount)}`, doc.internal.pageSize.width - 20, finalY, null, null, 'right');
 
    
