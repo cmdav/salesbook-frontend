@@ -19,7 +19,7 @@
                             <label>Subscription Plan<span class="required">*</span></label>
                             <select v-model="subscrib.plan_id">
                                 <option v-for="subscriber_plan in subscriberPlan" :key="subscriber_plan.id"
-                                    :value="subscriber_plan.id.toString()">
+                                    :value="subscriber_plan.id" >
                                     {{ subscriber_plan.plan_name }}
                                 </option>
                             </select>
@@ -68,8 +68,10 @@ const router = useRouter();
 
 // Reactive variables for data and state
 const subscriberPlan = ref([]);
+console.log(subscriberPlan)
+
 const organization = ref([]);
-const batchNo = ref('');
+
 const isLoading = ref(false);
 const error = ref(null);
 const setEndDate = ref(null);
@@ -87,15 +89,6 @@ const subscribers = reactive([
 // Set minimum expiry date to today's date
 const minExpiryDate = new Date().toISOString().split('T')[0];
 
-// const defaultMinDate = ref('1900-01-01')
-// let constantMinDate = hasMinDate ? minDate : defaultMinDate
-
-const selectedDate = (start_time) => {
-    console.log(`Subscriber  Start Time:`, subscribers[0].start_time);
-    console.log(setEndDate.value)
-    console.log(subscribers)
-}
-
 const getMinEndTime = (startTime) => {
     if (!startTime) return '';
     const start = new Date(startTime);
@@ -105,19 +98,27 @@ const getMinEndTime = (startTime) => {
     return minEnd.toISOString().slice(0, 16);
 };
 
-// Function to fetch data from the API
+
 const fetchData = async () => {
     try {
-        isLoading.value = true; // Set loading state to true
+        isLoading.value = true; 
         const [organizationResponse, subscriberResponse] = await Promise.all([
             apiService.get('all-organizations'),
             apiService.get('all-subscriptions'),
         ]);
+         console.log(subscriberResponse)
+         console.log(subscriberResponse.data)
+         console.log(subscriberResponse.data.data)
 
-        // Handle suppliers response
+         console.log(organizationResponse)
+         console.log(organizationResponse.data)
+         console.log(organizationResponse.data.data)
+
+
+       
         if (subscriberResponse.data) {
             subscriberPlan.value = subscriberResponse.data;
-            console.log(subscriberResponse)
+            // console.log(subscriberResponse)
             // subscribers[0].supplier_id = suppliers.value[0].id;
         } else {
             error.value = 'No subscribers found';
@@ -139,38 +140,11 @@ const fetchData = async () => {
     }
 };
 
-// Function to handle supplier change and fetch latest supplier price
-
-// Function to add a new purchase row
-// const addPurchase = () => {
-//   const lastPurchase = purchases[purchases.length - 1];
-//   if (lastPurchase.supplier_id && lastPurchase.product_type_id && lastPurchase.quantity && lastPurchase.cost_price && lastPurchase.selling_price) {
-//     purchases.push({
-//       supplier_id: suppliers.value.length > 0 ? suppliers.value[0].id : '',
-//       product_type_id: '',
-//       price_id: '',
-//       cost_price: '',
-//       selling_price: '',
-//       batch_no: batchNo.value,
-//       quantity: '',
-//       product_identifier: '',
-//       expiry_date: '',
-//       original_selling_price: null
-//     });
-//   } else {
-//     catchAxiosError({ message: 'Please fill out all required fields before adding a new purchase.' });
-//   }
-// };
-
-// // Function to check for duplicate purchases
-// const isDuplicatePurchase = (supplier_id, product_type_id) => {
-//   return purchases.some(purchase => purchase.supplier_id === supplier_id && purchase.product_type_id === product_type_id);
-// };
-
 // Function to handle form submission
 const handleSubmit = async () => {
     // Handle form submission
     try {
+        console.log(subscribers[0])
         const response = await apiService.post('subscription-statuses', subscribers[0]);
         catchAxiosSuccess(response);
         router.push('/subscriptions'); // Redirect to the view purchase page if the submission is successful

@@ -125,5 +125,6 @@ const handleLogUpload = async () => {
 
 onMounted(async () => {
   await store.handleUserProfile();
+  console.log(userProfileDetails)
 });
 </script>

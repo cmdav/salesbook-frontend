@@ -40,14 +40,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, onMounted, computed } from "vue";
+import { ref, reactive,  onMounted, } from "vue";
 import { roleFormFields } from "@/formfields/formFields";
-import { storeToRefs } from "pinia";
+//import { storeToRefs } from "pinia";
 import { useSecurityStore } from "@/stores/security";
-import { useStore } from "@/stores/user";
-const store = useStore();
+//import { useStore } from "@/stores/user";
+//const store = useStore();
 const securityStore = useSecurityStore();
-const { allRoles, allPages, roles, pages, permissions } = storeToRefs(securityStore);
+//const { allRoles, allPages,  pages, permissions } = storeToRefs(securityStore);
 import SaleFormModal from "@/components/UI/Modal/SalesFormModal.vue";
 import { useSharedComponent } from "@/composable/useSharedComponent";
 const emit = defineEmits("forceRefresh");
@@ -85,34 +85,33 @@ const handleAddRole = async () => {
   loading.value = true;
 
   let payload = {
-    role_name: formState.role_name,
+  role_name: formState.role_name,
   };
 
   try {
     let res = await securityStore.handleAddRole(payload);
-     await securityStore.handleGetRole();
+    // await securityStore.handleGetRole();
     loading.value = false;
     return res;
   } catch (error) {
     console.log(error);
   } finally {
-    loading.value = false;
     closeModal();
     forceRefresh()
   }
 
 };
 
-const changePage = async (link) => {
-  try {
-    await securityStore.handleGetPermissions(
-      `9bb79eae-a64f-4eaa-b8d5-8990eb02205d`,
-      link
-    );
-  } catch (error) {
-    //
-  }
-};
+// const changePage = async (link) => {
+//   try {
+//     await securityStore.handleGetPermissions(
+//       `9bb79eae-a64f-4eaa-b8d5-8990eb02205d`,
+//       link
+//     );
+//   } catch (error) {
+//     //
+//   }
+// };
 
 onMounted(async () => {
   try {

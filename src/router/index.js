@@ -19,12 +19,16 @@ import ProductsPages from '@/views/Dashboard/Product/ProductPages.vue'
 import ProductCategoryPage from '@/views/Dashboard/Product/ProductCategoryPage.vue'
 import ProductSubCategoryPage from '@/views/Dashboard/Product/ProductSubCategoryPage.vue'
 import CurrencyPage from '@/views/Dashboard/Product/CurrencyPage.vue'
-import StorePage from '@/views/Dashboard/Product/StorePage.vue'
+// import StorePage from '@/views/Dashboard/Product/StorePage.vue'
+import StorePage from '@/views/Dashboard/Product/StorePagee.vue'
 import SalePage from '@/views/Dashboard/Product/Sale/ViewSalePage.vue'
 import CreateSalePage from '@/views/Dashboard/Product/Sale/CreateSalePage.vue'
 import Subscriptions from '@/views/Dashboard/Subscriptions/SubscriptionDefaultPage.vue'
 import SubscriptionPlan from '@/views/Dashboard/Subscriptions/SubscribersPlanPage/ViewSubscribersPlan.vue'
 import CreateSubscriptionPage from '@/views/Dashboard/Subscriptions/SubscribersPage/CreateSubscriptionPage.vue'
+import EditSubscriptionPage from '@/views/Dashboard/Subscriptions/SubscribersPage/EditSubscriptionPage.vue'
+import NotFound from '@/views/Auth/NotFound.vue'
+
 
 import ViewCustomerSubscriptionPage from '@/views/Dashboard/CustomerSubscription/ViewCustomerSubscriptionPage.vue'
 
@@ -37,7 +41,7 @@ import CreatePurchasePage from '@/views/Dashboard/Product/Purchase/CreatePurchas
 //import PurchasePage from '@/views/Dashboard/Product/PurchasePage.vue'
 import MeasurementPage from '@/views/Dashboard/Product/MeasurementPage.vue'
 import SupplierProductsPage from '@/views/Dashboard/SupplierProduct/SupplierProductPage.vue'
-import RolesPage from '@/views/Dashboard/Security/Pages/RolesPage.vue'
+import RolesPage from '@/views/Dashboard/Security/Pages/RolesPagecopy.vue'
 import DefultPage from '@/views/Dashboard/Security/DefultPage.vue'
 import ResetPassword from '@/views/Auth/ResetPassword.vue'
 import ProfilePage from '@/views/Dashboard/Profile/ProfilePage.vue'
@@ -69,13 +73,15 @@ const router = createRouter({
     {
       path: '/new-supplier/:token',
       name: 'register-supplier',
-      component: RegisterSupplierPage
+      component: RegisterSupplierPage,
       // beforeEnter: [middleware.redirectDashboard]
+      beforeEnter: [middleware.redirectSupplierDashboard]
     },
     {
       path: '/existing-supplier/:token',
       name: 'existing-supplier',
-      component: VerifySupplier
+      component: VerifySupplier,
+      beforeEnter: [middleware.redirectSupplierDashboard]
       // beforeEnter: [middleware.redirectDashboard]
     },
     {
@@ -247,7 +253,7 @@ const router = createRouter({
     },
     {
       path: '/c-subscriptions',
-      name: 'customer subscriptions',
+      name: 'c-subscriptions',
       component: ViewCustomerSubscriptionPage,
       beforeEnter: [middleware.redirectLogin]
     },
@@ -261,6 +267,11 @@ const router = createRouter({
       path: '/create-subscription',
       name: 'create-subscription',
       component: CreateSubscriptionPage
+    },
+    {
+      path: '/edit-subscription/:organization_id',
+      name: 'edit-subscription',
+      component: EditSubscriptionPage
     },
     {
       path: '/customers/:id',
@@ -280,7 +291,7 @@ const router = createRouter({
     },
     {
       path: '/:catchAll(.*)',
-      component: Login
+      component: NotFound
     }
   ],
   scrollBehavior(to, from, savedPosition) {

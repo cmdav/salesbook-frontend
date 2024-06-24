@@ -1,6 +1,4 @@
-
 <template>
-  <!-- Main layout component for the Add Sale page -->
   <DashboardLayout pageTitle="Add Sale">
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
       <!-- Navigation buttons at the top -->
@@ -52,16 +50,14 @@
         <!-- Section for adding products to the sale -->
         <div class="my-8">
           <div class="form-group flex justify-end">
-            <span class="font-medium text-gray-700">Total Price: <span v-html="'&#8358;'"></span> {{ totalPrice
-              }}</span>
+            <span class="font-medium text-gray-700">Total Price: <span v-html="'&#8358;'"></span> {{ totalPrice }}</span>
             <button type="button" @click="addProducts" class="button btn-brand !bg-brand/[20%] !text-black !px-3 ml-4">
               Add product
             </button>
           </div>
 
           <!-- Loop through each product added to the sale and display input fields for each product's details -->
-          <div v-for="(product, index) in formState.products" :key="index"
-            class="product-group flex justify-between items-end mt-4">
+          <div v-for="(product, index) in formState.products" :key="index" class="product-group flex items-end mt-4">
             <!-- Product type selection -->
             <div class="input-group">
               <label class="block text-sm font-medium text-gray-700">Product</label>
@@ -75,10 +71,8 @@
             <!-- Product batch selection -->
             <div class="input-group">
               <label class="block text-sm font-medium text-gray-700">Product Batch</label>
-              <select v-model="formState.products[index].batch_id"
-                @change="updateBatchDetails(formState.products[index].batch_id, index)" class="select-input">
-                <option v-for="batch in formState.products[index].batches" :key="batch.id" :value="batch.id"
-                  :disabled="isBatchSelected(formState.products[index].product_type_id, batch.id, index)">
+              <select v-model="formState.products[index].batch_id" @change="updateBatchDetails(formState.products[index].batch_id, index)" class="select-input">
+                <option v-for="batch in formState.products[index].batches" :key="batch.id" :value="batch.id" :disabled="isBatchSelected(formState.products[index].product_type_id, batch.id, index)">
                   {{ batch.batch_no }}
                 </option>
               </select>
@@ -87,17 +81,14 @@
             <!-- Display available quantity left in the selected batch -->
             <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Qty left</label>
-              <input type="number" :value="formState.products[index].available_qty" class="input readonly-input"
-                readonly />
+              <input type="number" :value="formState.products[index].available_qty" class="input readonly-input" readonly />
             </div>
 
             <!-- Input field for the selling price of the product -->
             <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Price</label>
               <input required v-model="formState.products[index].price_sold_at" type="number" class="input" />
-              <label class="priceView"> &#8358; {{ formState.products[index].price_sold_at ?
-  parseFloat(formState.products[index].price_sold_at).toLocaleString() :
-                '0.00' }}</label>
+              <label class="priceView"> &#8358; {{ formState.products[index].price_sold_at ? parseFloat(formState.products[index].price_sold_at).toLocaleString() : '0.00' }}</label>
             </div>
 
             <!-- Input field for the quantity of the product being sold -->
@@ -123,11 +114,18 @@
                 {{ formState.products[index].amount ? formState.products[index].amount.toFixed(2) : '0.00' }}
               </span>
             </div>
+
+            <!-- Remove button for each product row except the first one -->
+            <div class="input-group">
+              <button v-if="index >= 0" type="button" class="button btn-danger remove-btn ml-2" @click="removeProduct(index)">
+                Remove
+              </button>
+            </div>
           </div>
         </div>
 
         <!-- Submit button for the form -->
-        <button type="submit" class="button submit-button">Submit</button>
+        <button type="submit" class="button submit-button" :disabled="isSubmitting">{{ isSubmitting ? 'Submitting...' : 'Submit' }}</button>
       </form>
     </div>
 
@@ -137,7 +135,6 @@
 </template>
 
 <script setup>
-// Import necessary functions and components from Vue and other dependencies
 import { ref, reactive, computed, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useProductStore } from '@/stores/products';
@@ -145,43 +142,32 @@ import { useCustomerstore } from '@/stores/customers';
 import CustomerFormModal from '@/components/UI/Modal/CustomerFormModal.vue';
 import { storeToRefs } from 'pinia';
 
-// Initialize the router for navigation
 const router = useRouter();
-
-// Access product and customer stores
 const productsStore = useProductStore();
 const customersStore = useCustomerstore();
 
-// Extract data from the stores
 const { allCustomersNames } = storeToRefs(customersStore);
 const { allProductTypeName } = storeToRefs(productsStore);
 
-// Reactive state for modal visibility
 const showModal = ref(false);
+const isSubmitting = ref(false); // Reactive variable for submission state
 
-// Function to open the customer form modal
 const addNewCustomer = () => {
   showModal.value = true;
 };
 
-// Function to close the customer form modal
 const closeModal = () => {
   showModal.value = false;
 };
 
-// Reactive state for sales loading status
-const salesLoading = ref(false);
-
-// Reactive state for whether to print a receipt
+//const salesLoading = ref(false);
 const printReceipt = ref('no');
 
-// Options for VAT selection
 const vatOptions = reactive([
   { id: 'yes', value: 'yes', label: 'Yes' },
   { id: 'no', value: 'no', label: 'No' }
 ]);
 
-// Reactive state for form data
 const formState = reactive({
   customer_id: "",
   payment_method: "cash",
@@ -198,7 +184,6 @@ const formState = reactive({
   ],
 });
 
-// Function to add a new product to the form
 const addProducts = () => {
   const lastProduct = formState.products[formState.products.length - 1];
   if (lastProduct.product_type_id.trim() !== "" && lastProduct.quantity > 0 && lastProduct.price_sold_at > 0) {
@@ -214,7 +199,13 @@ const addProducts = () => {
   }
 };
 
-// Function to reset the form
+// Function to remove a product from the formState.products array
+const removeProduct = (index) => {
+  if (index > 0) {
+    formState.products.splice(index, 1);
+  }
+};
+
 const resetForm = () => {
   formState.customer_id = "";
   formState.payment_method = "";
@@ -228,9 +219,8 @@ const resetForm = () => {
   ];
 };
 
-// Function to handle form submission
 const handleAddSales = async () => {
-  salesLoading.value = true;
+  isSubmitting.value = true; // Set submitting state to true
   let products = formState.products.filter(product => product.amount > 0).map(product => ({
     product_type_id: product.product_type_id,
     batch_no: product.batch_no,
@@ -248,25 +238,22 @@ const handleAddSales = async () => {
   try {
     let res = await productsStore.handleAddSaless(payload);
     productsStore.handleGetProducts();
-    salesLoading.value = false;
-    router.push('/sale'); // Redirect to the sale page after successful submission
+    router.push('/sale');
     return res;
   } catch (error) {
     console.error('Failed to submit sale:', error);
   } finally {
-    salesLoading.value = false;
+    isSubmitting.value = false; // Set submitting state to false
     resetForm();
   }
 };
 
-// Computed property to calculate the total price
 const totalPrice = computed(() => {
   return formState.products.reduce((sum, product, index) => {
     return sum + calculateAmount(index);
   }, 0).toFixed(2);
 });
 
-// Function to check if a batch is already selected
 const isBatchSelected = (productId, batchId, currentIndex) => {
   return formState.products.some((product, index) => {
     return index !== currentIndex &&
@@ -275,7 +262,6 @@ const isBatchSelected = (productId, batchId, currentIndex) => {
   });
 };
 
-// Function to update product details based on selected product type
 const updatePriceId = (productTypeId, index) => {
   const productInfo = allProductTypeName.value.find(product => product.id === productTypeId);
   if (productInfo) {
@@ -287,7 +273,6 @@ const updatePriceId = (productTypeId, index) => {
   }
 };
 
-// Function to update batch details based on selected batch
 const updateBatchDetails = (batchId, index) => {
   const productInfo = allProductTypeName.value.find(p => p.batches.some(b => b.id === batchId));
   const batchInfo = productInfo ? productInfo.batches.find(batch => batch.id === batchId) : null;
@@ -304,7 +289,6 @@ const updateBatchDetails = (batchId, index) => {
   }
 };
 
-// Function to calculate the amount for each product
 const calculateAmount = (index) => {
   const product = formState.products[index];
   if (!product || product.price_sold_at === null || product.quantity === null || product.price_sold_at === "" || product.quantity === "") {
@@ -322,7 +306,6 @@ const calculateAmount = (index) => {
   return amount;
 };
 
-// Watchers to update the form state and calculate amounts when relevant fields change
 watch(() => formState.products.map(p => p.product_type_id), (newProductTypeIds, oldProductTypeIds) => {
   newProductTypeIds.forEach((productTypeId, index) => {
     if (productTypeId !== oldProductTypeIds[index]) {
@@ -366,7 +349,6 @@ watch(() => formState.products.map(product => product.price_sold_at), (newPrices
   });
 }, { deep: true });
 
-// Fetch initial data when the component is mounted
 onMounted(async () => {
   try {
     await customersStore.handleAllCustomersName();
@@ -378,38 +360,32 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* Container styling */
 .container {
   padding: 20px;
 }
 
-/* Styling for top navigation buttons */
 .top-buttons {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
 }
 
-/* Styling for form groups */
 .form-group {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
 }
 
-/* Styling for radio button labels */
 .radio-label {
   margin-left: 10px;
 }
 
-/* Styling for input groups */
 .input-group {
   flex: 1;
   margin-right: 20px;
   height: 100px;
 }
 
-/* Styling for select inputs and text inputs */
 .select-input,
 .input {
   display: block;
@@ -419,17 +395,14 @@ onMounted(async () => {
   border-radius: 4px;
 }
 
-/* Styling for readonly inputs to have a different color */
 .readonly-input {
   background-color: #f5f5f5;
 }
 
-/* Styling for buttons */
 button {
   margin-right: 10px;
 }
 
-/* Styling for submit button */
 .submit-button {
   background-color: #28a745;
   color: #fff;
@@ -439,12 +412,12 @@ button {
   cursor: pointer;
 }
 
-/* Hover effect for submit button */
-.submit-button:hover {
+.submit-button:disabled {
   background-color: #218838;
+  cursor: not-allowed;
+  opacity: 0.65;
 }
 
-/* Styling for brand buttons */
 .btn-brand {
   background-color: #007bff;
   color: #fff;
@@ -454,19 +427,16 @@ button {
   cursor: pointer;
 }
 
-/* Disabled state styling for brand buttons */
 .btn-brand:disabled {
   background-color: #007bff;
   cursor: not-allowed;
   opacity: 0.65;
 }
 
-/* Hover effect for enabled brand buttons */
 .btn-brand:hover:not(:disabled) {
   background-color: #0056b3;
 }
 
-/* Styling for back button */
 .back-btn {
   background-color: #6c757d;
   color: #fff;
@@ -476,12 +446,10 @@ button {
   cursor: pointer;
 }
 
-/* Hover effect for back button */
 .back-btn:hover {
   background-color: #5a6268;
 }
 
-/* Styling for product groups */
 .product-group {
   display: flex;
   gap: 20px;
@@ -497,4 +465,17 @@ button {
   border-radius: 4px;
 }
 
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 1em;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
 </style>

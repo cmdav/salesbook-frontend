@@ -10,7 +10,6 @@
       </header>
       <!--Pass the formField and  value(value is gotten onclick from the datatable) as props from the parent to this modal-->
       <form @submit.prevent="editForm">
-        <h2>Hello</h2>
         <ReusableForm :fields="formField" @handleEditCategoryChange="handleEditCategoryChange"
           @fieldChanged="handleFieldChanged" :imagePath="imagePath" :hasMinDate="hasMinDate" />
         <input type="submit" v-if="!loading" class="btn-brand" value="Submit" />

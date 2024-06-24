@@ -294,6 +294,7 @@ const dashboardStore = useDashboardStore();
 const productsStore = useProductStore();
 const { products } = storeToRefs(productsStore);
 const { dashboardSataus, dashboardAutoSataus } = storeToRefs(dashboardStore);
+console.log(dashboardAutoSataus)
 import { storeToRefs } from "pinia";
 import { computed } from "vue";
 import { saleFormFields } from "@/formfields/formFields";

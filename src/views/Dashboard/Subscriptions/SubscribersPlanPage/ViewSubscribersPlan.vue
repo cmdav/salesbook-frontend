@@ -1,7 +1,8 @@
 <template>
     <div class="actions">
         <!-- <input type="text" v-model="search" placeholder="Search..." class="search-input" /> -->
-        <div v-if="permissions">
+        <!-- <div v-if="permissions"> -->
+        <div>
             <button class="button add-btn" @click="openModal()">
                 Add
                 <!-- <router-link to=" /create-subscription" class="button add-btn">Add</router-link> -->
@@ -14,8 +15,8 @@
                 <tr>
                     <th>S.NO</th>
                     <th>PLAN NAME</th>
-                    <!-- <th>DESCRIPTION</th> -->
-                    <!-- <th>EDIT</th> -->
+                    <th>DESCRIPTION</th>
+                    <th>EDIT</th>
                     <th>DELETE</th>
                 </tr>
             </thead>
@@ -23,8 +24,8 @@
                 <tr v-for="(item, index) in data" :key="item.id">
                     <td>{{ index + 1 }}</td>
                     <td>{{ item.plan_name }}</td>
-                    <!-- <td>{{ item.description }}</td> -->
-                    <!-- <td><button @click="openDeleteModal(item)">Edit</button></td> -->
+                    <td>{{ item.description }}</td>
+                    <td><button @click="openEditModal(item)">Edit</button></td>
                     <td><button @click="openDeleteModal(item)">Delete</button></td>
                 </tr>
             </tbody>
@@ -33,6 +34,9 @@
 
     <DeleteModal v-if="showDeleteModal" @close="closeDeleteModal" @updated="forceRefresh" :items="itemToDelete"
         :url="'subscriptions'" :modalTitle="modalTitle" />
+
+    <EditModal v-if="showEditModal" @close="closeEditModal" :items="itemToEdit" :formField="subscriptionFormFields"
+        @updated="forceRefresh" :formTitle="'Edit Subscription Plan'" :url="'subscriptions'" />
 
     <FormModal v-if="showModal" @close="closeModal" @updated="forceRefresh" :key="forceRefresh"
         :formTitle="'Add Subscription Plan'" :fields="subscriptionFormFields" :isLoadingMsg="isOptionLoadingMsg"
@@ -63,10 +67,12 @@ const search = ref('')
 const data = ref([])
 const pagination = ref({})
 const showDeleteModal = ref(false)
+const showEditModal = ref(false)
 // const showModal = ref({
 //     addSubscription: false,
 // });
 const itemToDelete = ref(null)
+const itemToEdit = ref(null)
 const modalTitle = 'Delete Purchase'
 
 const currentPage = ref(1)
@@ -77,9 +83,9 @@ const formState = reactive(
         description: "",
     });
 
-const { usePostComposable, FormModal } = useSharedComponent("subscriptions");
+const { usePostComposable, EditModal, useEditComposable, FormModal } = useSharedComponent("subscriptions");
 const { showModal } = usePostComposable("subscriptions", usePostComposable);
-
+// const { showEditModal, closeEditModal, items } = useEditComposable(emit);
 
 // const filteredData = computed(() => {
 //   return data.value.filter((item) => {
@@ -96,7 +102,7 @@ const { showModal } = usePostComposable("subscriptions", usePostComposable);
 
 async function fetchData(page = 1) {
     try {
-        const response = await apiService.get(`all-subscriptions`)
+        const response = await apiService.get(`subscriptions`)
         data.value = response.data || []
         console.log('Data Value',data.value)
         pagination.value = {
@@ -156,6 +162,16 @@ function openDeleteModal(item) {
 function closeDeleteModal() {
     showDeleteModal.value = false
     itemToDelete.value = null
+}
+
+function openEditModal(item) {
+    showEditModal.value = true
+    itemToEdit.value = item
+}
+
+function closeEditModal() {
+    showEditModal.value = false
+    itemToEdit.value = null
 }
 
 function forceRefresh() {

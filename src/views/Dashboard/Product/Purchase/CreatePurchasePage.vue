@@ -61,10 +61,13 @@
               <input type="date" v-model="purchase.expiry_date" :min="minExpiryDate" class="expiry-date" />
             </div>
             <input type="hidden" v-model="purchase.price_id" />
+            <div v-if="index !== 0" class="remove-button">
+              <button type="button" @click="removePurchase(index)" class="button remove-purchase-button">Remove</button>
+            </div>
           </div>
           <hr class="separator" />
         </div>
-        <button type="submit" class="button submit-button">Submit</button>
+        <button type="submit" class="button submit-button" :disabled="isSubmitting">{{ isSubmitting ? 'Please wait...' : 'Submit' }}</button>
       </form>
     </div>
   </DashboardLayout>
@@ -86,6 +89,7 @@ const productTypes = ref([]);
 const batchNo = ref('');
 const isLoading = ref(false);
 const error = ref(null);
+const isSubmitting = ref(false); // Reactive variable for submission state
 
 // Reactive variable for purchases array
 const purchases = reactive([
@@ -193,6 +197,11 @@ const addPurchase = () => {
   }
 };
 
+// Function to remove a purchase row
+const removePurchase = (index) => {
+  purchases.splice(index, 1);
+};
+
 // Function to check for duplicate purchases
 const isDuplicatePurchase = (supplier_id, product_type_id) => {
   return purchases.some(purchase => purchase.supplier_id === supplier_id && purchase.product_type_id === product_type_id);
@@ -230,6 +239,7 @@ const handleSubmit = async () => {
 
   // Handle form submission
   try {
+    isSubmitting.value = true; // Set submitting state to true
     const formattedPurchases = purchases.map(purchase => {
       if (purchase.price_id && purchase.selling_price === purchase.original_selling_price) {
         // If price_id is present and selling price hasn't changed
@@ -252,6 +262,8 @@ const handleSubmit = async () => {
     router.push('/purchase'); // Redirect to the view purchase page if the submission is successful
   } catch (err) {
     catchAxiosError(err); // Handle error
+  } finally {
+    isSubmitting.value = false; // Set submitting state to false
   }
 };
 
@@ -353,7 +365,13 @@ button {
   cursor: pointer;
 }
 
-.submit-button:hover {
+.submit-button:disabled {
+  background-color: #e86925;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.submit-button:hover:not(:disabled) {
   background-color: #e86925;
 }
 
@@ -390,5 +408,19 @@ button {
   color: #fff;
   padding: 0.3%;
   border-radius: 4px;
+}
+
+.remove-purchase-button {
+  background-color: #d9534f;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 1.5rem;
+}
+
+.remove-purchase-button:hover {
+  background-color: #c9302c;
 }
 </style>
