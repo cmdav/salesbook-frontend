@@ -62,170 +62,6 @@
   </DashboardLayout>
 </template>
 
-<!-- <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
-import apiService from '@/services/apiService';
-import DeleteModal from '@/components/UI/Modal/DeleteModals.vue';
-import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
-import { useStore } from "@/stores/user";
-import { storeToRefs } from 'pinia';
-const store = useStore();
-const { userProfileDetails } = storeToRefs(store);
-console.log(userProfileDetails?.value.company_name)
-console.log(userProfileDetails?.value.company_address)
-console.log(userProfileDetails?.value.email)
-console.log(userProfileDetails?.value.phone_number)
-
-const search = ref('');
-const isSearching = ref(false);
-
-const data = ref([]); // Initialize as an empty array
-const pagination = ref({});
-const showDeleteModal = ref(false);
-const itemToDelete = ref(null);
-const modalTitle = "Delete Sale";
-
-const currentPage = ref(1);
-const totalPages = ref(0);
-const itemsPerPage = ref(0);
-
-watch(search, async (newSearch) => {
-  if (newSearch) {
-    isSearching.value = true;
-    try {
-      const response = await apiService.get(`search-sales/${newSearch}`);
-      console.log(response);
-      data.value = response;
-      return data.value;
-    } catch (error) {
-      console.error('Failed to fetch data:', error);
-    }
-  } else {
-    isSearching.value = false;
-    fetchData();
-  }
-});
-
-async function fetchData(page = 1) {
-  try {
-    const response = await apiService.get(`sales?page=${page}`);
-    console.log(response.data)
-    data.value = response.data || []; // Ensure it’s always an array
-    pagination.value = {
-      next_page_url: response.next_page_url,
-      prev_page_url: response.prev_page_url,
-    };
-    currentPage.value = response.current_page;
-    totalPages.value = response.last_page;
-    itemsPerPage.value = response.per_page;
-  } catch (error) {
-    console.error("Failed to fetch data:", error);
-  }
-}
-
-function changePage(page) {
-  if (page > 0 && page <= totalPages.value) {
-    fetchData(page);
-  }
-}
-
-function openDeleteModal(item) {
-  itemToDelete.value = item;
-  showDeleteModal.value = true;
-}
-
-function closeDeleteModal() {
-  showDeleteModal.value = false;
-  itemToDelete.value = null;
-}
-
-function forceRefresh() {
-  fetchData(currentPage.value);
-}
-
-const generateReceipt = async (transactionId) => {
-  try {
-    const response = await apiService.get(`download-sales-receipts/${transactionId}`);
-    console.log(response.data)
-    if (response.data) {
-      generateReceiptPDF(response.data);
-    } else {
-      console.error('Failed to fetch receipt data');
-    }
-  } catch (error) {
-    console.error('Failed to generate receipt:', error);
-  }
-};
-
-const generateReceiptPDF = (receiptData, userProfileDetails) => {
-  const doc = new jsPDF();
-
-  const headerStyle = { fontSize: 24, fontStyle: 'bold' };
-  const sectionHeaderStyle = { fontSize: 16, fontStyle: 'bold' };
-  const itemStyle = { fontSize: 12 };
-
-  doc.setFont(headerStyle.fontStyle, 'normal');
-  doc.setFontSize(headerStyle.fontSize);
-  doc.text(`${userProfileDetails?.value.company_name}`, 105, 20, null, null, 'center');
-  doc.text(`${userProfileDetails?.value.company_address}`, 105, 25, null, null, 'center');
-  doc.text(`Email: ${userProfileDetails?.value.email}`, 105, 30, null, null, 'center');
-  doc.text(`Phone No: ${userProfileDetails?.value.phone_number}`, 105, 35, null, null, 'center');
-  doc.text('RECEIPT', 105, 42, null, null, 'center'); // Adjusted y-position
-
-  doc.setFont(sectionHeaderStyle.fontStyle, 'normal');
-  doc.setFontSize(sectionHeaderStyle.fontSize);
-  doc.text(`Transaction ID: ${receiptData.transaction_details.transaction_id}`, 20, 50);
-  doc.text(`Date: ${receiptData.transaction_details.created_at}`, 20, 60);
-
-  const tableColumn = ["Product Name", "Quantity", "VAT", "Price (NGN)", "Payment Method", "Total Price (NGN)"];
-  const tableRows = [];
-
-  receiptData.items.forEach((item) => {
-    const itemData = [
-      item.product_type_name,
-      item.quantity,
-      item.vat === 1 ? 'Yes' : 'No',
-      ` ${item.amount}`,
-      item.payment_method,
-      ` ${item.total_price}`
-    ];
-    tableRows.push(itemData);
-  });
-
-  doc.autoTable({
-    head: [tableColumn],
-    body: tableRows,
-    startY: 80,
-    styles: { fontSize: itemStyle.fontSize },
-    theme: 'plain',
-    tableLineColor: [0, 0, 0], // Set table line color to black
-    tableLineWidth: 0.1, // Set the line width
-  });
-
-  let finalY = doc.autoTable.previous.finalY + 10;
-  doc.setFontSize(sectionHeaderStyle.fontSize);
-  doc.text(`Total Amount: NGN ${receiptData.transaction_details.transaction_amount}`, 200, finalY, null, null, 'right');
-
-  const pdfDataUri = doc.output('datauristring');
-  const viewerWindow = window.open();
-  viewerWindow.document.write(`<iframe width='100%' height='100%' src='${pdfDataUri}'></iframe>`);
-};
-
-onMounted(() => fetchData(currentPage.value));
-
-
-const delPermissions = computed(() => {
-  const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'sales');
-  return perm.value?.del == 1; 
-});
-const addPermissions = computed(() => {
-  const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'sales');
-  return perm.write == 1; 
-});
-</script> -->
-
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 import jsPDF from 'jspdf';
@@ -367,7 +203,7 @@ const generateReceiptPDF = (receiptData, userProfileDetails) => {
       item.product_type_name,
       item.price_sold_at,
       item.quantity,
-      item.vat,
+      item.vat.toFixed(2),
       `${item.total_price}`
     ];
     tableRows.push(itemData);
@@ -386,7 +222,7 @@ const generateReceiptPDF = (receiptData, userProfileDetails) => {
   let finalY = doc.autoTable.previous.finalY + 10;
   doc.setFont(invoiceStyle.fontStyle)
   doc.setFontSize(invoiceStyle.fontSize);
-  doc.text(`Total Amount (NGN): ${formatNumber(receiptData.transaction_details.transaction_amount)}`, doc.internal.pageSize.width - 20, finalY, null, null, 'right');
+  doc.text(`Total Amount (NGN): ${formatNumber(receiptData.transaction_details.transaction_amount.toFixed(2))}`, doc.internal.pageSize.width - 20, finalY, null, null, 'right');
 
    
   doc.setFontSize(itemStyle.fontSize);
