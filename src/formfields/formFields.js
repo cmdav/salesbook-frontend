@@ -609,3 +609,70 @@ export const roleFormFields = ref([
     databaseField: 'role_name'
   }
 ])
+
+export const branchFormFields = ref([
+  {
+    label: 'Branch Name',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter first name',
+    databaseField: 'name'
+  },
+  {
+    label: 'State',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter State',
+    databaseField: 'state'
+  },
+  {
+    label: 'Email',
+    type: 'email',
+    value: '',
+    required: true,
+    placeholder: 'Enter email',
+    databaseField: 'email'
+  },
+  {
+    label: 'City',
+    type: 'text',
+    value: '',
+    required: false,
+    placeholder: 'Enter City',
+    databaseField: 'city'
+  },
+  {
+    label: 'Country',
+    type: 'text',
+    value: '',
+    required: false,
+    placeholder: 'Enter country',
+    databaseField: 'country'
+  },
+  {
+    label: 'Contact Person',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter contact person name',
+    databaseField: 'contact_person'
+  },
+  {
+    label: 'Phone Number',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter Phone Number',
+    databaseField: 'phone_number'
+  },
+  {
+    label: 'Postal Code',
+    type: 'text',
+    value: '',
+    required: false,
+    placeholder: 'Enter Postal Code',
+    databaseField: 'postal_code'
+  }
+])
