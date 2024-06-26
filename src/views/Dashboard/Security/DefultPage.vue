@@ -5,10 +5,12 @@
         <template #tab1> Roles </template>
         <template #tab2> Permissions </template>
         <template #tab3> Users </template>
+        <template #tab4> Branches </template>
         
         <template #view1><RolesPage /></template>
         <template #view2><Permissions /></template>
         <template #view3><AddUser /></template>
+        <template #view4><Branches /></template>
         
       </Tab>
     </div>
@@ -20,4 +22,5 @@ import Tab from "@/components/UI/Tab/Tab.vue";
 import RolesPage from "@/views/Dashboard/Security/Pages/RolesPagecopy.vue";
 import AddUser from "@/views/Dashboard/Security/Pages/AddUser.vue";
 import Permissions from "@/views/Dashboard/Security/Pages/PermissionSetting.vue";
+import Branches from "@/views/Dashboard/Security/Pages/Branches.vue";
 </script>

@@ -29,7 +29,8 @@
         :key="forceUpdate" 
         :formTitle="'Add User'"
          :fields="userFormFields"
-      @fetchDataForSubCategory="fetchDataForSubCategory" :isLoadingMsg="isOptionLoadingMsg" :url="'sale-users'">
+      @fetchDataForSubCategory="fetchDataForSubCategory" 
+      :isLoadingMsg="isOptionLoadingMsg" :url="'sale-users'">
     </FormModal>
 
   </div>
@@ -40,7 +41,16 @@ import { ref, onMounted } from "vue";
 import { userFormFields } from "@/formfields/formFields";
 import { useSharedComponent } from "@/composable/useSharedComponent";
 
-const { useSelectComposable, DataTableLayout, usePostComposable, useStore, DeleteModal, useDeleteComposable, FormModal, computed } = useSharedComponent("sale-users");
+const { 
+  useSelectComposable, 
+  DataTableLayout, 
+  usePostComposable, 
+  useStore, 
+  DeleteModal, 
+  useDeleteComposable, 
+  FormModal, 
+  computed 
+} = useSharedComponent("sale-users");
 
 const modalTitle = "user_name ";
 const url = ref("users?type=sales_personnel");
