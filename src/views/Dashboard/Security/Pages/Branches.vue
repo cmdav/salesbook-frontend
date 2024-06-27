@@ -53,7 +53,7 @@ const {
     <DataTableLayout 
       :key="forceUpdate"
        @toggleModal="showModal = !showModal"
-       :excludedKeys="[ 'created_at', 'updated_at' ]"
+       :excludedKeys="[ 'created_at', 'updated_at', 'id' ]"
        toggleButtonLabel="Add Branches" 
        :endpoint="url" 
        :pageName="'settings'"
@@ -85,7 +85,7 @@ const {
          @close="closeModal"
         :key="forceUpdate"
         @updated="forceRefresh"  
-        :formTitle="'Add User'"
+        :formTitle="'Add Branch'"
          :fields="branchFormFields" 
       :isLoadingMsg="isOptionLoadingMsg" :url="url">
     </FormModal>

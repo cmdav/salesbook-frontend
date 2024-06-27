@@ -9,6 +9,7 @@
        @toggleModal="showModal = !showModal" 
        :endpoint="url" :pageName="'settings'"
        toggleButtonLabel="Add User"
+       :excludedKeys="['id', 'organization_code' ]"
       searchEndpoint="search-users" 
       :additionalColumns=additionalColumns>
       <!-- <button class="btn-brand" @click="closeUploadModal">Upload</button> -->
