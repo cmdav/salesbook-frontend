@@ -26,6 +26,15 @@ export const userFormFields = ref([
     databaseField: 'email'
   },
   {
+    label: 'Branch',
+    type: 'select',
+    value: '',
+    required: true,
+    placeholder: 'Select Branch',
+    options: [],
+    databaseField: 'branch_id'
+  },
+  {
     label: 'Role',
     type: 'select',
     value: '',

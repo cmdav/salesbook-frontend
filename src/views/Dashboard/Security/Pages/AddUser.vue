@@ -56,7 +56,7 @@ const modalTitle = "user_name ";
 const url = ref("users?type=sales_personnel");
 
 const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg, }
-  = useSelectComposable(userFormFields, 'users', "role_id", "", "");
+  = useSelectComposable(userFormFields, 'users', 'branch_id', "role_id", "", "");
 
 
 const { showModal, forceUpdate, closeModal } = usePostComposable("/settings", userFormFields);
