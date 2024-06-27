@@ -8,6 +8,7 @@
       :key="forceUpdate"
        @toggleModal="showModal = !showModal" 
        :endpoint="url" :pageName="'settings'"
+       toggleButtonLabel="Add User"
       searchEndpoint="search-users" 
       :additionalColumns=additionalColumns>
       <!-- <button class="btn-brand" @click="closeUploadModal">Upload</button> -->
@@ -56,7 +57,7 @@ const modalTitle = "user_name ";
 const url = ref("users?type=sales_personnel");
 
 const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg, }
-  = useSelectComposable(userFormFields, 'users', 'branch_id', "role_id", "", "");
+  = useSelectComposable(userFormFields, 'users', "role_id", "", "branch_id" );
 
 
 const { showModal, forceUpdate, closeModal } = usePostComposable("/settings", userFormFields);
@@ -92,5 +93,6 @@ const forceRefresh = () => {
 onMounted(async () => {
 
   await fetchDataForSelect("Role", "/all-job-roles", "id", "role_name");
+  await fetchDataForSelect( "Branch", "/list-business-branches", "id", "name");
 });
 </script>
