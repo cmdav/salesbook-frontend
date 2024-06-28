@@ -8,7 +8,7 @@
             v-model="formData.role_id"
             @change="changePermission(formData.role_id)"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-            <option v-for="(option, optionIndex) in roles?.data" :key="optionIndex" :value="option.id">
+            <option v-for="(option, optionIndex) in allRoles" :key="optionIndex" :value="option.id">
               {{ option.role_name }}
             </option>
           </select>
@@ -48,7 +48,7 @@ import { ref, reactive, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useSecurityStore } from "@/stores/security";
 const securityStore = useSecurityStore();
-const { allPages, roles } = storeToRefs(securityStore);
+const { allPages, allRoles } = storeToRefs(securityStore);
 let loading = ref(false);
 const formData = reactive({
   role_id: "",
