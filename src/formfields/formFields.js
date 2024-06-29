@@ -629,14 +629,6 @@ export const branchFormFields = ref([
     databaseField: 'name'
   },
   {
-    label: 'State',
-    type: 'text',
-    value: '',
-    required: true,
-    placeholder: 'Enter State',
-    databaseField: 'state'
-  },
-  {
     label: 'Email',
     type: 'email',
     value: '',
@@ -651,6 +643,14 @@ export const branchFormFields = ref([
     required: false,
     placeholder: 'Enter City',
     databaseField: 'city'
+  },
+  {
+    label: 'State',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter State',
+    databaseField: 'state'
   },
   {
     label: 'Country',
