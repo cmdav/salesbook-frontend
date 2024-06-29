@@ -2,7 +2,8 @@
   <DashboardLayout pageTitle="Purchase Page">
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
-      <div v-if="addPermissions">
+      <div v-if="addPermissions" class="action">
+        <BranchDropDown :branches="branches" @change="handleBranchChange" />
         <button class="button add-btn"><router-link to="/create-purchase" class="button add-btn">Add</router-link></button>
       </div>
     </div>
@@ -57,6 +58,7 @@ import apiService from '@/services/apiService';
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue';
 import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
 import { useStore } from "@/stores/user";
+import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue';
 
 const search = ref('');
 const isSearching = ref(false);
@@ -70,6 +72,39 @@ const modalTitle = "Delete Purchase";
 const currentPage = ref(1);
 const totalPages = ref(0);
 const itemsPerPage = ref(0);
+const branches = ref([]);
+
+onMounted(async () => {
+  try {
+    const response = await apiService.get('/list-business-branches'); 
+    console.log(response)
+    branches.value = response || [];
+    console.log(branches.value)
+  } catch (error) {
+    console.error('Failed to fetch branches:', error);
+  }
+});
+
+function handleBranchChange(selectedBranchId) {
+  if (selectedBranchId) {
+    fetchBranch(selectedBranchId);
+  } else {
+    fetchData(currentPage.value);
+  }
+}
+
+
+async function fetchBranch(branchId = 1) {
+  try {
+    const response = await apiService.get(`purchases?branch_id=${branchId}`);
+    data.value = response;
+    console.log(response)
+    
+    return data.value;
+  } catch (error) {
+    console.error('Failed to fetch sales data:', error);
+  }
+}
 
 watch(search, async (newSearch) => {
   if (newSearch) {
@@ -154,9 +189,16 @@ const addPermissions = computed(() => {
 
 <style scoped>
 .actions {
+  width: 100%;
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
+}
+.action {
+  width: 25%;
+  display: flex;
+  justify-content: space-between;
+  /* margin-bottom: 20px; */
 }
 
 .search-input {

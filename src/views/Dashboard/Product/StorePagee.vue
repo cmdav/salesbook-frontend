@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import apiService from '@/services/apiService';
 import { getDb, setDb } from '@/utils/db';
+import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue';
 
 const search = ref('');
 const data = ref([]);
@@ -9,6 +10,39 @@ const pagination = ref({});
 
 const currentPage = ref(1);
 const totalPages = ref(0);
+const branches = ref([]);
+
+onMounted(async () => {
+  try {
+    const response = await apiService.get('/list-business-branches'); 
+    console.log(response)
+    branches.value = response || [];
+    console.log(branches.value)
+  } catch (error) {
+    console.error('Failed to fetch branches:', error);
+  }
+});
+
+function handleBranchChange(selectedBranchId) {
+  if (selectedBranchId) {
+    fetchBranch(selectedBranchId);
+  } else {
+    fetchData(currentPage.value);
+  }
+}
+
+
+async function fetchBranch(branchId = 1) {
+  try {
+    const response = await apiService.get(`sales?branch_id=${branchId}`);
+    data.value = response;
+    console.log(response)
+    
+    return data.value;
+  } catch (error) {
+    console.error('Failed to fetch sales data:', error);
+  }
+}
 
 const filteredData = computed(() => {
   return data.value.filter(item => {
@@ -64,6 +98,8 @@ onMounted(() => fetchData(currentPage.value));
       <div class="actions">
         <input type="text" v-model="search" placeholder="Search..." class="search-input" />
         <!-- <button class="button add-btn"><router-link to="/create-purchase" class="button add-btn">Add</router-link></button> -->
+
+          <BranchDropDown :branches="branches" @change="handleBranchChange" />
       </div>
       <div class="table-container">
         <table>
@@ -101,9 +137,16 @@ onMounted(() => fetchData(currentPage.value));
 
 <style scoped>
 .actions {
+  width: 100%;
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
+}
+.action {
+  width: 25%;
+  display: flex;
+  justify-content: space-between;
+  /* margin-bottom: 20px; */
 }
 
 .search-input {
