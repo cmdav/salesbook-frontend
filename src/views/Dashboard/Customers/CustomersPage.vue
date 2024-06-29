@@ -25,7 +25,10 @@
               </div>
             </div>
           </div>
-          <div class="flex justify-end mb-4">
+          <div class="flex justify-between mt-6 ">
+            <div>
+              <BranchDropDown :branches="branches" @change="handleBranchChange" />
+            </div>
             <div class="flex flex-row gap-2 items-center">
               <AuthInput
                 :error="false"
@@ -50,7 +53,7 @@
               </button>
             </div>
           </div>
-          <div class="bg-white py-6 mt-4 rounded-lg">
+          <div class="bg-white py-6 rounded-lg">
             <div class="overflow-x-scroll hide-scrollbar">
               <div class="table-container overflow-x-scroll">
                 <table class="table-auto w-full">
@@ -86,6 +89,8 @@
                       <td class="text-left p-4 pr-0 pl-6 capitalize border-x">{{ i.address }}</td>
                     </tr>
                   </tbody>
+      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+
                 </table>
               </div>
               <div v-if="!isSearching" class="mx-auto w-fit my-5">
@@ -103,6 +108,7 @@
 <script setup>
 import { ref, reactive, watch, onMounted } from 'vue';
 import DashboardLayout from '@/components/Layouts/dashboardLayout.vue';
+import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue';
 import AuthInput from '@/components/UI/Input/AuthInput.vue';
 import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
 import { useRouter } from 'vue-router';
@@ -120,6 +126,76 @@ const totalCompanies = ref(0);
 const toggleButton = ref(true);
 const toggleCompanyTable = ref(false);
 const userType = ref('individual');
+const branches = ref([]);
+const errorMessage = ref('');
+
+onMounted(async () => {
+  try {
+    const response = await apiService.get('/list-business-branches'); 
+    console.log(response)
+    branches.value = response || [];
+    console.log(branches.value)
+  } catch (error) {
+    console.error('Failed to fetch branches:', error);
+  }
+});
+
+function handleBranchChange(type, selectedBranchId) {
+  if (selectedBranchId) {
+    fetchBranch(type, selectedBranchId);
+  } else {
+    fetchData();
+  }
+}
+
+
+async function fetchBranch( type = 'individual', branchId = 1) {
+  try {
+    const response = await apiService.get(`customers?type=${type}&branch_id=${branchId}`);
+    if (type === 'individual') {
+      if (response.data && response.data.length) {
+      data.value = response.data.map((i) => ({
+        id: i.id,
+        first_name: i.first_name,
+        last_name: i.last_name,
+        email: i.email,
+        phone_number: i.phone_number,
+        address: i.address
+      }));
+      totalIndividuals.value = response.total;
+      errorMessage.value = '';
+    } else {
+      data.value = [];
+      errorMessage.value = 'No customer found for the selected branch.';
+    }
+    } else {
+      if (response.data && response.data.length) {
+      data.value = response.data.map((i) => ({
+        id: i.id,
+        company_name: i.company_name,
+        contact_person: i.contact_person,
+        email: i.email,
+        phone_number: i.phone_number,
+        address: i.address
+      }));
+      totalCompanies.value = response.total;
+      errorMessage.value = '';
+    } else {
+      data.value = [];
+      errorMessage.value = 'No items found for the selected branch.';
+    }
+    }
+   currentPage.value = response.current_page;
+    totalPages.value = response.last_page;
+    itemsPerPage.value = response.per_page;
+    console.log(itemsPerPage.value);
+    
+    return data.value;
+  } catch (error) {
+    console.error('Failed to fetch sales data:', error);
+  }
+}
+
 let sortInput = reactive({
   search: ''
 });
@@ -295,5 +371,12 @@ thead {
   background-color: #C35214;
   border-radius: 4px;
   color: white;
+}
+
+.error-message {
+  color: rgb(171, 26, 26);
+  font-size: 16px;
+  text-align: center;
+  margin: 20px 0;
 }
 </style>
