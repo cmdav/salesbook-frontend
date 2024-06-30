@@ -7,11 +7,18 @@
     <DataTableLayout 
       :key="forceUpdate"
        @toggleModal="showModal = !showModal" 
-       :endpoint="url" :pageName="'settings'"
+       :endpoint="endpoint" 
+       :pageName="'settings'"
        toggleButtonLabel="Add User"
        :excludedKeys="['id', 'organization_code' ]"
       searchEndpoint="search-users" 
-      :additionalColumns=additionalColumns>
+      :additionalColumns=additionalColumns
+      :data="data"
+      :errorMessage="errorMessage"
+      >
+       <div>
+              <BranchDropDown :branches="branches" @change="handleBranchChange" />
+            </div>
       <!-- <button class="btn-brand" @click="closeUploadModal">Upload</button> -->
     </DataTableLayout>
 
@@ -42,6 +49,8 @@
 import { ref, onMounted } from "vue";
 import { userFormFields } from "@/formfields/formFields";
 import { useSharedComponent } from "@/composable/useSharedComponent";
+import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue';
+import apiService from '@/services/apiService';
 
 const { 
   useSelectComposable, 
@@ -54,8 +63,9 @@ const {
   computed 
 } = useSharedComponent("sale-users");
 
+
 const modalTitle = "user_name ";
-const url = ref("users?type=sales_personnel");
+const endpoint = ref("users?type=sales_personnel");
 
 const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg, }
   = useSelectComposable(userFormFields, 'users', "role_id", "", "branch_id" );
@@ -82,6 +92,54 @@ const {
   itemsId,
   closeDeleteModal
 } = useDeleteComposable();
+
+const branches = ref([]);
+const selectedBranchId = ref(null);
+const data = ref([]);
+const errorMessage = ref('');
+
+onMounted(async () => {
+  await fetchDataForSelect("Role", "/all-job-roles", "id", "role_name");
+  await fetchDataForSelect("Branch", "/list-business-branches", "id", "name");
+  await fetchBranches();
+  fetchData();
+});
+
+async function fetchBranches() {
+  try {
+    const response = await apiService.get('/list-business-branches');
+    branches.value = response || [];
+  } catch (error) {
+    console.error('Failed to fetch branches:', error);
+  }
+}
+
+function handleBranchChange(branchId) {
+  selectedBranchId.value =  Number(branchId);;
+  fetchData();
+}
+
+async function fetchData() {
+  let url = endpoint.value;
+  if (selectedBranchId.value) {
+    url += `&branch_id=${selectedBranchId.value}`;
+  }
+
+  try {
+    const response = await apiService.get(url);
+    if (response.data && response.data.length > 0) {
+      data.value = response.data;
+      errorMessage.value = '';
+    } else {
+      data.value = [];
+      errorMessage.value = 'No users found for the selected branch.';
+    }
+  } catch (error) {
+    console.error('Failed to fetch data:', error);
+    data.value = [];
+    errorMessage.value = 'Failed to fetch data. Please try again later.';
+  }
+}
 
 // const toggleAddPermissionModal = async () => {
 //   showModal.value = !showModal.value;

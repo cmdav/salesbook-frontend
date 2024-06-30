@@ -42,6 +42,8 @@
           </tr>
         </tbody>
       </table>
+      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+
     </div>
 
     <DeleteModal v-if="showDeleteModal" @close="closeDeleteModal" @updated="forceRefresh" :items="itemToDelete" :url="'purchases'" :modalTitle="modalTitle" />
@@ -73,6 +75,7 @@ const currentPage = ref(1);
 const totalPages = ref(0);
 const itemsPerPage = ref(0);
 const branches = ref([]);
+const errorMessage = ref('');
 
 onMounted(async () => {
   try {
@@ -89,7 +92,7 @@ function handleBranchChange(selectedBranchId) {
   if (selectedBranchId) {
     fetchBranch(selectedBranchId);
   } else {
-    fetchData(currentPage.value);
+    fetchData();
   }
 }
 
@@ -97,12 +100,18 @@ function handleBranchChange(selectedBranchId) {
 async function fetchBranch(branchId = 1) {
   try {
     const response = await apiService.get(`purchases?branch_id=${branchId}`);
-    data.value = response;
-    console.log(response)
+      if (response.data && response.data.length) {
+      data.value = response.data;
+      errorMessage.value = '';
+    } else {
+      data.value = [];
+      errorMessage.value = 'No items found for the selected branch.';
+    }
     
     return data.value;
   } catch (error) {
     console.error('Failed to fetch sales data:', error);
+    errorMessage.value = 'An error occurred while fetching data.';
   }
 }
 
@@ -131,6 +140,11 @@ async function fetchData(page = 1) {
   try {
     const response = await apiService.get(`purchases?page=${page}`);
     data.value = response.data || [];
+      if (data.value.length === 0) {
+      errorMessage.value = 'No items found';
+    } else {
+      errorMessage.value = '';
+    }
     pagination.value = {
       next_page_url: response.next_page_url,
       prev_page_url: response.prev_page_url,
@@ -260,5 +274,12 @@ tbody tr:hover {
 
 thead {
   background-color: #C35214;
+}
+
+.error-message {
+  color: rgb(171, 26, 26);
+  font-size: 16px;
+  text-align: center;
+  margin: 20px 0;
 }
 </style>

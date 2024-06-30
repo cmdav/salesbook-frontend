@@ -30,4 +30,7 @@ function filterByBranch() {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+.select-input:focus{
+    outline: none;
+}
 </style>

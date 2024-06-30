@@ -629,14 +629,6 @@ export const branchFormFields = ref([
     databaseField: 'name'
   },
   {
-    label: 'Email',
-    type: 'email',
-    value: '',
-    required: true,
-    placeholder: 'Enter email',
-    databaseField: 'email'
-  },
-  {
     label: 'City',
     type: 'text',
     value: '',
@@ -661,6 +653,14 @@ export const branchFormFields = ref([
     databaseField: 'country'
   },
   {
+    label: 'Postal Code',
+    type: 'text',
+    value: '',
+    required: false,
+    placeholder: 'Enter Postal Code',
+    databaseField: 'postal_code'
+  },
+  {
     label: 'Contact Person',
     type: 'text',
     value: '',
@@ -669,19 +669,19 @@ export const branchFormFields = ref([
     databaseField: 'contact_person'
   },
   {
+    label: 'Email',
+    type: 'email',
+    value: '',
+    required: true,
+    placeholder: 'Enter email',
+    databaseField: 'email'
+  },
+  {
     label: 'Phone Number',
-    type: 'text',
+    type: 'num',
     value: '',
     required: true,
     placeholder: 'Enter Phone Number',
     databaseField: 'phone_number'
-  },
-  {
-    label: 'Postal Code',
-    type: 'text',
-    value: '',
-    required: false,
-    placeholder: 'Enter Postal Code',
-    databaseField: 'postal_code'
   }
 ])

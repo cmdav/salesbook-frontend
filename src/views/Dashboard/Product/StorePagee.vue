@@ -11,6 +11,7 @@ const pagination = ref({});
 const currentPage = ref(1);
 const totalPages = ref(0);
 const branches = ref([]);
+const errorMessage = ref('');
 
 onMounted(async () => {
   try {
@@ -31,16 +32,19 @@ function handleBranchChange(selectedBranchId) {
   }
 }
 
-
 async function fetchBranch(branchId = 1) {
   try {
-    const response = await apiService.get(`sales?branch_id=${branchId}`);
-    data.value = response;
-    console.log(response)
-    
-    return data.value;
+    const response = await apiService.get(`stores?branch_id=${branchId}`);
+    if (response.data && response.data.length) {
+      data.value = response.data;
+      errorMessage.value = '';
+    } else {
+      data.value = [];
+      errorMessage.value = 'No items found for the selected branch.';
+    }
   } catch (error) {
     console.error('Failed to fetch sales data:', error);
+    errorMessage.value = 'An error occurred while fetching data.';
   }
 }
 
@@ -124,6 +128,8 @@ onMounted(() => fetchData(currentPage.value));
             </tr>
           </tbody>
         </table>
+      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+
       </div>
   
   
@@ -220,5 +226,12 @@ thead {
   background-color: #C35214;
   border-radius: 4px;
   color: white;
+}
+
+.error-message {
+  color: rgb(171, 26, 26);
+  font-size: 16px;
+  text-align: center;
+  margin: 20px 0;
 }
 </style>

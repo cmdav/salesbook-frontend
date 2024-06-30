@@ -98,6 +98,16 @@
       <label class="priceView"> &#8358; {{ field.value ? parseFloat(field.value).toLocaleString() : '0.00'}}</label>
     </template>
 
+    <template v-else-if="field.type === 'num'">
+      <input :id="field.id" type="number"
+        class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
+        :class="{ 'readonly-background': field.readonly }"
+        @input="$emit('fieldChanged', field.databaseField, parseFloat(field.value).toLocaleString() || 0)"
+        v-model.number="field.value" :name="field.databaseField" :required="field.required"
+        :placeholder="field.placeholder" :min="field.min || 0" :readonly="field.readonly" />
+      <!-- <label class="priceView"> &#8358; {{ field.value ? parseFloat(field.value).toLocaleString() : '0.00'}}</label> -->
+    </template>
+
     <!-- Date field -->
     <template v-else-if="field.type === 'date'">
       <input :id="field.id" type="date"
