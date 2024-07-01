@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import { branchFormFields } from "@/formfields/formFields";
 import { useSharedComponent } from "@/composable/useSharedComponent";
 const emit = defineEmits("forceRefresh");
@@ -12,6 +12,7 @@ const showModal = ref(false);
 
 const formState = reactive({ role_name: "" });
 const {
+  useSelectComposable,
   DataTableLayout,
   usePostComposable,
   useEditComposable,
@@ -27,6 +28,10 @@ const { forceUpdate } = usePostComposable(
   "/business-branches",
   branchFormFields
 );
+
+const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg, }
+  = useSelectComposable(branchFormFields, "country_id", "state_id");
+
 
 const forceRefresh = () => {
   forceUpdate.value++;
@@ -44,6 +49,11 @@ const {
   itemsId,
   closeDeleteModal,
 } = useDeleteComposable();
+
+onMounted(async () => {
+  await fetchDataForSelect("Country", "/countries", "id", "name");
+  // await fetchDataForSelect("State", "/countries/id", "id", "name");
+});
 
 </script>
 
@@ -87,7 +97,9 @@ const {
         @updated="forceRefresh"  
         :formTitle="'Add Branch'"
          :fields="branchFormFields" 
-      :isLoadingMsg="isOptionLoadingMsg" :url="url">
+      :isLoadingMsg="isOptionLoadingMsg"
+       @fetchDataForSubCategory="fetchDataForSubCategory" 
+      :url="url">
     </FormModal>
 
   
