@@ -15,11 +15,6 @@
           {{ props?.toggleButtonLabel }}
         </button>
       </div>
-        <!-- <div>
-        <button @click="$emit('toggleModal')" class="btn-brand !px-4">
-          {{ props?.toggleButtonLabel }}
-        </button>
-      </div> -->
     </div>
 
     <!-- Section for the  table -->
@@ -149,8 +144,6 @@ import AuthInput from '@/components/UI/Input/AuthInput.vue';
 import apiService from '@/services/apiService';
 import { debounce } from 'lodash-es';
 import { useStore } from "@/stores/user";
-
-
 
 const searchQuery = ref('');
 

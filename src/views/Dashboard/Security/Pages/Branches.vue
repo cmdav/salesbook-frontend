@@ -1,82 +1,6 @@
-<!-- eslint-disable vue/multi-word-component-names
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
-import { ref, reactive, onMounted, watch } from "vue";
-import { branchFormFields } from "@/formfields/formFields";
-import { useSharedComponent } from "@/composable/useSharedComponent";
-const emit = defineEmits("forceRefresh");
-
-
-const url = ref("business-branches");
-
-const showModal = ref(false);
-
-const formState = reactive({ role_name: "" });
-const {
-  useSelectComposable,
-  DataTableLayout,
-  usePostComposable,
-  useEditComposable,
-  EditModal,
-  DeleteModal,
-  useDeleteComposable,
-  FormModal, 
-  defineEmits,
-} = useSharedComponent('business-branches');
-
-const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
-const { forceUpdate } = usePostComposable(
-  "/business-branches",
-  branchFormFields
-);
-// const link = ref(`states?country_id=${id}`)
-
-const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg, }
-  = useSelectComposable();
-
-
-const forceRefresh = () => {
-  forceUpdate.value++;
-};
-
-const closeModal = () => {
-  showModal.value = !showModal.value;
-  formState.role_name = "";
-};
-
-
-const {
-  handleDelete,
-  showDeleteModal,
-  itemsId,
-  closeDeleteModal,
-} = useDeleteComposable();
-
-const handleCountryChange = async (countryId) => {
-  await fetchDataForSubCategory(countryId, "country_id", "state_id");
-};
-
-onMounted(async () => {
-  await fetchDataForSelect("Country", "/countries", "id", "name");
-  // Trigger fetching states when country is selected
-  watch(
-    () => branchFormFields.value.find(field => field.databaseField === 'country_id').value,
-    (newCountryId) => {
-      if (newCountryId) {
-        handleCountryChange(newCountryId);
-      }
-    }
-  );
-});
-
-// onMounted(async () => {
-//   await fetchDataForSelect("Country", "/countries", "id", "name");
-//   // await fetchDataForSelect("State", "/countries/id", "id", "name");
-// });
-
-</script> -->
-
-<script setup>
-import { ref, reactive, onMounted, watch } from "vue";
+import { ref, reactive, onMounted, watch, computed } from "vue";
 import { branchFormFields } from "@/formfields/formFields";
 import { useSharedComponent } from "@/composable/useSharedComponent";
 import apiService from "@/services/apiService"; // Ensure this import is correct based on your project structure
@@ -93,6 +17,7 @@ const {
   DataTableLayout,
   usePostComposable,
   useEditComposable,
+   useStore, 
   EditModal,
   DeleteModal,
   useDeleteComposable,
@@ -116,6 +41,20 @@ const closeModal = () => {
   showModal.value = !showModal.value;
   formState.role_name = "";
 };
+const perm = roles.value;
+const store = useStore();
+const roles = computed(() => {
+
+  return store.getUser.user.permission.role_name === "Admin";
+})
+
+const additionalColumns = computed(() => {
+  const cols = [];
+  if (roles.value) {
+    cols.push({ name: 'Edit', action: handleEdit}, { name: 'Delete', action: handleDelete },);
+  }
+  return cols;
+})
 
 const {
   handleDelete,
@@ -161,12 +100,13 @@ watch(() => branchFormFields.value.find(field => field.databaseField === 'countr
     <DataTableLayout 
       :key="forceUpdate"
        @toggleModal="showModal = !showModal"
-       :excludedKeys="[ 'created_at', 'updated_at', 'id' ]"
+       :excludedKeys="[ 'created_at', 'updated_at', 'id', 'state_id', 'country_id' ]"
        toggleButtonLabel="Add Branches" 
        :endpoint="url" 
        :pageName="'settings'"
       searchEndpoint="business-branches" 
-      :additionalColumns="[{ name: 'Edit', action: handleEdit}, { name: 'Delete', action: handleDelete },]">
+      :additionalColumns="additionalColumns">
+     <!-- <button v-if="perm" @click=""> Add Branch </button> -->
     </DataTableLayout>
 
     
