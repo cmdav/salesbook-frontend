@@ -642,7 +642,7 @@ export const branchFormFields = ref([
     option: [],
     required: true,
     placeholder: 'Enter State',
-    databaseField: 'countries'
+    databaseField: 'state_id'
   },
   {
     label: 'Country',
@@ -651,7 +651,7 @@ export const branchFormFields = ref([
     value: '',
     required: true,
     placeholder: 'Enter country',
-    databaseField: 'countries'
+    databaseField: 'country_id'
   },
   {
     label: 'Postal Code',

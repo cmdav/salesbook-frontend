@@ -114,6 +114,7 @@ onMounted(() => fetchData(currentPage.value));
               <th>PRODUCT DESCRIPTION</th>
               <th>BATCH NO</th>
               <th>QUANTITY AVAILABLE</th>
+              <th>BRANCH</th>
               <th>STATUS</th>
             </tr>
           </thead>
@@ -124,6 +125,7 @@ onMounted(() => fetchData(currentPage.value));
               <td>{{ item.product_description }}</td>
               <td>{{ item.batch_no }}</td>
               <td>{{ item.quantity_available }}</td>
+              <td>{{ item.branch_name }}</td>
               <td>{{ item.status }}</td>
             </tr>
           </tbody>
