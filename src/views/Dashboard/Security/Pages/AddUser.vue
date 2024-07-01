@@ -39,7 +39,8 @@
         :formTitle="'Add User'"
          :fields="userFormFields"
       @fetchDataForSubCategory="fetchDataForSubCategory" 
-      :isLoadingMsg="isOptionLoadingMsg" :url="'sale-users'">
+      :isLoadingMsg="isOptionLoadingMsg" 
+      :url="'sale-users'">
     </FormModal>
 
   </div>
@@ -149,9 +150,5 @@ const forceRefresh = () => {
   forceUpdate.value++;
 };
 
-onMounted(async () => {
 
-  await fetchDataForSelect("Role", "/all-job-roles", "id", "role_name");
-  await fetchDataForSelect( "Branch", "/list-business-branches", "id", "name");
-});
 </script>

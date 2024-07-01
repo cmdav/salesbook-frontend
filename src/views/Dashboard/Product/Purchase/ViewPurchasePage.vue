@@ -20,6 +20,7 @@
             <th>COST PRICE(NGN)</th>
             <th>SELLING PRICE(NGN)</th>
             <th>SUPPLIER</th>
+            <th>BRANCH</th>
             <th>CREATED BY</th>
             <th>UPDATED BY</th>
             <th v-if="delPermissions">DELETE</th>
@@ -36,6 +37,7 @@
             <td>{{ item.cost_price }}</td>
             <td>{{ item.selling_price }}</td>
             <td>{{ item.supplier}}</td>
+            <td>{{ item.branch_name}}</td>
             <td>{{ item.created_by }}</td>
             <td>{{ item.updated_by }}</td>
             <td v-if="permissions"><button @click="openDeleteModal(item)">Delete</button></td>
@@ -139,6 +141,7 @@ watch(search, async (newSearch) => {
 async function fetchData(page = 1) {
   try {
     const response = await apiService.get(`purchases?page=${page}`);
+    console.log(response)
     data.value = response.data || [];
       if (data.value.length === 0) {
       errorMessage.value = 'No items found';

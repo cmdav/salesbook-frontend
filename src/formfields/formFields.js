@@ -638,19 +638,20 @@ export const branchFormFields = ref([
   },
   {
     label: 'State',
-    type: 'text',
-    value: '',
+    type: 'select',
+    option: [],
     required: true,
     placeholder: 'Enter State',
-    databaseField: 'state'
+    databaseField: 'state_id'
   },
   {
     label: 'Country',
-    type: 'text',
+    type: 'select',
+    option: [],
     value: '',
-    required: false,
+    required: true,
     placeholder: 'Enter country',
-    databaseField: 'country'
+    databaseField: 'country_id'
   },
   {
     label: 'Postal Code',

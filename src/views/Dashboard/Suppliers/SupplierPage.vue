@@ -57,7 +57,7 @@
                       <th class="text-left p-4 pr-0 px-6 border-x capitalize">Last Name</th>
                       <th class="text-left p-4 pr-0 px-6 border-x capitalize">Email</th>
                       <th class="text-left p-4 pr-0 px-6 border-x capitalize">Phone Number</th>
-                      <!-- <th class="text-left p-4 pr-0 px-6 border-x capitalize">account</th> -->
+                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">Branch</th>
                       <!-- <th class="text-left p-4 pr-0 px-6 capitalize">expiring Date</th> -->
                     </tr>
                   </thead>
@@ -85,9 +85,9 @@
                       <td class="text-left p-4 pr-0 pl-6 border-x capitalize">
                         {{ i.phone_number }}
                       </td>
-                      <!-- <td class="text-left p-4 pr-0 pl-6 border-x capitalize">
-                        {{ i.account_number }}
-                      </td> -->
+                      <td class="text-left p-4 pr-0 pl-6 border-x capitalize">
+                        {{ i.branch_name }}
+                      </td>
                       <!-- <td class="text-left p-4 pr-0 pl-6 capitalize">Basic</td> -->
                     </tr>
                   </tbody>

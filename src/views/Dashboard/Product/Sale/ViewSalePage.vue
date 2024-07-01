@@ -28,6 +28,7 @@
             <th>TRANSACTION ID</th>
             <th>CUSTOMER DETAIL</th>
             <th>CUSTOMER PHONE NUMBER</th>
+            <th>BRANCH</th>
             <th>CREATED BY</th>
             <th>UPDATED BY</th>
             <th>RECEIPT</th>
@@ -49,6 +50,7 @@
             <td>{{ item.transaction_id }}</td>
             <td>{{ item.customer_detail }}</td>
             <td>{{ item.customer_phone_number }}</td>
+            <td>{{ item.branch_name }}</td>
             <td>{{ item.created_by }}</td>
             <td>{{ item.updated_by }}</td>
             <td><button @click="generateReceipt(item.transaction_id)">Receipt</button></td>
