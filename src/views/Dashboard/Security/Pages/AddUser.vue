@@ -25,13 +25,6 @@
     <DeleteModal v-if="showDeleteModal" @close="closeDeleteModal" @updated="forceRefresh" :items="itemsId"
       :url="'/users'" :modalTitle="modalTitle" />
 
-    <!-- <SettingsLayoutcopy @changePage="changePage" :products="allUser">
-      <button class="btn-
-      brand !px-2 !text-[14px]" @click="toggleAddPermissionModal">
-        Add  User
-      </button>
-    </SettingsLayoutcopy> -->
-    <!-- <PermissionFormModalcopy v-if="showModal" @close="toggleAddPermissionModal" /> -->
     <FormModal 
         v-if="showModal"
          @close="closeModal"
@@ -63,7 +56,6 @@ const {
   FormModal, 
   computed 
 } = useSharedComponent("sale-users");
-
 
 const modalTitle = "user_name ";
 const endpoint = ref("users?type=sales_personnel");

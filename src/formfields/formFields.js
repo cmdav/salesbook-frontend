@@ -629,12 +629,13 @@ export const branchFormFields = ref([
     databaseField: 'name'
   },
   {
-    label: 'City',
-    type: 'text',
+    label: 'Country',
+    type: 'select',
+    option: [],
     value: '',
-    required: false,
-    placeholder: 'Enter City',
-    databaseField: 'city'
+    required: true,
+    placeholder: 'Enter country',
+    databaseField: 'country_id'
   },
   {
     label: 'State',
@@ -645,13 +646,12 @@ export const branchFormFields = ref([
     databaseField: 'state_id'
   },
   {
-    label: 'Country',
-    type: 'select',
-    option: [],
+    label: 'City',
+    type: 'text',
     value: '',
-    required: true,
-    placeholder: 'Enter country',
-    databaseField: 'country_id'
+    required: false,
+    placeholder: 'Enter City',
+    databaseField: 'city'
   },
   {
     label: 'Postal Code',
