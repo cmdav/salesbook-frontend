@@ -59,6 +59,7 @@ const {
 
 const modalTitle = "user_name ";
 const endpoint = ref("users?type=sales_personnel");
+console.log(endpoint)
 
 const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg, }
   = useSelectComposable(userFormFields, 'users', "role_id", "", "branch_id" );
