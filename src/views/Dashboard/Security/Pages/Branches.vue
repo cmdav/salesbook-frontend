@@ -41,7 +41,7 @@ const closeModal = () => {
   showModal.value = !showModal.value;
   formState.role_name = "";
 };
-const perm = roles.value;
+
 const store = useStore();
 const roles = computed(() => {
 
