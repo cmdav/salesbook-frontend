@@ -1,4 +1,4 @@
-<!-- <template>
+ <template>
  
   <div class="">
  
@@ -141,9 +141,9 @@ const forceRefresh = () => {
 };
 
 
-</script> -->
+</script>
 
-<template>
+<!-- <template>
   <div>
     <DataTableLayout 
       :key="forceUpdate"
@@ -278,4 +278,4 @@ const forceRefresh = () => {
   forceUpdate.value++;
 };
 
-</script>
+</script> -->
