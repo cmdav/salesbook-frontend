@@ -649,7 +649,7 @@ export const branchFormFields = ref([
     label: 'City',
     type: 'text',
     value: '',
-    required: false,
+    required: true,
     placeholder: 'Enter City',
     databaseField: 'city'
   },
@@ -657,7 +657,7 @@ export const branchFormFields = ref([
     label: 'Postal Code',
     type: 'text',
     value: '',
-    required: false,
+    required: true,
     placeholder: 'Enter Postal Code',
     databaseField: 'postal_code'
   },

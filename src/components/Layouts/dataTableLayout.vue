@@ -171,7 +171,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-
+  data: {
+    type: Array,
+    default: () => []
+  }
 });
 
 const {
