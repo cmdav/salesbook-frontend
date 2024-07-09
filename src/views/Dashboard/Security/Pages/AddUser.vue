@@ -3,7 +3,7 @@
     <DataTableLayout :key="forceUpdate" @toggleModal="showModal = !showModal" :endpoint="endpoint"
       :pageName="'settings'" toggleButtonLabel="Add User" :excludedKeys="['id', 'organization_code']"
       searchEndpoint="search-users" :data="data" :additionalColumns="additionalColumns">
-      <div>
+      <div v-if="roles">
         <BranchDropDown :branches="branches" @change="handleBranchChange" />
       </div>
     </DataTableLayout>
@@ -81,7 +81,8 @@ async function fetchBranches() {
 }
 
 function handleBranchChange(branchId) {
-  selectedBranchId.value = Number(branchId);
+  selectedBranchId.value = branchId;
+  fetchData();
 }
 
 async function fetchData() {

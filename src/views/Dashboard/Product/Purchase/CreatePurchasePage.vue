@@ -134,14 +134,14 @@ const fetchData = async () => {
     } else {
       error.value = 'No product types found';
     }
-
+    console.log(lastBatchNumberResponse.data)
     // Handle last batch number response
-    if (lastBatchNumberResponse.data && lastBatchNumberResponse.data.batch_no) {
-      const lastBatchNo = parseInt(lastBatchNumberResponse.data.batch_no);
-      batchNo.value = String(lastBatchNo + 1).padStart(5, '0');
+    if (lastBatchNumberResponse.data) {
+      const lastBatchNo = lastBatchNumberResponse.data;
+      batchNo.value = String(lastBatchNo).padStart(5, '0');
       purchases.forEach(purchase => purchase.batch_no = batchNo.value);
     } else {
-      batchNo.value = '00001';
+      batchNo.value = '000';
       purchases.forEach(purchase => purchase.batch_no = batchNo.value);
     }
   } catch (err) {
