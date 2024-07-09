@@ -4,7 +4,7 @@
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
       <div v-if="addPermissions" class="action">
         
-          <BranchDropDown :branches="branches" @change="handleBranchChange" />
+          <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" />
         
       <button class="button add-btn">
         <router-link to="/create-sale" class="button add-btn">Add</router-link>
@@ -295,6 +295,8 @@ const generateReceiptPDF = (receiptData, userProfileDetails) => {
   const viewerWindow = window.open();
   viewerWindow.document.write(`<iframe width='100%' height='100%' src='${pdfDataUri}'></iframe>`);
 };
+
+const roles = computed(() => store.getUser.user.permission.role_name === "Admin");
 
 onMounted(() => fetchData(currentPage.value));
 

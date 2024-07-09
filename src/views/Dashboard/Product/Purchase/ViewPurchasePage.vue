@@ -3,7 +3,7 @@
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
       <div v-if="addPermissions" class="action">
-        <BranchDropDown :branches="branches" @change="handleBranchChange" />
+        <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" />
         <button class="button add-btn"><router-link to="/create-purchase" class="button add-btn">Add</router-link></button>
       </div>
     </div>
@@ -191,6 +191,8 @@ onMounted(() => fetchData(currentPage.value));
 
 
 const store = useStore();
+const roles = computed(() => store.getUser.user.permission.role_name === "Admin");
+
 const delPermissions = computed(() => {
   const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'purchases');
   console.log(perm.value)
