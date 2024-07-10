@@ -27,7 +27,7 @@
           </div>
           <div class="flex justify-between mt-6 ">
             <div>
-              <BranchDropDown :branches="branches" @change="handleBranchChange" />
+              <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" />
             </div>
             <div class="flex flex-row gap-2 items-center">
               <AuthInput
@@ -106,13 +106,17 @@
 
 
 <script setup>
-import { ref, reactive, watch, onMounted } from 'vue';
+import { ref, reactive, watch, onMounted, computed } from 'vue';
 import DashboardLayout from '@/components/Layouts/dashboardLayout.vue';
 import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue';
 import AuthInput from '@/components/UI/Input/AuthInput.vue';
 import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
 import { useRouter } from 'vue-router';
 import apiService from '@/services/apiService';
+import { useStore } from "@/stores/user";
+
+const store = useStore();
+const roles = computed(() => store.getUser.user.permission.role_name === "Admin");
 
 const router = useRouter();
 const isSearching = ref(false);
@@ -128,6 +132,7 @@ const toggleCompanyTable = ref(false);
 const userType = ref('individual');
 const branches = ref([]);
 const errorMessage = ref('');
+
 
 onMounted(async () => {
   try {

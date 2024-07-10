@@ -28,7 +28,7 @@
             <div class="flex lg:flex-row flex-col gap-3 px-4 justify-between mb-4">
               <div class="flex lg:flex-row flex-col justify-between w-full gap-2">
                 <div class="w-[40%]">
-                  <BranchDropDown :branches="branches" @change="handleBranchChange" />
+                  <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" />
                   <!-- <AuthInput :error="false" type="text" placeholder="search" /> -->
                 </div>
                 <div class="flex flex-row gap-[12px]">
@@ -286,6 +286,8 @@ const redirectToSingleSupplierPage = (id) => {
   router.push({ name: "view-supplier", params: { id } });
 };
 
+
+const roles = computed(() => store.getUser.user.permission.role_name === "Admin");
 
 
 let showModal = ref(false);

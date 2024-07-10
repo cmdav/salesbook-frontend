@@ -12,7 +12,7 @@
   :additionalColumns="[{ name: 'Accept', action: (product) => handleAcceptModal(product), disabled: acceptDisabled  }, { name: 'Decline', action: declineProduct, disabled: declineDisabled }]"
   >
    <div>
-    <BranchDropDown :branches="branches" @change="handleBranchChange" />
+    <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" />
   </div>
 </SupplierTableLayout>
 </div>
@@ -56,6 +56,10 @@ const supplierStore = useSupplierStore();
 import { useSharedComponent } from "@/composable/useSharedComponent";
 import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue';
 import apiService from '@/services/apiService';
+import { useStore } from "@/stores/user";
+
+const store = useStore();
+const roles = computed(() => store.getUser.user.permission.role_name === "Admin");
 
 const endpoint = ref("price-notifications")
 
