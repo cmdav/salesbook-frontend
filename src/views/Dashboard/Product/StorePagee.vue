@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import apiService from '@/services/apiService';
 import { getDb, setDb } from '@/utils/db';
 import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue';
+import { useStore } from "@/stores/user";
 
 const search = ref('');
 const data = ref([]);
@@ -94,6 +95,10 @@ function changePage(page) {
   }
 }
 
+const store = useStore();
+const roles = computed(() => store.getUser.user.permission.role_name === "Admin");
+
+
 onMounted(() => fetchData(currentPage.value));
 </script>
 
@@ -103,7 +108,7 @@ onMounted(() => fetchData(currentPage.value));
         <input type="text" v-model="search" placeholder="Search..." class="search-input" />
         <!-- <button class="button add-btn"><router-link to="/create-purchase" class="button add-btn">Add</router-link></button> -->
 
-          <BranchDropDown :branches="branches" @change="handleBranchChange" />
+          <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" />
       </div>
       <div class="table-container">
         <table>
