@@ -193,6 +193,10 @@ const {
 
 const searchResults = ref([]);
 
+watch(() => props.data, (newData) => {
+  products.value = newData;
+});
+
 // Search function with debounce to limit API calls
 const search = debounce( async () => {
 
