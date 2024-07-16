@@ -53,7 +53,7 @@
             <td>{{ item.branch_name }}</td>
             <td>{{ item.created_by }}</td>
             <td>{{ item.updated_by }}</td>
-            <td><button @click="generateReceipt(item.transaction_id)">Receipt</button></td>
+            <td><button @click="generateReceipt(item.transaction_id, item.branch_id)">Receipt</button></td>
             <td v-if="permissions"><button @click="openDeleteModal(item)">Delete</button></td>
           </tr>
         </tbody>
@@ -204,10 +204,10 @@ function forceRefresh() {
   fetchData(currentPage.value);
 }
 
-const generateReceipt = async (transactionId) => {
+const generateReceipt = async (transactionId, branchId) => {
   try {
-    const response = await apiService.get(`download-sales-receipts/${transactionId}`);
-    console.log(response.data)
+    const response = await apiService.get(`download-sales-receipts/${transactionId}?branch_id=${branchId}`);
+    console.log(response.data);
     if (response.data) {
       generateReceiptPDF(response.data, userProfileDetails.value);
     } else {
@@ -227,6 +227,7 @@ const formatNumber = (amount) => {
 
 
 const generateReceiptPDF = (receiptData, userProfileDetails) => {
+  console.log("Hello Receipt")
   const doc = new jsPDF();
 
   const headerStyle = { fontSize: 18, fontStyle: 'bold' };
