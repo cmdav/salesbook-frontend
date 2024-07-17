@@ -60,6 +60,51 @@ export const userFormFields = ref([
     databaseField: 'password_confirmation'
   }
 ])
+export const userEditFormFields = ref([
+  {
+    label: 'First Name',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter first name',
+    databaseField: 'first_name'
+  },
+  {
+    label: 'Last Name',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter last name',
+    databaseField: 'last_name'
+  },
+  {
+    label: 'Email',
+    type: 'email',
+    value: '',
+    required: true,
+    placeholder: 'Enter email',
+    databaseField: 'email'
+  },
+  {
+    label: 'Branch',
+    type: 'select',
+    value: '',
+    required: true,
+    placeholder: 'Select Branch',
+    options: [],
+    databaseField: 'branch_id'
+  },
+  {
+    label: 'Role',
+    type: 'select',
+    value: '',
+    required: true,
+    placeholder: 'Select Role',
+    options: [],
+    databaseField: 'role_id'
+  }
+  
+])
 
 export const subscriptionFormFields = ref([
   {
