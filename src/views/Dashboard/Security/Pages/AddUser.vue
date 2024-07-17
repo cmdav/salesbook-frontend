@@ -8,9 +8,9 @@
       </div>
     </DataTableLayout>
 
-    <!-- <EditModal v-if="showEditModal" @close="closeEditModal" :items="items" :formField="userFormFields"
-      @updated="forceRefresh" :url="'sale-users'" @fetchDataForSubCategory="fetchDataForSubCategory"
-      :isLoadingMsg="isOptionLoadingMsg" /> -->
+    <EditModal v-if="showEditModal" @close="closeEditModal" :items="items" :formField="userFormFields"
+      @updated="forceRefresh" :url="'sale-users'" 
+      />
 
     <DeleteModal v-if="showDeleteModal" @close="closeDeleteModal" @updated="forceRefresh" :items="itemsId"
       :url="'/users'" :modalTitle="modalTitle" />
@@ -21,8 +21,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
-import { userFormFields } from "@/formfields/formFields";
+import { ref, onMounted, watch, computed } from "vue";
+import {userFormFields } from "@/formfields/formFields";
 import { useSharedComponent } from "@/composable/useSharedComponent";
 import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue';
 import apiService from '@/services/apiService';
@@ -37,8 +37,7 @@ const {
   DeleteModal,
   useDeleteComposable,
   FormModal,
-  computed,
-  defineEmits,
+  
 } = useSharedComponent("sale-users");
 // const emit = defineEmits("forceRefresh");
 const modalTitle = "user_name ";
@@ -50,12 +49,12 @@ const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg }
 const { showModal, forceUpdate, closeModal } = usePostComposable("/settings", userFormFields);
 const store = useStore();
 const roles = computed(() => store.getUser.user.permission.role_name === "Admin");
-// const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
+const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable();
 
 const additionalColumns = computed(() => {
   const cols = [];
   if (roles.value) {
-    cols.push( { name: 'Delete', action: handleDelete });
+    cols.push( { name: 'Edit', action: handleEdit },{ name: 'Delete', action: handleDelete });
   }
   return cols;
 });
