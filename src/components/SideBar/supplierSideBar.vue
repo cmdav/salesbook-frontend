@@ -6,7 +6,7 @@
         </router-link>
       </div>
       <!-- The nav -->
-      <div class="flex flex-col justify-between h-full w-[90%] !px-0">
+      <!-- <div class="flex flex-col justify-between h-full w-[90%] !px-0">
         <nav class="nav !font-light">
           <template v-for="item in menuItems" :key="item.name">
             <router-link
@@ -32,69 +32,25 @@
             </router-link>
           </template>
         </nav>
-      </div>
+      </div> -->
     </header>
   </template>
   
   <script setup>
-  import { useRoute } from "vue-router";
-  import { computed } from "vue";
-  import { useStore } from "@/stores/user";
-  import homeIcon from "@/components/icons/homeIcon.vue";
-  import StoreIcon from "@/components/icons/StoreIcon.vue";
-  import ProductIcon from "@/components/icons/ProductIcon.vue";
-  import recordsIcon from "@/components/icons/recordsIcon.vue";
-  import reportsIcon from "@/components/icons/reportsIcon.vue";
-  import logoutIcon from "@/components/icons/logoutIcon.vue";
-  import SuppliersIcon from "@/components/icons/SuppliersIcon.vue";
-  import CustomerIcon from "@/components/icons/CustomerIcon.vue";
-  import SettingsIcon from "@/components/icons/SettingsIcon.vue";
-  import CategoryIcon from "@/components/icons/CategoryIcon.vue";
-  import MeasurementIcon from "@/components/icons/MeasurementIcon.vue";
-  import FireIcon from "@/components/icons/FireIcon.vue";
-  import SalesIcon from "@/components/icons/SalesIcon.vue";
-  import PurchaseIcon from "@/components/icons/PurchaseIcon.vue";
+  // import { useRoute } from "vue-router";
+  // import { computed } from "vue";
+  // import { useStore } from "@/stores/user";
+
   
-  const route = useRoute();
-  const store = useStore();
-  const permissions = computed(() => {
-    return store.getUser.user.permission.permissions;
-  });
+  // const route = useRoute();
+  // const store = useStore();
+  // const permissions = computed(() => {
+  //   return store.getUser.user.permission.permissions;
+  // });
   
   //console.log(permissions.value)
   
-  const menuItems = computed(() => {
-    const allItems = [
-    { name: "Dashboard", route: "/dashboard", icon: homeIcon, backendKey:"dashboards"},
-    { name: "Organisation", route: "/organisation", icon: StoreIcon , backendKey:"organizations"},
-    { name: "Measurement", route: "/measurement", icon: MeasurementIcon , backendKey:"measurements"},
-    { name: "Currency", route: "/currency", icon: FireIcon, backendKey:"currencies" },
-    { name: "Product Category", route: "/product-category", icon: CategoryIcon, backendKey:"product-categories"},
-    { name: "Product Sub Category", route: "/product-sub-category", icon: StoreIcon, backendKey:"product-sub-categories"},
-    { name: "Products", route: "/products", icon: recordsIcon, backendKey:"products"},
-    { name: "Purchase", route: "/purchase", icon: PurchaseIcon, backendKey:"purchases"},
-    { name: "Sale", route: "/sale", icon: SalesIcon , backendKey:"sales"},
-    { name: "Store", route: "/store", icon: ProductIcon , backendKey:"stores"},
-    { name: "Customers", route: "/customers", icon: CustomerIcon , backendKey:"customers"},
-    { name: "Suppliers", route: "/supplier", icon: SuppliersIcon , backendKey:"suppliers"},
-    { name: "Supplier Product", route: "/supplier-product", icon: ProductIcon, backendKey:"supplier-products"},
-    { name: "Records", route: "/", icon: recordsIcon , backendKey:"records"},
-    { name: "Reports", route: "/", icon: reportsIcon, backendKey:"reports"},
-    { name: "Settings", route: "/settings", icon: SettingsIcon , backendKey:"permissions"},
-    { name: "Log Out", route: "/logout", icon: logoutIcon, backendKey:""},
-    ];
-  
-  return allItems.filter(item => {
-    if (item.backendKey === null) {
-        return true; 
-      } else {
-       
-        const perm = permissions.value.find(p => p.page_name == item.backendKey);
-        return perm && perm.read == 1; 
-      }
-  });
-  });
-  
+
   //console.log(menuItems.value)
   
   </script>

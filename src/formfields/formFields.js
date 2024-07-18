@@ -47,7 +47,7 @@ export const userFormFields = ref([
     label: 'Password',
     type: 'password',
     value: '',
-    required: true,
+    required: false,
     placeholder: 'Enter password',
     databaseField: 'password'
   },
@@ -55,7 +55,7 @@ export const userFormFields = ref([
     label: 'Confirm Password',
     type: 'password',
     value: '',
-    required: true,
+    required: false,
     placeholder: 'Confirm password',
     databaseField: 'password_confirmation'
   }
