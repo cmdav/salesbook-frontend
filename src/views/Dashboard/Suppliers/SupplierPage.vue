@@ -346,9 +346,9 @@ const branches = ref([])
 onMounted(async () => {
   try {
     const response = await apiService.get('/list-business-branches'); 
-    console.log(response)
+    // console.log(response)
     branches.value = response || [];
-    console.log(branches.value)
+    // console.log(branches.value)
   } catch (error) {
     console.error('Failed to fetch branches:', error);
   }
@@ -357,6 +357,7 @@ onMounted(async () => {
 const fetchFilteredSuppliers = async (branchId = 1) => {
   try {
     const response = await apiService.get(`users?type=supplier&branch_id=${branchId}`);
+    console.log(response)
     Supplier.value.data = response.data; 
   } catch (error) {
     console.error("Error fetching filtered suppliers:", error);
@@ -454,5 +455,6 @@ onMounted(async () => {
   console.log(itemsPerPage.value)
   formData.orgId = userProfileDetails.value?.organization_id;
   // console.log(userProfileDetails.value?.organization_id)
+  
 });
 </script>

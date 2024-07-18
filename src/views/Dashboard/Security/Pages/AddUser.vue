@@ -68,6 +68,7 @@ const {
 
 const branches = ref([]);
 const selectedBranchId = ref(null);
+const selectedRoleId = ref(null);
 const data = ref([]);
 const errorMessage = ref('');
 
@@ -76,11 +77,28 @@ onMounted(async () => {
   await fetchDataForSelect("Branch", "/list-business-branches", "id", "name");
   await fetchBranches();
   await fetchData();
+
+  // Populate the options for select fields
+  userFormFields.value.find(field => field.databaseField === 'branch_id').options = branches.value.map(branch => ({
+    value: branch.id,
+    label: branch.name
+  }));
+
+  const rolesResponse = await apiService.get('/all-job-roles');
+  console.log(rolesResponse)
+  userFormFields.value.find(field => field.databaseField === 'role_id').options = rolesResponse.map(role => ({
+    value: role.role,
+    label: role.role_name
+  }));
 });
+
+
+
 
 watch(selectedBranchId, () => {
   fetchData();
 });
+
 
 async function fetchBranches() {
   try {
@@ -120,4 +138,34 @@ async function fetchData() {
 const forceRefresh = () => {
   forceUpdate.value++;
 };
+
+watch([showEditModal, items], ([newShowEditModal, newItems]) => {
+  if (newShowEditModal && newItems && newItems.length > 0) {
+    const currentItem = newItems[0];
+    console.log('Current item:', currentItem); // Log current item for debugging
+    selectedBranchId.value = currentItem.branch_id;
+    selectedRoleId.value = currentItem.role_id;
+
+    // Set the form fields values here
+    userFormFields.forEach(field => {
+      if (field.databaseField === 'branch_id') {
+        field.value = currentItem.branch_id;
+      } else if (field.databaseField === 'role_id') {
+        field.value = currentItem.role_id;
+      }
+    });
+
+    console.log('Selected branch ID:', selectedBranchId.value); // Log selected branch ID for debugging
+    console.log('Selected role ID:', selectedRoleId.value); // Log selected role ID for debugging
+  }
+});
+
+// watch(items, (newItems) => {
+//   if (newItems && newItems.length > 0) {
+//     const currentItem = newItems[0];
+//     selectedBranchId.value = currentItem.branch_id;
+//     selectedRoleId.value = currentItem.role_id;
+//   }
+// });
+
 </script>

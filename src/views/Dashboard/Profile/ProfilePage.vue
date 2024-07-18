@@ -48,6 +48,16 @@
           <p
             class="text-[#00000066] !my-1.5 text-[16px] flex gap-[8px] items-center leading-[31.739px]"
           >
+            {{ userProfileDetails?.company_name }}
+          </p>
+          <p
+            class="text-[#00000066] !my-1.5 text-[16px] flex gap-[8px] items-center leading-[31.739px]"
+          >
+            {{ userProfileDetails?.branch }}
+          </p>
+          <p
+            class="text-[#00000066] !my-1.5 text-[16px] flex gap-[8px] items-center leading-[31.739px]"
+          >
             {{ userProfileDetails?.email }}
           </p>
           <p

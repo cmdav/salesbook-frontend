@@ -5,7 +5,7 @@ import SettingsLayout from "@/components/Layouts/settingsLayout.vue";
 import FormModal from "@/components/UI/Modal/FormModal.vue";
 import SupplierDashboardLayout from "@/components/Layouts/supplierDashboardLayout.vue"
 import PermissionFormModal from "@/components/UI/Modal/PermissionFormModal.vue";
- import { defineEmits } from "vue";
+import { defineEmits } from "vue";
 import ViewModal from "@/components/UI/Modal/ViewModal.vue";
 import ViewModalDetail from "@/components/UI/Modal/ViewModalDetail.vue";
 import ReusableForm from "@/components/Form/ReusableForm.vue";
