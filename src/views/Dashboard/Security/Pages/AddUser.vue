@@ -68,39 +68,9 @@ onMounted(async () => {
   await fetchBranches();
   await fetchData();
 
-  // Populate the options for select fields
-  const branchField = userFormFields.value.find(field => field.databaseField === 'branch_id');
-  if (branchField) {
-    branchField.options = branches.value.map(branch => ({
-      value: branch.id,
-      label: branch.name
-    }));
-  }
-
-  const rolesResponse = await apiService.get('/all-job-roles');
-  const roleField = userFormFields.value.find(field => field.databaseField === 'role_id');
-  if (roleField) {
-    roleField.options = rolesResponse.map(role => ({
-      value: role.id,
-      label: role.role_name
-    }));
-  }
 });
 
-watch(() => showEditModal.value, (newShowEditModal) => {
-  if (newShowEditModal && items.value) {
-    // Populate the form fields with the existing item data
-    userFormFields.value.forEach(field => {
-      if (field.databaseField === 'branch_id') {
-        field.value = items.value.branch_id;
-      } else if (field.databaseField === 'role_id') {
-        field.value = items.value.role_id;
-      } else {
-        field.value = items.value[field.databaseField];
-      }
-    });
-  }
-});
+
 
 async function fetchBranches() {
   try {
@@ -144,23 +114,8 @@ const forceRefresh = () => {
 
 function handleEditWrapper(item) {
   handleEdit(item);
-
-  // Populate the branch and role fields
-  const branchField = userFormFields.value.find(field => field.databaseField === 'branch_id');
-  console.log('Branch field:', branchField);
-  if (branchField) {
-    branchField.value = item.branch_id;
-  }
-
-  const roleField = userFormFields.value.find(field => field.databaseField === 'role_id');
-  console.log('Role field:', roleField);
-  if (roleField) {
-    roleField.value = item.role_id;
-  }
-
-  console.log('Branch ID:', item.branch_id);
-  console.log('Role ID:', item.role_id);
-
-  showEditModal.value = true;
+ 
 }
 </script>
+
+

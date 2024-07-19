@@ -59,7 +59,7 @@ export const userFormFields = ref([
     placeholder: 'Confirm password',
     databaseField: 'password_confirmation'
   }
-])
+]);
 export const userEditFormFields = ref([
   {
     label: 'First Name',

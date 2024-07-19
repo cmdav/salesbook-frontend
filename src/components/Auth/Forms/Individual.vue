@@ -49,13 +49,13 @@
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
         <div class="mb-3 flex flex-col w-full">
           <AuthInput
-            label="Date of Birth (optional)"
-            :error="dobError"
-            type="date"
-            placeholder="Enter Date of Birth"
-            v-model="dob"
+            label="Address*"
+            :error="errors.address"
+            type="text"
+            placeholder="Enter Address"
+            v-model="formData.address"
             :max="minDate"
-            :errorsMsg="dobErrorMsg"
+            :errorsMsg="errorsMsg.address"
           />
         </div>
         <div class="mb-3 flex flex-col w-full">
@@ -211,7 +211,7 @@ const formData = reactive({
   firstName: "",
   lastName: "",
   company_name: "",
-  // code: "",
+  address: "",
   email: "",
   password: "",
   confirmPassword: "",
@@ -222,20 +222,20 @@ const errors = reactive({
   firstName: false,
   lastName: false,
   company_name: false,
-  // code: false,
+  address: false,
   email: false,
   password: false,
   confirmPassword: false,
 });
 const dobError = ref(false);
-const dobErrorMsg = ref("date of birth is lower than 18");
+// const dobErrorMsg = ref("date of birth is lower than 18");
 const confirmPassword = ref("");
 
 const errorsMsg = {
   firstName: "First name is required",
   lastName: "Last name is required",
   company_name: "Company Name is required",
-  // code: "Organisation code is required",
+  address: "Address is required",
   email: "Email is required",
   password: "Password is required",
   confirmPassword: "Password does not match",
@@ -377,8 +377,8 @@ const handleSignup = async () => {
     company_name: formData.company_name,
     middle_name: middelName.value,
     phone_number: phoneNo.value,
-    // organization_code: formData.code,
-    dob: dob.value,
+    address: formData.address,
+    // dob: dob.value,
     email: formData.email,
     password: formData.password,
     password_confirmation: formData.confirmPassword,
