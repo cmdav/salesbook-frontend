@@ -53,7 +53,7 @@
             <td>{{ item.branch_name }}</td>
             <td>{{ item.created_by }}</td>
             <td>{{ item.updated_by }}</td>
-            <td><button @click="generateReceipt(item.transaction_id, item.branch_id)">Receipt</button></td>
+            <td><button @click="generateReceipt(item.transaction_id)">Receipt</button></td>
             <td v-if="permissions"><button @click="openDeleteModal(item)">Delete</button></td>
           </tr>
         </tbody>
@@ -204,9 +204,9 @@ function forceRefresh() {
   fetchData(currentPage.value);
 }
 
-const generateReceipt = async (transactionId, branchId) => {
+const generateReceipt = async (transactionId) => {
   try {
-    const response = await apiService.get(`download-sales-receipts/${transactionId}?branch_id=${branchId}`);
+    const response = await apiService.get(`download-sales-receipts/${transactionId}`);
     console.log(response.data);
     if (response.data) {
       generateReceiptPDF(response.data, userProfileDetails.value);
@@ -253,11 +253,14 @@ const generateReceiptPDF = (receiptData, userProfileDetails) => {
 
   doc.setFont(sectionHeaderStyle.fontStyle, 'normal');
   doc.setFontSize(sectionHeaderStyle.fontSize);
-  doc.text(`Customer Name: ${receiptData.transaction_details.customer_detail}`, 20, 70);
-  doc.text(`Customer PhoneNum: ${receiptData.transaction_details.customer_phone_number}`, 20, 78);
-  doc.text(`Transaction ID: ${receiptData.transaction_details.transaction_id}`, 20, 86);
-  doc.text(`Payment Method: ${receiptData.transaction_details.payment_method}`, 20, 94);
-  doc.text(`Date: ${receiptData.transaction_details.created_at}`, 20, 102);
+  doc.text(`Branch Name: ${receiptData.transaction_details.branch_name}`, 20, 70);
+  doc.text(`Branch Address: ${receiptData.transaction_details.branch_city} ${receiptData.transaction_details.branch_state}`, 20, 78);
+  doc.text(`Branch Phone Number: ${receiptData.transaction_details.branch_phone_number}`, 20, 86);
+  doc.text(`Customer Name: ${receiptData.transaction_details.customer_detail}`, 20, 102);
+  doc.text(`Customer PhoneNum: ${receiptData.transaction_details.customer_phone_number}`, 20, 112);
+  doc.text(`Transaction ID: ${receiptData.transaction_details.transaction_id}`, 20, 122);
+  doc.text(`Payment Method: ${receiptData.transaction_details.payment_method}`, 20, 132);
+  doc.text(`Date: ${receiptData.transaction_details.created_at}`, 20, 142);
 
   const tableColumn = ["Product Name", "Price(NGN)", "Quantity", "VAT(NGN)", "Total Price(NGN)"];
   const tableRows = [];
@@ -276,7 +279,7 @@ const generateReceiptPDF = (receiptData, userProfileDetails) => {
   doc.autoTable({
     head: [tableColumn],
     body: tableRows,
-    startY: 115,
+    startY: 152,
     styles: { fontSize: itemStyle.fontSize },
     theme: 'plain',
     tableLineColor: [0, 0, 0], 
