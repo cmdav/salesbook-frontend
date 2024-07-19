@@ -26,14 +26,11 @@
                 </div>
               </div>
             </div>
-            <div
-              class="flex flex-row justify-between rounded-[8px] p-4"
-              style="background-color: rgb(123, 97, 255)"
-            >
-              <div>
-                <!-- <div class="icon">
+            
+              <!-- <div>
+                 <div class="icon">
                   <img src="/assets/customers-844da486.svg" alt="" />
-                </div> -->
+                </div>
                 <div
                   class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
                 >
@@ -44,7 +41,7 @@
                 >
                   {{ productsStore?.sales?.total ? productsStore?.sales?.total : 0 }}
                 </div>
-              </div>
+              </div> -->
               <!-- <div class="flex flex-col justify-between">
                 <div>
                   <div
@@ -71,7 +68,7 @@
                   </div>
                 </div>
               </div> -->
-            </div>
+            
             <div
               class="flex flex-row justify-between rounded-[8px] p-4"
               style="background-color: rgb(44, 43, 108)"
