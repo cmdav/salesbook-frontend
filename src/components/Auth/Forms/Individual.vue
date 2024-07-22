@@ -147,6 +147,7 @@ const formData = reactive({
   password: "",
   confirmPassword: "",
 });
+
 let loading = ref(false);
 
 const errors = reactive({
@@ -309,7 +310,7 @@ const handleSignup = async () => {
     company_name: formData.company_name,
     middle_name: middelName.value,
     phone_number: phoneNo.value,
-    company_address: formData.ada,
+    company_address: formData.address,
     dob: dob.value,
     email: formData.email,
     password: formData.password,
