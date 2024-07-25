@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="flex flex-col gap-[17px]">
     <div class="flex flex-col gap-[17px]">

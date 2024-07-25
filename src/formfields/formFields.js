@@ -699,6 +699,14 @@ export const branchFormFields = ref([
     databaseField: 'city'
   },
   {
+    label: 'Address',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter Address',
+    databaseField: 'address'
+  },
+  {
     label: 'Postal Code',
     type: 'text',
     value: '',
