@@ -225,13 +225,13 @@ const generateReceiptPDF = (receiptData, userProfileDetails) => {
 
   doc.setFont(headerStyle.fontStyle, 'normal');
   doc.setFontSize(headerStyle.fontSize);
-  doc.text(`${userProfileDetails?.company_name || ''}`, 105, 20, null, null, 'center');
+  doc.text(`${receiptData.transaction_details.organization_name || ''}`, 105, 20, null, null, 'center');
 
   doc.setFont(companyDetailsStyle.fontStyle, 'normal');
   doc.setFontSize(companyDetailsStyle.fontSize);
-  doc.text(`Address: ${userProfileDetails?.company_address || ''}`, 105, 28, null, null, 'center');
-  doc.text(`Email: ${userProfileDetails?.email || ''}`, 105, 36, null, null, 'center');
-  doc.text(`Phone No: ${userProfileDetails?.phone_number || ''}`, 105, 44, null, null, 'center');
+  doc.text(`Address: ${receiptData.transaction_details.organization_address || ''}`, 105, 28, null, null, 'center');
+  doc.text(`Email: ${receiptData.transaction_details.organization_email || ''}`, 105, 36, null, null, 'center');
+  doc.text(`Phone No: ${receiptData.transaction_details.organization_phone_number || ''}`, 105, 44, null, null, 'center');
 
   doc.setFont(invoiceStyle.fontStyle, 'normal');
   doc.setFontSize(invoiceStyle.fontSize);
@@ -240,7 +240,7 @@ const generateReceiptPDF = (receiptData, userProfileDetails) => {
   doc.setFont(sectionHeaderStyle.fontStyle, 'normal');
   doc.setFontSize(sectionHeaderStyle.fontSize);
   doc.text(`Branch Name: ${receiptData.transaction_details.branch_name || ''}`, 20, 70);
-  doc.text(`Branch Address: ${receiptData.transaction_details.branch_city || ''} ${receiptData.transaction_details.branch_state || ''}`, 20, 78);
+  doc.text(`Branch Address: ${receiptData.transaction_details.branch_address || ''}`, 20, 78);
   doc.text(`Branch Phone Number: ${receiptData.transaction_details.branch_phone_number || ''}`, 20, 86);
   doc.text(`Customer Name: ${receiptData.transaction_details.customer_detail || ''}`, 20, 102);
   doc.text(`Customer PhoneNum: ${receiptData.transaction_details.customer_phone_number || ''}`, 20, 112);
