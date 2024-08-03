@@ -33,8 +33,9 @@ import NotFound from '@/views/Auth/NotFound.vue'
 import ViewCustomerSubscriptionPage from '@/views/Dashboard/CustomerSubscription/ViewCustomerSubscriptionPage.vue'
 
 //import SalePage from '@/views/Dashboard/Product/SalePage.vue'
-
-//import ProductTypePage from '@/views/Dashboard/Product/ProductTypePage.vue'
+// import ViewProductType from '@/views/Dashboard/Product/ProductType/ViewProductTypes.vue'
+// import ProductTypePage from '@/views/Dashboard/Product/ProductType/ViewProductTypes.vue'
+// import ProductTypePage from '@/views/Dashboard/Product/ProductTypePage.vue'
 import PricePage from '@/views/Dashboard/Product/PricePage.vue'
 import PurchasePage from '@/views/Dashboard/Product/Purchase/ViewPurchasePage.vue'
 import CreatePurchasePage from '@/views/Dashboard/Product/Purchase/CreatePurchasePage.vue'
@@ -45,6 +46,10 @@ import RolesPage from '@/views/Dashboard/Security/Pages/RolesPagecopy.vue'
 import DefultPage from '@/views/Dashboard/Security/DefultPage.vue'
 import ResetPassword from '@/views/Auth/ResetPassword.vue'
 import ProfilePage from '@/views/Dashboard/Profile/ProfilePage.vue'
+import ViewProductTypes from '@/views/Dashboard/Product/ProductType/ViewProductTypes.vue'
+import CreateProductType from '@/views/Dashboard/Product/ProductType/CreateProductType.vue'
+
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -208,12 +213,17 @@ const router = createRouter({
       name: 'create-sale',
       component: CreateSalePage
     },
-    // {
-    //   path: '/product-type/:id',
-    //   name: 'product-type',
-    //   component: ProductTypePage,
-    //  // beforeEnter: [middleware.redirectLogin]
-    // },
+    {
+      path: '/product-type',
+      name: 'product-type',
+      component: ViewProductTypes,
+      beforeEnter: [middleware.redirectLogin]
+    },
+    {
+      path: '/create-product-type',
+      name: 'create-product-type',
+      component: CreateProductType
+    },
 
     {
       path: '/price/:id',
