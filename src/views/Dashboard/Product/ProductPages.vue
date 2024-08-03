@@ -17,19 +17,17 @@
       <!-- Button to Open Modal -->
       <DataTableLayout
         :key="forceUpdate"
-        endpoint="product-types"
+        endpoint="products"
         :pageName="'product-types'"
-        searchEndpoint="search-product-types"
+        searchEndpoint="search-products"
         @toggleModal="showModal = !showModal"
         toggleButtonLabel="Add Product"
         :excludedKeys="[
           'id',
-          'product_description',
           'product_id',
           'product_ids',
           'category_ids',
           'product_category',
-          'product_image',
           'sub_category_id',
           'product_type_description'
         ]"
@@ -39,11 +37,11 @@
         :additionalColumns="additionalColumns"
       >
         <!-- <button @click="togglePriceModal" class="btn-brand !text-sm !px-1.5">Add Price</button> -->
-        <div v-if="canUploadPermission">
+        <!-- <div v-if="canUploadPermission">
         <button @click="toggleProductTypeModal" class="btn-brand !px-1.5 !text-[14px]">
           Add Product Type
         </button>
-      </div>
+      </div> -->
         <div v-if="canUploadPermission">
         <button class="btn-brand !px-1.5 !text-[14px]" @click="closeUploadModal">
           Upload Product
@@ -62,7 +60,7 @@
       :url="'/products'"
     />
     <!-- Modal to add product type-->
-    <FormModal
+    <!-- <FormModal
       v-if="showProductTypeModal"
       @close="toggleProductTypeModal('close')"
       @updated="forceRefresh"
@@ -71,7 +69,7 @@
       @fetchDataForSubCategory="fetchDataForSubCategory"
       :isLoadingMsg="isOptionLoadingMsg"
       :url="'/product-types'"
-    />
+    /> -->
     <!-- Modal for Price Type-->
     <FormModal
       v-if="showPriceModal"
@@ -102,7 +100,7 @@
       @fetchDataForSubCategory="fetchDataForSubCategory"
       :items="items"
       @updated="forceRefresh"
-      :formField="dynamicFormFields"
+      :formField="formFields"
       :url="dynamicUrl"
     />
     <UploadModal

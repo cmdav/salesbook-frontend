@@ -251,15 +251,7 @@ export const formFields = ref([
   // // { label: 'Purchasing price', type: 'text', value: '', required: false, placeholder: 'Enter purchasing price', databaseField: "purchasing_price" },
   // // { label: 'Selling Price', type: 'text', value: '', required: false, placeholder: 'Enter selling price', databaseField: "selling_price" },
   // { label: 'Actual Price', type: 'text', value: '', required: false, placeholder: 'Enter actual price', databaseField: "actual_price" },
-  {
-    label: 'Measurement',
-    type: 'select',
-    value: '',
-    required: true,
-    placeholder: 'Select Measurement',
-    options: [],
-    databaseField: 'measurement_id'
-  },
+  
   {
     label: 'Category',
     type: 'select',
@@ -314,6 +306,33 @@ export const productTypeFormFields = ref([
     required: true,
     placeholder: 'Enter product type description',
     databaseField: 'product_type_description'
+  },
+  {
+    label: 'Measurement',
+    type: 'select',
+    value: '',
+    required: true,
+    placeholder: 'Select Measurement',
+    options: [],
+    databaseField: 'measurement_id'
+  },
+  {
+    label: 'Container Capacity',
+    type: 'select',
+    value: '',
+    required: true,
+    placeholder: 'Select Container Capacity ',
+    options: [],
+    databaseField: 'container_type_capacity_id'
+  },
+  {
+    label: 'Supplier',
+    type: 'select',
+    value: '',
+    required: true,
+    placeholder: 'Select Supplier',
+    options: [],
+    databaseField: 'supplier_id'
   },
 ])
 

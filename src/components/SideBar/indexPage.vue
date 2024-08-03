@@ -73,6 +73,7 @@ const menuItems = computed(() => {
   { name: "Product Category", route: "/product-category", icon: CategoryIcon, backendKey:"product-categories"},
   { name: "Product Sub Category", route: "/product-sub-category", icon: StoreIcon, backendKey:"product-sub-categories"},
   { name: "Products", route: "/products", icon: recordsIcon, backendKey:"products"},
+  { name: "Product Type", route: "/product-type", icon: recordsIcon, backendKey:"product-types"},
   { name: "Purchase", route: "/purchase", icon: PurchaseIcon, backendKey:"purchases"},
   { name: "Sale", route: "/sale", icon: SalesIcon , backendKey:"sales"},
   { name: "Store", route: "/store", icon: ProductIcon , backendKey:"stores"},

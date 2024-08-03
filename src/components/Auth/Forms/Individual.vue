@@ -15,7 +15,7 @@
 
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
         <div class="mb-3 flex flex-col w-full">
-          <AuthInput label="Company Name*" :error="errors.company_name" :errorsMsg="errors.company_name" type="text"
+          <AuthInput label="Company Name*" :error="errors.company_name" :errorsMsg="errorsMsg.company_name" type="text"
             placeholder="Enter company name" v-model="formData.company_name" />
         </div>
         <div class="mb-3 flex flex-col w-full">
@@ -26,7 +26,7 @@
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
         <div class="mb-3 flex flex-col w-full">
           <AuthInput label="Date of Birth (Optional)"  type="text" placeholder="Enter Address"
-            v-model="dob" :max="minDate" :errorsMsg="dobError" />
+            v-model="dob" :max="minDate" :errorsMsg="dobErrorMsg" />
         </div>
         <div class="mb-3 flex flex-col w-full">
           <AuthInput label="Phone number*" :error="false" type="tel" placeholder="Enter Phone number"
@@ -123,6 +123,7 @@
     </div>
   </div>
 </template>
+
 <script setup>
 import { ref, computed, watch, reactive } from "vue";
 import AuthInput from "@/components/UI/Input/AuthInput.vue";
