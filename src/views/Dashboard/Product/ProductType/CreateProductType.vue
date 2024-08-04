@@ -1,88 +1,5 @@
 <template>
   <DashboardLayout pageTitle="Create Product Type">
-    <!-- <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
-      <div class="top-buttons">
-        <router-link to="/product-type" class="button back-btn">Back</router-link>
-      </div>
-
-      <form @submit.prevent="">
-
-        <div class="input-group w-[70%]">
-          <label class="block text-sm font-medium text-gray-700">Product</label>
-          <select v-model="formState.products" class="select-input">
-            <option selected>Select Product...</option>
-            <option v-for="name in allCustomersNames" :key="name.id" :value="name.id">
-              {{ name.customer_detail }}
-            </option>
-          </select>
-        </div>
-
-        <div class="input-group w-[70%]">
-          <label class="block text-sm font-medium text-gray-700">Product Type Name</label>
-          <input required type="text" class="input" placeholder="Enter Product Type Name" />
-        </div>
-        <div class="input-group w-[70%]">
-          <label class="block text-sm font-medium text-gray-700">Product Type Image</label>
-          <input ref="fileInput" type="file" placeholder="Select Image" />
-          <img
-            :src="newImage"
-            @click="triggerFileInput"
-            class="mb-4 max-h-40 w-full rounded-md object-cover"
-            alt="Current Image"
-          />
-        </div>
-        <div class="input-group w-[70%]">
-          <label class="block text-sm font-medium text-gray-700">Product Type Description</label>
-          <input required type="text" placeholder="Enter Product Type Description" class="input" />
-        </div>
-        <div class="input-group w-[70%]">
-          <label class="block text-sm font-medium text-gray-700">Barcode</label>
-          <input type="password" class="input" />
-        </div>
-        <div class="input-group w-[70%]">
-          <label class="block text-sm font-medium text-gray-700">Measurement</label>
-          <select v-model="formState.customer_id" class="select-input">
-            <option v-for="name in allCustomersNames" :key="name.id" :value="name.id">
-              {{ name.customer_detail`` }}
-            </option>
-          </select>
-        </div>
-        <div class="input-group w-full">
-          <label class="block text-sm font-medium text-gray-700">Container Type </label>
-          <div class="flex">
-            <div class="w-[70%]">
-              <select v-model="formState.customer_id" class="select-input">
-                <option v-for="name in allCustomersNames" :key="name.id" :value="name.id">
-                  {{ name.customer_detail }}
-                </option>
-              </select>
-            </div>
-            <button type="button" class="button btn-brand ml-4" @click="addNewProduct">
-              Add Container Type
-            </button>
-          </div>
-        </div>
-        <div class="input-group w-full">
-          <label class="block text-sm font-medium text-gray-700">Container Type Capacity</label>
-          <div class="flex">
-            <div class="w-[70%]">
-              <select v-model="formState.customer_id" class="select-input">
-                <option v-for="name in allCustomersNames" :key="name.id" :value="name.id">
-                  {{ name.customer_detail }}
-                </option>
-              </select>
-            </div>
-            <button type="button" class="button btn-brand ml-4" @click="addNewProduct">
-              Add Container Capacity
-            </button>
-          </div>
-        </div>
-
-        <button type="submit" class="button submit-button" :disabled="isSubmitting">
-          {{ isSubmitting ? 'Submitting...' : 'Submit' }}
-        </button>
-      </form>
-    </div> -->
 
      <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
     <!-- Navigation buttons at the top -->
@@ -133,11 +50,6 @@
         </select>
       </div>
 
-      <!-- <div class="input-group w-[70%]">
-        <label class="block text-sm font-medium text-gray-700">Measurement</label>
-        <input v-model="formState.measurement" type="text" class="input" />
-      </div> -->
-
       <div class="input-group w-full">
         <label class="block text-sm font-medium text-gray-700">Container Type</label>
         <div class="flex">
@@ -149,7 +61,7 @@
               </option>
             </select>
           </div>
-          <button type="button" class="button btn-brand ml-4" @click="addNewContainerType">
+          <button type="button" class="button btn-brand ml-4" @click="addContainerType">
             Add Container Type
           </button>
         </div>
@@ -166,7 +78,7 @@
               </option>
             </select>
           </div>
-          <button type="button" class="button btn-brand ml-4" @click="addNewContainerTypeCapacity">
+          <button type="button" class="button btn-brand ml-4" @click="addContainerCapacity">
             Add Container Capacity
           </button>
         </div>
@@ -179,8 +91,9 @@
     </form>
   </div>
 
-    <!-- Modal for adding a new customer -->
-    <CustomerFormModal v-if="showModal" @close="closeModal" />
+    <!-- Modal for Container Type and Container Capacity -->
+    <ContainerTypeModal v-if="showModal" @close="closeModal" />
+    <ContainerTypeCapacitiesModal v-if="displayModal" @close="closeModal" />
   </DashboardLayout>
 </template>
 
@@ -189,14 +102,30 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import apiService from '@/services/apiService';
-import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
-// import axios from 'axios';
+import { catchAxiosError, catchAxiosSuccess } from '@/services/Response';
+import ContainerTypeModal from '@/components/UI/Modal/containerTypeModal.vue';
+
+import ContainerTypeCapacitiesModal from '@/components/UI/Modal/containerCapacitiesModal.vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const fileInput = ref(null);
 const newImage = ref(null);
 const isSubmitting = ref(false);
+
+const showModal = ref(false);
+const displayModal = ref(false)
+
+const addContainerCapacity = () => {
+    displayModal.value = true;
+}
+const addContainerType = () => {
+    showModal.value = true;
+}
+const closeModal = () => {
+    showModal.value = false;
+    displayModal.value = false;
+}
 
 const formState = reactive({
   product: '',
@@ -278,33 +207,6 @@ const handleImageChange = (event) => {
       newImage.value = e.target.result;
     };
     reader.readAsDataURL(file);
-  }
-};
-
-const addNewContainerType = async () => {
-  const containerTypeName = prompt('Enter new container type name:');
-  if (containerTypeName) {
-    try {
-      const response = await apiService.post('/container-type', { name: containerTypeName });
-      containerTypes.value.push(response.data);
-    } catch (error) {
-      console.error('Error adding new container type:', error);
-    }
-  }
-};
-
-const addNewContainerTypeCapacity = async () => {
-  const containerCapacity = prompt('Enter new container type capacity:');
-  if (selectedContainerType.value && containerCapacity) {
-    try {
-      const response = await apiService.post('/container-type-capacity', {
-        containerTypeId: selectedContainerType.value,
-        capacity: containerCapacity
-      });
-      containerTypeCapacities.value.push(response.data);
-    } catch (error) {
-      console.error('Error adding new container type capacity:', error);
-    }
   }
 };
 

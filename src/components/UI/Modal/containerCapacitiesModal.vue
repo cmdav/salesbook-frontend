@@ -6,18 +6,17 @@
       <header
         class="flex flex-row items-center justify-between border-b-[#000000] mb-[0.6em] border-b-[1px]"
       >
-        <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">Add Container Type</h4>
+        <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">Add Container Capacity</h4>
         <button class="close-button" @click="$emit('close')">&#10005;</button>
       </header>
       <form @submit.prevent="submitForm" class="max-w-4xl mx-auto p-2">
-        <!-- Dynamic form fields based on customer type with Tailwind CSS grid layout -->
         
           <div class="mb-4">
-            <label  class="block text-sm font-medium text-gray-700 pb-1">Container Type</label>
+            <label  class="block text-sm font-medium text-gray-700 pb-1">Container Capacity</label>
             <input
               type="text"
-              v-model="containerName"
-              placeholder="Enter Container Type"
+              v-model="containerCapacity"
+              placeholder="Enter Container Capacity"
               required
               class="mt-1 block w-[90%] px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
@@ -28,7 +27,7 @@
           type="submit"
           class="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
-           Add Container
+          Add Capacity
         </button>
       </form>
     </div>
@@ -46,12 +45,12 @@ import { catchAxiosSuccess, catchAxiosError } from '@/services/Response'
 const emits = defineEmits(['close'])
 
 
-const containerName = ref('')
+const containerCapacity = ref('')
 
 const submitForm = async () => {
   try {
     const response = await apiService.post('/container-types', {
-      container_type_name: containerName.value
+      container_type_name: containerCapacity.value
     })
     console.log('Form submitted successfully:', response.data)
     catchAxiosSuccess(response)
