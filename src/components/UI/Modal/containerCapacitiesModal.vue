@@ -35,12 +35,17 @@
 </template>
 
 <script setup>
-import { defineEmits, ref } from 'vue'
+import { defineProps, defineEmits, ref } from 'vue'
 // import { useCustomerstore } from '@/stores/customers'
 import apiService from "@/services/apiService"
 import { catchAxiosSuccess, catchAxiosError } from '@/services/Response'
 
-
+const props = defineProps({
+  containerTypeId: {
+    type: Number,
+    required: true
+  }
+})
 
 const emits = defineEmits(['close'])
 
@@ -49,8 +54,9 @@ const containerCapacity = ref('')
 
 const submitForm = async () => {
   try {
-    const response = await apiService.post('/container-types', {
-      container_type_name: containerCapacity.value
+    const response = await apiService.post('/container-type-capacities', {
+      container_type_id: props.containerTypeId,
+      container_capacity: containerCapacity.value
     })
     console.log('Form submitted successfully:', response.data)
     catchAxiosSuccess(response)

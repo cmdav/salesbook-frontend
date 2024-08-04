@@ -68,7 +68,7 @@
       @close="closeDeleteModal"
       @updated="forceRefresh"
       :items="itemToDelete"
-      :url="'purchases'"
+      :url="'product-types'"
       :modalTitle="modalTitle"
     />
     <div v-if="!isSearching" class="mx-auto w-fit my-5">
@@ -78,15 +78,14 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import apiService from '@/services/apiService'
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue'
 import Pagination from '@/components/UI/Pagination/PaginatePage.vue'
-import { useStore } from '@/stores/user'
-import { storeToRefs } from 'pinia'
 
-const store = useStore()
-const { userProfileDetails } = storeToRefs(store)
+
+
+
 
 const search = ref('')
 const isSearching = ref(false)

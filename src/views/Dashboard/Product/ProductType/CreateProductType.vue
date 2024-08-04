@@ -93,7 +93,7 @@
 
     <!-- Modal for Container Type and Container Capacity -->
     <ContainerTypeModal v-if="showModal" @close="closeModal" />
-    <ContainerTypeCapacitiesModal v-if="displayModal" @close="closeModal" />
+    <ContainerTypeCapacitiesModal v-if="displayModal" :containerTypeId="selectedContainerType" @close="closeModal" />
   </DashboardLayout>
 </template>
 
@@ -139,7 +139,6 @@ const formState = reactive({
 
 const measurements = ref([]);
 const products = ref([]);
-console.log(products)
 const containerTypes = ref([]);
 const containerTypeCapacities = ref([]);
 const selectedContainerType = ref(null);
@@ -298,7 +297,7 @@ button {
 }
 
 .btn-brand {
-  background-color: #007bff;
+  background-color: #c35214;
   color: #fff;
   padding: 10px 20px;
   border: none;
@@ -317,7 +316,7 @@ button {
 }
 
 .back-btn {
-  background-color: #6c757d;
+  background-color: #c35214;
   color: #fff;
   padding: 10px 20px;
   border: none;
