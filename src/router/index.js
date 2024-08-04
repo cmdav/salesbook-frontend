@@ -222,7 +222,8 @@ const router = createRouter({
     {
       path: '/create-product-type',
       name: 'create-product-type',
-      component: CreateProductType
+      component: CreateProductType,
+      beforeEnter: [middleware.redirectLogin]
     },
 
     {

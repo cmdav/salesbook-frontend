@@ -1,14 +1,11 @@
 <template>
   <DashboardLayout pageTitle="Create Product Type">
-    <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
-      <!-- Navigation buttons at the top -->
+    <!-- <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
       <div class="top-buttons">
         <router-link to="/product-type" class="button back-btn">Back</router-link>
       </div>
 
-      <!-- Form for adding a new sale -->
       <form @submit.prevent="">
-        <!-- Section for selecting a customer if printing a receipt -->
 
         <div class="input-group w-[70%]">
           <label class="block text-sm font-medium text-gray-700">Product</label>
@@ -81,291 +78,263 @@
           </div>
         </div>
 
-        <!-- Submit button for the form -->
         <button type="submit" class="button submit-button" :disabled="isSubmitting">
           {{ isSubmitting ? 'Submitting...' : 'Submit' }}
         </button>
       </form>
+    </div> -->
+
+     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
+    <!-- Navigation buttons at the top -->
+    <div class="top-buttons">
+      <router-link to="/product-type" class="button back-btn">Back</router-link>
     </div>
+
+    <!-- Form for adding a new sale -->
+    <form @submit.prevent="handleSubmit">
+      <div class="input-group w-[70%]">
+        <label class="block text-sm font-medium text-gray-700">Product</label>
+        <select v-model="formState.product" class="select-input" required>
+          <option selected>Select Product...</option>
+          <option v-for="product in products" :key="product.id" :value="product.id">
+            {{ product.product_name }}
+          </option>
+        </select>
+      </div>
+
+      <div class="input-group w-[70%]">
+        <label class="block text-sm font-medium text-gray-700">Product Type Name</label>
+        <input v-model="formState.productTypeName" required type="text" class="input" placeholder="Enter Product Type Name" />
+      </div>
+
+      <div class="input-group w-[70%]">
+        <label class="block text-sm font-medium text-gray-700">Product Type Image</label>
+        <input ref="fileInput" type="file" @change="handleImageChange" />
+        <img v-if="newImage" :src="newImage" class="mb-4 h-20 w-30 rounded-md object-cover" alt="Current Image" />
+      </div>
+
+      <div class="input-group w-[70%]">
+        <label class="block text-sm font-medium text-gray-700">Product Type Description</label>
+        <input v-model="formState.productTypeDescription" required type="text" placeholder="Enter Product Type Description" class="input" />
+      </div>
+
+      <div class="input-group w-[70%]">
+        <label class="block text-sm font-medium text-gray-700">Barcode</label>
+        <input v-model="formState.barcode" type="password" class="input" />
+      </div>
+
+      <div class="input-group w-[70%]">
+        <label class="block text-sm font-medium text-gray-700">Measurement</label>
+        <select v-model="formState.measurement" class="select-input" required>
+          <option selected>Select Measurement...</option>
+          <option v-for="measurement in measurements" :key="measurement.id" :value="measurement.id">
+            {{ measurement.measurement_name }}
+          </option>
+        </select>
+      </div>
+
+      <!-- <div class="input-group w-[70%]">
+        <label class="block text-sm font-medium text-gray-700">Measurement</label>
+        <input v-model="formState.measurement" type="text" class="input" />
+      </div> -->
+
+      <div class="input-group w-full">
+        <label class="block text-sm font-medium text-gray-700">Container Type</label>
+        <div class="flex">
+          <div class="w-[70%]">
+            <select v-model="selectedContainerType" class="select-input" @change="fetchContainerTypeCapacities" required>
+              <option selected>Select Container Type...</option>
+              <option v-for="type in containerTypes" :key="type.id" :value="type.id">
+                {{ type.container_type_name }}
+              </option>
+            </select>
+          </div>
+          <button type="button" class="button btn-brand ml-4" @click="addNewContainerType">
+            Add Container Type
+          </button>
+        </div>
+      </div>
+
+      <div class="input-group w-full">
+        <label class="block text-sm font-medium text-gray-700">Container Type Capacity</label>
+        <div class="flex">
+          <div class="w-[70%]">
+            <select v-model="formState.containerTypeCapacity" class="select-input" required>
+              <option selected>Select Container Capacity...</option>
+              <option v-for="capacity in containerTypeCapacities" :key="capacity.id" :value="capacity.id">
+                {{ capacity.container_capacity }}
+              </option>
+            </select>
+          </div>
+          <button type="button" class="button btn-brand ml-4" @click="addNewContainerTypeCapacity">
+            Add Container Capacity
+          </button>
+        </div>
+      </div>
+
+      <!-- Submit button for the form -->
+      <button type="submit" class="button submit-button" :disabled="isSubmitting">
+        {{ isSubmitting ? 'Submitting...' : 'Submit' }}
+      </button>
+    </form>
+  </div>
 
     <!-- Modal for adding a new customer -->
     <CustomerFormModal v-if="showModal" @close="closeModal" />
   </DashboardLayout>
 </template>
 
+
+
 <script setup>
-import { ref, reactive, computed, watch, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-// import { useProductStore } from '@/stores/products'
-// import { useCustomerstore } from '@/stores/customers'
-import CustomerFormModal from '@/components/UI/Modal/CustomerFormModal.vue'
-// import { storeToRefs } from 'pinia'
+import { ref, reactive, onMounted } from 'vue';
+import apiService from '@/services/apiService';
+import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
+// import axios from 'axios';
+import { useRouter } from 'vue-router';
 
-const router = useRouter()
-const showModal = ref(false)
-const isSubmitting = ref(false) // Reactive variable for submission state
-
+const router = useRouter();
 const fileInput = ref(null);
-
-const addNewCustomer = () => {
-  showModal.value = true
-}
-
-const closeModal = () => {
-  showModal.value = false
-}
-
-const triggerFileInput = () => {
-  if (fileInput.value) {
-    fileInput.value.click()
-  } else {
-    console.error('File input is not correctly referenced.')
-  }
-}
+const newImage = ref(null);
+const isSubmitting = ref(false);
 
 const formState = reactive({
   product: '',
-  product_type: '',
-  product_type_img: '',
-  product_type_desc: '',
+  productTypeName: '',
+  productTypeImage: null,
+  productTypeDescription: '',
   barcode: '',
   measurement: '',
-  container_type_capacity: ''
-})
-//const salesLoading = ref(false);
-// const printReceipt = ref('no')
+  containerTypeCapacity: ''
+});
 
-// const vatOptions = reactive([
-//   { id: 'yes', value: 'yes', label: 'Yes' },
-//   { id: 'no', value: 'no', label: 'No' }
-// ])
+const measurements = ref([]);
+const products = ref([]);
+console.log(products)
+const containerTypes = ref([]);
+const containerTypeCapacities = ref([]);
+const selectedContainerType = ref(null);
 
-// const formState = reactive({
-//   customer_id: '',
-//   payment_method: 'cash',
-//   products: [
-//     {
-//       product_type_id: '',
-//       price_sold_at: null,
-//       quantity: null,
-//       batch_no: '',
-//       available_qty: null,
-//       amount: 0,
-//       vat: 'no'
-//     }
-//   ]
-// })
+// Fetch data on mounted
+onMounted(async () => {
+  await fetchMeasurements();
+  await fetchProducts();
+  await fetchContainerTypes();
+});
 
-// // const addProducts = () => {
-// //   const lastProduct = formState.products[formState.products.length - 1]
-// //   if (
-// //     lastProduct.product_type_id.trim() !== '' &&
-// //     lastProduct.quantity > 0 &&
-// //     lastProduct.price_sold_at > 0
-// //   ) {
-// //     formState.products.push({
-// //       product_type_id: '',
-// //       price_sold_at: 0,
-// //       quantity: 0,
-// //       batch_no: '',
-// //       available_qty: 0,
-// //       amount: 0,
-// //       vat: 'no'
-// //     })
-// //   }
-// // }
+const fetchMeasurements = async () => {
+  try {
+    const response = await apiService.get('/measurements');
+    console.log(response)
+    catchAxiosSuccess(response)
+    measurements.value = response;
+    console.log(measurements.value)
+  } catch (error) {
+    catchAxiosError(error)
+    console.error('Error fetching products:', error);
+  }
+};
+const fetchProducts = async () => {
+  try {
+    const response = await apiService.get('/all-products');
+    console.log(response)
+    products.value = response;
+    console.log(products.value)
+  } catch (error) {
+    catchAxiosError(error)
+    console.error('Error fetching products:', error);
+  }
+};
+// console.log(products)
+const fetchContainerTypes = async () => {
+  try {
+    const response = await apiService.get('/list-all-containers');
+    console.log(response.data)
+    containerTypes.value = response.data;
+  } catch (error) {
+    console.error('Error fetching container types:', error);
+    catchAxiosError(error);
+  }
+};
 
-// // Function to remove a product from the formState.products array
-// // const removeProduct = (index) => {
-// //   if (index > 0) {
-// //     formState.products.splice(index, 1)
-// //   }
-// // }
+const fetchContainerTypeCapacities = async () => {
+  if (selectedContainerType.value) {
+    try {
+      const response = await apiService.get(`/container-with-capacities/${selectedContainerType.value}`);
+      console.log(response.data.container_capacities)
+      containerTypeCapacities.value = response.data.container_capacities;
+    } catch (error) {
+      console.error('Error fetching container type capacities:', error);
+    }
+  }
+};
 
-// // const resetForm = () => {
-// //   formState.customer_id = ''
-// //   formState.payment_method = ''
-// //   formState.products = [
-// //     {
-// //       product_type_id: '',
-// //       price_sold_at: null,
-// //       batch_no: null,
-// //       quantity: null
-// //     }
-// //   ]
-// // }
+const handleImageChange = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    formState.productTypeImage = file;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      newImage.value = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+};
 
-// // const handleAddSales = async () => {
-// //   isSubmitting.value = true // Set submitting state to true
-// //   let products = formState.products
-// //     .filter((product) => product.amount > 0)
-// //     .map((product) => ({
-// //       product_type_id: product.product_type_id,
-// //       batch_no: product.batch_no,
-// //       price_sold_at: parseInt(product.price_sold_at),
-// //       quantity: parseInt(product.quantity),
-// //       vat: parseInt(product.vat === 'yes' ? 1 : 0)
-// //     }))
+const addNewContainerType = async () => {
+  const containerTypeName = prompt('Enter new container type name:');
+  if (containerTypeName) {
+    try {
+      const response = await apiService.post('/container-type', { name: containerTypeName });
+      containerTypes.value.push(response.data);
+    } catch (error) {
+      console.error('Error adding new container type:', error);
+    }
+  }
+};
 
-// //   let payload = {
-// //     customer_id: formState.customer_id,
-// //     payment_method: formState.payment_method,
-// //     products: products
-// //   }
+const addNewContainerTypeCapacity = async () => {
+  const containerCapacity = prompt('Enter new container type capacity:');
+  if (selectedContainerType.value && containerCapacity) {
+    try {
+      const response = await apiService.post('/container-type-capacity', {
+        containerTypeId: selectedContainerType.value,
+        capacity: containerCapacity
+      });
+      containerTypeCapacities.value.push(response.data);
+    } catch (error) {
+      console.error('Error adding new container type capacity:', error);
+    }
+  }
+};
 
-// //   try {
-// //     let res = await productsStore.handleAddSaless(payload)
-// //     productsStore.handleGetProducts()
-// //     router.push('/sale')
-// //     return res
-// //   } catch (error) {
-// //     console.error('Failed to submit sale:', error)
-// //   } finally {
-// //     isSubmitting.value = false // Set submitting state to false
-// //     resetForm()
-// //   }
-// // }
+const handleSubmit = async () => {
+  isSubmitting.value = true;
 
-// // const totalPrice = computed(() => {
-// //   return formState.products
-// //     .reduce((sum, product, index) => {
-// //       return sum + calculateAmount(index)
-// //     }, 0)
-// //     .toFixed(2)
-// // })
+  const formData = new FormData();
+  formData.append('product_id', formState.product);
+  formData.append('product_type_name', formState.productTypeName);
+  formData.append('product_type_image', formState.productTypeImage);
+  formData.append('product_type_description', formState.productTypeDescription);
+  formData.append('barcode', formState.barcode);
+  formData.append('measurement_id', formState.measurement);
+  formData.append('container_type_capacity_id', formState.containerTypeCapacity);
 
-// // const isBatchSelected = (productId, batchId, currentIndex) => {
-// //   return formState.products.some((product, index) => {
-// //     return (
-// //       index !== currentIndex &&
-// //       product.product_type_id === productId &&
-// //       product.batch_id === batchId
-// //     )
-// //   })
-// // }
-
-// // const updatePriceId = (productTypeId, index) => {
-// //   const productInfo = allProductTypeName.value.find((product) => product.id === productTypeId)
-// //   if (productInfo) {
-// //     formState.products[index].batches = productInfo.batches
-// //     formState.products[index].vat = productInfo.vat === 'Yes' ? 'yes' : 'no'
-// //   } else {
-// //     formState.products[index].batches = []
-// //     formState.products[index].vat = 'no'
-// //   }
-// // }
-
-// const updateBatchDetails = (batchId, index) => {
-//   const productInfo = allProductTypeName.value.find((p) => p.batches.some((b) => b.id === batchId))
-//   const batchInfo = productInfo ? productInfo.batches.find((batch) => batch.id === batchId) : null
-
-//   if (batchInfo && productInfo) {
-//     formState.products[index].available_qty = batchInfo.batch_quantity_left
-//     formState.products[index].price_sold_at = batchInfo.batch_selling_price
-//     formState.products[index].batch_no = batchInfo.batch_no
-//   } else {
-//     formState.products[index].available_qty = ''
-//     formState.products[index].price_sold_at = ''
-//     formState.products[index].vat = 'no'
-//     formState.products[index].amount = 0
-//   }
-// }
-
-// const calculateAmount = (index) => {
-//   const product = formState.products[index]
-//   if (
-//     !product ||
-//     product.price_sold_at === null ||
-//     product.quantity === null ||
-//     product.price_sold_at === '' ||
-//     product.quantity === ''
-//   ) {
-//     return 0
-//   }
-
-//   const baseAmount = parseFloat(product.price_sold_at) * parseInt(product.quantity)
-//   let amount = baseAmount
-//   if (product.vat === 'yes' && baseAmount > 0) {
-//     const vatPercentage = 7.5
-//     amount += baseAmount * (vatPercentage / 100)
-//   }
-
-//   product.amount = amount
-//   return amount
-// }
-
-// watch(
-//   () => formState.products.map((p) => p.product_type_id),
-//   (newProductTypeIds, oldProductTypeIds) => {
-//     newProductTypeIds.forEach((productTypeId, index) => {
-//       if (productTypeId !== oldProductTypeIds[index]) {
-//         updatePriceId(productTypeId, index)
-//       }
-//     })
-//   },
-//   { deep: true }
-// )
-
-// watch(
-//   () => formState.products.map((p) => p.batch_id),
-//   (newBatchIds, oldBatchIds) => {
-//     newBatchIds.forEach((batchId, index) => {
-//       if (batchId !== oldBatchIds[index]) {
-//         updateBatchDetails(batchId, index)
-//       }
-//     })
-//   },
-//   { deep: true }
-// )
-
-// watch(
-//   () => formState.products.map((product) => product.quantity),
-//   (newQuantities, oldQuantities) => {
-//     newQuantities.forEach((quantity, index) => {
-//       if (quantity !== oldQuantities[index]) {
-//         if (quantity > formState.products[index].available_qty) {
-//           formState.products[index].quantity = formState.products[index].available_qty
-//         }
-//         calculateAmount(index)
-//       }
-//     })
-//   },
-//   { deep: true }
-// )
-
-// watch(
-//   () => formState.products.map((product) => product.vat),
-//   (newVats, oldVats) => {
-//     formState.products.forEach((product, index) => {
-//       if (newVats[index] !== oldVats[index]) {
-//         calculateAmount(index)
-//       }
-//     })
-//   },
-//   { deep: true }
-// )
-
-// watch(
-//   () => formState.products.map((product) => product.price_sold_at),
-//   (newPrices, oldPrices) => {
-//     formState.products.forEach((product, index) => {
-//       if (newPrices[index] !== oldPrices[index]) {
-//         calculateAmount(index)
-//       }
-//     })
-//   },
-//   { deep: true }
-// )
-
-// onMounted(async () => {
-//   try {
-//     await customersStore.handleAllCustomersName()
-//     await productsStore.handleGetAllProductTypeName()
-//   } catch (error) {
-//     console.error
-//   }
-// })
+  try {
+    let res = await apiService.post('/product-types', formData);
+    router.push('/product-type');
+    
+    catchAxiosSuccess(res);
+    return res;
+  } catch (error) {
+    catchAxiosError(error)
+    console.error('Error submitting form:', error);
+  } finally {
+    isSubmitting.value = false;
+  }
+};
 </script>
+
 
 <style scoped>
 .container {
@@ -391,7 +360,7 @@ const formState = reactive({
 .input-group {
   flex: 1;
   margin-right: 20px;
-  height: 5em;
+  margin-bottom: 1.2em;
 }
 
 .select-input,
