@@ -1,7 +1,7 @@
 <template>
   <DashboardLayout pageTitle="Create Product Type">
 
-     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
+      <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
     <!-- Navigation buttons at the top -->
     <div class="top-buttons">
       <router-link to="/product-type" class="button back-btn">Back</router-link>

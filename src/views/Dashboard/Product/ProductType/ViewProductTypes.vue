@@ -83,10 +83,6 @@ import apiService from '@/services/apiService'
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue'
 import Pagination from '@/components/UI/Pagination/PaginatePage.vue'
 
-
-
-
-
 const search = ref('')
 const isSearching = ref(false)
 
