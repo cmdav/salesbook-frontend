@@ -1,18 +1,18 @@
 <template>
   <DashboardLayout pageTitle="Product Page">
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
-      <div class="grid lg:grid-cols-3 grid-cols-1 gap-4">
+      <!-- <div class="grid lg:grid-cols-3 grid-cols-1 gap-4">
         <div class="flex flex-row justify-between rounded-[8px] bg-brand p-4">
           <div>
             <div class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]">
               <span>Total Products</span>
             </div>
             <div class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]">
-              {{ productsStore?.productType?.total }}
+              {{ productsStore?.products?.total }}
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <!-- Button to Open Modal -->
       <DataTableLayout
@@ -71,7 +71,7 @@
       :url="'/product-types'"
     /> -->
     <!-- Modal for Price Type-->
-    <FormModal
+    <!-- <FormModal
       v-if="showPriceModal"
       @close="togglePriceModal('close')"
       :formTitle="'Add Price'"
@@ -80,7 +80,7 @@
       @fetchDataForSubCategory="fetchDataForSubCategory"
       :isLoadingMsg="isOptionLoadingMsg"
       :url="'/prices'"
-    />
+    /> -->
     <ViewModal v-if="showViewModal" @close="closeViewModal" :modalTitle="modalTitle">
       <ViewModalDetail :products="products" />
     </ViewModal>
@@ -90,7 +90,7 @@
       @close="closeDeleteModal"
       @updated="forceRefresh"
       :items="itemsId"
-      :url="'/product-types'"
+      :url="'/products'"
       :modalTitle="modalTitle"
     />
     <!-- Modal to edit  product types -->
@@ -101,7 +101,7 @@
       :items="items"
       @updated="forceRefresh"
       :formField="formFields"
-      :url="dynamicUrl"
+      :url="'/products'"
     />
     <UploadModal
       v-if="showUploadModal"
@@ -118,6 +118,7 @@ import { onMounted, ref, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProductStore } from '@/stores/products'
 const productsStore = useProductStore()
+console.log(productsStore)
 import { formFields, priceFormFields, productTypeFormFields } from '@/formfields/formFields'
 import { useSharedComponent } from '@/composable/useSharedComponent'
 
@@ -269,12 +270,10 @@ const dynamicFormFields = computed(() => {
 
 const dynamicUrl = computed(() => {
   if (items.value && items.value.product_name) {
-    if (items.value.product_name == items.value.product_type_name) {
+    
       return `/products/${items.value.product_ids}`
     }
-  }
-  return `/product-types/${items.value.id}`
-})
+  })
 
 const store = useStore()
 const permissions = computed(() => {

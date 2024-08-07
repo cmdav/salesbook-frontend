@@ -34,6 +34,17 @@
               </select>
             </div>
             <div>
+              <label for="cost_price">Container Qty<span class="required"></span></label>
+              <input type="number" v-model="purchase.container_qty" maxlength="9" />
+              
+            </div>
+            <div>
+              <label for="cost_price">Container Capacity Qty<span class="required"></span></label>
+              <input type="number" v-model="purchase.capacity_qty" maxlength="9" />
+              
+            </div>
+            <div class="form-row">
+            <div>
               <label for="cost_price">Cost Price <span class="required">*</span></label>
               <input type="number" v-model="purchase.cost_price" maxlength="9" required />
               <label class="priceView"> &#8358; {{ purchase.cost_price ?
@@ -64,6 +75,7 @@
             <div v-if="index !== 0" class="remove-button">
               <button type="button" @click="removePurchase(index)" class="button remove-purchase-button">Remove</button>
             </div>
+          </div>
           </div>
           <hr class="separator" />
         </div>
@@ -103,6 +115,8 @@ const purchases = reactive([
     quantity: '',
     product_identifier: '',
     expiry_date: '',
+    container_qty: '',
+    capacity_qty: '',
     original_selling_price: null // To track the original selling price
   }
 ]);
@@ -117,7 +131,7 @@ const fetchData = async () => {
     const [suppliersResponse, productTypesResponse, lastBatchNumberResponse] = await Promise.all([
       apiService.get('all-suppliers'),
       apiService.get('all-product-type'),
-      apiService.get('last-batch-number')
+      apiService.get('last-batch-number'),
     ]);
 
     // Handle suppliers response
@@ -185,6 +199,8 @@ const addPurchase = () => {
       product_type_id: '',
       price_id: '',
       cost_price: '',
+      container_qty: '',
+      capacity_qty: '',
       selling_price: '',
       batch_no: batchNo.value,
       quantity: '',

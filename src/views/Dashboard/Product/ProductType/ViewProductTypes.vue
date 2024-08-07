@@ -32,6 +32,7 @@
             <th>SUPPLIER PHONE NUMBER</th>
             <th>CREATED BY</th>
             <th>UPDATED BY</th>
+            <th>EDIT</th>
             <th>DELETE</th>
           </tr>
         </thead>
@@ -56,12 +57,24 @@
             <td>{{ item.supplier_phone_number }}</td>
             <td>{{ item.created_by }}</td>
             <td>{{ item.updated_by }}</td>
+            <td><button @click="openEditModal(item)">Edit</button></td>
             <td><button @click="openDeleteModal(item)">Delete</button></td>
           </tr>
         </tbody>
+
       </table>
       <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
     </div>
+
+     <EditModal
+      v-if="showEditModal"
+      @close="closeEditModal"
+      @fetchDataForSubCategory="fetchDataForSubCategory"
+      :items="itemToEdit"
+      @updated="forceRefresh"
+      :formField="productTypeFormFields"
+      :url="product-types"
+    />
 
     <DeleteModal
       v-if="showDeleteModal"
@@ -78,18 +91,24 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
-import apiService from '@/services/apiService'
-import DeleteModal from '@/components/UI/Modal/DeleteModals.vue'
-import Pagination from '@/components/UI/Pagination/PaginatePage.vue'
+import { ref, onMounted, watch } from 'vue';
+import apiService from '@/services/apiService';
+import DeleteModal from '@/components/UI/Modal/DeleteModals.vue';
+import EditModal from '@/components/UI/Modal/EditModal.vue';
+import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
+import { productTypeFormFields } from '@/formfields/formFields';
+import { useSharedComponent } from '@/composable/useSharedComponent';
+
 
 const search = ref('')
 const isSearching = ref(false)
 
 const data = ref([]) // Initialize as an empty array
 const pagination = ref({})
+const showEditModal = ref(false)
 const showDeleteModal = ref(false)
 const itemToDelete = ref(null)
+const itemToEdit = ref(null)
 const modalTitle = 'Delete Sale'
 
 const currentPage = ref(1)
@@ -98,24 +117,30 @@ const itemsPerPage = ref(0)
 // const branches = ref([]);
 const errorMessage = ref('')
 
-// async function fetchProductTypes() {
-//   try {
-//     const response = await apiService.get(`/product-types`);
-//     if (response.data && response.data.length) {
-//       data.value = response.data;
-//       errorMessage.value = '';
-//     } else {
-//       data.value = [];
-//       errorMessage.value = 'No items found for the selected branch.';
-//     }
-//   } catch (error) {
-//     console.error('Failed to fetch sales data:', error);
-//     errorMessage.value = 'An error occurred while fetching data.';
-//   }
-// }
+const {
+  
+  useSelectComposable,
+} = useSharedComponent('products')
 
 onMounted( async() => {
   await fetchData()
+});
+
+const { fetchDataForSelect } = useSelectComposable(
+  productTypeFormFields,
+  '/products'
+)
+
+onMounted(async () => {
+  await fetchDataForSelect('Product Name', '/all-products', 'id', 'product_name')
+  await fetchDataForSelect('Measurement', '/measurements', 'id', 'measurement_name')
+  await fetchDataForSelect('Container Type', '/list-all-containers', 'id', 'container_type_name')
+  await fetchDataForSelect(
+    'Container Capacity',
+    '/container-with-capacities',
+    'id',
+    'container_capacitity',
+  )
 });
 
 async function fetchData(page = 1) {
@@ -162,6 +187,17 @@ function changePage(page) {
   if (page > 0 && page <= totalPages.value) {
     fetchData(page)
   }
+}
+
+
+function openEditModal(item) {
+  itemToEdit.value = item
+  showEditModal.value = true
+}
+
+function closeEditModal() {
+  showEditModal.value = false
+  itemToEdit.value = null
 }
 
 function openDeleteModal(item) {

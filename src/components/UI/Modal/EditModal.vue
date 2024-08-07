@@ -100,8 +100,7 @@ const handleFieldChanged = (value, fieldDatabase) => {
 }
 
 onMounted(async () => {
-  //console.log('emitting data from modal')
-  //console.log(items.value["category_ids"])
+  
   emit(
     'fetchDataForSubCategory',
     items.value['category_ids'],

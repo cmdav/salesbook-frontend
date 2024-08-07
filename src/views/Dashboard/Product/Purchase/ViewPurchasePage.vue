@@ -13,9 +13,14 @@
           <tr>
             <th>S.NO</th>
             <th>PRODUCT TYPE</th>
+            <th>PRODUCT TYPE IMAGE</th>
             <th>PRODUCT TYPE DESCRIPTION</th>
             <th>BATCH NO</th>
             <th>QUANTITY</th>
+            <th>CONTAINER TYPE</th>
+            <th>CONTAINER TYPE CAPACITY</th>
+            <th>CONTAINER QTY</th>
+            <th>CAPACITY QTY</th>
             <th>EXPIRY DATE</th>
             <th>COST PRICE(NGN)</th>
             <th>SELLING PRICE(NGN)</th>
@@ -30,9 +35,14 @@
           <tr v-for="(item, index) in data" :key="item.id">
             <td>{{(parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1}}</td>
             <td>{{ item.product_type_name }}</td>
+            <td><img class="w-10 h-10 bg-slate-500/[30%] rounded-lg mx-auto object-cover" :src="item.product_type_image"/></td>
             <td>{{ item.product_type_description }}</td>
             <td>{{ item.batch_no }}</td>
             <td>{{ item.quantity }}</td>
+            <td>{{ item.container_type_name }}</td>
+            <td>{{ item.container_type_capacity }}</td>
+            <td>{{ item.container_qty }}</td>
+            <td>{{ item.capacity_qty }}</td>
             <td>{{ item.expiry_date }}</td>
             <td>{{ item.cost_price }}</td>
             <td>{{ item.selling_price }}</td>
@@ -40,7 +50,7 @@
             <td>{{ item.branch_name}}</td>
             <td>{{ item.created_by }}</td>
             <td>{{ item.updated_by }}</td>
-            <td v-if="permissions"><button @click="openDeleteModal(item)">Delete</button></td>
+            <td v-if="delPermissions"><button @click="openDeleteModal(item)">Delete</button></td>
           </tr>
         </tbody>
       </table>
@@ -195,9 +205,8 @@ const roles = computed(() => store.getUser.user.permission.role_name === "Admin"
 
 const delPermissions = computed(() => {
   const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'purchases');
-  console.log(perm.value)
-  console.log(perm.value?.del)
-  return perm.value?.del == 1; 
+  console.log(perm.del)
+  return perm.del == 1; 
 });
 const addPermissions = computed(() => {
   const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'purchases');

@@ -279,7 +279,7 @@ export const productTypeFormFields = ref([
     type: 'select',
     value: '',
     required: false,
-    placeholder: 'Enter product type',
+    placeholder: 'Choose Product Name',
     options: [],
     databaseField: 'product_id'
   },
@@ -288,7 +288,7 @@ export const productTypeFormFields = ref([
     type: 'text',
     value: '',
     required: true,
-    placeholder: 'Enter product type',
+    placeholder: 'Enter product type name',
     databaseField: 'product_type_name'
   },
   {
@@ -317,6 +317,15 @@ export const productTypeFormFields = ref([
     databaseField: 'measurement_id'
   },
   {
+    label: 'Container Type',
+    type: 'select',
+    value: '',
+    required: true,
+    placeholder: 'Select Container Type ',
+    options: [],
+    databaseField: 'container_type'
+  },
+  {
     label: 'Container Capacity',
     type: 'select',
     value: '',
@@ -324,16 +333,7 @@ export const productTypeFormFields = ref([
     placeholder: 'Select Container Capacity ',
     options: [],
     databaseField: 'container_type_capacity_id'
-  },
-  {
-    label: 'Supplier',
-    type: 'select',
-    value: '',
-    required: true,
-    placeholder: 'Select Supplier',
-    options: [],
-    databaseField: 'supplier_id'
-  },
+  }
 ])
 
 export const purchaseFormFields = ref([
