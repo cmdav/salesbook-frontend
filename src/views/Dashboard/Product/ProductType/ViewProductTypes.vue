@@ -2,13 +2,13 @@
   <DashboardLayout pageTitle="Product Type Page">
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
-      <div  class="action">
+      
         <!-- <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" /> -->
 
         <button class="button add-btn">
           <router-link to="/create-product-type" class="button add-btn">Add</router-link>
         </button>
-      </div>
+      
     </div>
     <div class="table-container">
       <table>
@@ -73,6 +73,7 @@
       :items="itemToEdit"
       @updated="forceRefresh"
       :formField="productTypeFormFields"
+      :isLoadingMsg="isOptionLoadingMsg"
       :url="product-types"
     />
 
@@ -126,15 +127,18 @@ onMounted( async() => {
   await fetchData()
 });
 
-const { fetchDataForSelect } = useSelectComposable(
+const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg } = useSelectComposable(
   productTypeFormFields,
-  '/products'
+  '/products',
+   'category_id',
+  'sub_category_id',
+  'sub_category_name'
 )
 
 onMounted(async () => {
   await fetchDataForSelect('Product Name', '/all-products', 'id', 'product_name')
   await fetchDataForSelect('Measurement', '/measurements', 'id', 'measurement_name')
-  await fetchDataForSelect('Container Type', '/list-all-containers', 'id', 'container_type_name')
+  await fetchDataForSelect('Container', '/list-all-containers', 'id', 'container_type_name')
   await fetchDataForSelect(
     'Container Capacity',
     '/container-with-capacities',

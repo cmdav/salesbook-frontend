@@ -317,7 +317,7 @@ export const productTypeFormFields = ref([
     databaseField: 'measurement_id'
   },
   {
-    label: 'Container Type',
+    label: 'Container',
     type: 'select',
     value: '',
     required: true,

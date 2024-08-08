@@ -208,7 +208,7 @@ const fetchProducts = async () => {
 const fetchContainerTypes = async () => {
   try {
     const response = await apiService.get('/list-all-containers')
-    console.log(response.data)
+    console.log(response)
     containerTypes.value = response.data
   } catch (error) {
     console.error('Error fetching container types:', error)
