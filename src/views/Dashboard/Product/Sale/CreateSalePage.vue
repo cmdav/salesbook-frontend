@@ -69,20 +69,20 @@
             </div>
 
             <!-- Product batch selection -->
-            <div class="input-group">
+            <!-- <div class="input-group">
               <label class="block text-sm font-medium text-gray-700">Product Batch</label>
               <select v-model="formState.products[index].batch_id" @change="updateBatchDetails(formState.products[index].batch_id, index)" class="select-input">
                 <option v-for="batch in formState.products[index].batches" :key="batch.id" :value="batch.id" :disabled="isBatchSelected(formState.products[index].product_type_id, batch.id, index)">
                   {{ batch.batch_no }}
                 </option>
               </select>
-            </div>
+            </div> -->
 
             <!-- Display available quantity left in the selected batch -->
-            <div class="input-group w-20">
+            <!-- <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Qty left</label>
               <input type="number" :value="formState.products[index].available_qty" class="input readonly-input" readonly />
-            </div>
+            </div> -->
 
             <!-- Input field for the selling price of the product -->
             <div class="input-group w-20">
@@ -92,10 +92,10 @@
             </div>
 
             <!-- Input field for the quantity of the product being sold -->
-            <div class="input-group w-20">
+            <!-- <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Qty Sold</label>
               <input required v-model="formState.products[index].quantity" type="number" class="input" min="1" />
-            </div>
+            </div> -->
 
             <!-- Selection for VAT applicability -->
             <div class="input-group w-20">

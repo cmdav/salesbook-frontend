@@ -119,7 +119,6 @@ const itemsPerPage = ref(0)
 const errorMessage = ref('')
 
 const {
-  
   useSelectComposable,
 } = useSharedComponent('products')
 
