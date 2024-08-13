@@ -122,7 +122,7 @@
               </select>
             </div>
             <button type="button" class="button btn-brand ml-4" @click="addContainerCapacity">
-              Add Unit Capacities
+              Add Unit Capacity
             </button>
           </div>
         </div>
