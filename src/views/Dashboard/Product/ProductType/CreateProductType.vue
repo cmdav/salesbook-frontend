@@ -57,6 +57,20 @@
         </div>
 
         <div class="input-group w-[70%]">
+          <p>Are you selling in unit?</p>
+          <label class="mt-20 text-sm font-medium text-gray-700">
+          <input type="radio" value="1" name="choice" v-model="formState.unitSales" >
+          Yes 
+        </label>
+
+          <label class="ml-8 text-sm font-medium text-gray-700">
+          <input type="radio" value="0" name="choice" v-model="formState.unitSales" >
+          No 
+        </label>
+          <!-- <input v-model="formState.barcode" type="password" class="input" /> -->
+        </div>
+
+        <!-- <div class="input-group w-[70%]">
           <label class="block text-sm font-medium text-gray-700">Measurement</label>
           <select v-model="formState.measurement" class="select-input" required>
             <option selected>Select Measurement...</option>
@@ -68,36 +82,36 @@
               {{ measurement.measurement_name }}
             </option>
           </select>
-        </div>
+        </div> -->
 
         <div class="input-group w-full">
-          <label class="block text-sm font-medium text-gray-700">Container Type</label>
+          <label class="block text-sm font-medium text-gray-700">Select Selling Unit</label>
           <div class="flex">
             <div class="w-[70%]">
               <select
                 v-model="selectedContainerType"
                 class="select-input"
                 @change="fetchContainerTypeCapacities"
-                required
+
               >
-                <option selected>Select Container Type...</option>
+                <option selected>Select Selling Unit...</option>
                 <option v-for="type in containerTypes" :key="type.id" :value="type.id">
                   {{ type.container_type_name }}
                 </option>
               </select>
             </div>
             <button type="button" class="button btn-brand ml-4" @click="addContainerType">
-              Add Container Type
+              Add Selling Unit
             </button>
           </div>
         </div>
 
         <div class="input-group w-full">
-          <label class="block text-sm font-medium text-gray-700">Container Type Capacity</label>
+          <label class="block text-sm font-medium text-gray-700">Select Selling Unit Capacity</label>
           <div class="flex">
             <div class="w-[70%]">
-              <select v-model="formState.containerTypeCapacity" class="select-input" required>
-                <option selected>Select Container Capacity...</option>
+              <select v-model="formState.containerTypeCapacity" class="select-input">
+                <option selected>Select Selling Unit Capacity...</option>
                 <option
                   v-for="capacity in containerTypeCapacities"
                   :key="capacity.id"
@@ -108,7 +122,7 @@
               </select>
             </div>
             <button type="button" class="button btn-brand ml-4" @click="addContainerCapacity">
-              Add Container Capacity
+              Add Unit Capacity
             </button>
           </div>
         </div>
@@ -143,6 +157,7 @@ const router = useRouter()
 const fileInput = ref(null)
 const newImage = ref(null)
 const isSubmitting = ref(false)
+// const unitSales = ref(null);
 
 const showModal = ref(false)
 const displayModal = ref(false)
@@ -164,35 +179,31 @@ const formState = reactive({
   productTypeImage: null,
   productTypeDescription: '',
   barcode: '',
-  measurement: '',
+  unitSales: null,
+  // measurement: '',
   containerTypeCapacity: ''
 })
 
-const measurements = ref([])
+// const measurements = ref([])
 const products = ref([])
 const containerTypes = ref([])
 const containerTypeCapacities = ref([])
 const selectedContainerType = ref(null)
 
-// Fetch data on mounted
-onMounted(async () => {
-  await fetchMeasurements()
-  await fetchProducts()
-  await fetchContainerTypes()
-})
 
-const fetchMeasurements = async () => {
-  try {
-    const response = await apiService.get('/measurements')
-    console.log(response)
-    catchAxiosSuccess(response)
-    measurements.value = response
-    console.log(measurements.value)
-  } catch (error) {
-    catchAxiosError(error)
-    console.error('Error fetching products:', error)
-  }
-}
+
+// const fetchMeasurements = async () => {
+//   try {
+//     const response = await apiService.get('/measurements')
+//     console.log(response)
+//     catchAxiosSuccess(response)
+//     measurements.value = response
+//     console.log(measurements.value)
+//   } catch (error) {
+//     catchAxiosError(error)
+//     console.error('Error fetching products:', error)
+//   }
+// }
 const fetchProducts = async () => {
   try {
     const response = await apiService.get('/all-products')
@@ -242,6 +253,14 @@ const handleImageChange = (event) => {
   }
 }
 
+// Fetch data on mounted
+onMounted(async () => {
+  // await fetchMeasurements()
+  await fetchProducts()
+  await fetchContainerTypes()
+  await fetchContainerTypeCapacities()
+})
+
 const handleSubmit = async () => {
   isSubmitting.value = true
 
@@ -251,7 +270,7 @@ const handleSubmit = async () => {
   formData.append('product_type_image', formState.productTypeImage)
   formData.append('product_type_description', formState.productTypeDescription)
   formData.append('barcode', formState.barcode)
-  formData.append('measurement_id', formState.measurement)
+  formData.append('is_container_type', formState.unitSales)
   formData.append('container_type_capacity_id', formState.containerTypeCapacity)
 
   try {
@@ -344,7 +363,7 @@ button {
 }
 
 .btn-brand:hover:not(:disabled) {
-  background-color: #0056b3;
+  background-color: #5a6268;
 }
 
 .back-btn {
