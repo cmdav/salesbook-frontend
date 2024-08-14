@@ -57,14 +57,14 @@
         </div>
 
         <div class="input-group w-[70%]">
-          <p>Are you selling in unit?</p>
+          <p>Are you selling in units?</p>
           <label class="mt-20 text-sm font-medium text-gray-700">
-          <input type="radio" value="1" name="choice" v-model="formState.unitSales" >
+          <input type="radio" value="yes" name="choice" v-model="formState.unitSales" >
           Yes 
         </label>
 
           <label class="ml-8 text-sm font-medium text-gray-700">
-          <input type="radio" value="0" name="choice" v-model="formState.unitSales" >
+          <input type="radio" value="no" name="choice" v-model="formState.unitSales" >
           No 
         </label>
           <!-- <input v-model="formState.barcode" type="password" class="input" /> -->
@@ -92,7 +92,6 @@
                 v-model="selectedContainerType"
                 class="select-input"
                 @change="fetchContainerTypeCapacities"
-
               >
                 <option selected>Select Selling Unit...</option>
                 <option v-for="type in containerTypes" :key="type.id" :value="type.id">
@@ -106,7 +105,7 @@
           </div>
         </div>
 
-        <div class="input-group w-full">
+        <div class="input-group w-full" v-if="formState.unitSales === 'yes'">
           <label class="block text-sm font-medium text-gray-700">Select Selling Unit Capacity</label>
           <div class="flex">
             <div class="w-[70%]">
@@ -256,9 +255,9 @@ const handleImageChange = (event) => {
 // Fetch data on mounted
 onMounted(async () => {
   // await fetchMeasurements()
-  await fetchProducts()
-  await fetchContainerTypes()
-  await fetchContainerTypeCapacities()
+  await fetchProducts();
+  await fetchContainerTypes();
+  // await fetchContainerTypeCapacities()
 })
 
 const handleSubmit = async () => {
@@ -272,8 +271,11 @@ const handleSubmit = async () => {
   formData.append('barcode', formState.barcode)
   formData.append('is_container_type', formState.unitSales)
   formData.append('container_type_capacity_id', formState.containerTypeCapacity)
+  formData.append('container_type_id', selectedContainerType.value)
+
 
   try {
+    console.log(formData)
     let res = await apiService.post('/product-types', formData)
     router.push('/product-type')
 
