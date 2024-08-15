@@ -7,7 +7,7 @@
       </div>
 
       <!-- Form for adding a new sale -->
-      <form @submit.prevent="handleAddSales">
+      <form @submit.prevent="addSales">
         <!-- Section for selecting whether to print a receipt -->
         <div class="form-group">
           <span class="font-medium text-gray-700">Print Receipt:</span>
@@ -117,7 +117,14 @@
 
             <div class="input-group">
               <label class="block text-sm font-medium text-gray-700">Cost Price</label>
-              <input type="text" id="cost_price" v-model="form.cost_price" class="input" readonly />
+              <input type="text" id="cost_price" v-model="formState.products[index].cost_price" class="input" readonly />
+              <label class="priceView">
+                &#8358;
+                {{
+                  formState.products[index].cost_price
+                    ? parseFloat(formState.products[index].cost_price).toLocaleString()
+                    : '0.00'
+                }}</label>
             </div>            
 
             <div class="input-group w-20">
@@ -125,14 +132,14 @@
               <input
                 type="text"
                 id="selling_price"
-                v-model="form.selling_price"
+                v-model="formState.products[index].selling_price"
                 class="input"
                 readonly
               />
               <label class="priceView">
                 &#8358;
                 {{
-                  form.selling_price ? parseFloat(form.selling_price).toLocaleString() : '0.00'
+                  formState.products[index].selling_price ? parseFloat(formState.products[index].selling_price).toLocaleString() : '0.00'
                 }}</label
               >
             </div>
@@ -148,7 +155,7 @@
             </div>
 
             <!-- Input field for the selling price of the product -->
-            <div class="input-group w-20">
+            <!-- <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Price</label>
               <input
                 required
@@ -163,7 +170,7 @@
                     ? parseFloat(formState.products[index].price_sold_at).toLocaleString()
                     : '0.00'
                 }}</label>
-            </div>
+            </div> -->
 
             <!-- Display the calculated amount for the product -->
             <div class="input-group flex-1">
@@ -217,6 +224,7 @@ const router = useRouter()
 const customersStore = useCustomerstore()
 const data = ref([]);
 
+
 const { allCustomersNames } = storeToRefs(customersStore)
 // const { allProductTypeName } = storeToRefs(productsStore)
 
@@ -246,29 +254,34 @@ const formState = reactive({
       container_capacity: '',
       cost_price: '',
       selling_price: '',
-      vat: 'no'
+      capacity_qty: '',
+      container_qty: '',
+      // vat: 'no'
     }
   ]
 })
 
-// const addProducts = () => {
-//   const lastProduct = formState.products[formState.products.length - 1]
-//   if (
-//     lastProduct.product_type_id.trim() !== '' &&
-//     lastProduct.quantity > 0 &&
-//     lastProduct.price_sold_at > 0
-//   ) {
-//     formState.products.push({
-//       product_type_id: '',
-//       price_sold_at: 0,
-//       quantity: 0,
-//       batch_no: '',
-//       available_qty: 0,
-//       amount: 0,
-//       vat: 'no'
-//     })
-//   }
-// }
+const addProducts = () => {
+  const lastProduct = formState.products[formState.products.length - 1]
+  if (
+    lastProduct.product_type_id.trim() !== '' 
+    &&
+    lastProduct.container_qty > 0 ||
+    lastProduct.capacity_qty > 0
+  ) {
+    formState.products.push({
+    product_type_id: '',
+      barcode: '',
+      price_sold_at: null,
+      is_container_type: '',
+      container_capacity: '',
+      cost_price: '',
+      selling_price: '',
+      capacity_qty: '',
+      container_qty: '',
+    })
+  }
+}
 
 // Function to remove a product from the formState.products array
 const removeProduct = (index) => {
@@ -277,94 +290,6 @@ const removeProduct = (index) => {
   }
 }
 
-const resetForm = () => {
-  formState.customer_id = ''
-  formState.payment_method = ''
-  formState.products = [
-    {
-      product_type_id: '',
-      price_sold_at: null,
-      batch_no: null,
-      quantity: null
-    }
-  ]
-}
-
-const handleAddSales = async () => {
-  isSubmitting.value = true // Set submitting state to true
-  let products = formState.products
-    .filter((product) => product.amount > 0)
-    .map((product) => ({
-      product_type_id: product.product_type_id,
-      batch_no: product.batch_no,
-      price_sold_at: parseInt(product.price_sold_at),
-      quantity: parseInt(product.quantity),
-      vat: parseInt(product.vat === 'yes' ? 1 : 0)
-    }))
-
-  let payload = {
-    customer_id: formState.customer_id,
-    payment_method: formState.payment_method,
-    products: products
-  }
-
-  try {
-    let res = await productsStore.handleAddSaless(payload)
-    productsStore.handleGetProducts()
-    router.push('/sale')
-    return res
-  } catch (error) {
-    console.error('Failed to submit sale:', error)
-  } finally {
-    isSubmitting.value = false // Set submitting state to false
-    resetForm()
-  }
-}
-
-
-
-const selectedProduct = computed(() => {
-  if (allProductTypeName.value && allProductTypeName.value.data) {
-    return (
-      allProductTypeName.value.data.find(
-        product =>
-          product.product_type_name === form.product_type_name || 
-          product.barcode === form.barcode
-      ) || {}
-    );
-  }
-  return {}; 
-});
-
-watch(
-  () => form.product_type_name,
-  () => {
-    if (selectedProduct.value) {
-      form.vat = selectedProduct.value.vat;
-      form.is_container_type = selectedProduct.value.is_container_type;
-      form.container_capacity = selectedProduct.value.container_capacity;
-      form.cost_price = selectedProduct.value.cost_price;
-      form.selling_price = selectedProduct.value.selling_price;
-    }
-  },
-  {immediate: true}
-);
-
-
-watch(
-  () => form.barcode,
-  () => {
-    if (selectedProduct.value) {
-      form.product_type_name = selectedProduct.value.product_type_name;
-      form.vat = selectedProduct.value.vat;
-      form.is_container_type = selectedProduct.value.is_container_type;
-      form.container_capacity = selectedProduct.value.container_capacity;
-      form.cost_price = selectedProduct.value.cost_price;
-      form.selling_price = selectedProduct.value.selling_price;
-    }
-  },
-  {immediate: true}
-);
 
 
 onMounted(async () => {
@@ -377,9 +302,142 @@ onMounted(async () => {
     console.error
   }
 
-  console.log(data)
 })
 
+watch(
+  () => formState.products.map(product => product.product_type_id),
+  (newProductIds) => {
+    newProductIds.forEach((productId, index) => {
+      const selectedProduct = data.value.find(product => product.id === productId);
+      if (selectedProduct) {
+        formState.products[index].barcode = selectedProduct.barcode;
+        formState.products[index].is_container_type = selectedProduct.is_container_type;
+        formState.products[index].container_capacity = selectedProduct.container_capacity;
+        formState.products[index].cost_price = selectedProduct.cost_price;
+        formState.products[index].selling_price = selectedProduct.selling_price;
+      }
+    });
+  }
+);
+
+const addSales = async() => {
+  isSubmitting.value = true
+  let products = formState.products
+    .filter((product) => product.amount > 0)
+    .map((product) => ({
+      product_type_id: product.product_type_id,
+      capacity_qty: product.capacity_qty,
+      container_qty: product.container_qty,
+    }))
+
+    let payload = {
+    customer_id: formState.customer_id,
+    payment_method: formState.payment_method,
+    products: products
+  }
+
+  try {
+    let res = await apiService.post('/sales', payload)
+    router.push('/sale')
+    return res
+  } catch (error) {
+    console.error('Failed to submit sale:', error)
+  } finally {
+    isSubmitting.value = false // Set submitting state to false
+    resetForm()
+  }
+}
+
+
+
+const resetForm = () => {
+  formState.customer_id = ''
+  formState.payment_method = ''
+  formState.products = [
+    {
+      product_type_id: '',
+      price_sold_at: null,
+      capacity_qty: '',
+      container_qty: '',
+    }
+  ]
+}
+
+// const handleAddSales = async () => {
+//   isSubmitting.value = true // Set submitting state to true
+//   let products = formState.products
+//     .filter((product) => product.amount > 0)
+//     .map((product) => ({
+//       product_type_id: product.product_type_id,
+//       batch_no: product.batch_no,
+//       price_sold_at: parseInt(product.price_sold_at),
+//       quantity: parseInt(product.quantity),
+//       vat: parseInt(product.vat === 'yes' ? 1 : 0)
+//     }))
+
+//   let payload = {
+//     customer_id: formState.customer_id,
+//     payment_method: formState.payment_method,
+//     products: products
+//   }
+
+//   try {
+//     let res = await productsStore.handleAddSaless(payload)
+//     productsStore.handleGetProducts()
+//     router.push('/sale')
+//     return res
+//   } catch (error) {
+//     console.error('Failed to submit sale:', error)
+//   } finally {
+//     isSubmitting.value = false // Set submitting state to false
+//     resetForm()
+//   }
+// }
+
+
+
+// const selectedProduct = computed(() => {
+//   if (allProductTypeName.value && allProductTypeName.value.data) {
+//     return (
+//       allProductTypeName.value.data.find(
+//         product =>
+//           product.product_type_name === form.product_type_name || 
+//           product.barcode === form.barcode
+//       ) || {}
+//     );
+//   }
+//   return {}; 
+// });
+
+// watch(
+//   () => formState.products.product_type_id,
+//   () => {
+//     if (selectedProduct.value) {
+//       // form.vat = selectedProduct.value.vat;
+//       formState.products.is_container_type = selectedProduct.value.is_container_type;
+//       formState.products.container_capacity = selectedProduct.value.container_capacity;
+//       formState.products.cost_price = selectedProduct.value.cost_price;
+//       formState.products.selling_price = selectedProduct.value.selling_price;
+//     }
+//   },
+//   {immediate: true}
+// );
+
+
+// watch(
+//   () => formState.products.barcode,
+//   () => {
+//     if (selectedProduct.value) {
+//       formState.products.product_type_name = selectedProduct.value.product_type_name;
+//       formState.products.vat = selectedProduct.value.vat;
+//       formState.products.is_container_type = selectedProduct.value.is_container_type;
+//       formState.products.container_capacity = selectedProduct.value.container_capacity;
+//       formState.products.cost_price = selectedProduct.value.cost_price;
+//       formState.products.selling_price = selectedProduct.value.selling_price;
+//     }
+//   },
+//   {immediate: true}
+// );
 </script>
 
 <style scoped>
