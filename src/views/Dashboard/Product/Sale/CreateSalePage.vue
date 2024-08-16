@@ -102,30 +102,48 @@
                 id="barcode"
                 v-model="formState.products[index].barcode"
                 class="input"
-                
               />
             </div>
 
             <div class="input-group">
               <label class="block text-sm font-medium text-gray-700">Unit Sales</label>
-              <input type="text" id="container_type" v-model="formState.products[index].is_container_type" class="input" readonly />
+              <input
+                type="text"
+                id="container_type"
+                v-model="formState.products[index].is_container_type"
+                class="input"
+                readonly
+              />
             </div>
             <div class="input-group">
               <label class="block text-sm font-medium text-gray-700">Purchase Unit</label>
-              <input type="text" id="container_type" v-model="formState.products[index].container_capacity" class="input" readonly />
+              <input
+                type="text"
+                id="container_type"
+                v-model="formState.products[index].container_capacity"
+                class="input"
+                readonly
+              />
             </div>
 
             <div class="input-group">
               <label class="block text-sm font-medium text-gray-700">Cost Price</label>
-              <input type="text" id="cost_price" v-model="formState.products[index].cost_price" class="input" readonly />
+              <input
+                type="text"
+                id="cost_price"
+                v-model="formState.products[index].cost_price"
+                class="input"
+                readonly
+              />
               <label class="priceView">
                 &#8358;
                 {{
                   formState.products[index].cost_price
                     ? parseFloat(formState.products[index].cost_price).toLocaleString()
                     : '0.00'
-                }}</label>
-            </div>            
+                }}</label
+              >
+            </div>
 
             <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Selling Price</label>
@@ -139,19 +157,20 @@
               <label class="priceView">
                 &#8358;
                 {{
-                  formState.products[index].selling_price ? parseFloat(formState.products[index].selling_price).toLocaleString() : '0.00'
+                  formState.products[index].selling_price
+                    ? parseFloat(formState.products[index].selling_price).toLocaleString()
+                    : '0.00'
                 }}</label
               >
             </div>
 
-            
             <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Selling Unit</label>
-              <input type="number" :value="formState.products[index].capacity_qty" class="input" />
+              <input type="number" v-model="formState.products[index].capacity_qty" class="input" />
             </div>
             <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Container Qty</label>
-              <input type="number" :value="formState.products[index].container_qty" class="input" />
+              <input type="number" v-model="formState.products[index].container_qty" class="input" />
             </div>
 
             <!-- Input field for the selling price of the product -->
@@ -222,8 +241,7 @@ import { storeToRefs } from 'pinia'
 const router = useRouter()
 // const productsStore = useProductStore()
 const customersStore = useCustomerstore()
-const data = ref([]);
-
+const data = ref([])
 
 const { allCustomersNames } = storeToRefs(customersStore)
 // const { allProductTypeName } = storeToRefs(productsStore)
@@ -249,14 +267,15 @@ const formState = reactive({
     {
       product_type_id: '',
       barcode: '',
-      price_sold_at: null,
+      // price_sold_at: null,
       is_container_type: '',
       container_capacity: '',
       cost_price: '',
       selling_price: '',
       capacity_qty: '',
       container_qty: '',
-      // vat: 'no'
+      amount: '',
+      vat: 'no'
     }
   ]
 })
@@ -264,21 +283,20 @@ const formState = reactive({
 const addProducts = () => {
   const lastProduct = formState.products[formState.products.length - 1]
   if (
-    lastProduct.product_type_id.trim() !== '' 
-    &&
-    lastProduct.container_qty > 0 ||
+    (lastProduct.product_type_id && lastProduct.container_qty > 0) ||
     lastProduct.capacity_qty > 0
   ) {
     formState.products.push({
-    product_type_id: '',
+      product_type_id: '',
       barcode: '',
-      price_sold_at: null,
+      // price_sold_at: null,
       is_container_type: '',
       container_capacity: '',
       cost_price: '',
       selling_price: '',
       capacity_qty: '',
       container_qty: '',
+      amount: ''
     })
   }
 }
@@ -290,47 +308,97 @@ const removeProduct = (index) => {
   }
 }
 
-
-
 onMounted(async () => {
   try {
-    await customersStore.handleAllCustomersName();
+    await customersStore.handleAllCustomersName()
     const response = await apiService.get('/all-product-type-name')
     console.log(response.data)
-    data.value = response.data;
+    data.value = response.data
   } catch (error) {
     console.error
   }
-
 })
 
 watch(
-  () => formState.products.map(product => product.product_type_id),
+  () => formState.products.map((product) => product.product_type_id),
   (newProductIds) => {
     newProductIds.forEach((productId, index) => {
-      const selectedProduct = data.value.find(product => product.id === productId);
+      const selectedProduct = data.value.find((product) => product.id === productId)
       if (selectedProduct) {
-        formState.products[index].barcode = selectedProduct.barcode;
-        formState.products[index].is_container_type = selectedProduct.is_container_type;
-        formState.products[index].container_capacity = selectedProduct.container_capacity;
-        formState.products[index].cost_price = selectedProduct.cost_price;
-        formState.products[index].selling_price = selectedProduct.selling_price;
+        formState.products[index].barcode = selectedProduct.barcode
+        formState.products[index].is_container_type = selectedProduct.is_container_type
+        formState.products[index].container_capacity = selectedProduct.container_capacity
+        formState.products[index].cost_price = selectedProduct.cost_price
+        formState.products[index].selling_price = selectedProduct.selling_price
       }
-    });
+    })
   }
 );
 
-const addSales = async() => {
+watch(
+  () => formState.products.map((product) => product.barcode),
+  (newProductIds) => {
+    newProductIds.forEach((productId, index) => {
+      const selectedProduct = data.value.find((product) => product.barcode === productId)
+      if (selectedProduct) {
+        formState.products[index].product_type_id = selectedProduct.product_type_id
+        formState.products[index].is_container_type = selectedProduct.is_container_type
+        formState.products[index].container_capacity = selectedProduct.container_capacity
+        formState.products[index].cost_price = selectedProduct.cost_price
+        formState.products[index].selling_price = selectedProduct.selling_price
+      }
+    })
+  }
+)
+
+watch(
+  () =>
+    formState.products.map((product) => ({
+      selling_price: product.selling_price,
+      capacity_qty: product.capacity_qty
+    })),
+  (newValues, oldValues) => {
+    formState.products.forEach((product, index) => {
+      const sellingPrice = parseFloat(product.selling_price) || 0
+      const capacityQty = parseFloat(product.capacity_qty) || 0
+      const amount = sellingPrice * capacityQty
+      // console.log(`Product ${index}:`, { sellingPrice, capacityQty, amount })
+      formState.products[index].amount = amount
+    })
+  },
+  { deep: true }
+)
+
+watch(
+  () => formState.products,
+  (newVal) => {
+    newVal.forEach((product, index) => {
+      if (product.capacity_qty > product.container_capacity) {
+        formState.products[index].capacity_qty = product.container_capacity;
+        alert(`Capacity quantity cannot exceed the container capacity of ${product.container_capacity}`);
+      }
+
+      if (product.selling_price && product.capacity_qty) {
+        formState.products[index].amount = product.selling_price * product.capacity_qty;
+      }
+    });
+  },
+  { deep: true }
+);
+
+const addSales = async () => {
   isSubmitting.value = true
   let products = formState.products
     .filter((product) => product.amount > 0)
     .map((product) => ({
       product_type_id: product.product_type_id,
+      price_sold_at: product.selling_price,
       capacity_qty: product.capacity_qty,
       container_qty: product.container_qty,
+      vat: product.vat
     }))
 
-    let payload = {
+  let payload = {
     customer_id: formState.customer_id,
     payment_method: formState.payment_method,
     products: products
@@ -348,17 +416,22 @@ const addSales = async() => {
   }
 }
 
-
-
 const resetForm = () => {
   formState.customer_id = ''
   formState.payment_method = ''
   formState.products = [
     {
       product_type_id: '',
-      price_sold_at: null,
+      barcode: '',
+      // price_sold_at: null,
+      is_container_type: '',
+      container_capacity: '',
+      cost_price: '',
+      selling_price: '',
       capacity_qty: '',
       container_qty: '',
+      amount: '',
+      vat: 'no'
     }
   ]
 }
@@ -394,19 +467,17 @@ const resetForm = () => {
 //   }
 // }
 
-
-
 // const selectedProduct = computed(() => {
 //   if (allProductTypeName.value && allProductTypeName.value.data) {
 //     return (
 //       allProductTypeName.value.data.find(
 //         product =>
-//           product.product_type_name === form.product_type_name || 
+//           product.product_type_name === form.product_type_name ||
 //           product.barcode === form.barcode
 //       ) || {}
 //     );
 //   }
-//   return {}; 
+//   return {};
 // });
 
 // watch(
@@ -422,7 +493,6 @@ const resetForm = () => {
 //   },
 //   {immediate: true}
 // );
-
 
 // watch(
 //   () => formState.products.barcode,
