@@ -34,12 +34,12 @@
               </select>
             </div>
             <div>
-              <label for="cost_price">Container Qty<span class="required"></span></label>
+              <label for="cost_price">Purchase Unit<span class="required"></span></label>
               <input type="number" v-model="purchase.container_qty" maxlength="9" />
               
             </div>
             <div>
-              <label for="cost_price">Container Capacity Qty<span class="required"></span></label>
+              <label for="cost_price">Purchase Unit Qty<span class="required"></span></label>
               <input type="number" v-model="purchase.capacity_qty" maxlength="9" />
               
             </div>

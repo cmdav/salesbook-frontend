@@ -83,23 +83,13 @@
                 </option>
               </select>
             </div>
-            <!-- 
-            <div class="input-group w-20">
-              <label class="block text-sm font-medium text-gray-700">Quantity</label>
-              <input
-                required
-                v-model="formState.products[index].price_sold_at"
-                type="number"
-                class="input"
-              />
-               <label class="priceView"> &#8358; {{ formState.products[index].price_sold_at ? parseFloat(formState.products[index].price_sold_at).toLocaleString() : '0.00' }}</label>
-            </div> -->
 
             <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Barcode</label>
               <input
                 type="password"
                 id="barcode"
+                ref="barcodeInputRef"
                 v-model="formState.products[index].barcode"
                 class="input"
               />
@@ -173,24 +163,6 @@
               <input type="number" v-model="formState.products[index].container_qty" class="input" />
             </div>
 
-            <!-- Input field for the selling price of the product -->
-            <!-- <div class="input-group w-20">
-              <label class="block text-sm font-medium text-gray-700">Price</label>
-              <input
-                required
-                v-model="formState.products[index].price_sold_at"
-                type="number"
-                class="input"
-              />
-              <label class="priceView">
-                &#8358;
-                {{
-                  formState.products[index].price_sold_at
-                    ? parseFloat(formState.products[index].price_sold_at).toLocaleString()
-                    : '0.00'
-                }}</label>
-            </div> -->
-
             <!-- Display the calculated amount for the product -->
             <div class="input-group flex-1">
               <label class="block text-sm font-medium text-gray-700">Amount</label>
@@ -230,17 +202,17 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, reactive, watch, onMounted, nextTick} from 'vue';
+import { useRouter } from 'vue-router';
 import apiService from '@/services/apiService'
-// import { useProductStore } from '@/stores/products'
 import { useCustomerstore } from '@/stores/customers'
 import CustomerFormModal from '@/components/UI/Modal/CustomerFormModal.vue'
 import { storeToRefs } from 'pinia'
 
-const router = useRouter()
-// const productsStore = useProductStore()
-const customersStore = useCustomerstore()
+const router = useRouter();
+const customersStore = useCustomerstore();
+
+const barcodeInputRef = ref(null);
 const data = ref([])
 
 const { allCustomersNames } = storeToRefs(customersStore)
@@ -256,6 +228,14 @@ const addNewCustomer = () => {
 const closeModal = () => {
   showModal.value = false
 }
+
+onMounted(() => {
+  nextTick(() => {
+    if (barcodeInputRef.value) {
+      barcodeInputRef.value.focus()
+    }
+  })
+})
 
 //const salesLoading = ref(false);
 const printReceipt = ref('no')
@@ -280,11 +260,21 @@ const formState = reactive({
   ]
 })
 
+onMounted(async () => {
+  try {
+    await customersStore.handleAllCustomersName()
+    const response = await apiService.get('/all-product-type-name')
+    console.log(response.data)
+    data.value = response.data
+  } catch (error) {
+    console.error
+  }
+})
+
 const addProducts = () => {
   const lastProduct = formState.products[formState.products.length - 1]
   if (
-    (lastProduct.product_type_id && lastProduct.container_qty > 0) ||
-    lastProduct.capacity_qty > 0
+    lastProduct.product_type_id 
   ) {
     formState.products.push({
       product_type_id: '',
@@ -298,6 +288,7 @@ const addProducts = () => {
       container_qty: '',
       amount: ''
     })
+    nextTick(() => barcodeInputRef.value.focus());
   }
 }
 
@@ -308,16 +299,7 @@ const removeProduct = (index) => {
   }
 }
 
-onMounted(async () => {
-  try {
-    await customersStore.handleAllCustomersName()
-    const response = await apiService.get('/all-product-type-name')
-    console.log(response.data)
-    data.value = response.data
-  } catch (error) {
-    console.error
-  }
-})
+
 
 watch(
   () => formState.products.map((product) => product.product_type_id),
@@ -349,42 +331,74 @@ watch(
       }
     })
   }
-)
-
-watch(
-  () =>
-    formState.products.map((product) => ({
-      selling_price: product.selling_price,
-      capacity_qty: product.capacity_qty
-    })),
-  (newValues, oldValues) => {
-    formState.products.forEach((product, index) => {
-      const sellingPrice = parseFloat(product.selling_price) || 0
-      const capacityQty = parseFloat(product.capacity_qty) || 0
-      const amount = sellingPrice * capacityQty
-      // console.log(`Product ${index}:`, { sellingPrice, capacityQty, amount })
-      formState.products[index].amount = amount
-    })
-  },
-  { deep: true }
-)
-
-watch(
-  () => formState.products,
-  (newVal) => {
-    newVal.forEach((product, index) => {
-      if (product.capacity_qty > product.container_capacity) {
-        formState.products[index].capacity_qty = product.container_capacity;
-        alert(`Capacity quantity cannot exceed the container capacity of ${product.container_capacity}`);
-      }
-
-      if (product.selling_price && product.capacity_qty) {
-        formState.products[index].amount = product.selling_price * product.capacity_qty;
-      }
-    });
-  },
-  { deep: true }
 );
+
+watch(
+  () => formState.products[formState.products.length - 1].barcode,
+  (newBarcode, _, onInvalidate) => {
+    if (newBarcode) {
+      const product = data.value.find((p) => p.barcode === newBarcode)
+      if (product) {
+        const lastProduct = formState.products[formState.products.length - 1]
+        lastProduct.product_type_id = product.id
+        lastProduct.is_container_type = product.is_container_type
+        lastProduct.container_capacity = product.container_capacity
+        lastProduct.cost_price = product.cost_price
+        lastProduct.selling_price = product.selling_price
+        lastProduct.capacity_qty = 1
+        lastProduct.container_qty = 1
+        lastProduct.amount = lastProduct.selling_price * lastProduct.capacity_qty
+
+        addProducts()
+        // addProductToCart(formState.products.length - 1)
+        formState.products[formState.products.length - 1].barcode = ''
+      }
+    }
+    onInvalidate(() => {
+      nextTick(() => {
+        if (barcodeInputRef.value) {
+          barcodeInputRef.value.focus()
+        }
+      })
+    })
+  }
+)
+
+
+// watch(
+//   () =>
+//     formState.products.map((product) => ({
+//       selling_price: product.selling_price,
+//       capacity_qty: product.capacity_qty
+//     })),
+//   (newValues, oldValues) => {
+//     formState.products.forEach((product, index) => {
+//       const sellingPrice = parseFloat(product.selling_price) || 0
+//       const capacityQty = parseFloat(product.capacity_qty) || 0
+//       const amount = sellingPrice * capacityQty
+//       // console.log(`Product ${index}:`, { sellingPrice, capacityQty, amount })
+//       formState.products[index].amount = amount
+//     })
+//   },
+//   { deep: true }
+// )
+
+// watch(
+//   () => formState.products,
+//   (newVal) => {
+//     newVal.forEach((product, index) => {
+//       if (product.capacity_qty > product.container_capacity) {
+//         formState.products[index].capacity_qty = product.container_capacity;
+//         alert(`Capacity quantity cannot exceed the container capacity of ${product.container_capacity}`);
+//       }
+
+//       if (product.selling_price && product.capacity_qty) {
+//         formState.products[index].amount = product.selling_price * product.capacity_qty;
+//       }
+//     });
+//   },
+//   { deep: true }
+// );
 
 const addSales = async () => {
   isSubmitting.value = true
@@ -434,80 +448,9 @@ const resetForm = () => {
       vat: 'no'
     }
   ]
+  nextTick(() => barcodeInputRef.value.focus())
 }
 
-// const handleAddSales = async () => {
-//   isSubmitting.value = true // Set submitting state to true
-//   let products = formState.products
-//     .filter((product) => product.amount > 0)
-//     .map((product) => ({
-//       product_type_id: product.product_type_id,
-//       batch_no: product.batch_no,
-//       price_sold_at: parseInt(product.price_sold_at),
-//       quantity: parseInt(product.quantity),
-//       vat: parseInt(product.vat === 'yes' ? 1 : 0)
-//     }))
-
-//   let payload = {
-//     customer_id: formState.customer_id,
-//     payment_method: formState.payment_method,
-//     products: products
-//   }
-
-//   try {
-//     let res = await productsStore.handleAddSaless(payload)
-//     productsStore.handleGetProducts()
-//     router.push('/sale')
-//     return res
-//   } catch (error) {
-//     console.error('Failed to submit sale:', error)
-//   } finally {
-//     isSubmitting.value = false // Set submitting state to false
-//     resetForm()
-//   }
-// }
-
-// const selectedProduct = computed(() => {
-//   if (allProductTypeName.value && allProductTypeName.value.data) {
-//     return (
-//       allProductTypeName.value.data.find(
-//         product =>
-//           product.product_type_name === form.product_type_name ||
-//           product.barcode === form.barcode
-//       ) || {}
-//     );
-//   }
-//   return {};
-// });
-
-// watch(
-//   () => formState.products.product_type_id,
-//   () => {
-//     if (selectedProduct.value) {
-//       // form.vat = selectedProduct.value.vat;
-//       formState.products.is_container_type = selectedProduct.value.is_container_type;
-//       formState.products.container_capacity = selectedProduct.value.container_capacity;
-//       formState.products.cost_price = selectedProduct.value.cost_price;
-//       formState.products.selling_price = selectedProduct.value.selling_price;
-//     }
-//   },
-//   {immediate: true}
-// );
-
-// watch(
-//   () => formState.products.barcode,
-//   () => {
-//     if (selectedProduct.value) {
-//       formState.products.product_type_name = selectedProduct.value.product_type_name;
-//       formState.products.vat = selectedProduct.value.vat;
-//       formState.products.is_container_type = selectedProduct.value.is_container_type;
-//       formState.products.container_capacity = selectedProduct.value.container_capacity;
-//       formState.products.cost_price = selectedProduct.value.cost_price;
-//       formState.products.selling_price = selectedProduct.value.selling_price;
-//     }
-//   },
-//   {immediate: true}
-// );
 </script>
 
 <style scoped>
