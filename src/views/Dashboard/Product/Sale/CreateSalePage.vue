@@ -90,8 +90,10 @@
                 type="password"
                 id="barcode"
                 ref="barcodeInputRef"
+                v-focus
                 v-model="formState.products[index].barcode"
                 class="input"
+                @keydown.enter="handleBarcodeEnter"
               />
             </div>
 
@@ -99,7 +101,7 @@
               <label class="block text-sm font-medium text-gray-700">Unit Sales</label>
               <input
                 type="text"
-                id="container_type"
+                id="container_t"
                 v-model="formState.products[index].is_container_type"
                 class="input"
                 readonly
@@ -109,7 +111,7 @@
               <label class="block text-sm font-medium text-gray-700">Purchase Unit</label>
               <input
                 type="text"
-                id="container_type"
+                id="container_qty"
                 v-model="formState.products[index].container_capacity"
                 class="input"
                 readonly
@@ -160,7 +162,11 @@
             </div>
             <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Container Qty</label>
-              <input type="number" v-model="formState.products[index].container_qty" class="input" />
+              <input
+                type="number"
+                v-model="formState.products[index].container_qty"
+                class="input"
+              />
             </div>
 
             <!-- Display the calculated amount for the product -->
@@ -202,17 +208,17 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, onMounted, nextTick} from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, reactive, watch, onMounted, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
 import apiService from '@/services/apiService'
 import { useCustomerstore } from '@/stores/customers'
 import CustomerFormModal from '@/components/UI/Modal/CustomerFormModal.vue'
 import { storeToRefs } from 'pinia'
 
-const router = useRouter();
-const customersStore = useCustomerstore();
+const router = useRouter()
+const customersStore = useCustomerstore()
 
-const barcodeInputRef = ref(null);
+const barcodeInputRef = ref(null)
 const data = ref([])
 
 const { allCustomersNames } = storeToRefs(customersStore)
@@ -229,12 +235,64 @@ const closeModal = () => {
   showModal.value = false
 }
 
+// const focusBarcodeInput = () => {
+//   barcodeInputRef.value?.focus()
+// }
+
+// const focusBarcodeInput = () => {
+//   const inputElement = barcodeInputRef.value
+
+//   if (inputElement && typeof inputElement.focus === 'function') {
+//     inputElement.focus()
+//   } else {
+//     console.error('Input element not found or focus is not a function')
+//   }
+// }
+
+// Use onMounted to set focus when the component is mounted
+// onMounted(() => {
+//   // Ensure the input field is focused after the component has fully mounted
+//   setTimeout(() => {
+//     focusBarcodeInput()
+//   }, 100) // You can adjust the timeout duration if needed
+// })
+
+// const focusBarcodeInput = () => {
+//   const inputElement = barcodeInputRef.value
+
+//   if (inputElement instanceof HTMLInputElement) {
+//     inputElement.focus()
+//   } else {
+//     console.error('barcodeInputRef is not an input element:', inputElement)
+//   }
+// }
+
+// onMounted(() => {
+//   // focusBarcodeInput()
+//   // setTimeout(() => {
+//   //   focusBarcodeInput()
+//   // }, 100)
+
+//   nextTick(() => {
+//     if (barcodeInputRef.value) {
+//       barcodeInputRef.value.focus()
+//     }
+//   })
+
+//   console.log(barcodeInputRef.value)
+// })
+
 onMounted(() => {
-  nextTick(() => {
-    if (barcodeInputRef.value) {
-      barcodeInputRef.value.focus()
+  // Custom directive to set focus
+  const focus = {
+    mounted(el) {
+      el.focus()
     }
-  })
+  }
+
+  return {
+    focus
+  }
 })
 
 //const salesLoading = ref(false);
@@ -273,9 +331,7 @@ onMounted(async () => {
 
 const addProducts = () => {
   const lastProduct = formState.products[formState.products.length - 1]
-  if (
-    lastProduct.product_type_id 
-  ) {
+  if (lastProduct.product_type_id) {
     formState.products.push({
       product_type_id: '',
       barcode: '',
@@ -288,7 +344,7 @@ const addProducts = () => {
       container_qty: '',
       amount: ''
     })
-    nextTick(() => barcodeInputRef.value.focus());
+    nextTick(() => barcodeInputRef.value.focus())
   }
 }
 
@@ -298,8 +354,6 @@ const removeProduct = (index) => {
     formState.products.splice(index, 1)
   }
 }
-
-
 
 watch(
   () => formState.products.map((product) => product.product_type_id),
@@ -315,7 +369,7 @@ watch(
       }
     })
   }
-);
+)
 
 watch(
   () => formState.products.map((product) => product.barcode),
@@ -331,7 +385,7 @@ watch(
       }
     })
   }
-);
+)
 
 watch(
   () => formState.products[formState.products.length - 1].barcode,
@@ -364,24 +418,23 @@ watch(
   }
 )
 
-
-// watch(
-//   () =>
-//     formState.products.map((product) => ({
-//       selling_price: product.selling_price,
-//       capacity_qty: product.capacity_qty
-//     })),
-//   (newValues, oldValues) => {
-//     formState.products.forEach((product, index) => {
-//       const sellingPrice = parseFloat(product.selling_price) || 0
-//       const capacityQty = parseFloat(product.capacity_qty) || 0
-//       const amount = sellingPrice * capacityQty
-//       // console.log(`Product ${index}:`, { sellingPrice, capacityQty, amount })
-//       formState.products[index].amount = amount
-//     })
-//   },
-//   { deep: true }
-// )
+watch(
+  () =>
+    formState.products.map((product) => ({
+      selling_price: product.selling_price,
+      capacity_qty: product.capacity_qty
+    })),
+  (newValues, oldValues) => {
+    formState.products.forEach((product, index) => {
+      const sellingPrice = parseFloat(product.selling_price) || 0
+      const capacityQty = parseFloat(product.capacity_qty) || 0
+      const amount = sellingPrice * capacityQty
+      // console.log(`Product ${index}:`, { sellingPrice, capacityQty, amount })
+      formState.products[index].amount = amount
+    })
+  },
+  { deep: true }
+)
 
 // watch(
 //   () => formState.products,
@@ -450,7 +503,6 @@ const resetForm = () => {
   ]
   nextTick(() => barcodeInputRef.value.focus())
 }
-
 </script>
 
 <style scoped>

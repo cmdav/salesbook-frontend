@@ -101,7 +101,7 @@ const productTypes = ref([]);
 const batchNo = ref('');
 const isLoading = ref(false);
 const error = ref(null);
-const isSubmitting = ref(false); // Reactive variable for submission state
+const isSubmitting = ref(false); 
 
 // Reactive variable for purchases array
 const purchases = reactive([
@@ -117,7 +117,7 @@ const purchases = reactive([
     expiry_date: '',
     container_qty: '',
     capacity_qty: '',
-    original_selling_price: null // To track the original selling price
+    original_selling_price: null 
   }
 ]);
 
