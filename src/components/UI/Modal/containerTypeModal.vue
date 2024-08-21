@@ -43,7 +43,7 @@ import { catchAxiosSuccess, catchAxiosError } from '@/services/Response'
 
 
 
-const emits = defineEmits(['close'])
+const emits = defineEmits(['close', 'container-type-added'])
 
 
 const containerName = ref('')
@@ -55,6 +55,7 @@ const submitForm = async () => {
     })
     console.log('Form submitted successfully:', response.data)
     catchAxiosSuccess(response)
+    emits('container-type-added', response.data)
     emits('close')
   } catch (error) {
     console.error('Error submitting form:', error)

@@ -134,11 +134,12 @@
     </div>
 
     <!-- Modal for Container Type and Container Capacity -->
-    <ContainerTypeModal v-if="showModal" @close="closeModal" />
+    <ContainerTypeModal v-if="showModal" @close="closeModal" @container-type-added="handleNewContainerType" />
     <ContainerTypeCapacitiesModal
       v-if="displayModal"
       :containerTypeId="selectedContainerType"
       @close="closeModal"
+      @container-capacity-added="handleNewContainerCapacity"
     />
   </DashboardLayout>
 </template>
@@ -189,7 +190,15 @@ const containerTypes = ref([])
 const containerTypeCapacities = ref([])
 const selectedContainerType = ref(null)
 
+const handleNewContainerType = (newType) => {
+  containerTypes.value.push(newType)
+  selectedContainerType.value = newType.id 
+}
 
+const handleNewContainerCapacity = (newCapacity) => {
+  containerTypeCapacities.value.push(newCapacity)
+ 
+}
 
 // const fetchMeasurements = async () => {
 //   try {

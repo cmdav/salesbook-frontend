@@ -47,7 +47,7 @@ const props = defineProps({
   }
 })
 
-const emits = defineEmits(['close'])
+const emits = defineEmits(['close', 'container-capacity-added'])
 
 
 const containerCapacity = ref('')
@@ -60,6 +60,7 @@ const submitForm = async () => {
     })
     console.log('Form submitted successfully:', response.data)
     catchAxiosSuccess(response)
+     emits('container-capacity-added', response.data)
     emits('close')
   } catch (error) {
     console.error('Error submitting form:', error)
