@@ -59,10 +59,10 @@
                 parseFloat(purchase.selling_price).toLocaleString() :
                 '0.00' }}</label>
             </div>
-            <div>
+            <!-- <div>
               <label for="quantity">Qty <span class="required">*</span></label>
               <input type="number" v-model="purchase.quantity" maxlength="5" required />
-            </div>
+            </div> -->
             <div>
               <label for="product_identifier">Product Identifier</label>
               <input type="text" v-model="purchase.product_identifier" />
@@ -112,7 +112,7 @@ const purchases = reactive([
     cost_price: '',
     selling_price: '',
     batch_no: '',
-    quantity: '',
+    //quantity: '',
     product_identifier: '',
     expiry_date: '',
     container_qty: '',
@@ -193,7 +193,7 @@ const handleSupplierChange = async (index) => {
 // Function to add a new purchase row
 const addPurchase = () => {
   const lastPurchase = purchases[purchases.length - 1];
-  if (lastPurchase.supplier_id && lastPurchase.product_type_id && lastPurchase.quantity && lastPurchase.cost_price && lastPurchase.selling_price) {
+  if (lastPurchase.supplier_id && lastPurchase.product_type_id  && lastPurchase.cost_price && lastPurchase.selling_price) {
     purchases.push({
       supplier_id: suppliers.value.length > 0 ? suppliers.value[0].id : '',
       product_type_id: '',
@@ -203,7 +203,7 @@ const addPurchase = () => {
       capacity_qty: '',
       selling_price: '',
       batch_no: batchNo.value,
-      quantity: '',
+      //quantity: '',
       product_identifier: '',
       expiry_date: '',
       original_selling_price: null
@@ -249,7 +249,7 @@ const handleSellingPriceChange = (index) => {
 const handleSubmit = async () => {
   // Remove last row if not completely filled
   const lastPurchase = purchases[purchases.length - 1];
-  if (!lastPurchase.supplier_id || !lastPurchase.product_type_id || !lastPurchase.quantity || !lastPurchase.cost_price || !lastPurchase.selling_price) {
+  if (!lastPurchase.supplier_id || !lastPurchase.product_type_id || !lastPurchase.cost_price || !lastPurchase.selling_price) {
     purchases.pop();
   }
 
