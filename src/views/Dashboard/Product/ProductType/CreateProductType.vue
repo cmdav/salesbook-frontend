@@ -26,6 +26,7 @@
             type="text"
             class="input"
             placeholder="Enter Product Type Name"
+            @keypress="preventSubmitOnEnter" 
           />
         </div>
 
@@ -48,13 +49,19 @@
             type="text"
             placeholder="Enter Product Type Description"
             class="input"
+            @keypress="preventSubmitOnEnter" 
           />
         </div>
 
         <div class="input-group w-[70%]">
-          <label class="block text-sm font-medium text-gray-700">Barcode</label>
-          <input v-model="formState.barcode" type="password" class="input" />
-        </div>
+  <label class="block text-sm font-medium text-gray-700">Barcode</label>
+  <input 
+    v-model="formState.barcode" 
+    type="password" 
+    class="input" 
+    @keypress="preventSubmitOnEnter" 
+  />
+</div>
 
         <div class="input-group w-[70%]">
           <p>Are you selling in units?</p>
@@ -170,6 +177,11 @@ const addContainerType = () => {
 const closeModal = () => {
   showModal.value = false
   displayModal.value = false
+}
+const preventSubmitOnEnter = (event) => {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+  }
 }
 
 const formState = reactive({

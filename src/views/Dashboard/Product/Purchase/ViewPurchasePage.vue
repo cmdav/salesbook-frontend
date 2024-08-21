@@ -16,7 +16,7 @@
             <th>PRODUCT TYPE IMAGE</th>
             <th>PRODUCT TYPE DESCRIPTION</th>
             <th>BATCH NO</th>
-            <th>QUANTITY</th>
+            <!-- <th>QUANTITY</th> -->
             <th>CONTAINER TYPE</th>
             <th>CONTAINER TYPE CAPACITY</th>
             <th>CONTAINER QTY</th>
@@ -38,7 +38,7 @@
             <td><img class="w-10 h-10 bg-slate-500/[30%] rounded-lg mx-auto object-cover" :src="item.product_type_image"/></td>
             <td>{{ item.product_type_description }}</td>
             <td>{{ item.batch_no }}</td>
-            <td>{{ item.quantity }}</td>
+            <!-- <td>{{ item.quantity }}</td> -->
             <td>{{ item.container_type_name }}</td>
             <td>{{ item.container_type_capacity }}</td>
             <td>{{ item.container_qty }}</td>
