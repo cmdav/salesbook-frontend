@@ -57,7 +57,7 @@
   <label class="block text-sm font-medium text-gray-700">Barcode</label>
   <input 
     v-model="formState.barcode" 
-    type="password" 
+    type="text" 
     class="input" 
     @keypress="preventSubmitOnEnter" 
   />

@@ -77,52 +77,59 @@
             <!-- Product type selection -->
             <div class="input-group">
               <label class="block text-sm font-medium text-gray-700">Product</label>
-              <select v-model="formState.products[index].product_type_id" class="select-input">
-                <option v-for="name in data" :key="name.id" :value="name.id">
+              <select 
+                v-model="formState.products[index].product_type_id" 
+                class="select-input" 
+                @change="handleProductTypeSelect(index)">
+                <option 
+                  v-for="name in data" 
+                  :key="name.id" 
+                  :value="name.id" 
+                  :disabled="isProductSelected(name.id)">
                   {{ name.product_type_name }}
                 </option>
               </select>
             </div>
 
+            <!-- Barcode input -->
             <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Barcode</label>
               <input
-                type="password"
-                id="barcode"
-                ref="barcodeInputRef"
-                v-focus
+                type="text"
+                :ref="(el) => setBarcodeRef(el, index)"
                 v-model="formState.products[index].barcode"
                 class="input"
-                @keydown.enter="handleBarcodeEnter"
+                @keydown.enter.prevent="handleBarcodeEnter(index)"
               />
             </div>
 
+            <!-- Unit Sales -->
             <div class="input-group">
               <label class="block text-sm font-medium text-gray-700">Unit Sales</label>
               <input
                 type="text"
-                id="container_t"
                 v-model="formState.products[index].is_container_type"
                 class="input"
                 readonly
               />
             </div>
+
+            <!-- Purchase Unit -->
             <div class="input-group">
               <label class="block text-sm font-medium text-gray-700">Purchase Unit</label>
               <input
                 type="text"
-                id="container_qty"
                 v-model="formState.products[index].container_capacity"
                 class="input"
                 readonly
               />
             </div>
 
+            <!-- Cost Price -->
             <div class="input-group">
               <label class="block text-sm font-medium text-gray-700">Cost Price</label>
               <input
                 type="text"
-                id="cost_price"
                 v-model="formState.products[index].cost_price"
                 class="input"
                 readonly
@@ -137,11 +144,11 @@
               >
             </div>
 
+            <!-- Selling Price -->
             <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Selling Price</label>
               <input
                 type="text"
-                id="selling_price"
                 v-model="formState.products[index].selling_price"
                 class="input"
                 readonly
@@ -156,10 +163,17 @@
               >
             </div>
 
+            <!-- Selling Unit -->
             <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Selling Unit</label>
-              <input type="number" v-model="formState.products[index].capacity_qty" class="input" />
+              <input
+                type="number"
+                v-model="formState.products[index].capacity_qty"
+                class="input"
+              />
             </div>
+
+            <!-- Container Qty -->
             <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Container Qty</label>
               <input
@@ -218,11 +232,11 @@ import { storeToRefs } from 'pinia'
 const router = useRouter()
 const customersStore = useCustomerstore()
 
-const barcodeInputRef = ref(null)
+// Store multiple references for barcode inputs
+const barcodeInputRefs = ref([])
 const data = ref([])
 
 const { allCustomersNames } = storeToRefs(customersStore)
-// const { allProductTypeName } = storeToRefs(productsStore)
 
 const showModal = ref(false)
 const isSubmitting = ref(false) // Reactive variable for submission state
@@ -235,67 +249,32 @@ const closeModal = () => {
   showModal.value = false
 }
 
-// const focusBarcodeInput = () => {
-//   barcodeInputRef.value?.focus()
-// }
+// Handle setting the ref dynamically for each barcode input
+const setBarcodeRef = (el, index) => {
+  barcodeInputRefs.value[index] = el
+}
 
-// const focusBarcodeInput = () => {
-//   const inputElement = barcodeInputRef.value
+// Focus the latest empty barcode input field
+const focusBarcodeInput = () => {
+  nextTick(() => {
+    const emptyBarcodeField = barcodeInputRefs.value.find((el) => el && !el.value)
+    
+    emptyBarcodeField?.focus()
+  })
+}
 
-//   if (inputElement && typeof inputElement.focus === 'function') {
-//     inputElement.focus()
-//   } else {
-//     console.error('Input element not found or focus is not a function')
-//   }
-// }
-
-// Use onMounted to set focus when the component is mounted
-// onMounted(() => {
-//   // Ensure the input field is focused after the component has fully mounted
-//   setTimeout(() => {
-//     focusBarcodeInput()
-//   }, 100) // You can adjust the timeout duration if needed
-// })
-
-// const focusBarcodeInput = () => {
-//   const inputElement = barcodeInputRef.value
-
-//   if (inputElement instanceof HTMLInputElement) {
-//     inputElement.focus()
-//   } else {
-//     console.error('barcodeInputRef is not an input element:', inputElement)
-//   }
-// }
-
-// onMounted(() => {
-//   // focusBarcodeInput()
-//   // setTimeout(() => {
-//   //   focusBarcodeInput()
-//   // }, 100)
-
-//   nextTick(() => {
-//     if (barcodeInputRef.value) {
-//       barcodeInputRef.value.focus()
-//     }
-//   })
-
-//   console.log(barcodeInputRef.value)
-// })
-
-onMounted(() => {
-  // Custom directive to set focus
-  const focus = {
-    mounted(el) {
-      el.focus()
-    }
-  }
-
-  return {
-    focus
+// Focus the barcode input field on page load
+onMounted(async () => {
+  try {
+    await customersStore.handleAllCustomersName()
+    const response = await apiService.get('/all-product-type-name')
+    data.value = response.data
+    focusBarcodeInput() // Autofocus on the first barcode input field
+  } catch (error) {
+    console.error
   }
 })
 
-//const salesLoading = ref(false);
 const printReceipt = ref('no')
 
 const formState = reactive({
@@ -305,46 +284,39 @@ const formState = reactive({
     {
       product_type_id: '',
       barcode: '',
-      // price_sold_at: null,
       is_container_type: '',
       container_capacity: '',
       cost_price: '',
       selling_price: '',
-      capacity_qty: '',
-      container_qty: '',
+      capacity_qty: 1, // Default selling unit
+      container_qty: 1, // Default container quantity
       amount: '',
       vat: 'no'
     }
   ]
 })
 
-onMounted(async () => {
-  try {
-    await customersStore.handleAllCustomersName()
-    const response = await apiService.get('/all-product-type-name')
-    console.log(response.data)
-    data.value = response.data
-  } catch (error) {
-    console.error
-  }
-})
+// Function to check if a product is already selected
+const isProductSelected = (productId) => {
+  return formState.products.some(product => product.product_type_id === productId)
+}
 
+// Function to add new products with autofocus on the latest empty barcode field
 const addProducts = () => {
   const lastProduct = formState.products[formState.products.length - 1]
-  if (lastProduct.product_type_id) {
+  if (lastProduct.product_type_id || lastProduct.barcode) {
     formState.products.push({
       product_type_id: '',
       barcode: '',
-      // price_sold_at: null,
       is_container_type: '',
       container_capacity: '',
       cost_price: '',
       selling_price: '',
-      capacity_qty: '',
-      container_qty: '',
+      capacity_qty: 1, // Default selling unit
+      container_qty: 1, // Default container quantity
       amount: ''
     })
-    nextTick(() => barcodeInputRef.value.focus())
+    nextTick(() => focusBarcodeInput()) // Autofocus on the new barcode input field after DOM updates
   }
 }
 
@@ -352,107 +324,71 @@ const addProducts = () => {
 const removeProduct = (index) => {
   if (index > 0) {
     formState.products.splice(index, 1)
+    barcodeInputRefs.value.splice(index, 1) // Remove the reference
+    nextTick(() => focusBarcodeInput()) // Refocus on the latest empty barcode field after DOM updates
   }
 }
 
-watch(
-  () => formState.products.map((product) => product.product_type_id),
-  (newProductIds) => {
-    newProductIds.forEach((productId, index) => {
-      const selectedProduct = data.value.find((product) => product.id === productId)
-      if (selectedProduct) {
-        formState.products[index].barcode = selectedProduct.barcode
-        formState.products[index].is_container_type = selectedProduct.is_container_type
-        formState.products[index].container_capacity = selectedProduct.container_capacity
-        formState.products[index].cost_price = selectedProduct.cost_price
-        formState.products[index].selling_price = selectedProduct.selling_price
-      }
-    })
-  }
-)
+// Watcher for barcode field to populate product details and add new product
 
-watch(
-  () => formState.products.map((product) => product.barcode),
-  (newProductIds) => {
-    newProductIds.forEach((productId, index) => {
-      const selectedProduct = data.value.find((product) => product.barcode === productId)
-      if (selectedProduct) {
-        formState.products[index].product_type_id = selectedProduct.product_type_id
-        formState.products[index].is_container_type = selectedProduct.is_container_type
-        formState.products[index].container_capacity = selectedProduct.container_capacity
-        formState.products[index].cost_price = selectedProduct.cost_price
-        formState.products[index].selling_price = selectedProduct.selling_price
-      }
-    })
-  }
-)
+const handleBarcodeEnter = (index) => {
+  const existingProductIndex = formState.products.findIndex(product => product.barcode === formState.products[index].barcode)
 
-watch(
-  () => formState.products[formState.products.length - 1].barcode,
-  (newBarcode, _, onInvalidate) => {
-    if (newBarcode) {
-      const product = data.value.find((p) => p.barcode === newBarcode)
-      if (product) {
-        const lastProduct = formState.products[formState.products.length - 1]
-        lastProduct.product_type_id = product.id
-        lastProduct.is_container_type = product.is_container_type
-        lastProduct.container_capacity = product.container_capacity
-        lastProduct.cost_price = product.cost_price
-        lastProduct.selling_price = product.selling_price
-        lastProduct.capacity_qty = 1
-        lastProduct.container_qty = 1
-        lastProduct.amount = lastProduct.selling_price * lastProduct.capacity_qty
-
-        addProducts()
-        // addProductToCart(formState.products.length - 1)
-        formState.products[formState.products.length - 1].barcode = ''
-      }
+  if (existingProductIndex !== -1 && existingProductIndex !== index) {
+    alert("Product already exist")
+    // Clear the barcode input field if the product has already been added
+    formState.products[index].barcode = ''
+  } else {
+    const product = data.value.find((p) => p.barcode === formState.products[index].barcode)
+    if (product) {
+      populateProductDetails(index, product)
+      addProducts() // Automatically add a new empty product row
     }
-    onInvalidate(() => {
-      nextTick(() => {
-        if (barcodeInputRef.value) {
-          barcodeInputRef.value.focus()
-        }
-      })
-    })
   }
-)
+}
 
+
+// Handle manual product type selection
+const handleProductTypeSelect = (index) => {
+  const product = data.value.find((p) => p.id === formState.products[index].product_type_id)
+  if (product) {
+    populateProductDetails(index, product)
+  }
+}
+
+// Populate the product details when either barcode or product type is selected
+const populateProductDetails = (index, product) => {
+  formState.products[index].product_type_id = product.id
+  formState.products[index].barcode = product.barcode
+  formState.products[index].is_container_type = product.is_container_type
+  formState.products[index].container_capacity = product.container_capacity
+  formState.products[index].cost_price = product.cost_price
+  formState.products[index].selling_price = product.selling_price
+  formState.products[index].capacity_qty = 1 // Default selling unit
+  formState.products[index].container_qty = 1 // Default container quantity
+  formState.products[index].amount = formState.products[index].selling_price * formState.products[index].capacity_qty
+  nextTick(() => focusBarcodeInput()) // Refocus on the latest empty barcode field after updating product details
+}
+
+// Watcher to calculate the total price for each product whenever quantity or price changes
 watch(
   () =>
     formState.products.map((product) => ({
       selling_price: product.selling_price,
       capacity_qty: product.capacity_qty
     })),
-  (newValues, oldValues) => {
+  () => {
     formState.products.forEach((product, index) => {
       const sellingPrice = parseFloat(product.selling_price) || 0
       const capacityQty = parseFloat(product.capacity_qty) || 0
       const amount = sellingPrice * capacityQty
-      // console.log(`Product ${index}:`, { sellingPrice, capacityQty, amount })
       formState.products[index].amount = amount
     })
   },
   { deep: true }
 )
 
-// watch(
-//   () => formState.products,
-//   (newVal) => {
-//     newVal.forEach((product, index) => {
-//       if (product.capacity_qty > product.container_capacity) {
-//         formState.products[index].capacity_qty = product.container_capacity;
-//         alert(`Capacity quantity cannot exceed the container capacity of ${product.container_capacity}`);
-//       }
-
-//       if (product.selling_price && product.capacity_qty) {
-//         formState.products[index].amount = product.selling_price * product.capacity_qty;
-//       }
-//     });
-//   },
-//   { deep: true }
-// );
-
+// Function to handle form submission
 const addSales = async () => {
   isSubmitting.value = true
   let products = formState.products
@@ -483,6 +419,7 @@ const addSales = async () => {
   }
 }
 
+// Function to reset the form after submission
 const resetForm = () => {
   formState.customer_id = ''
   formState.payment_method = ''
@@ -490,20 +427,21 @@ const resetForm = () => {
     {
       product_type_id: '',
       barcode: '',
-      // price_sold_at: null,
       is_container_type: '',
       container_capacity: '',
       cost_price: '',
       selling_price: '',
-      capacity_qty: '',
-      container_qty: '',
+      capacity_qty: 1, // Default selling unit
+      container_qty: 1, // Default container quantity
       amount: '',
       vat: 'no'
     }
   ]
-  nextTick(() => barcodeInputRef.value.focus())
+  nextTick(() => focusBarcodeInput()) // Autofocus on the barcode input field after resetting form
 }
 </script>
+
+
 
 <style scoped>
 .container {
