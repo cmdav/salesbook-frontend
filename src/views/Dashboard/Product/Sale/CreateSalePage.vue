@@ -77,8 +77,15 @@
             <!-- Product type selection -->
             <div class="input-group">
               <label class="block text-sm font-medium text-gray-700">Product</label>
-              <select v-model="formState.products[index].product_type_id" class="select-input" @change="handleProductTypeSelect(index)">
-                <option v-for="name in data" :key="name.id" :value="name.id">
+              <select 
+                v-model="formState.products[index].product_type_id" 
+                class="select-input" 
+                @change="handleProductTypeSelect(index)">
+                <option 
+                  v-for="name in data" 
+                  :key="name.id" 
+                  :value="name.id" 
+                  :disabled="isProductSelected(name.id)">
                   {{ name.product_type_name }}
                 </option>
               </select>
@@ -289,6 +296,11 @@ const formState = reactive({
   ]
 })
 
+// Function to check if a product is already selected
+const isProductSelected = (productId) => {
+  return formState.products.some(product => product.product_type_id === productId)
+}
+
 // Function to add new products with autofocus on the latest empty barcode field
 const addProducts = () => {
   const lastProduct = formState.products[formState.products.length - 1]
@@ -318,13 +330,23 @@ const removeProduct = (index) => {
 }
 
 // Watcher for barcode field to populate product details and add new product
+
 const handleBarcodeEnter = (index) => {
-  const product = data.value.find((p) => p.barcode === formState.products[index].barcode)
-  if (product) {
-    populateProductDetails(index, product)
-    addProducts() // Automatically add a new empty product row
+  const existingProductIndex = formState.products.findIndex(product => product.barcode === formState.products[index].barcode)
+
+  if (existingProductIndex !== -1 && existingProductIndex !== index) {
+    alert("Product already exist")
+    // Clear the barcode input field if the product has already been added
+    formState.products[index].barcode = ''
+  } else {
+    const product = data.value.find((p) => p.barcode === formState.products[index].barcode)
+    if (product) {
+      populateProductDetails(index, product)
+      addProducts() // Automatically add a new empty product row
+    }
   }
 }
+
 
 // Handle manual product type selection
 const handleProductTypeSelect = (index) => {
@@ -419,9 +441,6 @@ const resetForm = () => {
 }
 </script>
 
-<style scoped>
-/* Your CSS styles remain unchanged */
-</style>
 
 
 <style scoped>
