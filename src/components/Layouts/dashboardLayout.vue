@@ -3,6 +3,7 @@ import BaseSidebar from "@/components/SideBar/indexPage.vue";
 import { ref, onMounted } from "vue";
 import "animate.css";
 const closeNav = ref(false);
+const sideNav = ref(false)
 const closeBackdrop = ref(false);
 const showDropdown = ref(false);
 const showNotificationDropdown = ref(false);
@@ -16,6 +17,10 @@ const { userProfileDetails } = storeToRefs(store);
 onMounted(() => {
   store.handleUserProfile();
 });
+
+const toggleSidebar = () => {
+  sideNav.value = !sideNav.value;
+}
 
 const toggle = () => {
   closeNav.value = !closeNav.value;
@@ -62,10 +67,12 @@ defineProps({ pageTitle: String });
           :class="{ 'animate__animated animate__slideOutLeft': !closeNav }"
           class="w-2/3 animate__animated animate__slideInLeft"
         >
+        
           <BaseSidebar />
         </div>
       </div>
-      <div class="hidden lg:block flex-shrink-0 md:w-[286px]">
+      
+      <div v-if="!sideNav" class="lg:block flex-shrink-0 md:w-[286px]">
         <BaseSidebar />
       </div>
       <div class="flex-grow pb-20" style="overflow: auto; padding: 0 2em">
@@ -162,6 +169,10 @@ defineProps({ pageTitle: String });
       </div>
     </div>
   </div>
+
+  <div class="lg:block absolute top-1 left-2 cursor-pointer" @click="toggleSidebar">
+          <img src="@/assets/svg/sidebarIcon.svg" alt="" class="w-6" >
+        </div>
 </template>
 
 <style lang="scss" scoped>

@@ -1,11 +1,13 @@
 <template>
   <header class="h-screen bg-secondary-800/[40%]">
+    
     <div class="logo lg:visible invisible">
       <img src="@/assets/iSalesbook-Option-02.png" class="h-[5rem]" alt=" logo" />
     </div>
     <!-- The nav -->
     <div class="flex flex-col justify-between h-full w-[90%] !px-0">
       <nav class="nav !font-light">
+        
         <template v-for="item in menuItems" :key="item.name">
           <router-link
             :to="item.route"
@@ -53,6 +55,7 @@ import FireIcon from '@/components/icons/FireIcon.vue'
 import SalesIcon from '@/components/icons/SalesIcon.vue'
 import PurchaseIcon from '@/components/icons/PurchaseIcon.vue'
 import SubscriptionIcon from '@/components/icons/subscriptionIcon.vue'
+// import SideBarIcon from '@/components/icons/SideBarIcon.vue'
 
 const route = useRoute()
 const store = useStore()

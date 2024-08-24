@@ -23,7 +23,7 @@
             <th>PRODUCT SUB CATEGORY</th>
             <th>QUANTITY</th>
             <th>VAT</th>
-            <th>MEASUREMENT</th>
+            
             <th>CONTAINER TYPE</th>
             <th>CONTAINER TYPE CAPACITY</th>
             <th>PURCHASING PRICE</th>
@@ -48,7 +48,7 @@
             <td>{{ item.product_sub_category }}</td>
             <td>{{ item.quantity_available }}</td>
             <td>{{ item.vat }}</td>
-            <td>{{ item.measurement }}</td>
+            
             <td>{{ item.container_type }}</td>
             <td>{{ item.container_type_capacity }}</td>
             <td>{{ item.purchasing_price }}</td>
