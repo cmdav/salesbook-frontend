@@ -125,25 +125,25 @@ onMounted( async() => {
   await fetchData()
 });
 
-const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg } = useSelectComposable(
-  productTypeFormFields,
-  '/products',
-   'category_id',
-  'sub_category_id',
-  'sub_category_name'
-)
+// const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg } = useSelectComposable(
+//   productTypeFormFields,
+//   '/products',
+//    'category_id',
+//   'sub_category_id',
+//   'sub_category_name'
+// )
 
-onMounted(async () => {
-  await fetchDataForSelect('Product Name', '/all-products', 'id', 'product_name')
-  // await fetchDataForSelect('Measurement', '/measurements', 'id', 'measurement_name')
-  await fetchDataForSelect('Container', '/list-purchase-units', 'id', 'purchase_unit_name')
-  await fetchDataForSelect(
-    'Container Capacity',
-    '/container-with-capacities',
-    'id',
-    'container_capacitity',
-  )
-});
+// onMounted(async () => {
+//   await fetchDataForSelect('Product Name', '/all-products', 'id', 'product_name')
+//   // await fetchDataForSelect('Measurement', '/measurements', 'id', 'measurement_name')
+//   await fetchDataForSelect('Container', '/list-purchase-units', 'id', 'purchase_unit_name')
+//   await fetchDataForSelect(
+//     'Container Capacity',
+//     '/container-with-capacities',
+//     'id',
+//     'container_capacitity',
+//   )
+// });
 
 async function fetchData(page = 1) {
   try {
