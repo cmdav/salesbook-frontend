@@ -96,19 +96,19 @@ import apiService from '@/services/apiService';
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue';
 // import EditModal from '@/components/UI/Modal/EditModal.vue';
 import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
-import { productTypeFormFields } from '@/formfields/formFields';
+// import { productTypeFormFields } from '@/formfields/formFields';
 import { useSharedComponent } from '@/composable/useSharedComponent';
 
 
 const search = ref('')
 const isSearching = ref(false)
 
-const data = ref([]) // Initialize as an empty array
+const data = ref([]) 
 const pagination = ref({})
-const showEditModal = ref(false)
+// const showEditModal = ref(false)
 const showDeleteModal = ref(false)
 const itemToDelete = ref(null)
-const itemToEdit = ref(null)
+// const itemToEdit = ref(null)
 const modalTitle = 'Delete Sale'
 
 const currentPage = ref(1)
@@ -192,15 +192,15 @@ function changePage(page) {
 }
 
 
-function openEditModal(item) {
-  itemToEdit.value = item
-  showEditModal.value = true
-}
+// function openEditModal(item) {
+//   itemToEdit.value = item
+//   showEditModal.value = true
+// }
 
-function closeEditModal() {
-  showEditModal.value = false
-  itemToEdit.value = null
-}
+// function closeEditModal() {
+//   showEditModal.value = false
+//   itemToEdit.value = null
+// }
 
 function openDeleteModal(item) {
   itemToDelete.value = item
@@ -251,7 +251,7 @@ function forceRefresh() {
 }
 
 .add-btn {
-  margin-left:;
+  /* margin-left:; */
   background-color: #c35214;
 }
 
