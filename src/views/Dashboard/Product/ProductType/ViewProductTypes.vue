@@ -31,7 +31,7 @@
             <th>SUPPLIER PHONE NUMBER</th>
             <th>CREATED BY</th>
             <th>UPDATED BY</th>
-            <th>EDIT</th>
+            <!-- <th>EDIT</th> -->
             <th>DELETE</th>
           </tr>
         </thead>
@@ -56,7 +56,7 @@
             <td>{{ item.supplier_phone_number }}</td>
             <td>{{ item.created_by }}</td>
             <td>{{ item.updated_by }}</td>
-            <td><button @click="openEditModal(item)">Edit</button></td>
+            <!-- <td><button @click="openEditModal(item)">Edit</button></td> -->
             <td><button @click="openDeleteModal(item)">Delete</button></td>
           </tr>
         </tbody>
@@ -65,7 +65,7 @@
       <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
     </div>
 
-     <EditModal
+     <!-- <EditModal
       v-if="showEditModal"
       @close="closeEditModal"
       @fetchDataForSubCategory="fetchDataForSubCategory"
@@ -74,7 +74,7 @@
       :formField="productTypeFormFields"
       :isLoadingMsg="isOptionLoadingMsg"
       :url="product-types"
-    />
+    /> -->
 
     <DeleteModal
       v-if="showDeleteModal"
@@ -94,7 +94,7 @@
 import { ref, onMounted, watch } from 'vue';
 import apiService from '@/services/apiService';
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue';
-import EditModal from '@/components/UI/Modal/EditModal.vue';
+// import EditModal from '@/components/UI/Modal/EditModal.vue';
 import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
 import { productTypeFormFields } from '@/formfields/formFields';
 import { useSharedComponent } from '@/composable/useSharedComponent';
