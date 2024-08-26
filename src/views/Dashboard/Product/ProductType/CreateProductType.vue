@@ -77,9 +77,9 @@
         </div> -->
 
         <div class="input-group w-full">
-          <label class="block text-sm font-medium text-gray-700">Select Purchase Unit <span><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+          <label class="block text-sm font-medium text-gray-700">Select Purchase Unit <span class="tooltip-container"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="16" height="16" viewBox="0 0 24 24">
     <path d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"></path>
-</svg> <span></span>What unit did you purchase this item?</span> </label>
+</svg> <span class="tooltip-text">What unit did you purchase this item?</span></span> </label>
           <div class="flex">
             <div class="w-[70%]">
               <select
@@ -100,9 +100,9 @@
         </div>
 
         <div class="input-group w-full">
-          <label class="block text-sm font-medium text-gray-700">Select Selling Unit <span><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+          <label class="block text-sm font-medium text-gray-700">Select Selling Unit <span class="tooltip-container"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="16" height="16" viewBox="0 0 24 24">
     <path d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"></path>
-</svg> <span></span>What unit will you sell this item?</span> </label>
+</svg> <span class="tooltip-text">What unit will you sell this item?</span></span> </label>
           <div class="flex">
             <div class="w-[70%]">
               <select
@@ -124,9 +124,9 @@
 
         <div class="input-group w-full">
           <label class="block text-sm font-medium text-gray-700"
-            >Select Selling Unit Capacity <span><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+            >Select Selling Unit Capacity <span class="tooltip-container"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="16" height="16" viewBox="0 0 24 24">
     <path d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"></path>
-</svg> <span></span>E.g dozen = 12, one create = 30eggs...  </span> </label
+</svg> <span class="tooltip-text">E.g dozen = 12, one create = 30eggs...</span></span> </label
           >
           <div class="flex">
             <div class="w-[70%]">
@@ -474,5 +474,37 @@ button {
 
 .btn-danger:hover {
   background-color: #c82333;
+}
+
+/* tooltip style */
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tooltip-container .tooltip-text {
+  visibility: hidden;
+  width: 200px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px;
+  border-radius: 4px;
+  
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  bottom: 125%; /* Position above the icon */
+  left: 50%;
+  margin-left: -80px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
 }
 </style>
