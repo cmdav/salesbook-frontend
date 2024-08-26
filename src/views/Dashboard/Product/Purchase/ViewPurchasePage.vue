@@ -17,9 +17,10 @@
             <th>PRODUCT TYPE DESCRIPTION</th>
             <th>BATCH NO</th>
             <!-- <th>QUANTITY</th> -->
-            <th>CONTAINER TYPE</th>
-            <th>CONTAINER TYPE CAPACITY</th>
-            <th>CONTAINER QTY</th>
+            <th>PURCHASE UNIT</th>
+            <th>SELLING UNIT</th>
+            <th>SELLING UNIT CAPACITY</th>
+            <!-- <th>CONTAINER QTY</th> -->
             <th>CAPACITY QTY</th>
             <th>EXPIRY DATE</th>
             <th>COST PRICE(NGN)</th>
@@ -39,9 +40,9 @@
             <td>{{ item.product_type_description }}</td>
             <td>{{ item.batch_no }}</td>
             <!-- <td>{{ item.quantity }}</td> -->
-            <td>{{ item.container_type_name }}</td>
-            <td>{{ item.container_type_capacity }}</td>
-            <td>{{ item.container_qty }}</td>
+            <td>{{ item.purchase_unit_name }}</td>
+            <td>{{ item.selling_unit_name }}</td>
+            <td>{{ item.selling_unit_capacity }}</td>
             <td>{{ item.capacity_qty }}</td>
             <td>{{ item.expiry_date }}</td>
             <td>{{ item.cost_price }}</td>

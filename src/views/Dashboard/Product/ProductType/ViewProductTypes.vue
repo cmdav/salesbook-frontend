@@ -23,9 +23,8 @@
             <th>PRODUCT SUB CATEGORY</th>
             <th>QUANTITY</th>
             <th>VAT</th>
-            
-            <th>CONTAINER TYPE</th>
-            <th>CONTAINER TYPE CAPACITY</th>
+            <th>SELLING UNIT</th>
+            <th>SELLING UNIT CAPACITY</th>
             <th>PURCHASING PRICE</th>
             <th>SELLING PRICE</th>
             <th>SUPPLIER NAME</th>
@@ -49,8 +48,8 @@
             <td>{{ item.quantity_available }}</td>
             <td>{{ item.vat }}</td>
             
-            <td>{{ item.container_type }}</td>
-            <td>{{ item.container_type_capacity }}</td>
+            <td>{{ item.selling_unit_name }}</td>
+            <td>{{ item.selling_unit_capacity }}</td>
             <td>{{ item.purchasing_price }}</td>
             <td>{{ item.selling_price }}</td>
             <td>{{ item.supplier_name }}</td>
@@ -136,8 +135,8 @@ const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg } = useS
 
 onMounted(async () => {
   await fetchDataForSelect('Product Name', '/all-products', 'id', 'product_name')
-  await fetchDataForSelect('Measurement', '/measurements', 'id', 'measurement_name')
-  await fetchDataForSelect('Container', '/list-all-containers', 'id', 'container_type_name')
+  // await fetchDataForSelect('Measurement', '/measurements', 'id', 'measurement_name')
+  await fetchDataForSelect('Container', '/list-purchase-units', 'id', 'purchase_unit_name')
   await fetchDataForSelect(
     'Container Capacity',
     '/container-with-capacities',

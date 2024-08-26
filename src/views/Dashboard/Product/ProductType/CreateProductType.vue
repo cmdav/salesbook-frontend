@@ -26,7 +26,7 @@
             type="text"
             class="input"
             placeholder="Enter Product Type Name"
-            @keypress="preventSubmitOnEnter" 
+            @keypress="preventSubmitOnEnter"
           />
         </div>
 
@@ -49,89 +49,98 @@
             type="text"
             placeholder="Enter Product Type Description"
             class="input"
-            @keypress="preventSubmitOnEnter" 
+            @keypress="preventSubmitOnEnter"
           />
         </div>
 
         <div class="input-group w-[70%]">
-  <label class="block text-sm font-medium text-gray-700">Barcode</label>
-  <input 
-    v-model="formState.barcode" 
-    type="text" 
-    class="input" 
-    @keypress="preventSubmitOnEnter" 
-  />
-</div>
-
-        <div class="input-group w-[70%]">
-          <p>Are you selling in units?</p>
-          <label class="mt-20 text-sm font-medium text-gray-700">
-          <input type="radio" value="yes" name="choice" v-model="formState.unitSales" >
-          Yes 
-        </label>
-
-          <label class="ml-8 text-sm font-medium text-gray-700">
-          <input type="radio" value="no" name="choice" v-model="formState.unitSales" >
-          No 
-        </label>
-          <!-- <input v-model="formState.barcode" type="password" class="input" /> -->
+          <label class="block text-sm font-medium text-gray-700">Barcode</label>
+          <input
+            v-model="formState.barcode"
+            type="text"
+            class="input"
+            @keypress="preventSubmitOnEnter"
+          />
         </div>
 
         <!-- <div class="input-group w-[70%]">
-          <label class="block text-sm font-medium text-gray-700">Measurement</label>
-          <select v-model="formState.measurement" class="select-input" required>
-            <option selected>Select Measurement...</option>
-            <option
-              v-for="measurement in measurements"
-              :key="measurement.id"
-              :value="measurement.id"
-            >
-              {{ measurement.measurement_name }}
-            </option>
-          </select>
+          <p>VAT</p>
+          <label class="mt-20 text-sm font-medium text-gray-700">
+            <input type="radio" value="yes" name="choice" v-model="formState.vat" />
+            Yes
+          </label>
+
+          <label class="ml-8 text-sm font-medium text-gray-700">
+            <input type="radio" value="no" name="choice" v-model="formState.vat" />
+            No
+          </label>
         </div> -->
+
+        <div class="input-group w-full">
+          <label class="block text-sm font-medium text-gray-700">Select Purchase Unit</label>
+          <div class="flex">
+            <div class="w-[70%]">
+              <select
+                v-model="selectedPurchaseUnit"
+                class="select-input"
+                @change="fetchPurchasingUnit"
+              >
+                <option selected>Select Purchasing Unit...</option>
+                <option v-for="unit in purchaseUnit" :key="unit.id" :value="unit.id">
+                  {{ unit.purchase_unit_name }}
+                </option>
+              </select>
+            </div>
+            <button type="button" class="button btn-brand ml-4" @click="addPurchaseUnit">
+              Add Purchasing Unit
+            </button>
+          </div>
+        </div>
 
         <div class="input-group w-full">
           <label class="block text-sm font-medium text-gray-700">Select Selling Unit</label>
           <div class="flex">
             <div class="w-[70%]">
               <select
-                v-model="selectedContainerType"
+                v-model="selectedSellingUnit"
                 class="select-input"
-                @change="fetchContainerTypeCapacities"
+                @change="fetchSellingCapacities(selectedSellingUnit)"
               >
                 <option selected>Select Selling Unit...</option>
-                <option v-for="type in containerTypes" :key="type.id" :value="type.id">
-                  {{ type.container_type_name }}
+                <option v-for="unit in sellingUnit" :key="unit.id" :value="unit.id">
+                  {{ unit.selling_unit_name }}
                 </option>
               </select>
             </div>
-            <button type="button" class="button btn-brand ml-4" @click="addContainerType">
+            <button type="button" class="button btn-brand ml-4" @click="addSellingUnit(selectedPurchaseUnit)">
               Add Selling Unit
             </button>
           </div>
         </div>
 
-        <div class="input-group w-full" v-if="formState.unitSales === 'yes'">
-          <label class="block text-sm font-medium text-gray-700">Select Selling Unit Capacity</label>
+        <div class="input-group w-full">
+          <label class="block text-sm font-medium text-gray-700"
+            >Select Selling Unit Capacity</label
+          >
           <div class="flex">
             <div class="w-[70%]">
-              <select v-model="formState.containerTypeCapacity" class="select-input">
+              <select v-model="selectedSellingCapacity" class="select-input">
                 <option selected>Select Selling Unit Capacity...</option>
                 <option
-                  v-for="capacity in containerTypeCapacities"
+                  v-for="capacity in sellingCapacity"
                   :key="capacity.id"
                   :value="capacity.id"
                 >
-                  {{ capacity.container_capacity }}
+                  {{ capacity.selling_unit_capacity }}
                 </option>
               </select>
             </div>
-            <button type="button" class="button btn-brand ml-4" @click="addContainerCapacity">
+            <button type="button" class="button btn-brand ml-4" @click="addSellingCapacity(selectedSellingUnit)">
               Add Unit Capacity
             </button>
           </div>
         </div>
+
 
         <!-- Submit button for the form -->
         <button type="submit" class="button submit-button" :disabled="isSubmitting">
@@ -141,23 +150,36 @@
     </div>
 
     <!-- Modal for Container Type and Container Capacity -->
-    <ContainerTypeModal v-if="showModal" @close="closeModal" @container-type-added="handleNewContainerType" />
-    <ContainerTypeCapacitiesModal
-      v-if="displayModal"
-      :containerTypeId="selectedContainerType"
-      @close="closeModal"
-      @container-capacity-added="handleNewContainerCapacity"
-    />
+     <PurchaseUnitModal
+     v-if="showModal"
+     @close="closeModal"
+     @purchase-unit-added="handlePurchaseUnit"
+     />
+     <SellingUnitModal
+     v-if="displayModal"
+     @close="closeModal"
+     @selling-unit-added="handleSellingUnit"
+     :purchaseUnitId="selectedPurchaseUnit"
+     />
+     <SellingUnitCapacityModal
+     v-if="displayCapModal"
+     @close="closeModal"
+     @selling-capacity-added="handleSellingCapacity"
+     :sellingUnitId="selectedSellingUnit"
+     />
+   
   </DashboardLayout>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import apiService from '@/services/apiService'
 import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
-import ContainerTypeModal from '@/components/UI/Modal/containerTypeModal.vue'
-
-import ContainerTypeCapacitiesModal from '@/components/UI/Modal/containerCapacitiesModal.vue'
+// import ContainerTypeModal from '@/components/UI/Modal/sellingUnitCapacityModal.vue'
+import PurchaseUnitModal from '@/components/UI/Modal/purchaseUnitModal.vue'
+import SellingUnitModal from '@/components/UI/Modal/sellingUnitModal.vue'
+import SellingUnitCapacityModal from '@/components/UI/Modal/sellingUnitCapacityModal.vue'
+// import ContainerTypeCapacitiesModal from '@/components/UI/Modal/sellingUnitModal.vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -168,20 +190,29 @@ const isSubmitting = ref(false)
 
 const showModal = ref(false)
 const displayModal = ref(false)
+const displayCapModal = ref(false)
 
-const addContainerCapacity = () => {
-  displayModal.value = true
-}
-const addContainerType = () => {
+const addPurchaseUnit = () => {
   showModal.value = true
+}
+const addSellingUnit = (purchaseUnitId) => {
+  selectedPurchaseUnit.value = purchaseUnitId
+  displayModal.value = true
+
+}
+const addSellingCapacity = (sellingUnitId) => {
+  selectedSellingCapacity.value = sellingUnitId
+  displayCapModal.value = true
 }
 const closeModal = () => {
   showModal.value = false
   displayModal.value = false
+  displayCapModal.value = false
 }
+
 const preventSubmitOnEnter = (event) => {
   if (event.key === 'Enter') {
-    event.preventDefault();
+    event.preventDefault()
   }
 }
 
@@ -191,39 +222,40 @@ const formState = reactive({
   productTypeImage: null,
   productTypeDescription: '',
   barcode: '',
-  unitSales: null,
+  vat: 'yes',
   // measurement: '',
-  containerTypeCapacity: ''
+  // sellingunitCapacity: ''
 })
+
+// const getVatValue = () => {
+//     return formState.vat === 'yes' ? 1 : 0;
+// };
 
 // const measurements = ref([])
 const products = ref([])
-const containerTypes = ref([])
-const containerTypeCapacities = ref([])
-const selectedContainerType = ref(null)
+const purchaseUnit = ref([])
+const sellingUnit = ref([])
+const sellingCapacity = ref([])
+// const containerTypeCapacities = ref([])
+const selectedPurchaseUnit = ref(null)
+const selectedSellingUnit = ref(null)
+const selectedSellingCapacity = ref(null)
 
-const handleNewContainerType = (newType) => {
-  containerTypes.value.push(newType)
-  selectedContainerType.value = newType.id 
+const handlePurchaseUnit = (newType) => {
+  purchaseUnit.value.push(newType)
+  selectedPurchaseUnit.value = newType.id
+  console.log(selectedPurchaseUnit.value)
+}
+const handleSellingUnit = (newType) => {
+  sellingUnit.value.push(newType)
+  selectedSellingUnit.value = newType.id
 }
 
-const handleNewContainerCapacity = (newCapacity) => {
-  containerTypeCapacities.value.push(newCapacity)
- 
+const handleSellingCapacity = (newCapacity) => {
+  sellingCapacity.value.push(newCapacity)
+  selectedSellingCapacity.value = newCapacity.id
 }
 
-// const fetchMeasurements = async () => {
-//   try {
-//     const response = await apiService.get('/measurements')
-//     console.log(response)
-//     catchAxiosSuccess(response)
-//     measurements.value = response
-//     console.log(measurements.value)
-//   } catch (error) {
-//     catchAxiosError(error)
-//     console.error('Error fetching products:', error)
-//   }
-// }
 const fetchProducts = async () => {
   try {
     const response = await apiService.get('/all-products')
@@ -236,30 +268,37 @@ const fetchProducts = async () => {
   }
 }
 // console.log(products)
-const fetchContainerTypes = async () => {
+const fetchPurchasingUnit = async () => {
   try {
-    const response = await apiService.get('/list-all-containers')
-    console.log(response)
-    containerTypes.value = response.data
+    const response = await apiService.get('/list-purchase-units')
+    console.log(response.data)
+    purchaseUnit.value = response.data
+    if(selectedPurchaseUnit.value){
+      await fetchSellingUnit(selectedPurchaseUnit.value)
+    }
   } catch (error) {
-    console.error('Error fetching container types:', error)
+    console.error('Error fetching purchasing unit:', error)
     catchAxiosError(error)
   }
 }
 
-const fetchContainerTypeCapacities = async () => {
-  if (selectedContainerType.value) {
-    try {
-      const response = await apiService.get(
-        `/container-with-capacities/${selectedContainerType.value}`
-      )
-      console.log(response.data.container_capacities)
-      containerTypeCapacities.value = response.data.container_capacities
-    } catch (error) {
-      console.error('Error fetching container type capacities:', error)
-    }
+const fetchSellingUnit = async (purchaseUnitId) => {
+  const selectedUnit = purchaseUnit.value.find(unit => unit.id === purchaseUnitId)
+  if(selectedUnit){
+    sellingUnit.value = selectedUnit.selling_units
+    selectedSellingUnit.value = null
+    selectedSellingCapacity.value = null
   }
 }
+
+const fetchSellingCapacities = async (sellingUnitId) => {
+  const selectedUnit = sellingUnit.value.find(unit => unit.id === sellingUnitId) 
+  if (selectedUnit) {
+    sellingCapacity.value = selectedUnit.selling_unit_capacities
+    selectedSellingCapacity.value = null
+   }
+}
+
 
 const handleImageChange = (event) => {
   const file = event.target.files[0]
@@ -275,10 +314,9 @@ const handleImageChange = (event) => {
 
 // Fetch data on mounted
 onMounted(async () => {
-  // await fetchMeasurements()
-  await fetchProducts();
-  await fetchContainerTypes();
-  // await fetchContainerTypeCapacities()
+  await fetchProducts()
+  await fetchPurchasingUnit()
+  
 })
 
 const handleSubmit = async () => {
@@ -287,13 +325,14 @@ const handleSubmit = async () => {
   const formData = new FormData()
   formData.append('product_id', formState.product)
   formData.append('product_type_name', formState.productTypeName)
-  formData.append('product_type_image', formState.productTypeImage)
+  // formData.append('vat', getVatValue.value)
+  // formData.append('product_type_image', formState.productTypeImage)
+   if (formState.productTypeImage) {
+    formData.append('product_type_image', formState.productTypeImage)
+  }
   formData.append('product_type_description', formState.productTypeDescription)
   formData.append('barcode', formState.barcode)
-  formData.append('is_container_type', formState.unitSales)
-  formData.append('container_type_capacity_id', formState.containerTypeCapacity)
-  formData.append('container_type_id', selectedContainerType.value)
-
+  formData.append('selling_unit_capacity_id', selectedSellingCapacity.value)
 
   try {
     console.log(formData)

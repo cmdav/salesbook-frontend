@@ -307,32 +307,42 @@ export const productTypeFormFields = ref([
     placeholder: 'Enter product type description',
     databaseField: 'product_type_description'
   },
+  
+  // {
+  //   label: 'Measurement',
+  //   type: 'select',
+  //   value: '',
+  //   required: true,
+  //   placeholder: 'Select Measurement',
+  //   options: [],
+  //   databaseField: 'measurement_id'
+  // },
+  // {
+  //   label: 'Purchase Unit',
+  //   type: 'select',
+  //   value: '',
+  //   required: true,
+  //   placeholder: 'Select Purchase Unit ',
+  //   options: [],
+  //   databaseField: 'container_type'
+  // },
+  // {
+  //   label: 'Selling Unit',
+  //   type: 'select',
+  //   value: '',
+  //   required: true,
+  //   placeholder: 'Select Selling Unit ',
+  //   options: [],
+  //   databaseField: 'container_type_capacity_id'
+  // },
   {
-    label: 'Measurement',
+    label: 'Selling Unit Capacity',
     type: 'select',
     value: '',
     required: true,
-    placeholder: 'Select Measurement',
+    placeholder: 'Select Selling Capacity Unit ',
     options: [],
-    databaseField: 'measurement_id'
-  },
-  {
-    label: 'Container',
-    type: 'select',
-    value: '',
-    required: true,
-    placeholder: 'Select Container Type ',
-    options: [],
-    databaseField: 'container_type'
-  },
-  {
-    label: 'Container Capacity',
-    type: 'select',
-    value: '',
-    required: true,
-    placeholder: 'Select Container Capacity ',
-    options: [],
-    databaseField: 'container_type_capacity_id'
+    databaseField: 'selling_unit_capacity_id'
   }
 ])
 

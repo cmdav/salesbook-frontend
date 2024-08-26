@@ -43,6 +43,7 @@ import { useStore } from '@/stores/user'
 import homeIcon from '@/components/icons/homeIcon.vue'
 import StoreIcon from '@/components/icons/StoreIcon.vue'
 import ProductIcon from '@/components/icons/ProductIcon.vue'
+import ProductsIcon from '@/components/icons/productsIcon.vue'
 import recordsIcon from '@/components/icons/recordsIcon.vue'
 import reportsIcon from '@/components/icons/reportsIcon.vue'
 import logoutIcon from '@/components/icons/logoutIcon.vue'
@@ -85,14 +86,14 @@ const menuItems = computed(() => {
     {
       name: 'Product Sub Category',
       route: '/product-sub-category',
-      icon: StoreIcon,
+      icon: CategoryIcon,
       backendKey: 'product-sub-categories'
     },
-    { name: 'Products', route: '/products', icon: recordsIcon, backendKey: 'products' },
+    { name: 'Products', route: '/products', icon: ProductsIcon, backendKey: 'products' },
     {
       name: 'Product Type',
       route: '/product-type',
-      icon: recordsIcon,
+      icon: ProductsIcon,
       backendKey: 'product-types'
     },
     { name: 'Purchase', route: '/purchase', icon: PurchaseIcon, backendKey: 'purchases' },

@@ -6,7 +6,7 @@ const closeNav = ref(false);
 const sideNav = ref(false)
 const closeBackdrop = ref(false);
 const showDropdown = ref(false);
-const showNotificationDropdown = ref(false);
+// const showNotificationDropdown = ref(false);
 import { useStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 import NavDropDown from "@/components/UI/Dropdown/NavDropDown.vue";

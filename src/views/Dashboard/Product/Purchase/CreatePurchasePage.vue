@@ -9,7 +9,7 @@
       <form v-else @submit.prevent="handleSubmit">
         <div class="batch-container">
           <label for="batch_no">Batch No</label>
-          <input type="text" v-model="batchNo" readonly />
+          <input class="batch_input" type="text" v-model="batchNo" readonly />
         </div>
         <div v-for="(purchase, index) in purchases" :key="index" class="purchase-form">
           <div v-if="index !== 0" class="top-buttons">
@@ -39,7 +39,7 @@
               
             </div>
             <div>
-              <label for="cost_price">Purchase Unit Qty<span class="required"></span></label>
+              <label for="cost_price">Purchase Qty<span class="required">*</span></label>
               <input type="number" v-model="purchase.capacity_qty" maxlength="9" />
               
             </div>
@@ -199,7 +199,7 @@ const addPurchase = () => {
       product_type_id: '',
       price_id: '',
       cost_price: '',
-      container_qty: '',
+      // container_qty: '',
       capacity_qty: '',
       selling_price: '',
       batch_no: batchNo.value,
@@ -255,35 +255,33 @@ const handleSubmit = async () => {
 
   // Handle form submission
   try {
-    isSubmitting.value = true; // Set submitting state to true
+    isSubmitting.value = true; 
     const formattedPurchases = purchases.map(purchase => {
       if (purchase.price_id && purchase.selling_price === purchase.original_selling_price) {
-        // If price_id is present and selling price hasn't changed
         return {
           ...purchase,
-          cost_price: undefined, // Remove cost_price if price_id is present
-          selling_price: undefined // Remove selling_price if price_id is present
+          cost_price: undefined, 
+          selling_price: undefined 
         };
       } else {
-        // If price_id is not present or selling price has changed
+        
         return {
           ...purchase,
-          price_id: undefined // Remove price_id if it's not present or selling price has changed
+          price_id: undefined 
         };
       }
     });
 
     const response = await apiService.post('purchases', { purchases: formattedPurchases });
     catchAxiosSuccess(response);
-    router.push('/purchase'); // Redirect to the view purchase page if the submission is successful
+    router.push('/purchase'); 
   } catch (err) {
-    catchAxiosError(err); // Handle error
+    catchAxiosError(err); 
   } finally {
-    isSubmitting.value = false; // Set submitting state to false
+    isSubmitting.value = false; 
   }
 };
 
-// Fetch initial data when the component is mounted
 onMounted(() => {
   fetchData();
 });
@@ -302,13 +300,15 @@ onMounted(() => {
 
 .batch-container {
   display: flex;
+  width: 100%;
   align-items: center;
   margin-bottom: 20px;
 }
 
-batch-container input {
-  flex: 1;
-  margin-right: 10px;
+.batch-container input {
+  width: 50%;
+  /* margin-right: 10px; */
+  margin: 0 1em;
 }
 
 .purchase-form {
