@@ -41,7 +41,8 @@ export const catchAxiosError = (error) => {
 
 
 export const catchAxiosSuccess = (res) => {
-   
+  //  console.log(res)
+  //  console.log(res.status)
   if (res?.data?.message) {
     toast.success(res.data.message, {
       timeout: 4000
