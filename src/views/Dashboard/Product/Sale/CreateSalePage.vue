@@ -1,16 +1,13 @@
 <template>
   <DashboardLayout pageTitle="Add Sale">
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
-      <!-- Navigation buttons at the top -->
       <div class="top-buttons">
         <router-link to="/sale" class="button back-btn">Back</router-link>
       </div>
 
-      <!-- Form for adding a new sale -->
       <form @submit.prevent="addSales">
-        <!-- Section for selecting whether to print a receipt -->
         <div class="form-group">
-          <span class="font-medium text-gray-700">Print Receipt:</span>
+          <span class="font-medium text-gray-700">Send Receipt To Email:</span>
           <label class="radio-label">
             <input type="radio" value="yes" v-model="printReceipt" />
             Yes
@@ -21,7 +18,6 @@
           </label>
         </div>
 
-        <!-- Section for selecting a customer if printing a receipt -->
         <div v-if="printReceipt === 'yes'" class="form-group flex items-center">
           <div class="flex-grow">
             <select v-model="formState.customer_id" class="select-input">
@@ -35,7 +31,6 @@
           </button>
         </div>
 
-        <!-- Section for selecting a payment method -->
         <div class="form-group">
           <label class="block text-sm font-medium text-gray-700">Payment method</label>
           <select required v-model="formState.payment_method" class="select-input">
@@ -53,12 +48,11 @@
           </select>
         </div>
 
-        <!-- Section for adding products to the sale -->
         <div class="my-8">
           <div class="form-group flex justify-end">
-            <span class="font-medium text-gray-700"
-              >Total Price: <span v-html="'&#8358;'"></span> {{ totalPrice }}</span
-            >
+            <span class="font-medium text-gray-700">
+              Total Price: <span v-html="'&#8358;'"></span> {{ totalPrice }}
+            </span>
             <button
               type="button"
               @click="addProducts"
@@ -68,13 +62,11 @@
             </button>
           </div>
 
-          <!-- Loop through each product added to the sale and display input fields for each product's details -->
           <div
             v-for="(product, index) in formState.products"
             :key="index"
             class="product-group flex items-end mt-4"
           >
-            <!-- Product type selection -->
             <div class="input-group">
               <label class="block text-sm font-medium text-gray-700">Product</label>
               <select 
@@ -103,45 +95,24 @@
               />
             </div>
 
-            <!-- Unit Sales -->
+            <!-- VAT Select -->
             <div class="input-group">
-              <label class="block text-sm font-medium text-gray-700">Unit Sales</label>
-              <input
-                type="text"
-                v-model="formState.products[index].is_container_type"
-                class="input"
-                readonly
-              />
+              <label class="block text-sm font-medium text-gray-700">VAT</label>
+              <select v-model="formState.products[index].vat" class="select-input">
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+              </select>
             </div>
 
-            <!-- Purchase Unit -->
-            <div class="input-group">
-              <label class="block text-sm font-medium text-gray-700">Purchase Unit</label>
+            <!-- Quantity Sold -->
+            <div class="input-group w-20">
+              <label class="block text-sm font-medium text-gray-700">Qty Sold</label>
               <input
-                type="text"
-                v-model="formState.products[index].container_capacity"
+                type="number"
+                v-model="formState.products[index].quantity_sold"
                 class="input"
-                readonly
+                @change="checkQuantitySold(index)"
               />
-            </div>
-
-            <!-- Cost Price -->
-            <div class="input-group">
-              <label class="block text-sm font-medium text-gray-700">Cost Price</label>
-              <input
-                type="text"
-                v-model="formState.products[index].cost_price"
-                class="input"
-                readonly
-              />
-              <label class="priceView">
-                &#8358;
-                {{
-                  formState.products[index].cost_price
-                    ? parseFloat(formState.products[index].cost_price).toLocaleString()
-                    : '0.00'
-                }}</label
-              >
             </div>
 
             <!-- Selling Price -->
@@ -150,7 +121,7 @@
               <input
                 type="text"
                 v-model="formState.products[index].selling_price"
-                class="input"
+                class="input readonly-input"
                 readonly
               />
               <label class="priceView">
@@ -161,26 +132,6 @@
                     : '0.00'
                 }}</label
               >
-            </div>
-
-            <!-- Selling Unit -->
-            <div class="input-group w-20">
-              <label class="block text-sm font-medium text-gray-700">Selling Unit</label>
-              <input
-                type="number"
-                v-model="formState.products[index].capacity_qty"
-                class="input"
-              />
-            </div>
-
-            <!-- Container Qty -->
-            <div class="input-group w-20">
-              <label class="block text-sm font-medium text-gray-700">Container Qty</label>
-              <input
-                type="number"
-                v-model="formState.products[index].container_qty"
-                class="input"
-              />
             </div>
 
             <!-- Display the calculated amount for the product -->
@@ -209,73 +160,73 @@
           </div>
         </div>
 
-        <!-- Submit button for the form -->
         <button type="submit" class="button submit-button" :disabled="isSubmitting">
           {{ isSubmitting ? 'Submitting...' : 'Submit' }}
         </button>
       </form>
     </div>
 
-    <!-- Modal for adding a new customer -->
     <CustomerFormModal v-if="showModal" @close="closeModal" />
+    <ReceiptModal v-if="showReceiptModal" @close="handleReceiptChoice" />
   </DashboardLayout>
 </template>
 
 <script setup>
-import { ref, reactive, watch, onMounted, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
-import apiService from '@/services/apiService'
-import { useCustomerstore } from '@/stores/customers'
-import CustomerFormModal from '@/components/UI/Modal/CustomerFormModal.vue'
-import { storeToRefs } from 'pinia'
+import { ref, reactive, watch, onMounted, nextTick } from 'vue';
+import { useRouter } from 'vue-router';
+import apiService from '@/services/apiService';
+import { useCustomerstore } from '@/stores/customers';
+import CustomerFormModal from '@/components/UI/Modal/CustomerFormModal.vue';
+import ReceiptModal from '@/components/UI/Modal/ReceiptModal.vue';
+import { storeToRefs } from 'pinia';
+import { generateReceiptPDF } from './receipts';
+import { catchAxiosError, catchAxiosSuccess } from '@/services/Response';
 
-const router = useRouter()
-const customersStore = useCustomerstore()
+const router = useRouter();
+const customersStore = useCustomerstore();
 
-// Store multiple references for barcode inputs
-const barcodeInputRefs = ref([])
-const data = ref([])
+const barcodeInputRefs = ref([]);
+const data = ref([]);
+const totalPrice = ref(0); // Initialize totalPrice with 0
+const res = ref(null); // Use ref instead of this.res
 
-const { allCustomersNames } = storeToRefs(customersStore)
+const { allCustomersNames } = storeToRefs(customersStore);
 
-const showModal = ref(false)
-const isSubmitting = ref(false) // Reactive variable for submission state
+const showModal = ref(false);
+const isSubmitting = ref(false);
 
 const addNewCustomer = () => {
-  showModal.value = true
-}
+  showModal.value = true;
+};
 
 const closeModal = () => {
-  showModal.value = false
-}
+  showModal.value = false;
+};
 
-// Handle setting the ref dynamically for each barcode input
 const setBarcodeRef = (el, index) => {
-  barcodeInputRefs.value[index] = el
-}
+  barcodeInputRefs.value[index] = el;
+};
 
-// Focus the latest empty barcode input field
 const focusBarcodeInput = () => {
   nextTick(() => {
-    const emptyBarcodeField = barcodeInputRefs.value.find((el) => el && !el.value)
-    
-    emptyBarcodeField?.focus()
-  })
-}
+    const emptyBarcodeField = barcodeInputRefs.value.find((el) => el && !el.value);
+    emptyBarcodeField?.focus();
+  });
+};
 
-// Focus the barcode input field on page load
 onMounted(async () => {
   try {
-    await customersStore.handleAllCustomersName()
-    const response = await apiService.get('/all-product-type-name')
-    data.value = response.data
-    focusBarcodeInput() // Autofocus on the first barcode input field
+    await customersStore.handleAllCustomersName();
+    const response = await apiService.get('/all-product-type-name');
+    data.value = response.data;
+    focusBarcodeInput();
   } catch (error) {
-    console.error
+    console.error('Failed to fetch product type names:', error);
   }
-})
+});
 
-const printReceipt = ref('no')
+const printReceipt = ref('no');
+const showReceiptModal = ref(false);
 
 const formState = reactive({
   customer_id: '',
@@ -284,166 +235,198 @@ const formState = reactive({
     {
       product_type_id: '',
       barcode: '',
-      is_container_type: '',
-      container_capacity: '',
-      cost_price: '',
       selling_price: '',
-      capacity_qty: 1, // Default selling unit
-      container_qty: 1, // Default container quantity
+      quantity_sold: 1,
       amount: '',
       vat: 'no'
     }
   ]
-})
+});
 
-// Function to check if a product is already selected
-const isProductSelected = (productId) => {
-  return formState.products.some(product => product.product_type_id === productId)
-}
-
-// Function to add new products with autofocus on the latest empty barcode field
-const addProducts = () => {
-  const lastProduct = formState.products[formState.products.length - 1]
-  if (lastProduct.product_type_id || lastProduct.barcode) {
-    formState.products.push({
-      product_type_id: '',
-      barcode: '',
-      is_container_type: '',
-      container_capacity: '',
-      cost_price: '',
-      selling_price: '',
-      capacity_qty: 1, // Default selling unit
-      container_qty: 1, // Default container quantity
-      amount: ''
-    })
-    nextTick(() => focusBarcodeInput()) // Autofocus on the new barcode input field after DOM updates
-  }
-}
-
-// Function to remove a product from the formState.products array
-const removeProduct = (index) => {
-  if (index > 0) {
-    formState.products.splice(index, 1)
-    barcodeInputRefs.value.splice(index, 1) // Remove the reference
-    nextTick(() => focusBarcodeInput()) // Refocus on the latest empty barcode field after DOM updates
-  }
-}
-
-// Watcher for barcode field to populate product details and add new product
-
-const handleBarcodeEnter = (index) => {
-  const existingProductIndex = formState.products.findIndex(product => product.barcode === formState.products[index].barcode)
-
-  if (existingProductIndex !== -1 && existingProductIndex !== index) {
-    alert("Product already exist")
-    // Clear the barcode input field if the product has already been added
-    formState.products[index].barcode = ''
-  } else {
-    const product = data.value.find((p) => p.barcode === formState.products[index].barcode)
-    if (product) {
-      populateProductDetails(index, product)
-      addProducts() // Automatically add a new empty product row
-    }
-  }
-}
-
-
-// Handle manual product type selection
-const handleProductTypeSelect = (index) => {
-  const product = data.value.find((p) => p.id === formState.products[index].product_type_id)
-  if (product) {
-    populateProductDetails(index, product)
-  }
-}
-
-// Populate the product details when either barcode or product type is selected
 const populateProductDetails = (index, product) => {
-  formState.products[index].product_type_id = product.id
-  formState.products[index].barcode = product.barcode
-  formState.products[index].is_container_type = product.is_container_type
-  formState.products[index].container_capacity = product.container_capacity
-  formState.products[index].cost_price = product.cost_price
-  formState.products[index].selling_price = product.selling_price
-  formState.products[index].capacity_qty = 1 // Default selling unit
-  formState.products[index].container_qty = 1 // Default container quantity
-  formState.products[index].amount = formState.products[index].selling_price * formState.products[index].capacity_qty
-  nextTick(() => focusBarcodeInput()) // Refocus on the latest empty barcode field after updating product details
-}
+  formState.products[index].product_type_id = product.id;
+  formState.products[index].barcode = product.barcode;
+  formState.products[index].selling_price = product.selling_price;
+  formState.products[index].vat = product.vat.toLowerCase();
+  formState.products[index].amount = calculateAmountWithVat(
+    formState.products[index].selling_price,
+    formState.products[index].quantity_sold,
+    formState.products[index].vat
+  );
+  nextTick(() => focusBarcodeInput());
+};
 
-// Watcher to calculate the total price for each product whenever quantity or price changes
+const calculateAmountWithVat = (sellingPrice, quantitySold, vat) => {
+  let amount = parseFloat(sellingPrice) * parseFloat(quantitySold || 1); // Ensure quantitySold is never NaN
+  if (vat === 'yes') {
+    amount *= 1.075;
+  }
+  return isNaN(amount) ? 0 : amount;
+};
+
 watch(
   () =>
     formState.products.map((product) => ({
       selling_price: product.selling_price,
-      capacity_qty: product.capacity_qty
+      quantity_sold: product.quantity_sold,
+      vat: product.vat
     })),
   () => {
     formState.products.forEach((product, index) => {
-      const sellingPrice = parseFloat(product.selling_price) || 0
-      const capacityQty = parseFloat(product.capacity_qty) || 0
-      const amount = sellingPrice * capacityQty
-      formState.products[index].amount = amount
-    })
+      formState.products[index].amount = calculateAmountWithVat(
+        product.selling_price,
+        product.quantity_sold,
+        product.vat
+      );
+    });
+    calculateTotalPrice();
   },
   { deep: true }
-)
+);
 
-// Function to handle form submission
+const calculateTotalPrice = () => {
+  const total = formState.products.reduce((acc, product) => acc + (product.amount || 0), 0);
+  totalPrice.value = isNaN(total) ? '0.00' : total.toFixed(2); // Ensure total is never NaN
+};
+
+const isProductSelected = (productId) => {
+  return formState.products.some((product) => product.product_type_id === productId);
+};
+
+const addProducts = () => {
+  const lastProduct = formState.products[formState.products.length - 1];
+  if (lastProduct.product_type_id || lastProduct.barcode) {
+    formState.products.push({
+      product_type_id: '',
+      barcode: '',
+      selling_price: '',
+      quantity_sold: 1,
+      amount: '',
+      vat: 'no'
+    });
+    nextTick(() => focusBarcodeInput());
+  }
+};
+
+const removeProduct = (index) => {
+  if (formState.products.length > 1) {
+    formState.products.splice(index, 1);
+    barcodeInputRefs.value.splice(index, 1);
+    nextTick(() => focusBarcodeInput());
+    calculateTotalPrice();
+  }
+};
+
+const handleBarcodeEnter = (index) => {
+  const product = data.value.find((p) => p.barcode === formState.products[index].barcode);
+
+  // Prevent duplicate barcode entries
+  if (isDuplicateBarcode(formState.products[index].barcode)) {
+    alert("This barcode has already been scanned.");
+    formState.products[index].barcode = ''; // Clear the duplicate barcode
+    return;
+  }
+
+  if (product) {
+    populateProductDetails(index, product);
+    addProducts();
+  }
+};
+
+const handleProductTypeSelect = (index) => {
+  const product = data.value.find((p) => p.id === formState.products[index].product_type_id);
+  if (product) {
+    populateProductDetails(index, product);
+  }
+};
+
+const checkQuantitySold = (index) => {
+  // Assuming `product.quantity_available` is available somewhere in your data
+  const product = data.value.find(p => p.id === formState.products[index].product_type_id);
+  
+  if (product && formState.products[index].quantity_sold > product.quantity_available) {
+    formState.products[index].quantity_sold = product.quantity_available; // Reset to available quantity if exceeds
+    alert(`Quantity sold exceeds available stock. Resetting to available quantity: ${product.quantity_available}.`);
+  }
+  
+  formState.products[index].amount = calculateAmountWithVat(
+    formState.products[index].selling_price,
+    formState.products[index].quantity_sold,
+    formState.products[index].vat
+  );
+  calculateTotalPrice();
+};
+
+const isDuplicateBarcode = (barcode) => {
+  return formState.products.filter(product => product.barcode === barcode).length > 1;
+};
+
 const addSales = async () => {
-  isSubmitting.value = true
-  let products = formState.products
+  isSubmitting.value = true;
+
+  const products = formState.products
     .filter((product) => product.amount > 0)
     .map((product) => ({
       product_type_id: product.product_type_id,
-      price_sold_at: product.selling_price,
-      capacity_qty: product.capacity_qty,
-      container_qty: product.container_qty,
-      vat: product.vat
-    }))
+      price_sold_at: parseInt(product.selling_price, 10),
+      quantity: parseInt(product.quantity_sold, 10),
+      vat: product.vat ? product.vat : null
+    }));
 
-  let payload = {
-    customer_id: formState.customer_id,
+  const payload = {
+    customer_id: formState.customer_id ? formState.customer_id : null,
     payment_method: formState.payment_method,
-    products: products
-  }
+    products
+  };
 
   try {
-    let res = await apiService.post('/sales', payload)
-    router.push('/sale')
-    return res
-  } catch (error) {
-    console.error('Failed to submit sale:', error)
-  } finally {
-    isSubmitting.value = false // Set submitting state to false
-    resetForm()
-  }
-}
+    res.value = await apiService.post('/sales', payload);
+    console.log(res.value)
+    if (res.value.success) {
+    
+      showReceiptModal.value = true;
+    }
 
-// Function to reset the form after submission
+    
+    return res.value;
+  } catch (error) {
+    catchAxiosError(error); 
+    console.error('Failed to submit sale:', error);
+  } finally {
+    isSubmitting.value = false;
+    resetForm();
+  }
+};
+
+const handleReceiptChoice = (choice) => {
+  showReceiptModal.value = false;
+  console.log('User choice:', choice); // Log the choice to confirm it's being captured
+  if (choice === 'yes') {
+    generateReceiptPDF(res.value.data);
+  }
+  catchAxiosSuccess(res.value);
+  router.push('/sale');
+};
+
 const resetForm = () => {
-  formState.customer_id = ''
-  formState.payment_method = ''
+  formState.customer_id = '';
+  formState.payment_method = '';
   formState.products = [
     {
       product_type_id: '',
       barcode: '',
-      is_container_type: '',
-      container_capacity: '',
-      cost_price: '',
       selling_price: '',
-      capacity_qty: 1, // Default selling unit
-      container_qty: 1, // Default container quantity
+      quantity_sold: 1,
       amount: '',
       vat: 'no'
     }
-  ]
-  nextTick(() => focusBarcodeInput()) // Autofocus on the barcode input field after resetting form
-}
+  ];
+  nextTick(() => focusBarcodeInput());
+};
 </script>
 
-
-
 <style scoped>
+/* Your existing CSS styles */
 .container {
   padding: 20px;
 }
