@@ -1,255 +1,227 @@
 <template>
-    <DashboardLayout pageTitle="Measurement Page">
-        <section class="page-container">
-  <div class="container">
-   
-     <button class="add-button" @click="openCreateModal">Add New Purchase Unit</button>
-    <div class="card-grid">
-      <div
-        v-for="purchaseUnit in purchaseUnits"
-        :key="purchaseUnit.id"
-        class="purchase-card"
-      >
-        <h4 class="text-3em font-bold">Purchase Unit: {{ purchaseUnit.purchase_unit_name }}</h4>
-        <div v-if="purchaseUnit.selling_units.length > 0">
-          <div
-            v-for="sellingUnit in purchaseUnit.selling_units"
-            :key="sellingUnit.id"
-            class="selling-unit-card"
-          >
-            <h3>Selling Unit: {{ sellingUnit.selling_unit_name }}</h3>
-            <ul>
-              <li
-                v-for="capacity in sellingUnit.selling_unit_capacities"
-                :key="capacity.id"
-              >
-                Quantity: {{ capacity.selling_unit_capacity }}
-              </li>
-            </ul>
-            
-        <button
-          class="add-selling-unit-button"
-          @click="openCreateSellingUnitModal(purchaseUnit.id)"
-        >
-          Add Selling Unit
-        </button>
+  <DashboardLayout pageTitle="Measurement Page">
+    <section class="page-container">
+      <div class="container">
+        <button class="add-button" @click="openCreateModal">Add New Purchase Unit</button>
+        <div class="card-grid">
+          <div v-for="purchaseUnit in purchaseUnits" :key="purchaseUnit.id" class="purchase-card">
+            <div class="purchase-card-header">
+              <h4 class="text-2xl font-semibold">Purchase Unit: {{ purchaseUnit.purchase_unit_name }}</h4>
+              <button class="add-selling-unit-button" @click="openCreateSellingUnitModal(purchaseUnit.id)">
+                &#43;
+              </button>
+            </div>
+            <div v-if="purchaseUnit.selling_units.length > 0">
+              <div v-for="sellingUnit in purchaseUnit.selling_units" :key="sellingUnit.id" class="selling-unit-card">
+                <div class="selling-unit-header">
+                  <h5 class="text-lg font-medium">Selling Unit: {{ sellingUnit.selling_unit_name }}</h5>
+                  <button class="add-selling-capacity-button" @click="openCreateSellingCapacityModal(sellingUnit.id)">
+                    &#43;
+                  </button>
+                </div>
+                <ul>
+                  <li v-for="capacity in sellingUnit.selling_unit_capacities" :key="capacity.id">
+                    Quantity: {{ capacity.selling_unit_capacity }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div v-else>
+              <p>No Selling Units Available</p>
+            </div>
           </div>
         </div>
-        <div v-else>
-          <p>No Selling Units Available</p>
-        </div>
-        <!-- <button class="edit-button" @click="editUnit(purchaseUnit)">Edit</button> -->
-        <button class="delete-button" @click="deleteUnit()">
-          Delete
-        </button>
-        
+
+        <!-- Purchase Unit Modal -->
+        <create-edit-modal
+          v-if="isModalOpen"
+          @close="closeModal"
+          @purchase-unit-added="fetchPurchaseUnits"
+        />
+
+        <!-- Selling Unit Modal -->
+        <create-selling-unit-modal
+          v-if="isSellingUnitModalOpen"
+          :purchaseUnitId="selectedPurchaseUnitId"
+          @close="closeSellingUnitModal"
+          @selling-unit-added="fetchPurchaseUnits"
+        />
+
+        <!-- Selling Unit Capacity Modal -->
+        <selling-unit-capacity-modal
+          v-if="isSellingUnitCapacityModalOpen"
+          :sellingUnitId="selectedSellingUnitId"
+          @close="closeSellingUnitCapacityModal"
+          @selling-capacity-added="fetchPurchaseUnits"
+        />
       </div>
-    </div>
-
-    <!-- Add New Purchase Unit Button -->
-   
-
-    <!-- Modals for Create/Edit -->
-    <create-edit-modal
-      v-if="isModalOpen"
-      :unit="selectedUnit"
-      @close="closeModal"
-      @save="fetchPurchaseUnits"
-    />
-  </div>
-
-  <DeleteModal
-      v-if="showDeleteModal"
-      @close="closeDeleteModal"
-      @updated="forceRefresh"
-      :items="itemsId"
-      :url="'/purchase-units'"
-      :modalTitle="modalTitle"
-    />
     </section>
   </DashboardLayout>
 </template>
-
 <script setup>
 import { ref, onMounted } from 'vue';
-import apiService from '@/services/apiService'
-import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
+import apiService from '@/services/apiService';
+import { catchAxiosError } from '@/services/Response';
 import DashboardLayout from '@/components/Layouts/dashboardLayout.vue';
-import { useSharedComponent } from "@/composable/useSharedComponent";
-import CreateEditModal from '@/components/UI/Modal/CreateMeasurementModal.vue';
+import CreateEditModal from '@/components/UI/Modal/purchaseUnitModal.vue';
+import CreateSellingUnitModal from '@/components/UI/Modal/sellingUnitModal.vue';
+import SellingUnitCapacityModal from '@/components/UI/Modal/sellingUnitCapacityModal.vue';
 
 const purchaseUnits = ref([]);
 const isModalOpen = ref(false);
-const selectedUnit = ref(null);
-const isEdit = ref(false)
-
-const {
-  
-  DeleteModal,
-  useDeleteComposable,
-//   defineEmits,
-
-} = useSharedComponent('list-purchase-unit');
-
-const {
-  handleDelete,
-  showDeleteModal,
-  itemsId,
-  closeDeleteModal,
-} = useDeleteComposable();
-
-// const emit = defineEmits(["forceRefresh"]);
+const isSellingUnitModalOpen = ref(false);
+const isSellingUnitCapacityModalOpen = ref(false);
+const selectedPurchaseUnitId = ref(null);
+const selectedSellingUnitId = ref(null);
 
 const fetchPurchaseUnits = async () => {
   try {
-    const response = await apiService.get('/list-purchase-units');
+    const response = await apiService.get('/purchase-units');
     purchaseUnits.value = response.data;
+    console.log(response.data);
   } catch (error) {
     console.error('Error fetching purchase units:', error);
-    catchAxiosError(error)
+    catchAxiosError(error);
   }
 };
 
 const openCreateModal = () => {
-  selectedUnit.value = null;
   isModalOpen.value = true;
 };
 
-const editUnit = (unit) => {
-  selectedUnit.value = unit;
-  isModalOpen.value = true;
+const openCreateSellingUnitModal = (purchaseUnitId) => {
+  selectedPurchaseUnitId.value = purchaseUnitId;
+  isSellingUnitModalOpen.value = true;
 };
 
-const openCreateSellingUnitModal = (purchaseUnit) => {
-  selectedUnit.value = { ...purchaseUnit };
-  isEdit.value = false;
-  isModalOpen.value = true;
-};
-
-const deleteUnit = async (id) => {
-  try {
-    await apiService.delete(`/purchase-unit/${id}`);
-    fetchPurchaseUnits();
-  } catch (error) {
-    console.error('Error deleting purchase unit:', error);
-  }
+const openCreateSellingCapacityModal = (sellingUnitId) => {
+  selectedSellingUnitId.value = sellingUnitId;
+  isSellingUnitCapacityModalOpen.value = true;
 };
 
 const closeModal = () => {
   isModalOpen.value = false;
 };
 
+const closeSellingUnitModal = () => {
+  isSellingUnitModalOpen.value = false;
+};
+
+const closeSellingUnitCapacityModal = () => {
+  isSellingUnitCapacityModalOpen.value = false;
+};
+
 onMounted(fetchPurchaseUnits);
 </script>
-
 <style scoped>
-.page-container{
-    width: 100%;
+.page-container {
+  width: 100%;
+  padding: 2em;
+  background-color: #f4f5f7;
 }
+
 .container {
   display: flex;
-  
   flex-direction: column;
-  align-items: flex-end;
-  /* width: 100%; */
-}
-
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
+  align-items: flex-start;
 }
 
 .card-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2em;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Changed to two columns */
+  gap: 1.5em;
+  width: 100%;
+  justify-content: flex-start;
 }
 
 .purchase-card {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
   padding: 16px;
-  width: 300px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-.purchase-card h2 {
-  margin-bottom: 16px;
+.purchase-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1em;
 }
 
 .selling-unit-card {
-  background-color: #fff;
+  background-color: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 4px;
   padding: 12px;
   margin-bottom: 12px;
 }
 
-.selling-unit-card h3 {
-  margin-bottom: 8px;
-  font-size: 16px;
-  font-weight: bold;
+.selling-unit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.selling-unit-card ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.selling-unit-card li {
-  font-size: 14px;
-}
-
-.edit-button,
-.delete-button {
+.add-button {
   background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  cursor: pointer;
+  margin-bottom: 1.5em;
+  border-radius: 5px;
+  font-size: 1em;
+}
+
+.add-button:hover {
+  background-color: #45a049;
+}
+
+.add-selling-unit-button {
+  background-color: #1e88e5;
+  color: white;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 1.5em;
+  border-radius: 50%;
+}
+
+.add-selling-unit-button:hover {
+  background-color: #1565c0;
+}
+
+.add-selling-capacity-button {
+  background-color: #1e88e5;
+  color: white;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 1.5em;
+  border-radius: 50%;
+}
+
+.add-selling-capacity-button:hover {
+  background-color: #1565c0;
+}
+
+.delete-button {
+  background-color: #f44336;
   color: white;
   border: none;
   padding: 8px 16px;
   margin: 4px;
   cursor: pointer;
-}
-
-.edit-button:hover {
-  background-color: #45a049;
-}
-
-.delete-button {
-  background-color: #f44336;
+  border-radius: 5px;
 }
 
 .delete-button:hover {
   background-color: #e53935;
 }
-
-.add-button {
-  background-color: #dc900d;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  cursor: pointer;
-  display: flex;
-  margin: 2em 0;
-}
-
-.add-button:hover {
-  background-color: #c08102;
-}
-
-.add-selling-unit-button {
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  margin: 4px;
-  cursor: pointer;
-}
-
-.add-selling-unit-button:hover {
-  background-color: #45a049;
-}
-
 </style>
+

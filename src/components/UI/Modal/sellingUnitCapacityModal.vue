@@ -6,13 +6,13 @@
       <header
         class="flex flex-row items-center justify-between border-b-[#000000] mb-[0.6em] border-b-[1px]"
       >
-        <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">Add Selling Capacity</h4>
+        <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">How many selling unit equal a purchase unit</h4>
         <button class="close-button" @click="$emit('close')">&#10005;</button>
       </header>
       <form @submit.prevent="submitForm" class="max-w-4xl mx-auto p-2">
         
           <div class="mb-4">
-            <label  class="block text-sm font-medium text-gray-700 pb-1">Selling Capacity</label>
+            <label  class="block text-sm font-medium text-gray-700 pb-1">Selling Unit</label>
             <input
               type="number"
               v-model="sellingCapacity"
