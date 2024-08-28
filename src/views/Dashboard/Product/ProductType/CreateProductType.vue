@@ -302,6 +302,7 @@ const fetchPurchasingUnit = async () => {
     if (formState.purchaseUnit) {
       await fetchSellingUnit(formState.purchaseUnit)
     }
+    catchAxiosSuccess(response.data)
   } catch (error) {
     console.error('Error fetching purchasing unit:', error)
     catchAxiosError(error)
