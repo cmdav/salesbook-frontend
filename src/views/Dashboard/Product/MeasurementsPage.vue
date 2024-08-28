@@ -121,14 +121,10 @@ const editUnit = (unit) => {
 };
 
 const openCreateSellingUnitModal = (purchaseUnit) => {
-  selectedUnit.value = {
-    purchase_unit_id: purchaseUnit.id,
-    purchase_unit_name: purchaseUnit.purchase_unit_name,
-  };
+  selectedUnit.value = { ...purchaseUnit };
   isEdit.value = false;
   isModalOpen.value = true;
 };
-
 
 const deleteUnit = async (id) => {
   try {
