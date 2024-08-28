@@ -56,34 +56,38 @@
         <div class="input-group w-[70%]">
           <label class="block text-sm font-medium text-gray-700">Barcode</label>
           <input
+            ref="barcodeInput"
             v-model="formState.barcode"
             type="text"
             class="input"
-            @keypress="preventSubmitOnEnter"
+            :readonly="isBarcodeReadonly"
+            @keydown.enter.prevent="handleBarcodeEntry"
           />
         </div>
 
-        <!-- <div class="input-group w-[70%]">
-          <p>VAT</p>
-          <label class="mt-20 text-sm font-medium text-gray-700">
-            <input type="radio" value="yes" name="choice" v-model="formState.vat" />
-            Yes
-          </label>
-
-          <label class="ml-8 text-sm font-medium text-gray-700">
-            <input type="radio" value="no" name="choice" v-model="formState.vat" />
-            No
-          </label>
-        </div> -->
+        <!-- Conditionally render the edit button -->
+        <button 
+          v-if="isBarcodeReadonly" 
+          type="button" 
+          class="button edit-button" 
+          @click="clearBarcode"
+        >
+          Edit Barcode
+        </button>
 
         <div class="input-group w-full">
-          <label class="block text-sm font-medium text-gray-700">Select Purchase Unit <span class="tooltip-container"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="16" height="16" viewBox="0 0 24 24">
-    <path d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"></path>
-</svg> <span class="tooltip-text">What unit did you purchase this item?</span></span> </label>
+          <label class="block text-sm font-medium text-gray-700">Select Purchase Unit 
+            <span class="tooltip-container">
+              <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="16" height="16" viewBox="0 0 24 24">
+                <path d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"></path>
+              </svg> 
+              <span class="tooltip-text">What unit did you purchase this item?</span>
+            </span> 
+          </label>
           <div class="flex">
             <div class="w-[70%]">
               <select
-                v-model="selectedPurchaseUnit"
+                v-model="formState.purchaseUnit"
                 class="select-input"
                 @change="fetchPurchasingUnit"
               >
@@ -100,9 +104,14 @@
         </div>
 
         <div class="input-group w-full">
-          <label class="block text-sm font-medium text-gray-700">Select Selling Unit <span class="tooltip-container"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="16" height="16" viewBox="0 0 24 24">
-    <path d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"></path>
-</svg> <span class="tooltip-text">What unit will you sell this item?</span></span> </label>
+          <label class="block text-sm font-medium text-gray-700">Select Selling Unit 
+            <span class="tooltip-container">
+              <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="16" height="16" viewBox="0 0 24 24">
+                <path d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 4 12 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"></path>
+              </svg> 
+              <span class="tooltip-text">What unit will you sell this item?</span>
+            </span> 
+          </label>
           <div class="flex">
             <div class="w-[70%]">
               <select
@@ -116,18 +125,22 @@
                 </option>
               </select>
             </div>
-            <button type="button" class="button btn-brand ml-4" @click="addSellingUnit(selectedPurchaseUnit)">
+            <button type="button" class="button btn-brand ml-4" @click="addSellingUnit(formState.purchaseUnit)">
               Add Selling Unit
             </button>
           </div>
         </div>
 
         <div class="input-group w-full">
-          <label class="block text-sm font-medium text-gray-700"
-            >How many selling unit equal a purchase unit<span class="tooltip-container"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="16" height="16" viewBox="0 0 24 24">
-    <path d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"></path>
-</svg> <span class="tooltip-text">E.g dozen = 12, one create = 30eggs...</span></span> </label
-          >
+          <label class="block text-sm font-medium text-gray-700">
+            How many selling unit equal a purchase unit
+            <span class="tooltip-container">
+              <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="16" height="16" viewBox="0 0 24 24">
+                <path d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"></path>
+              </svg> 
+              <span class="tooltip-text">E.g dozen = 12, one create = 30eggs...</span>
+            </span>
+          </label>
           <div class="flex">
             <div class="w-[70%]">
               <select v-model="selectedSellingCapacity" class="select-input">
@@ -147,7 +160,6 @@
           </div>
         </div>
 
-
         <!-- Submit button for the form -->
         <button type="submit" class="button submit-button" :disabled="isSubmitting">
           {{ isSubmitting ? 'Submitting...' : 'Submit' }}
@@ -156,60 +168,96 @@
     </div>
 
     <!-- Modal for Container Type and Container Capacity -->
-     <PurchaseUnitModal
-     v-if="showModal"
-     @close="closeModal"
-     @purchase-unit-added="handlePurchaseUnit"
-     />
-     <SellingUnitModal
-     v-if="displayModal"
-     @close="closeModal"
-     @selling-unit-added="handleSellingUnit"
-     :purchaseUnitId="selectedPurchaseUnit"
-     />
-     <SellingUnitCapacityModal
-     v-if="displayCapModal"
-     @close="closeModal"
-     @selling-capacity-added="handleSellingCapacity"
-     :sellingUnitId="selectedSellingUnit"
-     />
-   
+    <PurchaseUnitModal
+      v-if="showModal"
+      @close="closeModal"
+      @purchase-unit-added="handlePurchaseUnit"
+    />
+    <SellingUnitModal
+      v-if="displayModal"
+      @close="closeModal"
+      @selling-unit-added="handleSellingUnit"
+      :purchaseUnitId="formState.purchaseUnit"
+    />
+    <SellingUnitCapacityModal
+      v-if="displayCapModal"
+      @close="closeModal"
+      @selling-capacity-added="handleSellingCapacity"
+      :sellingUnitId="selectedSellingUnit"
+    />
   </DashboardLayout>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import apiService from '@/services/apiService'
 import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
-// import ContainerTypeModal from '@/components/UI/Modal/sellingUnitCapacityModal.vue'
 import PurchaseUnitModal from '@/components/UI/Modal/purchaseUnitModal.vue'
 import SellingUnitModal from '@/components/UI/Modal/sellingUnitModal.vue'
 import SellingUnitCapacityModal from '@/components/UI/Modal/sellingUnitCapacityModal.vue'
-// import ContainerTypeCapacitiesModal from '@/components/UI/Modal/sellingUnitModal.vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const fileInput = ref(null)
 const newImage = ref(null)
 const isSubmitting = ref(false)
-// const unitSales = ref(null);
 
 const showModal = ref(false)
 const displayModal = ref(false)
 const displayCapModal = ref(false)
+const barcodeInput = ref(null)
+const lastScannedBarcode = ref('')
+const isBarcodeReadonly = ref(false)
+
+const formState = reactive({
+  product: '',
+  productTypeName: '',
+  productTypeImage: null,
+  productTypeDescription: '',
+  barcode: '',
+  vat: 'yes',
+  purchaseUnit: '', // Now using formState.purchaseUnit
+  // other form states...
+})
+
+const products = ref([])
+const purchaseUnit = ref([])
+const sellingUnit = ref([])
+const sellingCapacity = ref([])
+const selectedSellingUnit = ref(null)
+const selectedSellingCapacity = ref(null)
+
+const handleBarcodeEntry = (event) => {
+  const newBarcode = event.target.value.trim()
+
+  if (newBarcode !== lastScannedBarcode.value) {
+    formState.barcode = newBarcode
+    lastScannedBarcode.value = newBarcode
+    isBarcodeReadonly.value = true
+  }
+
+  barcodeInput.value.value = ''
+}
+
+const clearBarcode = () => {
+  formState.barcode = ''
+  isBarcodeReadonly.value = false
+}
 
 const addPurchaseUnit = () => {
   showModal.value = true
 }
-const addSellingUnit = (purchaseUnitId) => {
-  selectedPurchaseUnit.value = purchaseUnitId
-  displayModal.value = true
 
+const addSellingUnit = (purchaseUnitId) => {
+  formState.purchaseUnit = purchaseUnitId
+  displayModal.value = true
 }
+
 const addSellingCapacity = (sellingUnitId) => {
   selectedSellingCapacity.value = sellingUnitId
   displayCapModal.value = true
 }
+
 const closeModal = () => {
   showModal.value = false
   displayModal.value = false
@@ -222,36 +270,11 @@ const preventSubmitOnEnter = (event) => {
   }
 }
 
-const formState = reactive({
-  product: '',
-  productTypeName: '',
-  productTypeImage: null,
-  productTypeDescription: '',
-  barcode: '',
-  vat: 'yes',
-  // measurement: '',
-  // sellingunitCapacity: ''
-})
-
-// const getVatValue = () => {
-//     return formState.vat === 'yes' ? 1 : 0;
-// };
-
-// const measurements = ref([])
-const products = ref([])
-const purchaseUnit = ref([])
-const sellingUnit = ref([])
-const sellingCapacity = ref([])
-// const containerTypeCapacities = ref([])
-const selectedPurchaseUnit = ref(null)
-const selectedSellingUnit = ref(null)
-const selectedSellingCapacity = ref(null)
-
 const handlePurchaseUnit = (newType) => {
   purchaseUnit.value.push(newType)
-  selectedPurchaseUnit.value = newType.id
-  console.log(selectedPurchaseUnit.value)
+  formState.purchaseUnit = newType.id
 }
+
 const handleSellingUnit = (newType) => {
   sellingUnit.value.push(newType)
   selectedSellingUnit.value = newType.id
@@ -265,22 +288,19 @@ const handleSellingCapacity = (newCapacity) => {
 const fetchProducts = async () => {
   try {
     const response = await apiService.get('/all-products')
-    console.log(response)
     products.value = response
-    console.log(products.value)
   } catch (error) {
     catchAxiosError(error)
     console.error('Error fetching products:', error)
   }
 }
-// console.log(products)
+
 const fetchPurchasingUnit = async () => {
   try {
     const response = await apiService.get('/list-purchase-units')
-    console.log(response.data)
     purchaseUnit.value = response.data
-    if(selectedPurchaseUnit.value){
-      await fetchSellingUnit(selectedPurchaseUnit.value)
+    if (formState.purchaseUnit) {
+      await fetchSellingUnit(formState.purchaseUnit)
     }
   } catch (error) {
     console.error('Error fetching purchasing unit:', error)
@@ -290,7 +310,7 @@ const fetchPurchasingUnit = async () => {
 
 const fetchSellingUnit = async (purchaseUnitId) => {
   const selectedUnit = purchaseUnit.value.find(unit => unit.id === purchaseUnitId)
-  if(selectedUnit){
+  if (selectedUnit) {
     sellingUnit.value = selectedUnit.selling_units
     selectedSellingUnit.value = null
     selectedSellingCapacity.value = null
@@ -298,13 +318,12 @@ const fetchSellingUnit = async (purchaseUnitId) => {
 }
 
 const fetchSellingCapacities = async (sellingUnitId) => {
-  const selectedUnit = sellingUnit.value.find(unit => unit.id === sellingUnitId) 
+  const selectedUnit = sellingUnit.value.find(unit => unit.id === sellingUnitId)
   if (selectedUnit) {
     sellingCapacity.value = selectedUnit.selling_unit_capacities
     selectedSellingCapacity.value = null
-   }
+  }
 }
-
 
 const handleImageChange = (event) => {
   const file = event.target.files[0]
@@ -318,11 +337,9 @@ const handleImageChange = (event) => {
   }
 }
 
-// Fetch data on mounted
 onMounted(async () => {
   await fetchProducts()
   await fetchPurchasingUnit()
-  
 })
 
 const handleSubmit = async () => {
@@ -331,18 +348,16 @@ const handleSubmit = async () => {
   const formData = new FormData()
   formData.append('product_id', formState.product)
   formData.append('product_type_name', formState.productTypeName)
-  // formData.append('vat', getVatValue.value)
-  // formData.append('product_type_image', formState.productTypeImage)
-   if (formState.productTypeImage) {
+  if (formState.productTypeImage) {
     formData.append('product_type_image', formState.productTypeImage)
   }
   formData.append('product_type_description', formState.productTypeDescription)
   formData.append('barcode', formState.barcode)
   formData.append('selling_unit_capacity_id', selectedSellingCapacity.value)
+  formData.append('purchase_unit_id', formState.purchaseUnit)
 
   try {
-    console.log(formData)
-    let res = await apiService.post('/product-types', formData)
+    const res = await apiService.post('/product-types', formData)
     router.push('/product-type')
 
     catchAxiosSuccess(res)
@@ -390,6 +405,12 @@ const handleSubmit = async () => {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  background-color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+.input[readonly] {
+  background-color: #e0e0e0;
 }
 
 .readonly-input {
@@ -476,8 +497,6 @@ button {
   background-color: #c82333;
 }
 
-/* tooltip style */
-
 .tooltip-container {
   position: relative;
   display: inline-block;
@@ -492,11 +511,10 @@ button {
   text-align: center;
   padding: 5px;
   border-radius: 4px;
-  
-  /* Position the tooltip */
+
   position: absolute;
   z-index: 1;
-  bottom: 125%; /* Position above the icon */
+  bottom: 125%;
   left: 50%;
   margin-left: -80px;
   opacity: 0;
@@ -506,5 +524,20 @@ button {
 .tooltip-container:hover .tooltip-text {
   visibility: visible;
   opacity: 1;
+}
+
+.edit-button {
+  background-color: #ffc107;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+.edit-button:hover {
+  background-color: #e0a800;
 }
 </style>
