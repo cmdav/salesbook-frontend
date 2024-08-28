@@ -1,7 +1,9 @@
 <template>
     <DashboardLayout pageTitle="Measurement Page">
-  <div class="container mt-2em">
+        <section class="page-container">
+  <div class="container">
    
+     <button class="add-button" @click="openCreateModal">Add New Purchase Unit</button>
     <div class="card-grid">
       <div
         v-for="purchaseUnit in purchaseUnits"
@@ -24,20 +26,28 @@
                 Quantity: {{ capacity.selling_unit_capacity }}
               </li>
             </ul>
+            
+        <button
+          class="add-selling-unit-button"
+          @click="openCreateSellingUnitModal(purchaseUnit.id)"
+        >
+          Add Selling Unit
+        </button>
           </div>
         </div>
         <div v-else>
           <p>No Selling Units Available</p>
         </div>
         <!-- <button class="edit-button" @click="editUnit(purchaseUnit)">Edit</button> -->
-        <!-- <button class="delete-button" @click="handleDelete()">
+        <button class="delete-button" @click="deleteUnit()">
           Delete
-        </button> -->
+        </button>
+        
       </div>
     </div>
 
     <!-- Add New Purchase Unit Button -->
-    <button class="add-button" @click="openCreateModal">Add New Purchase Unit</button>
+   
 
     <!-- Modals for Create/Edit -->
     <create-edit-modal
@@ -53,9 +63,10 @@
       @close="closeDeleteModal"
       @updated="forceRefresh"
       :items="itemsId"
-      :url="'/list-purchase-units'"
+      :url="'/purchase-units'"
       :modalTitle="modalTitle"
     />
+    </section>
   </DashboardLayout>
 </template>
 
@@ -70,6 +81,7 @@ import CreateEditModal from '@/components/UI/Modal/CreateMeasurementModal.vue';
 const purchaseUnits = ref([]);
 const isModalOpen = ref(false);
 const selectedUnit = ref(null);
+const isEdit = ref(false)
 
 const {
   
@@ -108,9 +120,15 @@ const editUnit = (unit) => {
   isModalOpen.value = true;
 };
 
+const openCreateSellingUnitModal = (purchaseUnit) => {
+  selectedUnit.value = { ...purchaseUnit };
+  isEdit.value = false;
+  isModalOpen.value = true;
+};
+
 const deleteUnit = async (id) => {
   try {
-    await apiService.delete(`/list-purchase-units/${id}`);
+    await apiService.delete(`/purchase-unit/${id}`);
     fetchPurchaseUnits();
   } catch (error) {
     console.error('Error deleting purchase unit:', error);
@@ -125,9 +143,15 @@ onMounted(fetchPurchaseUnits);
 </script>
 
 <style scoped>
+.page-container{
+    width: 100%;
+}
 .container {
-  width: 80%;
-  margin: 2em auto;
+  display: flex;
+  
+  flex-direction: column;
+  align-items: flex-end;
+  /* width: 100%; */
 }
 
 h1 {
@@ -138,7 +162,7 @@ h1 {
 .card-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 2em;
   justify-content: center;
 }
 
@@ -207,12 +231,25 @@ h1 {
   border: none;
   padding: 12px 24px;
   cursor: pointer;
-  display: block;
-  margin: 20px auto;
+  display: flex;
+  margin: 2em 0;
 }
 
 .add-button:hover {
   background-color: #c08102;
+}
+
+.add-selling-unit-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  margin: 4px;
+  cursor: pointer;
+}
+
+.add-selling-unit-button:hover {
+  background-color: #45a049;
 }
 
 </style>
