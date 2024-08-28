@@ -84,7 +84,7 @@ import { catchAxiosSuccess, catchAxiosError } from '@/services/Response'
 
 const props = defineProps({
   unit: {
-    type: Object,
+    type: [Object, String],
     default: null,
   },
 });
@@ -109,11 +109,18 @@ const removeSellingUnit = (index) => {
 
 const saveUnit = async () => {
   try {
-    // Submit Purchase Unit
-    const purchaseUnitResponse = await apiService.post('/purchase-units', {
-      purchase_unit_name: form.value.purchase_unit_name,
-    });
-    const purchaseUnitId = purchaseUnitResponse.data.id;
+    let purchaseUnitId;
+    
+    // If editing an existing purchase unit
+    if (props.unit && props.unit.id) {
+      purchaseUnitId = props.unit.id;
+    } else {
+      // Create a new purchase unit if it doesn't exist
+      const purchaseUnitResponse = await apiService.post('/purchase-units', {
+        purchase_unit_name: form.value.purchase_unit_name,
+      });
+      purchaseUnitId = purchaseUnitResponse.data.id;
+    }
 
     // Loop through Selling Units and submit each
     for (const sellingUnit of form.value.selling_units) {
@@ -134,22 +141,64 @@ const saveUnit = async () => {
 
     // Emit save event with the new data
     emit('save', { ...form.value });
-    catchAxiosSuccess(Response)
     closeModal();
     
   } catch (error) {
     console.error('Error saving unit:', error);
-    catchAxiosError(error)
+    catchAxiosError(error);
   }
 };
+
+
+// const saveUnit = async () => {
+//   try {
+//     // Submit Purchase Unit
+//     const purchaseUnitResponse = await apiService.post('/purchase-units', {
+//       purchase_unit_name: form.value.purchase_unit_name,
+//     });
+//     const purchaseUnitId = purchaseUnitResponse.data.id;
+
+//     // Loop through Selling Units and submit each
+//     for (const sellingUnit of form.value.selling_units) {
+//       const sellingUnitResponse = await apiService.post('/selling-units', {
+//         purchase_unit_id: purchaseUnitId,
+//         selling_unit_name: sellingUnit.selling_unit_name,
+//       });
+//       const sellingUnitId = sellingUnitResponse.data.id;
+
+//       // Loop through Selling Unit Capacities and submit each
+//       for (const capacity of sellingUnit.selling_unit_capacities) {
+//         await apiService.post('/selling-unit-capacities', {
+//           selling_unit_id: sellingUnitId,
+//           selling_unit_capacity: capacity.selling_unit_capacity,
+//         });
+//       }
+//     }
+
+//     // Emit save event with the new data
+//     emit('save', { ...form.value });
+//     catchAxiosSuccess(Response)
+//     closeModal();
+    
+//   } catch (error) {
+//     console.error('Error saving unit:', error);
+//     catchAxiosError(error)
+//   }
+// };
 
 const closeModal = () => {
   emit('close');
 };
 
 onMounted(() => {
-  if (props.unit) {
+  if (typeof props.unit === 'object' && props.unit !== null) {
     form.value = { ...props.unit };
+  } else {
+    // If unit is not an object, initialize the form correctly
+    form.value = {
+      purchase_unit_name: '',
+      selling_units: [],
+    };
   }
 });
 </script>
