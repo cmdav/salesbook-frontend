@@ -25,7 +25,7 @@
       </div>
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
         <div class="mb-3 flex flex-col w-full">
-          <AuthInput label="Date of Birth (Optional)"  type="text" placeholder="Enter Address"
+          <AuthInput label="Date of Birth (Optional)"  type="text" placeholder="Enter DOB"
             v-model="dob" :max="minDate" :errorsMsg="dobErrorMsg" />
         </div>
         <div class="mb-3 flex flex-col w-full">
