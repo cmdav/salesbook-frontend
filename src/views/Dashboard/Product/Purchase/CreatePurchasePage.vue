@@ -3,7 +3,10 @@
     <div class="container">
       <div class="top-buttons">
         <router-link to="/purchase" class="button back-btn">Back</router-link>
-        <button type="button" @click="addPurchase" class="button add-purchase-button">Add Purchase</button>
+        <div class="total-and-add">
+          <span class="total-cost-price">Total Cost Price: &#8358; {{ totalCostPrice }}</span>
+          <button type="button" @click="addPurchase" class="button add-purchase-button">Add Purchase</button>
+        </div>
       </div>
       <div v-if="isLoading" class="loading-icon">Loading...</div>
       <form v-else @submit.prevent="handleSubmit">
@@ -34,48 +37,42 @@
               </select>
             </div>
             <div>
-              <label for="cost_price">Purchase Unit<span class="required"></span></label>
-              <input type="number" v-model="purchase.container_qty" maxlength="9" />
-              
+              <label for="purchase_unit_name">Purchase Unit <span class="required">*</span></label>
+              <input type="text" v-model="purchase.purchase_unit_name" class="short-input" readonly />
             </div>
-            <div>
-              <label for="cost_price">Purchase Qty<span class="required">*</span></label>
-              <input type="number" v-model="purchase.capacity_qty" maxlength="9" />
-              
-            </div>
-            <div class="form-row">
             <div>
               <label for="cost_price">Cost Price <span class="required">*</span></label>
-              <input type="number" v-model="purchase.cost_price" maxlength="9" required />
-              <label class="priceView"> &#8358; {{ purchase.cost_price ?
-                parseFloat(purchase.cost_price).toLocaleString() :
-                '0.00' }}</label>
+              <div class="tooltip-container">
+                <input type="number" v-model="purchase.cost_price" maxlength="9" @mouseover="showTooltip" data-tooltip="Enter the cost price per item" required />
+                <span class="tooltip">Enter the cost price per item</span>
+              </div>
+              <label class="priceView">&#8358; {{ purchase.cost_price ? parseFloat(purchase.cost_price).toLocaleString() : '0.00' }}</label>
             </div>
             <div>
               <label for="selling_price">Selling Price <span class="required">*</span></label>
-              <input type="number" v-model="purchase.selling_price" @change="handleSellingPriceChange(index)"
-                maxlength="9" required />
-              <label class="priceView"> &#8358; {{ purchase.selling_price ?
-                parseFloat(purchase.selling_price).toLocaleString() :
-                '0.00' }}</label>
+              <div class="tooltip-container">
+                <input type="number" v-model="purchase.selling_price" @change="handleSellingPriceChange(index)"
+                  maxlength="9" @mouseover="showTooltip" data-tooltip="Enter the selling price per item" required />
+                <span class="tooltip">Enter the selling price per item</span>
+              </div>
+              <label class="priceView">&#8358; {{ purchase.selling_price ? parseFloat(purchase.selling_price).toLocaleString() : '0.00' }}</label>
             </div>
-            <!-- <div>
-              <label for="quantity">Qty <span class="required">*</span></label>
-              <input type="number" v-model="purchase.quantity" maxlength="5" required />
-            </div> -->
             <div>
-              <label for="product_identifier">Product Identifier</label>
-              <input type="text" v-model="purchase.product_identifier" />
+              <label for="purchase_qty">Purchase Qty <span class="required">*</span></label>
+              <input type="number" v-model="purchase.capacity_qty" maxlength="9" />
             </div>
             <div>
               <label for="expiry_date">Expiry Date</label>
               <input type="date" v-model="purchase.expiry_date" :min="minExpiryDate" class="expiry-date" />
             </div>
+            <div>
+              <label for="amount">Amount</label>
+              <span class="priceView">&#8358; {{ RowTotalCost(purchase).toLocaleString() }}</span>
+            </div>
             <input type="hidden" v-model="purchase.price_id" />
             <div v-if="index !== 0" class="remove-button">
               <button type="button" @click="removePurchase(index)" class="button remove-purchase-button">Remove</button>
             </div>
-          </div>
           </div>
           <hr class="separator" />
         </div>
@@ -86,24 +83,20 @@
 </template>
 
 <script setup>
-// Import necessary functions and components from Vue and other dependencies
 import { ref, reactive, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import apiService from '@/services/apiService';
-import { catchAxiosError, catchAxiosSuccess } from '@/services/Response';
+import { catchAxiosError } from '@/services/Response';
 
-// Initialize the router for navigation
 const router = useRouter();
 
-// Reactive variables for data and state
 const suppliers = ref([]);
 const productTypes = ref([]);
 const batchNo = ref('');
 const isLoading = ref(false);
 const error = ref(null);
-const isSubmitting = ref(false); 
+const isSubmitting = ref(false);
 
-// Reactive variable for purchases array
 const purchases = reactive([
   {
     supplier_id: '',
@@ -112,29 +105,29 @@ const purchases = reactive([
     cost_price: '',
     selling_price: '',
     batch_no: '',
-    //quantity: '',
     product_identifier: '',
     expiry_date: '',
-    container_qty: '',
+    purchase_unit_name: '',
     capacity_qty: '',
-    original_selling_price: null 
+    original_selling_price: null
   }
 ]);
 
-// Set minimum expiry date to today's date
 const minExpiryDate = new Date().toISOString().split('T')[0];
 
-// Function to fetch data from the API
+const totalCostPrice = ref(0);
+const tooltipMessage = ref('');
+const tooltipVisible = ref(false);
+
 const fetchData = async () => {
   try {
-    isLoading.value = true; // Set loading state to true
+    isLoading.value = true;
     const [suppliersResponse, productTypesResponse, lastBatchNumberResponse] = await Promise.all([
       apiService.get('all-suppliers'),
       apiService.get('all-product-type'),
       apiService.get('last-batch-number'),
     ]);
 
-    // Handle suppliers response
     if (suppliersResponse.data) {
       suppliers.value = suppliersResponse.data;
       purchases[0].supplier_id = suppliers.value[0].id;
@@ -142,14 +135,12 @@ const fetchData = async () => {
       error.value = 'No suppliers found';
     }
 
-    // Handle product types response
     if (productTypesResponse.data) {
       productTypes.value = productTypesResponse.data;
     } else {
       error.value = 'No product types found';
     }
-    console.log(lastBatchNumberResponse.data)
-    // Handle last batch number response
+
     if (lastBatchNumberResponse.data) {
       const lastBatchNo = lastBatchNumberResponse.data;
       batchNo.value = String(lastBatchNo).padStart(5, '0');
@@ -159,26 +150,34 @@ const fetchData = async () => {
       purchases.forEach(purchase => purchase.batch_no = batchNo.value);
     }
   } catch (err) {
-    catchAxiosError(err); // Handle error
+    catchAxiosError(err);
   } finally {
-    isLoading.value = false; // Set loading state to false
+    isLoading.value = false;
   }
 };
 
-// Function to handle supplier change and fetch latest supplier price
 const handleSupplierChange = async (index) => {
   const purchase = purchases[index];
   if (!purchase.product_type_id || !purchase.supplier_id) {
     catchAxiosError({ message: 'Please select both supplier and product type.' });
     return;
   }
+
+  // Retrieve the purchase unit name from the productTypes array
+  const productType = productTypes.value.find(pt => pt.id === purchase.product_type_id);
+  if (productType) {
+    purchase.purchase_unit_name = productType.purchase_unit_name;
+  } else {
+    purchase.purchase_unit_name = '';
+  }
+
   try {
-    const response = await apiService.get(`latest-supplier-price/${purchase.product_type_id}/${purchase.supplier_id}`);
-    if (response.data) {
-      purchase.price_id = response.data.id;
-      purchase.cost_price = response.data.cost_price;
-      purchase.selling_price = response.data.selling_price;
-      purchase.original_selling_price = response.data.selling_price; // Track the original selling price
+    const priceData = await apiService.get(`latest-supplier-price/${purchase.product_type_id}/${purchase.supplier_id}`);
+    if (priceData.data) {
+      purchase.price_id = priceData.data.id;
+      purchase.cost_price = priceData.data.cost_price || '';
+      purchase.selling_price = priceData.data.selling_price || '';
+      purchase.original_selling_price = priceData.data.selling_price || null;
     } else {
       purchase.price_id = '';
       purchase.cost_price = '';
@@ -186,26 +185,25 @@ const handleSupplierChange = async (index) => {
       purchase.original_selling_price = null;
     }
   } catch (err) {
-    catchAxiosError(err); // Handle error
+    catchAxiosError(err);
   }
 };
 
-// Function to add a new purchase row
+
 const addPurchase = () => {
   const lastPurchase = purchases[purchases.length - 1];
-  if (lastPurchase.supplier_id && lastPurchase.product_type_id  && lastPurchase.cost_price && lastPurchase.selling_price) {
+  if (lastPurchase.supplier_id && lastPurchase.product_type_id && lastPurchase.cost_price && lastPurchase.selling_price) {
     purchases.push({
       supplier_id: suppliers.value.length > 0 ? suppliers.value[0].id : '',
       product_type_id: '',
       price_id: '',
       cost_price: '',
-      // container_qty: '',
       capacity_qty: '',
       selling_price: '',
       batch_no: batchNo.value,
-      //quantity: '',
       product_identifier: '',
       expiry_date: '',
+      purchase_unit_name: '',
       original_selling_price: null
     });
   } else {
@@ -213,30 +211,28 @@ const addPurchase = () => {
   }
 };
 
-// Function to remove a purchase row
 const removePurchase = (index) => {
   purchases.splice(index, 1);
+  calculateTotalCost();
 };
 
-// Function to check for duplicate purchases
 const isDuplicatePurchase = (supplier_id, product_type_id) => {
   return purchases.some(purchase => purchase.supplier_id === supplier_id && purchase.product_type_id === product_type_id);
 };
 
-// Watcher to track changes in selling price
 watch(
   purchases,
   (newPurchases) => {
     newPurchases.forEach((purchase) => {
       if (purchase.selling_price !== purchase.original_selling_price) {
-        purchase.price_id = ''; // Clear the price_id if selling price changes
+        purchase.price_id = '';
       }
     });
+    calculateTotalCost();
   },
   { deep: true }
 );
 
-// Function to handle selling price change
 const handleSellingPriceChange = (index) => {
   const purchase = purchases[index];
   if (purchase.selling_price < purchase.cost_price) {
@@ -245,41 +241,51 @@ const handleSellingPriceChange = (index) => {
   }
 };
 
-// Function to handle form submission
+const calculateTotalCost = () => {
+  totalCostPrice.value = purchases.reduce((acc, purchase) => {
+    return acc + RowTotalCost(purchase);
+  }, 0);
+};
+
+const RowTotalCost = (purchase) => {
+  return parseFloat(purchase.cost_price || 0) * parseFloat(purchase.capacity_qty || 1);
+};
+
 const handleSubmit = async () => {
-  // Remove last row if not completely filled
   const lastPurchase = purchases[purchases.length - 1];
   if (!lastPurchase.supplier_id || !lastPurchase.product_type_id || !lastPurchase.cost_price || !lastPurchase.selling_price) {
     purchases.pop();
   }
 
-  // Handle form submission
   try {
-    isSubmitting.value = true; 
+    isSubmitting.value = true;
     const formattedPurchases = purchases.map(purchase => {
       if (purchase.price_id && purchase.selling_price === purchase.original_selling_price) {
         return {
           ...purchase,
-          cost_price: undefined, 
-          selling_price: undefined 
+          cost_price: undefined,
+          selling_price: undefined
         };
       } else {
-        
         return {
           ...purchase,
-          price_id: undefined 
+          price_id: undefined
         };
       }
     });
 
-    const response = await apiService.post('purchases', { purchases: formattedPurchases });
-    catchAxiosSuccess(response);
-    router.push('/purchase'); 
+    await apiService.post('purchases', { purchases: formattedPurchases });
+    router.push('/purchase');
   } catch (err) {
-    catchAxiosError(err); 
+    catchAxiosError(err);
   } finally {
-    isSubmitting.value = false; 
+    isSubmitting.value = false;
   }
+};
+
+const showTooltip = (event) => {
+  tooltipMessage.value = event.target.dataset.tooltip;
+  tooltipVisible.value = true;
 };
 
 onMounted(() => {
@@ -298,6 +304,17 @@ onMounted(() => {
   margin-bottom: 20px;
 }
 
+.total-and-add {
+  display: flex;
+  align-items: center;
+}
+
+.total-cost-price {
+  margin-right: 10px;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
 .batch-container {
   display: flex;
   width: 100%;
@@ -307,7 +324,6 @@ onMounted(() => {
 
 .batch-container input {
   width: 50%;
-  /* margin-right: 10px; */
   margin: 0 1em;
 }
 
@@ -333,11 +349,15 @@ label {
 input,
 select {
   display: block;
-  width: 100%;
+  width: auto;
   margin-bottom: 10px;
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+.short-input {
+  width: 150px;
 }
 
 input[type="number"] {
@@ -438,5 +458,34 @@ button {
 
 .remove-purchase-button:hover {
   background-color: #c9302c;
+}
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tooltip {
+  visibility: hidden;
+  width: 200px;
+  background-color: #000;
+  color: #fff;
+  text-align: center;
+  padding: 5px;
+  border-radius: 4px;
+
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -100px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip-container:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
 }
 </style>

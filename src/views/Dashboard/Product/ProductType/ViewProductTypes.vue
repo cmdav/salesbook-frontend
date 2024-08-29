@@ -173,7 +173,7 @@ watch(search, async (newSearch) => {
   if (newSearch) {
     isSearching.value = true
     try {
-      const response = await apiService.get(`search-products/${newSearch}`)
+      const response = await apiService.get(`search-product-types/${newSearch}`)
       data.value = response
       return data.value
     } catch (error) {

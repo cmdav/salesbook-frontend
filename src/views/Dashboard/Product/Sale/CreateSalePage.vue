@@ -179,7 +179,7 @@ import { useCustomerstore } from '@/stores/customers';
 import CustomerFormModal from '@/components/UI/Modal/CustomerFormModal.vue';
 import ReceiptModal from '@/components/UI/Modal/ReceiptModal.vue';
 import { storeToRefs } from 'pinia';
-import { generateReceiptPDF } from './receipts';
+import { generateReceiptPDF } from './sentToPrinter';
 import { catchAxiosError, catchAxiosSuccess } from '@/services/Response';
 
 const router = useRouter();
