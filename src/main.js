@@ -11,32 +11,17 @@ import 'vue-tel-input/vue-tel-input.css'
 import Toast, { POSITION, useToast } from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
 import { VueQueryPlugin } from 'vue-query'
-import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
+import DashboardLayout from '@/components/Layouts/dashboardLayout.vue'
 import AngleRight from '@/components/icons/AngleRight.vue'
 import CenteredModalLarge from '@/components/UI/CenteredModalLarge.vue'
 import Loader from '@/components/UI/Loader.vue'
 import CloudUploadIcon from '@/components/icons/cloudUploadIcon.vue'
-import { registerSW } from 'virtual:pwa-register';
-import syncData from '@/utils/sync';
+import syncData from '@/utils/sync'
 
 const app = createApp(App)
 
-app.use(Toast, { position: POSITION.TOP_RIGHT });
-const toast = useToast();
-
-const updateSW = registerSW({
-    onNeedRefresh() {
-      if (confirm('New content is available. Refresh?')) {
-        updateSW(true); 
-      }
-    },
-    onOfflineReady() {
-      console.log('App is ready to work offline.');
-      toast.info('Ready for work offline mode')
-    },
-  });
-
-
+app.use(Toast, { position: POSITION.TOP_RIGHT })
+const toast = useToast()
 
 app.use(createPinia())
 app.use(router)
@@ -50,6 +35,6 @@ app.use(VueTelInput)
 app.use(Toast, { position: POSITION.TOP_RIGHT })
 app.use(VueQueryPlugin)
 
-syncData();
+syncData()
 
 app.mount('#app')
