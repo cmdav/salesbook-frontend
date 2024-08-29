@@ -6,6 +6,7 @@
       </div>
 
       <form @submit.prevent="addSales">
+        <!-- Radio buttons for sending receipt -->
         <div class="form-group">
           <span class="font-medium text-gray-700">Send Receipt To Email:</span>
           <label class="radio-label">
@@ -18,6 +19,7 @@
           </label>
         </div>
 
+        <!-- Customer selection if sending receipt -->
         <div v-if="printReceipt === 'yes'" class="form-group flex items-center">
           <div class="flex-grow">
             <select v-model="formState.customer_id" class="select-input">
@@ -31,53 +33,38 @@
           </button>
         </div>
 
+        <!-- Payment method selection -->
         <div class="form-group">
           <label class="block text-sm font-medium text-gray-700">Payment method</label>
           <select required v-model="formState.payment_method" class="select-input">
-            <option
-              v-for="option in [
-                { value: 'cash', label: 'Cash' },
-                { value: 'pos', label: 'Pos' },
-                { value: 'bank-transfer', label: 'Bank Transfer' }
-              ]"
-              :key="option.value"
-              :value="option.value"
-            >
+            <option v-for="option in paymentMethods" :key="option.value" :value="option.value">
               {{ option.label }}
             </option>
           </select>
         </div>
 
+        <!-- Product list with dynamic inputs -->
         <div class="my-8">
           <div class="form-group flex justify-end">
             <span class="font-medium text-gray-700">
               Total Price: <span v-html="'&#8358;'"></span> {{ totalPrice }}
             </span>
-            <button
-              type="button"
-              @click="addProducts"
-              class="button btn-brand !bg-brand/[20%] !text-black !px-3 ml-4"
-            >
+            <button type="button" @click="addProducts" class="button btn-brand !bg-brand/[20%] !text-black !px-3 ml-4">
               Add product
             </button>
           </div>
 
+          <!-- Loop through products -->
           <div
             v-for="(product, index) in formState.products"
             :key="index"
             class="product-group flex items-end mt-4"
           >
+            <!-- Product Type Select -->
             <div class="input-group">
               <label class="block text-sm font-medium text-gray-700">Product</label>
-              <select 
-                v-model="formState.products[index].product_type_id" 
-                class="select-input" 
-                @change="handleProductTypeSelect(index)">
-                <option 
-                  v-for="name in data" 
-                  :key="name.id" 
-                  :value="name.id" 
-                  :disabled="isProductSelected(name.id)">
+              <select v-model="formState.products[index].product_type_id" class="select-input" @change="handleProductTypeSelect(index)">
+                <option v-for="name in data" :key="name.id" :value="name.id" :disabled="isProductSelected(name.id)">
                   {{ name.product_type_name }}
                 </option>
               </select>
@@ -134,7 +121,18 @@
               >
             </div>
 
-            <!-- Display the calculated amount for the product -->
+            <!-- Selling Unit -->
+            <div class="input-group w-20">
+              <label class="block text-sm font-medium text-gray-700">Selling Unit</label>
+              <input
+                type="text"
+                v-model="formState.products[index].selling_unit_name"
+                class="input readonly-input"
+                readonly
+              />
+            </div>
+
+            <!-- Amount -->
             <div class="input-group flex-1">
               <label class="block text-sm font-medium text-gray-700">Amount</label>
               <span>
@@ -146,7 +144,7 @@
               </span>
             </div>
 
-            <!-- Remove button for each product row except the first one -->
+            <!-- Remove button for each product row -->
             <div class="input-group">
               <button
                 v-if="index >= 0"
@@ -160,12 +158,14 @@
           </div>
         </div>
 
+        <!-- Submit button -->
         <button type="submit" class="button submit-button" :disabled="isSubmitting">
           {{ isSubmitting ? 'Submitting...' : 'Submit' }}
         </button>
       </form>
     </div>
 
+    <!-- Customer and Receipt Modals -->
     <CustomerFormModal v-if="showModal" @close="closeModal" />
     <ReceiptModal v-if="showReceiptModal" @close="handleReceiptChoice" />
   </DashboardLayout>
@@ -187,8 +187,8 @@ const customersStore = useCustomerstore();
 
 const barcodeInputRefs = ref([]);
 const data = ref([]);
-const totalPrice = ref(0); // Initialize totalPrice with 0
-const res = ref(null); // Use ref instead of this.res
+const totalPrice = ref(0);
+const res = ref(null);
 
 const { allCustomersNames } = storeToRefs(customersStore);
 
@@ -236,6 +236,7 @@ const formState = reactive({
       product_type_id: '',
       barcode: '',
       selling_price: '',
+      selling_unit_name: '', // Add selling_unit_name field
       quantity_sold: 1,
       amount: '',
       vat: 'no'
@@ -247,6 +248,7 @@ const populateProductDetails = (index, product) => {
   formState.products[index].product_type_id = product.id;
   formState.products[index].barcode = product.barcode;
   formState.products[index].selling_price = product.selling_price;
+  formState.products[index].selling_unit_name = product.selling_unit_name; // Populate selling unit
   formState.products[index].vat = product.vat.toLowerCase();
   formState.products[index].amount = calculateAmountWithVat(
     formState.products[index].selling_price,
@@ -300,6 +302,7 @@ const addProducts = () => {
       product_type_id: '',
       barcode: '',
       selling_price: '',
+      selling_unit_name: '', // Ensure new product object has selling_unit_name field
       quantity_sold: 1,
       amount: '',
       vat: 'no'
@@ -320,7 +323,6 @@ const removeProduct = (index) => {
 const handleBarcodeEnter = (index) => {
   const product = data.value.find((p) => p.barcode === formState.products[index].barcode);
 
-  // Prevent duplicate barcode entries
   if (isDuplicateBarcode(formState.products[index].barcode)) {
     alert("This barcode has already been scanned.");
     formState.products[index].barcode = ''; // Clear the duplicate barcode
@@ -341,7 +343,6 @@ const handleProductTypeSelect = (index) => {
 };
 
 const checkQuantitySold = (index) => {
-  // Assuming `product.quantity_available` is available somewhere in your data
   const product = data.value.find(p => p.id === formState.products[index].product_type_id);
   
   if (product && formState.products[index].quantity_sold > product.quantity_available) {
@@ -416,6 +417,7 @@ const resetForm = () => {
       product_type_id: '',
       barcode: '',
       selling_price: '',
+      selling_unit_name: '', // Reset selling_unit_name in the form
       quantity_sold: 1,
       amount: '',
       vat: 'no'
@@ -423,6 +425,12 @@ const resetForm = () => {
   ];
   nextTick(() => focusBarcodeInput());
 };
+
+const paymentMethods = [
+  { value: 'cash', label: 'Cash' },
+  { value: 'pos', label: 'Pos' },
+  { value: 'bank-transfer', label: 'Bank Transfer' }
+];
 </script>
 
 <style scoped>
