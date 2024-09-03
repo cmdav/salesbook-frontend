@@ -14,7 +14,7 @@
           <button class="add-button" @click="openUploadModal()">Upload Purchase Units</button>
           <button class="add-button" @click="openCreateModal">Add New Purchase Unit</button>
         </div> -->
-        <div class="card-grid">
+        <div class="card-grid" v-if="purchaseUnits.length > 0">
           <div v-for="purchaseUnit in purchaseUnits" :key="purchaseUnit.id" class="purchase-card">
             <div class="purchase-card-header">
               <h4 class="text-2xl font-semibold">
@@ -73,6 +73,10 @@
             </div>
           </div>
         </div>
+
+        <div v-else>
+  <p class="text-center">No purchase units found.</p>
+</div>
 
 
         <div v-if="!isSearching" class="mx-auto w-fit my-5">
@@ -158,6 +162,7 @@ const totalPages = ref(0)
 const showUploadModal = ref(false)
 const search = ref('')
 const isSearching = ref(false)
+const errorMessage = ref('')
 
 const fetchPurchaseUnits = async (page = 1) => {
   try {
@@ -236,14 +241,24 @@ watch(search, async (newSearch) => {
     isSearching.value = true
     try {
       const response = await apiService.get(`search-purchase-units?search=${newSearch}`)
-      purchaseUnits.value = response.data
+      if (response.data.length > 0) {
+        purchaseUnits.value = response.data;
+      } else {
+        purchaseUnits.value = [];
+        errorMessage.value = response.data.message || 'No purchase units found for the search term.';
+      }
       console.log(response.data)
       return purchaseUnits.value
     } catch (error) {
-      console.error('Failed to fetch data:', error.message)
+      console.error('Failed to fetch data:', error.message);
+      purchaseUnits.value = [];
+      errorMessage.value = 'Error occurred while searching for purchase units.';
+    } finally {
+      isSearching.value = false;
     }
   } else {
-    isSearching.value = false
+    isSearching.value = false;
+    errorMessage.value = '';
     fetchPurchaseUnits(currentPage.value)
   }
 })

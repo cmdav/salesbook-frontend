@@ -188,14 +188,26 @@ watch(search, async (newSearch) => {
     isSearching.value = true
     try {
       const response = await apiService.get(`search-product-types/${newSearch}`)
-      data.value = response
+      console.log(response.data)
+      if(response.data.length>0){
+      data.value = response.data
       return data.value
+      }else {
+        data.value= [];
+        errorMessage.value = response.data.message || 'No Product found'
+      }
+      
     } catch (error) {
       console.error('Failed to fetch data:', error)
+      data.value = [];
+      errorMessage.value = 'Error Occur while searching products'
+    } finally {
+      isSearching.value = false
     }
   } else {
-    isSearching.value = false
-    fetchData()
+    isSearching.value = false;
+    errorMessage.value = '';
+    fetchData(currentPage.value)
   }
 })
 
