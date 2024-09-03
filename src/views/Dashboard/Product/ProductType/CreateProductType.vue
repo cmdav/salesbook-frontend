@@ -8,7 +8,7 @@
 
       <!-- Form for adding a new sale -->
       <form @submit.prevent="handleSubmit">
-        <div class="input-group w-[70%]">
+        <!-- <div class="input-group w-[70%]">
           <label class="block text-sm font-medium text-gray-700">Product</label>
           <select v-model="formState.product" class="select-input" required>
             <option selected>Select Product...</option>
@@ -16,10 +16,10 @@
               {{ product.product_name }}
             </option>
           </select>
-        </div>
+        </div> -->
 
         <div class="input-group w-[70%]">
-          <label class="block text-sm font-medium text-gray-700">Product Type Name</label>
+          <label class="block text-sm font-medium text-gray-700">Product Name</label>
           <input
             v-model="formState.productTypeName"
             required
@@ -31,7 +31,7 @@
         </div>
 
         <div class="input-group w-[70%]">
-          <label class="block text-sm font-medium text-gray-700">Product Type Image</label>
+          <label class="block text-sm font-medium text-gray-700">Product Image</label>
           <input ref="fileInput" type="file" @change="handleImageChange" />
           <img
             v-if="newImage"
@@ -42,7 +42,7 @@
         </div>
 
         <div class="input-group w-[70%]">
-          <label class="block text-sm font-medium text-gray-700">Product Type Description</label>
+          <label class="block text-sm font-medium text-gray-700">Product Description</label>
           <input
             v-model="formState.productTypeDescription"
             required
@@ -74,6 +74,48 @@
         >
           Edit Barcode
         </button>
+
+        <div>
+  <label>VAT</label>
+  <div>
+    <input
+      type="radio"
+      id="vatYes"
+      value="1"
+      v-model="formState.vat"
+    />
+    <label for="vatYes">Yes</label>
+  </div>
+  <div>
+    <input
+      type="radio"
+      id="vatNo"
+      value="0"
+      v-model="formState.vat"
+    />
+    <label for="vatNo">No</label>
+  </div>
+</div>
+
+        <div class="input-group w-[70%]">
+          <label class="block text-sm font-medium text-gray-700">Product Category</label>
+          <select v-model="formState.category" @change="fetchSubCategory(formState.category)" class="select-input" required>
+            <option selected>Select Category...</option>
+            <option v-for="category in categories" :key="category.id" :value="category.id">
+              {{ category.category_name }}
+            </option>
+          </select>
+        </div>
+
+         <div class="input-group w-[70%]">
+          <label class="block text-sm font-medium text-gray-700">Product Subcategory</label>
+          <select v-model="formState.sub_category" class="select-input" required>
+            <option selected>Select Subcategory...</option>
+            <option v-for="subCategory in subCategories" :key="subCategory.id" :value="subCategory.id">
+              {{ subCategory.sub_category_name }}
+            </option>
+          </select>
+        </div>
 
         <div class="input-group w-full">
           <label class="block text-sm font-medium text-gray-700">Select Purchase Unit 
@@ -217,19 +259,21 @@ const formState = reactive({
   barcode: '',
   category: '',
   sub_category: '',
-  vat: 'yes',
+  vat: '1',
   selling_unit: '',
   selling_unit_cty: '',
   purchaseUnit: '', // Now using formState.purchaseUnit
   // other form states...
 })
 
-const products = ref([])
+// const products = ref([])
 const purchaseUnit = ref([])
 const sellingUnit = ref([])
 const sellingCapacity = ref([])
 const selectedSellingUnit = ref(null)
 const selectedSellingCapacity = ref(null)
+const categories = ref([])
+const subCategories = ref([])
 
 const handleBarcodeEntry = (event) => {
   const newBarcode = event.target.value.trim()
@@ -289,10 +333,33 @@ const handleSellingCapacity = (newCapacity) => {
   selectedSellingCapacity.value = newCapacity.id
 }
 
-const fetchProducts = async () => {
+// const fetchProducts = async () => {
+//   try {
+//     const response = await apiService.get('/all-products')
+//     products.value = response
+//   } catch (error) {
+//     catchAxiosError(error)
+//     console.error('Error fetching products:', error)
+//   }
+// }
+const fetchCategory = async () => {
   try {
-    const response = await apiService.get('/all-products')
-    products.value = response
+    const response = await apiService.get('/product-categories')
+    categories.value = response
+    // console.log('Hello Bro');
+    console.log(response);
+  } catch (error) {
+    catchAxiosError(error)
+    console.error('Error fetching products:', error)
+  }
+}
+
+const fetchSubCategory = async (categoryId) => {
+  try {
+    const response = await apiService.get(`/all-product-sub-categories-by-category-id/${categoryId}`)
+    subCategories.value = response
+    // console.log('Hello Bro');
+    console.log(response);
   } catch (error) {
     catchAxiosError(error)
     console.error('Error fetching products:', error)
@@ -343,7 +410,9 @@ const handleImageChange = (event) => {
 }
 
 onMounted(async () => {
-  await fetchProducts()
+  // await fetchProducts()
+  await fetchCategory()
+  await fetchSubCategory()
   await fetchPurchasingUnit()
 })
 
@@ -351,13 +420,16 @@ const handleSubmit = async () => {
   isSubmitting.value = true
 
   const formData = new FormData()
-  formData.append('product_id', formState.product)
+  // formData.append('product_id', formState.product)
   formData.append('product_type_name', formState.productTypeName)
   if (formState.productTypeImage) {
     formData.append('product_type_image', formState.productTypeImage)
   }
   formData.append('product_type_description', formState.productTypeDescription)
   formData.append('barcode', formState.barcode)
+  formData.append('category_id', formState.category)
+  formData.append('vat', formState.vat)
+  formData.append('sub_category_id', formState.sub_category)
   formData.append('selling_unit_id', selectedSellingUnit.value)
   formData.append('selling_unit_capacity_id', selectedSellingCapacity.value)
   formData.append('purchase_unit_id', formState.purchaseUnit)
