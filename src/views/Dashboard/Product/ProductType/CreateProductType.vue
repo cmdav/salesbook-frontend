@@ -156,17 +156,18 @@
           </label>
           <div class="flex">
             <div class="w-[70%]">
-              <select
-                v-model="selectedSellingUnit"
-                class="select-input"
-                @change="fetchSellingCapacities(selectedSellingUnit)"
-              >
-                <option selected>Select Selling Unit...</option>
-                <option v-for="unit in sellingUnit" :key="unit.id" :value="unit.id">
-                  {{ unit.selling_unit_name }}
-                </option>
-              </select>
-            </div>
+  <select
+    v-model="formState.sellingUnit"
+    class="select-input"
+    @change="fetchSellingCapacities(formState.sellingUnit)" 
+  >
+    <option selected>Select Selling Unit...</option>
+    <option v-for="unit in sellingUnit" :key="unit.id" :value="unit.id">
+      {{ unit.selling_unit_name }}
+    </option>
+  </select>
+</div>
+
             <button type="button" class="button btn-brand ml-4" @click="addSellingUnit(formState.purchaseUnit)">
               Add Selling Unit
             </button>
@@ -263,6 +264,7 @@ const formState = reactive({
   selling_unit: '',
   selling_unit_cty: '',
   purchaseUnit: '', // Now using formState.purchaseUnit
+  sellingUnit: '',
   // other form states...
 })
 
@@ -276,21 +278,26 @@ const categories = ref([])
 const subCategories = ref([])
 
 const handleBarcodeEntry = (event) => {
-  const newBarcode = event.target.value.trim()
+  const newBarcode = event.target.value.trim();
 
-  if (newBarcode !== lastScannedBarcode.value) {
-    formState.barcode = newBarcode
-    lastScannedBarcode.value = newBarcode
-    isBarcodeReadonly.value = true
+  // Allows any barcode after clearing the previous one
+
+  if (newBarcode !== lastScannedBarcode.value || !newBarcode) {
+    formState.barcode = newBarcode;
+    lastScannedBarcode.value = newBarcode;
+    isBarcodeReadonly.value = true;
   }
 
-  barcodeInput.value.value = ''
-}
+  // Resets the input field after setting the barcode
+  barcodeInput.value.value = '';
+};
 
 const clearBarcode = () => {
-  formState.barcode = ''
-  isBarcodeReadonly.value = false
-}
+  formState.barcode = '';
+  isBarcodeReadonly.value = false;
+  lastScannedBarcode.value = ''; // Clear the last scanned barcode to allow re-entry of the same barcode
+};
+
 
 const addPurchaseUnit = () => {
   showModal.value = true
@@ -417,14 +424,21 @@ onMounted(async () => {
 })
 
 const handleSubmit = async () => {
-  isSubmitting.value = true
+  isSubmitting.value = true;
 
+<<<<<<< HEAD
   const formData = new FormData()
   // formData.append('product_id', formState.product)
   formData.append('product_type_name', formState.productTypeName)
+=======
+  const formData = new FormData();
+  formData.append('product_id', formState.product);
+  formData.append('product_type_name', formState.productTypeName);
+>>>>>>> 861852716a439ba3e55bd670db0937e9796f047d
   if (formState.productTypeImage) {
-    formData.append('product_type_image', formState.productTypeImage)
+    formData.append('product_type_image', formState.productTypeImage);
   }
+<<<<<<< HEAD
   formData.append('product_type_description', formState.productTypeDescription)
   formData.append('barcode', formState.barcode)
   formData.append('category_id', formState.category)
@@ -433,20 +447,28 @@ const handleSubmit = async () => {
   formData.append('selling_unit_id', selectedSellingUnit.value)
   formData.append('selling_unit_capacity_id', selectedSellingCapacity.value)
   formData.append('purchase_unit_id', formState.purchaseUnit)
+=======
+  formData.append('product_type_description', formState.productTypeDescription);
+  formData.append('barcode', formState.barcode);
+  formData.append('selling_unit_capacity_id', selectedSellingCapacity.value);
+  formData.append('purchase_unit_id', formState.purchaseUnit);
+  formData.append('selling_unit_id', formState.sellingUnit); // Add selling_unit_id here
+>>>>>>> 861852716a439ba3e55bd670db0937e9796f047d
 
   try {
-    const res = await apiService.post('/product-types', formData)
-    router.push('/product-type')
+    const res = await apiService.post('/product-types', formData);
+    router.push('/product-type');
 
-    catchAxiosSuccess(res)
-    return res
+    catchAxiosSuccess(res);
+    return res;
   } catch (error) {
-    catchAxiosError(error)
-    console.error('Error submitting form:', error)
+    catchAxiosError(error);
+    console.error('Error submitting form:', error);
   } finally {
-    isSubmitting.value = false
+    isSubmitting.value = false;
   }
-}
+};
+
 </script>
 
 <style scoped>
