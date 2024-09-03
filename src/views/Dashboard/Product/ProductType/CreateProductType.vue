@@ -25,7 +25,7 @@
             required
             type="text"
             class="input"
-            placeholder="Enter Product Type Name"
+            placeholder="Enter Product Name"
             @keypress="preventSubmitOnEnter"
           />
         </div>
@@ -47,7 +47,7 @@
             v-model="formState.productTypeDescription"
             required
             type="text"
-            placeholder="Enter Product Type Description"
+            placeholder="Enter Product Description"
             class="input"
             @keypress="preventSubmitOnEnter"
           />
@@ -66,40 +66,37 @@
         </div>
 
         <!-- Conditionally render the edit button -->
-        <button 
-          v-if="isBarcodeReadonly" 
-          type="button" 
-          class="button edit-button" 
+        <button
+          v-if="isBarcodeReadonly"
+          type="button"
+          class="button edit-button"
           @click="clearBarcode"
         >
           Edit Barcode
         </button>
 
         <div>
-  <label>VAT</label>
-  <div>
-    <input
-      type="radio"
-      id="vatYes"
-      value="1"
-      v-model="formState.vat"
-    />
-    <label for="vatYes">Yes</label>
-  </div>
-  <div>
-    <input
-      type="radio"
-      id="vatNo"
-      value="0"
-      v-model="formState.vat"
-    />
-    <label for="vatNo">No</label>
-  </div>
-</div>
+          <label>VAT</label>
+          <div class="option">
+            <div>
+              <input type="radio" id="vatYes" value="1" v-model="formState.vat" />
+              <label for="vatYes">Yes</label>
+            </div>
+            <div>
+              <input type="radio" id="vatNo" value="0" v-model="formState.vat" />
+              <label for="vatNo">No</label>
+            </div>
+          </div>
+        </div>
 
         <div class="input-group w-[70%]">
           <label class="block text-sm font-medium text-gray-700">Product Category</label>
-          <select v-model="formState.category" @change="fetchSubCategory(formState.category)" class="select-input" required>
+          <select
+            v-model="formState.category"
+            @change="fetchSubCategory(formState.category)"
+            class="select-input"
+            required
+          >
             <option selected>Select Category...</option>
             <option v-for="category in categories" :key="category.id" :value="category.id">
               {{ category.category_name }}
@@ -107,24 +104,38 @@
           </select>
         </div>
 
-         <div class="input-group w-[70%]">
+        <div class="input-group w-[70%]">
           <label class="block text-sm font-medium text-gray-700">Product Subcategory</label>
           <select v-model="formState.sub_category" class="select-input" required>
             <option selected>Select Subcategory...</option>
-            <option v-for="subCategory in subCategories" :key="subCategory.id" :value="subCategory.id">
+            <option
+              v-for="subCategory in subCategories"
+              :key="subCategory.id"
+              :value="subCategory.id"
+            >
               {{ subCategory.sub_category_name }}
             </option>
           </select>
         </div>
 
         <div class="input-group w-full">
-          <label class="block text-sm font-medium text-gray-700">Select Purchase Unit 
+          <label class="block text-sm font-medium text-gray-700"
+            >Select Purchase Unit
             <span class="tooltip-container">
-              <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="16" height="16" viewBox="0 0 24 24">
-                <path d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"></path>
-              </svg> 
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                x="0px"
+                y="0px"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"
+                ></path>
+              </svg>
               <span class="tooltip-text">What unit did you purchase this item?</span>
-            </span> 
+            </span>
           </label>
           <div class="flex">
             <div class="w-[70%]">
@@ -146,29 +157,43 @@
         </div>
 
         <div class="input-group w-full">
-          <label class="block text-sm font-medium text-gray-700">Select Selling Unit 
+          <label class="block text-sm font-medium text-gray-700"
+            >Select Selling Unit
             <span class="tooltip-container">
-              <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="16" height="16" viewBox="0 0 24 24">
-                <path d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 4 12 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"></path>
-              </svg> 
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                x="0px"
+                y="0px"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 4 12 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"
+                ></path>
+              </svg>
               <span class="tooltip-text">What unit will you sell this item?</span>
-            </span> 
+            </span>
           </label>
           <div class="flex">
             <div class="w-[70%]">
-  <select
-    v-model="formState.sellingUnit"
-    class="select-input"
-    @change="fetchSellingCapacities(formState.sellingUnit)" 
-  >
-    <option selected>Select Selling Unit...</option>
-    <option v-for="unit in sellingUnit" :key="unit.id" :value="unit.id">
-      {{ unit.selling_unit_name }}
-    </option>
-  </select>
-</div>
+              <select
+                v-model="formState.sellingUnit"
+                class="select-input"
+                @change="fetchSellingCapacities(formState.sellingUnit)"
+              >
+                <option selected>Select Selling Unit...</option>
+                <option v-for="unit in sellingUnit" :key="unit.id" :value="unit.id">
+                  {{ unit.selling_unit_name }}
+                </option>
+              </select>
+            </div>
 
-            <button type="button" class="button btn-brand ml-4" @click="addSellingUnit(formState.purchaseUnit)">
+            <button
+              type="button"
+              class="button btn-brand ml-4"
+              @click="addSellingUnit(formState.purchaseUnit)"
+            >
               Add Selling Unit
             </button>
           </div>
@@ -178,9 +203,18 @@
           <label class="block text-sm font-medium text-gray-700">
             How many selling unit equal a purchase unit
             <span class="tooltip-container">
-              <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="16" height="16" viewBox="0 0 24 24">
-                <path d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"></path>
-              </svg> 
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                x="0px"
+                y="0px"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"
+                ></path>
+              </svg>
               <span class="tooltip-text">E.g dozen = 12, one create = 30eggs...</span>
             </span>
           </label>
@@ -188,16 +222,16 @@
             <div class="w-[70%]">
               <select v-model="selectedSellingCapacity" class="select-input">
                 <option selected>Select Selling Unit ...</option>
-                <option
-                  v-for="capacity in sellingCapacity"
-                  :key="capacity.id"
-                  :value="capacity.id"
-                >
+                <option v-for="capacity in sellingCapacity" :key="capacity.id" :value="capacity.id">
                   {{ capacity.selling_unit_capacity }}
                 </option>
               </select>
             </div>
-            <button type="button" class="button btn-brand ml-4" @click="addSellingCapacity(selectedSellingUnit)">
+            <button
+              type="button"
+              class="button btn-brand ml-4"
+              @click="addSellingCapacity(selectedSellingUnit)"
+            >
               Add Unit Capacity
             </button>
           </div>
@@ -426,19 +460,12 @@ onMounted(async () => {
 const handleSubmit = async () => {
   isSubmitting.value = true;
 
-<<<<<<< HEAD
   const formData = new FormData()
   // formData.append('product_id', formState.product)
   formData.append('product_type_name', formState.productTypeName)
-=======
-  const formData = new FormData();
-  formData.append('product_id', formState.product);
-  formData.append('product_type_name', formState.productTypeName);
->>>>>>> 861852716a439ba3e55bd670db0937e9796f047d
   if (formState.productTypeImage) {
     formData.append('product_type_image', formState.productTypeImage);
   }
-<<<<<<< HEAD
   formData.append('product_type_description', formState.productTypeDescription)
   formData.append('barcode', formState.barcode)
   formData.append('category_id', formState.category)
@@ -447,13 +474,6 @@ const handleSubmit = async () => {
   formData.append('selling_unit_id', selectedSellingUnit.value)
   formData.append('selling_unit_capacity_id', selectedSellingCapacity.value)
   formData.append('purchase_unit_id', formState.purchaseUnit)
-=======
-  formData.append('product_type_description', formState.productTypeDescription);
-  formData.append('barcode', formState.barcode);
-  formData.append('selling_unit_capacity_id', selectedSellingCapacity.value);
-  formData.append('purchase_unit_id', formState.purchaseUnit);
-  formData.append('selling_unit_id', formState.sellingUnit); // Add selling_unit_id here
->>>>>>> 861852716a439ba3e55bd670db0937e9796f047d
 
   try {
     const res = await apiService.post('/product-types', formData);
@@ -468,7 +488,6 @@ const handleSubmit = async () => {
     isSubmitting.value = false;
   }
 };
-
 </script>
 
 <style scoped>
@@ -553,6 +572,16 @@ button {
 
 .btn-brand:hover:not(:disabled) {
   background-color: #5a6268;
+}
+.option{
+  display: flex;
+}
+.option div{
+  margin: 0.3em 0.5em 1em;
+}
+
+.option div input{
+  margin-right: 0.2em;
 }
 
 .back-btn {
