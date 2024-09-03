@@ -1,5 +1,5 @@
 <template>
-  <DashboardLayout pageTitle="Create Product Type">
+  <DashboardLayout pageTitle="Create Product">
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
       <!-- Navigation buttons at the top -->
       <div class="top-buttons">
@@ -215,7 +215,11 @@ const formState = reactive({
   productTypeImage: null,
   productTypeDescription: '',
   barcode: '',
+  category: '',
+  sub_category: '',
   vat: 'yes',
+  selling_unit: '',
+  selling_unit_cty: '',
   purchaseUnit: '', // Now using formState.purchaseUnit
   // other form states...
 })
@@ -354,6 +358,7 @@ const handleSubmit = async () => {
   }
   formData.append('product_type_description', formState.productTypeDescription)
   formData.append('barcode', formState.barcode)
+  formData.append('selling_unit_id', selectedSellingUnit.value)
   formData.append('selling_unit_capacity_id', selectedSellingCapacity.value)
   formData.append('purchase_unit_id', formState.purchaseUnit)
 

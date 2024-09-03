@@ -1,24 +1,28 @@
 <template>
-  <DashboardLayout pageTitle="Product Type Page">
+  <DashboardLayout pageTitle="Product Page">
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
-      
-        <!-- <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" /> -->
 
+      <!-- <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" /> -->
+      <div>
+        <button class="button upload-btn" @click="openUploadModal()">
+          Upload
+          <!-- <router-link to="/create-product-type" class="button add-btn">Add</router-link> -->
+        </button>
         <button class="button add-btn">
           <router-link to="/create-product-type" class="button add-btn">Add</router-link>
         </button>
-      
+      </div>
     </div>
     <div class="table-container">
       <table>
         <thead>
           <tr>
             <th>S.NO</th>
+            <!-- <th>PRODUCT NAME</th> -->
             <th>PRODUCT NAME</th>
-            <th>PRODUCT TYPE NAME</th>
-            <th>PRODUCT TYPE IMAGE</th>
-            <th>PRODUCT TYPE DESCRIPTION</th>
+            <th>PRODUCT IMAGE</th>
+            <th>PRODUCT DESCRIPTION</th>
             <th>PRODUCT CATEGORY</th>
             <th>PRODUCT SUB CATEGORY</th>
             <th>QUANTITY</th>
@@ -38,16 +42,21 @@
         <tbody>
           <tr v-for="(item, index) in data" :key="item.id">
             <td>{{ (parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1 }}</td>
-            <td>{{ item.product_name }}</td>
+            <!-- <td>{{ item.product_name }}</td> -->
             <td>{{ item.product_type_name }}</td>
             <!-- <td>{{ item.product_type_image }}</td> -->
-            <td><img class="w-10 h-10 bg-slate-500/[30%] rounded-lg mx-auto object-cover" :src="item.product_type_image"/></td>
+            <td>
+              <img
+                class="w-10 h-10 bg-slate-500/[30%] rounded-lg mx-auto object-cover"
+                :src="item.product_type_image"
+              />
+            </td>
             <td>{{ item.product_type_description }}</td>
             <td>{{ item.product_category }}</td>
             <td>{{ item.product_sub_category }}</td>
             <td>{{ item.quantity_available }}</td>
             <td>{{ item.vat }}</td>
-            
+
             <td>{{ item.selling_unit_name }}</td>
             <td>{{ item.selling_unit_capacity }}</td>
             <td>{{ item.purchasing_price }}</td>
@@ -60,12 +69,11 @@
             <td><button @click="openDeleteModal(item)">Delete</button></td>
           </tr>
         </tbody>
-
       </table>
       <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
     </div>
 
-     <!-- <EditModal
+    <!-- <EditModal
       v-if="showEditModal"
       @close="closeEditModal"
       @fetchDataForSubCategory="fetchDataForSubCategory"
@@ -75,6 +83,13 @@
       :isLoadingMsg="isOptionLoadingMsg"
       :url="product-types"
     /> -->
+    <UploadModal
+      v-if="showUploadModal"
+      @close="closeUploadModal"
+      @updated="forceRefresh"
+      :url="'/process-csv'"
+      type="Product"
+    />
 
     <DeleteModal
       v-if="showDeleteModal"
@@ -91,22 +106,23 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import apiService from '@/services/apiService';
-import DeleteModal from '@/components/UI/Modal/DeleteModals.vue';
+import { ref, onMounted, watch } from 'vue'
+import apiService from '@/services/apiService'
+import DeleteModal from '@/components/UI/Modal/DeleteModals.vue'
+import UploadModal from '@/components/UI/Modal/UploadModal.vue'
 // import EditModal from '@/components/UI/Modal/EditModal.vue';
-import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
+import Pagination from '@/components/UI/Pagination/PaginatePage.vue'
 // import { productTypeFormFields } from '@/formfields/formFields';
-import { useSharedComponent } from '@/composable/useSharedComponent';
-
+import { useSharedComponent } from '@/composable/useSharedComponent'
 
 const search = ref('')
 const isSearching = ref(false)
 
-const data = ref([]) 
+const data = ref([])
 const pagination = ref({})
 // const showEditModal = ref(false)
 const showDeleteModal = ref(false)
+const showUploadModal = ref(false)
 const itemToDelete = ref(null)
 // const itemToEdit = ref(null)
 const modalTitle = 'Delete Sale'
@@ -117,13 +133,11 @@ const itemsPerPage = ref(0)
 // const branches = ref([]);
 const errorMessage = ref('')
 
-const {
-  useSelectComposable,
-} = useSharedComponent('products')
+const { useSelectComposable } = useSharedComponent('products')
 
-onMounted( async() => {
+onMounted(async () => {
   await fetchData()
-});
+})
 
 // const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg } = useSelectComposable(
 //   productTypeFormFields,
@@ -191,7 +205,6 @@ function changePage(page) {
   }
 }
 
-
 // function openEditModal(item) {
 //   itemToEdit.value = item
 //   showEditModal.value = true
@@ -210,6 +223,13 @@ function openDeleteModal(item) {
 function closeDeleteModal() {
   showDeleteModal.value = false
   itemToDelete.value = null
+}
+function openUploadModal() {
+  showUploadModal.value = true
+}
+
+function closeUploadModal() {
+  showUploadModal.value = false
 }
 
 function forceRefresh() {
@@ -248,6 +268,7 @@ function forceRefresh() {
 
 .upload-btn {
   background-color: #c35214;
+  margin-right: 2em;
 }
 
 .add-btn {

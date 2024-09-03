@@ -89,9 +89,9 @@ const menuItems = computed(() => {
       icon: CategoryIcon,
       backendKey: 'product-sub-categories'
     },
-    { name: 'Products', route: '/products', icon: ProductsIcon, backendKey: 'products' },
+    // { name: 'Products', route: '/products', icon: ProductsIcon, backendKey: 'products' },
     {
-      name: 'Product Type',
+      name: 'Products',
       route: '/product-type',
       icon: ProductsIcon,
       backendKey: 'product-types'

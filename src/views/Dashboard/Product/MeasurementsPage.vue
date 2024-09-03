@@ -1,8 +1,19 @@
 <template>
   <DashboardLayout pageTitle="Measurement Page">
+    <div class="actions">
+      <input type="text" v-model="search" placeholder="Search..." class="search-input" />
+      <div >
+          <button class="button upload-btn" @click="openUploadModal()">Upload</button>
+          <button class="button add-btn" @click="openCreateModal">Add</button>
+        </div>
+    </div>
+
     <section class="page-container">
       <div class="container">
-        <button class="add-button" @click="openCreateModal">Add New Purchase Unit</button>
+        <!-- <div class="container_btn">
+          <button class="add-button" @click="openUploadModal()">Upload Purchase Units</button>
+          <button class="add-button" @click="openCreateModal">Add New Purchase Unit</button>
+        </div> -->
         <div class="card-grid">
           <div v-for="purchaseUnit in purchaseUnits" :key="purchaseUnit.id" class="purchase-card">
             <div class="purchase-card-header">
@@ -63,13 +74,27 @@
           </div>
         </div>
 
-        <div class="pagination">
-        <button @click="changePage(currentPage - 1)" :disabled="!pagination.prev_page_url">Previous</button>
-        <span>Page {{ currentPage }} of {{ totalPages }}</span>
-        <button @click="changePage(currentPage + 1)" :disabled="!pagination.next_page_url">Next</button>
-      </div>
 
+        <div v-if="!isSearching" class="mx-auto w-fit my-5">
+      <Pagination :currentPage="currentPage" :totalPages="totalPages" @changePage="changePage" />
+    </div>
+        <!-- <div class="pagination">
+          <button @click="changePage(currentPage - 1)" :disabled="!pagination.prev_page_url">
+            Previous
+          </button>
+          <span>Page {{ currentPage }} of {{ totalPages }}</span>
+          <button @click="changePage(currentPage + 1)" :disabled="!pagination.next_page_url">
+            Next
+          </button>
+        </div> -->
 
+        <UploadModal
+          v-if="showUploadModal"
+          @close="closeUploadModal"
+          @updated="forceRefresh"
+          :url="'/process-csv'"
+          type="PurchaseUnit"
+        />
         <!-- Purchase Unit Modal -->
         <create-edit-modal
           v-if="isModalOpen"
@@ -106,12 +131,14 @@
   </DashboardLayout>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import apiService from '@/services/apiService'
 import { catchAxiosError } from '@/services/Response'
 import DashboardLayout from '@/components/Layouts/dashboardLayout.vue'
 import CreateEditModal from '@/components/UI/Modal/purchaseUnitModal.vue'
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue'
+import UploadModal from '@/components/UI/Modal/UploadModal.vue'
+import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
 import CreateSellingUnitModal from '@/components/UI/Modal/sellingUnitModal.vue'
 import SellingUnitCapacityModal from '@/components/UI/Modal/sellingUnitCapacityModal.vue'
 
@@ -128,6 +155,9 @@ const itemToDelete = ref(null)
 const pagination = ref({})
 const currentPage = ref(1)
 const totalPages = ref(0)
+const showUploadModal = ref(false)
+const search = ref('')
+const isSearching = ref(false)
 
 const fetchPurchaseUnits = async (page = 1) => {
   try {
@@ -139,19 +169,19 @@ const fetchPurchaseUnits = async (page = 1) => {
       next_page_url: response.data.next_page_url,
       prev_page_url: response.data.prev_page_url
     }
-    currentPage.value = page
-    totalPages.value = response.data.last_page
+    currentPage.value = response.current_page
+    totalPages.value = response.last_page
   } catch (error) {
     console.error('Error fetching purchase units:', error)
     catchAxiosError(error)
   }
 }
 
-// function changePage(page) {
-//   if (page > 0 && page <= totalPages.value) {
-//     fetchPurchaseUnits(page);
-//   }
-// }
+function changePage(page) {
+  if (page > 0 && page <= totalPages.value) {
+    fetchPurchaseUnits(page);
+  }
+}
 
 // const deletePurchase = async (id) => {
 //     console.log("Function Called")
@@ -200,9 +230,52 @@ const closeSellingUnitCapacityModal = () => {
 }
 
 onMounted(() => fetchPurchaseUnits(currentPage.value))
+
+watch(search, async (newSearch) => {
+  if (newSearch) {
+    isSearching.value = true
+    try {
+      const response = await apiService.get(`search-purchase-units?search=${newSearch}`)
+      purchaseUnits.value = response.data
+      console.log(response.data)
+      return purchaseUnits.value
+    } catch (error) {
+      console.error('Failed to fetch data:', error.message)
+    }
+  } else {
+    isSearching.value = false
+    fetchPurchaseUnits(currentPage.value)
+  }
+})
+
+function openUploadModal(){
+  showUploadModal.value = true;
+  console.log("Clickedd")
+}
+
+function closeUploadModal(){
+  showUploadModal.value =false;
+}
+
+function forceRefresh() {
+  fetchPurchaseUnits(currentPage.value)
+}
 </script>
 
 <style scoped>
+.actions {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.search-input {
+  padding: 8px;
+  width: 30%;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+}
+
 .page-container {
   width: 100%;
   padding: 2em;
@@ -254,6 +327,24 @@ onMounted(() => fetchPurchaseUnits(currentPage.value))
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+}
+
+.upload-btn {
+  background-color: #c35214;
+  margin-right: 2em;
+}
+
+.add-btn {
+  /* margin-left:; */
+  background-color: #c35214;
 }
 
 .add-button {
