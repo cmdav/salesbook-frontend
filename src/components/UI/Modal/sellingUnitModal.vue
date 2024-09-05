@@ -6,28 +6,28 @@
       <header
         class="flex flex-row items-center justify-between border-b-[#000000] mb-[0.6em] border-b-[1px]"
       >
-        <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">Add Selling Unit</h4>
+        <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">
+          {{ isEditing ? 'Edit Selling Unit' : 'Add Selling Unit' }}
+        </h4>
         <button class="close-button" @click="$emit('close')">&#10005;</button>
       </header>
       <form @submit.prevent="submitForm" class="max-w-4xl mx-auto p-2">
-        
-          <div class="mb-4">
-            <label  class="block text-sm font-medium text-gray-700 pb-1">Selling Unit</label>
-            <input
-              type="text"
-              v-model="sellingUnit"
-              placeholder="Enter Selling Unit"
-              required
-              class="mt-1 block w-[90%] px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-          </div>
-        
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 pb-1">Selling Unit</label>
+          <input
+            type="text"
+            v-model="sellingUnit"
+            placeholder="Enter Selling Unit"
+            required
+            class="mt-1 block w-[90%] px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
 
         <button
           type="submit"
           class="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
-          Add Selling Unit
+          {{ isEditing ? 'Update Selling Unit' : 'Add Selling Unit' }}
         </button>
       </form>
     </div>
@@ -35,36 +35,65 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref } from 'vue'
+import { defineProps, defineEmits, ref, watch} from 'vue'
 // import { useCustomerstore } from '@/stores/customers'
-import apiService from "@/services/apiService"
+import apiService from '@/services/apiService'
 import { catchAxiosSuccess, catchAxiosError } from '@/services/Response'
 
 const props = defineProps({
   purchaseUnitId: {
-    type: Number,
+    type: String,
     required: true
+  },
+  sellingUnit: {
+    type: Object,
+    default: null
   }
 })
 
-const emits = defineEmits(['close', 'selling-unit-added'])
+const isEditing = ref(!!props.sellingUnit)
 
+const emits = defineEmits(['close', 'selling-unit-added', 'selling-unit-updated'])
 
-const sellingUnit = ref('')
+const sellingUnit = ref(isEditing.value ? props.sellingUnit.selling_unit_name : '')
+
+watch(() => props.sellingUnit, (newVal) => {
+  if (newVal) {
+    sellingUnit.value = newVal.selling_unit_name
+  }
+})
 
 const submitForm = async () => {
   try {
-    const response = await apiService.post('/selling-units', {
-      purchase_unit_id: props.purchaseUnitId,
-      selling_unit_name: sellingUnit.value
-    })
-    console.log('Form submitted successfully:', response.data)
-    catchAxiosSuccess(response)
-     emits('selling-unit-added', response.data)
+
+     if (isEditing.value) {
+      const response = await apiService.update(`/selling-units/${props.sellingUnit.id}`, {
+        purchase_unit_id: props.purchaseUnitId,
+        selling_unit_name: sellingUnit.value
+      })
+      catchAxiosSuccess(response)
+      emits('selling-unit-updated', response.data)
+    } else {
+      const response = await apiService.post('/selling-units', {
+        purchase_unit_id: props.purchaseUnitId,
+        selling_unit_name: sellingUnit.value
+      })
+      console.log('Form submitted successfully:', response.data)
+      catchAxiosSuccess(response)
+      emits('selling-unit-added', response.data)
+
+    }
+    // const response = await apiService.post('/selling-units', {
+    //   purchase_unit_id: props.purchaseUnitId,
+    //   selling_unit_name: sellingUnit.value
+    // })
+    
+    
+    // emits('selling-unit-added', response.data)
     emits('close')
   } catch (error) {
     console.error('Error submitting form:', error)
-   catchAxiosError(error);
+    catchAxiosError(error)
   }
 }
 </script>
@@ -88,7 +117,7 @@ const submitForm = async () => {
   border-radius: 12px;
   animation: slidedown 0.8s ease;
   max-height: 90vh;
-  overflow-y: auto; 
+  overflow-y: auto;
 }
 
 .close-button {

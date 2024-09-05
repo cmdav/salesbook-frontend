@@ -2,6 +2,7 @@
   <DashboardLayout pageTitle="Measurement Page">
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
+      
       <div>
         <button class="button upload-btn" @click="openUploadModal()">Upload</button>
         <button class="button add-btn" @click="openCreateModal">Add</button>
@@ -10,10 +11,6 @@
 
     <section class="page-container">
       <div class="container">
-        <!-- <div class="container_btn">
-          <button class="add-button" @click="openUploadModal()">Upload Purchase Units</button>
-          <button class="add-button" @click="openCreateModal">Add New Purchase Unit</button>
-        </div> -->
         <div class="card-grid" v-if="purchaseUnits.length > 0">
           <div v-for="purchaseUnit in purchaseUnits" :key="purchaseUnit.id" class="purchase-card">
             <div class="purchase-card-header">
@@ -33,6 +30,7 @@
                   <path fill="white" d="M19 12.998h-6v6h-2v-6H5v-2h6v-6h2v6h6z" />
                 </svg>
               </button>
+              
               <button class="add-selling-unit-button" @click="openDeleteModal(purchaseUnit.id)">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -71,23 +69,48 @@
                       <path fill="white" d="M19 12.998h-6v6h-2v-6H5v-2h6v-6h2v6h6z" />
                     </svg>
                   </button>
+
+                  <!-- <button class="add-selling-unit-button" @click="openSellingDeleteModal(sellingUnit.id)">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="1em"
+                  height="1em"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="white"
+                    fill-rule="evenodd"
+                    d="m6.774 6.4l.812 13.648a.8.8 0 0 0 .798.752h7.232a.8.8 0 0 0 .798-.752L17.226 6.4zm11.655 0l-.817 13.719A2 2 0 0 1 15.616 22H8.384a2 2 0 0 1-1.996-1.881L5.571 6.4H3.5v-.7a.5.5 0 0 1 .5-.5h16a.5.5 0 0 1 .5.5v.7zM14 3a.5.5 0 0 1 .5.5v.7h-5v-.7A.5.5 0 0 1 10 3zM9.5 9h1.2l.5 9H10zm3.8 0h1.2l-.5 9h-1.2z"
+                  />
+                </svg>
+              </button> -->
                 </div>
                 <ul>
                   <li v-for="capacity in sellingUnit.selling_unit_capacities" :key="capacity.id">
                     Quantity: {{ capacity.selling_unit_capacity }}
                   </li>
                 </ul>
+                <button class="update-selling-unit-button" @click="openEditSellingUnitModal(sellingUnit)">
+                Edit Selling Unit
+              </button>
               </div>
             </div>
             <div v-else>
               <p class="text-center">No Selling Units Available</p>
             </div>
+            <button class="update-selling-unit-button" @click="openEditPurchaseUnitModal(purchaseUnit)">
+                Edit Purchase Unit
+              </button>
           </div>
+          
+
         </div>
 
         <div v-else>
           <p class="text-center">No purchase units found.</p>
         </div>
+
+        
 
         <div v-if="!isSearching" class="mx-auto w-fit my-5">
           <Pagination
@@ -96,15 +119,6 @@
             @changePage="changePage"
           />
         </div>
-        <!-- <div class="pagination">
-          <button @click="changePage(currentPage - 1)" :disabled="!pagination.prev_page_url">
-            Previous
-          </button>
-          <span>Page {{ currentPage }} of {{ totalPages }}</span>
-          <button @click="changePage(currentPage + 1)" :disabled="!pagination.next_page_url">
-            Next
-          </button>
-        </div> -->
 
         <div v-if="showDeleteModal" class="modal backdrop-blur z-[100] fixed animate__zoomIn animate__rubberBand animate__fadeOut min-h-screen h-full">
           <div class="modal__body relative w-full md:max-w-[600px] bg-white m-0 md:px-5 py-4 px-4">
@@ -113,11 +127,23 @@
             </header>
             <p class="text-center py-4">Are you sure you want to delete this purchase unit?</p>
             <div class="flex justify-center">
-              <button @click="confirmDelete" class="btn-brand !bg-green-400 mr-6">Yes, Delete</button>
+              <button @click="confirmDelete" class="btn-brand !bg-green-400 mr-6"> Delete</button>
               <button @click="closeDeleteModal" class="btn-brand !bg-red-600">Cancel</button>
             </div>
           </div>
         </div>
+        <!-- <div v-if="showSellingDeleteModal" class="modal backdrop-blur z-[100] fixed animate__zoomIn animate__rubberBand animate__fadeOut min-h-screen h-full">
+          <div class="modal__body relative w-full md:max-w-[600px] bg-white m-0 md:px-5 py-4 px-4">
+            <header class="flex flex-row items-center justify-between border-b-[#000000] pb-[5px] mb-[35px] border-b-[1px]">
+            <h3 class="text-[22px] font-EBGaramond500 text-[#244034]">Confirm Deletion</h3>
+            </header>
+            <p class="text-center py-4">Are you sure you want to delete this selling unit?</p>
+            <div class="flex justify-center">
+              <button @click="confirmDelete" class="btn-brand !bg-green-400 mr-6"> Delete</button>
+              <button @click="closeSellingDeleteModal" class="btn-brand !bg-red-600">Cancel</button>
+            </div>
+          </div>
+        </div> -->
 
         <UploadModal
           v-if="showUploadModal"
@@ -132,6 +158,8 @@
           v-if="isModalOpen"
           @close="closeModal"
           @purchase-unit-added="fetchPurchaseUnits"
+          @purchase-unit-updated="fetchPurchaseUnits"
+          :purchaseUnit="selectedPurchaseUnit"
         />
 
         <!-- Selling Unit Modal -->
@@ -140,6 +168,8 @@
           :purchaseUnitId="selectedPurchaseUnitId"
           @close="closeSellingUnitModal"
           @selling-unit-added="fetchPurchaseUnits"
+          @selling-unit-updated="fetchPurchaseUnits"
+          :sellingUnit="selectedSellingUnit"
         />
 
         <!-- Selling Unit Capacity Modal -->
@@ -152,10 +182,9 @@
       </div>
     </section>
 
-    <!-- :items="itemToDelete"
-      :url="'/purchase-units'" -->
   </DashboardLayout>
 </template>
+
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import apiService from '@/services/apiService'
@@ -167,23 +196,27 @@ import Pagination from '@/components/UI/Pagination/PaginatePage.vue'
 import CreateSellingUnitModal from '@/components/UI/Modal/sellingUnitModal.vue'
 import SellingUnitCapacityModal from '@/components/UI/Modal/sellingUnitCapacityModal.vue'
 
-const purchaseUnits = ref([])
-const isModalOpen = ref(false)
-const isSellingUnitModalOpen = ref(false)
-const isSellingUnitCapacityModalOpen = ref(false)
-const selectedPurchaseUnitId = ref(null)
-const selectedSellingUnitId = ref(null)
+const purchaseUnits = ref([]);
+const isModalOpen = ref(false);
+const isSellingUnitModalOpen = ref(false);
+const isSellingUnitCapacityModalOpen = ref(false);
+const selectedPurchaseUnitId = ref(null);
+const selectedSellingUnitId = ref(null);
+const selectedPurchaseUnit = ref(null); 
+const selectedSellingUnit = ref(null);
 
-const showDeleteModal = ref(false)
-const itemToDelete = ref(null)
+const showDeleteModal = ref(false);
+const itemToDelete = ref(null);
 
-const pagination = ref({})
-const currentPage = ref(1)
-const totalPages = ref(0)
-const showUploadModal = ref(false)
-const search = ref('')
-const isSearching = ref(false)
-const errorMessage = ref('')
+const pagination = ref({});
+const currentPage = ref(1);
+const totalPages = ref(0);
+const showUploadModal = ref(false);
+const search = ref('');
+const isSearching = ref(false);
+const errorMessage = ref('');
+
+const emit = defineEmits(['edit-purchase-unit', 'edit-selling-unit'])
 
 const fetchPurchaseUnits = async (page = 1) => {
   try {
@@ -205,41 +238,42 @@ const fetchPurchaseUnits = async (page = 1) => {
 
 function changePage(page) {
   if (page > 0 && page <= totalPages.value) {
-    fetchPurchaseUnits(page)
+    fetchPurchaseUnits(page);
   }
 }
 
 const openCreateModal = () => {
-  isModalOpen.value = true
+  isModalOpen.value = true;
+  selectedPurchaseUnit.value = null;
 }
 
 const openCreateSellingUnitModal = (purchaseUnitId) => {
-  selectedPurchaseUnitId.value = purchaseUnitId
-  isSellingUnitModalOpen.value = true
+  selectedPurchaseUnitId.value = purchaseUnitId;
+  isSellingUnitModalOpen.value = true;
 }
 
 const openCreateSellingCapacityModal = (sellingUnitId) => {
-  selectedSellingUnitId.value = sellingUnitId
-  isSellingUnitCapacityModalOpen.value = true
+  selectedSellingUnitId.value = sellingUnitId;
+  isSellingUnitCapacityModalOpen.value = true;
 }
 
 const closeModal = () => {
-  isModalOpen.value = false
+  isModalOpen.value = false;
 }
 
 const closeSellingUnitModal = () => {
-  isSellingUnitModalOpen.value = false
+  isSellingUnitModalOpen.value = false;
 }
 
 function openDeleteModal(item) {
-  itemToDelete.value = item
+  itemToDelete.value = item;
   console.log(itemToDelete.value)
-  showDeleteModal.value = true
+  showDeleteModal.value = true;
 }
 
 function closeDeleteModal() {
-  showDeleteModal.value = false
-  itemToDelete.value = null
+  showDeleteModal.value = false;
+  itemToDelete.value = null;
 }
 
 const confirmDelete = () => {
@@ -255,7 +289,7 @@ const deleteUnit = async (id) => {
     const response = await apiService.delete(`purchase-units/${id}`)
     // console.log(response)
     fetchPurchaseUnits(currentPage.value)
-    catchAxiosSuccess(response.data)
+    catchAxiosSuccess(response)
   } catch (error) {
     catchAxiosError(error)
   }
@@ -294,6 +328,22 @@ watch(search, async (newSearch) => {
     fetchPurchaseUnits(currentPage.value)
   }
 })
+
+const openEditPurchaseUnitModal = (purchaseUnit) => {
+  selectedPurchaseUnit.value = purchaseUnit;
+  isModalOpen.value = true;
+  // Pass the purchaseUnit to the modal
+  // This assumes your modal accepts a `purchaseUnit` prop
+  emit('edit-purchase-unit', purchaseUnit)
+}
+
+const openEditSellingUnitModal = (sellingUnit) => {
+  console.log('clicked')
+  selectedSellingUnit.value = sellingUnit;
+  isSellingUnitModalOpen.value = true;
+
+  emit('edit-selling-unit', sellingUnit)
+}
 
 function openUploadModal() {
   showUploadModal.value = true
@@ -420,6 +470,21 @@ function forceRefresh() {
 }
 
 .add-selling-unit-button:hover {
+  background-color: #d67b0d;
+}
+.update-selling-unit-button {
+  background-color: #c8640b;
+  color: white;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 1em;
+  border-radius: 0.3em;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.update-selling-unit-button:hover {
   background-color: #d67b0d;
 }
 
