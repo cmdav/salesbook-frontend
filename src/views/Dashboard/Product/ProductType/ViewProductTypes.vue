@@ -125,7 +125,7 @@ const pagination = ref({})
 const showEditModal = ref(false)
 const showDeleteModal = ref(false)
 const showUploadModal = ref(false)
-const itemToDelete = ref(null)
+const itemToDelete = ref({})
 const itemToEdit = ref(null)
 const modalTitle = 'Delete Product'
 
@@ -143,6 +143,7 @@ const sellingCapacities = ref([]);
 
 onMounted(async () => {
   await fetchData()
+   await fetchPurchaseUnits();
 })
 
 const url = '/all-product-sub-categories-by-category-id'
@@ -160,6 +161,16 @@ onMounted(async () => {
   await fetchDataForSelect('Purchase Unit', '/list-purchase-units', 'id', 'purchase_unit_name')
   
 });
+
+async function fetchPurchaseUnits() {
+  try {
+    const response = await apiService.get('/list-purchase-units');
+    console.log(response.data)
+    purchaseUnits.value = response.data || [];
+  } catch (error) {
+    console.error('Error fetching purchase units:', error);
+  }
+}
 
 async function fetchSellingUnits(purchaseUnitId) {
   const selectedPurchaseUnit = purchaseUnits.value.find(unit => unit.id === purchaseUnitId);
@@ -200,7 +211,8 @@ async function fetchData(page = 1) {
     console.log(response)
     data.value = response.data || []
 
-    purchaseUnits.value = response.data.purchase_unit
+    
+     
     console.log(data.value)
     if (data.value.length === 0) {
       errorMessage.value = 'No items found'
@@ -256,6 +268,8 @@ function changePage(page) {
 
 const openEditModal = async(item) => {
   itemToEdit.value = item
+
+   await fetchPurchaseUnits();
 
    await fetchSellingUnits(item.purchase_unit_id);
   await fetchSellingCapacities(item.selling_unit_id);

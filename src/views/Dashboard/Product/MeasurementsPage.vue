@@ -33,7 +33,7 @@
                   <path fill="white" d="M19 12.998h-6v6h-2v-6H5v-2h6v-6h2v6h6z" />
                 </svg>
               </button>
-              <button class="add-selling-unit-button" @click="openDeleteModal(item)">
+              <button class="add-selling-unit-button" @click="openDeleteModal(purchaseUnit.id)">
                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="white" fill-rule="evenodd" d="m6.774 6.4l.812 13.648a.8.8 0 0 0 .798.752h7.232a.8.8 0 0 0 .798-.752L17.226 6.4zm11.655 0l-.817 13.719A2 2 0 0 1 15.616 22H8.384a2 2 0 0 1-1.996-1.881L5.571 6.4H3.5v-.7a.5.5 0 0 1 .5-.5h16a.5.5 0 0 1 .5.5v.7zM14 3a.5.5 0 0 1 .5.5v.7h-5v-.7A.5.5 0 0 1 10 3zM9.5 9h1.2l.5 9H10zm3.8 0h1.2l-.5 9h-1.2z"/></svg>
               </button>
             </div>
@@ -128,12 +128,13 @@
       </div>
     </section>
 
+    <!-- :items="itemToDelete"
+      :url="'/purchase-units'" -->
     <DeleteModal
       v-if="showDeleteModal"
       @close="closeDeleteModal"
       @updated="forceRefresh"
-      :items="itemToDelete"
-      :url="'/purchase-units'"
+      
       :modalTitle="modalTitle"
     />
   </DashboardLayout>
@@ -150,7 +151,7 @@ import Pagination from '@/components/UI/Pagination/PaginatePage.vue'
 import CreateSellingUnitModal from '@/components/UI/Modal/sellingUnitModal.vue'
 import SellingUnitCapacityModal from '@/components/UI/Modal/sellingUnitCapacityModal.vue'
 
-const modalTitle = ref('Measurement')
+const modalTitle = ref('Delete Measurement')
 const purchaseUnits = ref([])
 const isModalOpen = ref(false)
 const isSellingUnitModalOpen = ref(false)
@@ -193,15 +194,15 @@ function changePage(page) {
   }
 }
 
-// const download = async () => {
-//   console.log('Function Called')
-//   try {
-//     const response = await apiService.get(`/download-csv/currency`)
-//     console.log(response)
-//   } catch (error) {
-//     catchAxiosError(error)
-//   }
-// }
+const deletePurchase = async (id) => {
+  console.log('Function Called')
+  try {
+    const response = await apiService.delete(`purchase-units/${id}`)
+    console.log(response)
+  } catch (error) {
+    catchAxiosError(error)
+  }
+}
 
 const openCreateModal = () => {
   isModalOpen.value = true
@@ -227,6 +228,7 @@ const closeSellingUnitModal = () => {
 
 function openDeleteModal(item) {
   itemToDelete.value = item;
+  console.log(itemToDelete.value)
   showDeleteModal.value = true;
 }
 

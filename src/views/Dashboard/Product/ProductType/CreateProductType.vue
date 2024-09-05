@@ -360,16 +360,20 @@ const preventSubmitOnEnter = (event) => {
 }
 
 const handlePurchaseUnit = (newType) => {
+  console.log()
   purchaseUnit.value.push(newType)
   formState.purchaseUnit = newType.id
 }
 
 const handleSellingUnit = (newType) => {
+  
   sellingUnit.value.push(newType)
+  console.log(sellingUnit.value)
   selectedSellingUnit.value = newType.id
 }
 
 const handleSellingCapacity = (newCapacity) => {
+  console.log(sellingUnit.value)
   sellingCapacity.value.push(newCapacity)
   selectedSellingCapacity.value = newCapacity.id
 }
@@ -424,6 +428,7 @@ const fetchPurchasingUnit = async () => {
 
 const fetchSellingUnit = async (purchaseUnitId) => {
   const selectedUnit = purchaseUnit.value.find(unit => unit.id === purchaseUnitId)
+  console.log(selectedUnit)
   if (selectedUnit) {
     sellingUnit.value = selectedUnit.selling_units
     selectedSellingUnit.value = null
@@ -433,6 +438,7 @@ const fetchSellingUnit = async (purchaseUnitId) => {
 
 const fetchSellingCapacities = async (sellingUnitId) => {
   const selectedUnit = sellingUnit.value.find(unit => unit.id === sellingUnitId)
+  console.log(selectedUnit)
   if (selectedUnit) {
     sellingCapacity.value = selectedUnit.selling_unit_capacities
     selectedSellingCapacity.value = null
@@ -462,6 +468,9 @@ const handleSubmit = async () => {
   isSubmitting.value = true;
 
   const formData = new FormData()
+
+  console.log('Selected Selling Unit:', formState.sellingUnit);
+  console.log('Selected Selling Cap:', selectedSellingCapacity.value);
   // formData.append('product_id', formState.product)
   formData.append('product_type_name', formState.productTypeName)
   if (formState.productTypeImage) {
@@ -472,7 +481,7 @@ const handleSubmit = async () => {
   formData.append('category_id', formState.category)
   formData.append('vat', formState.vat)
   formData.append('sub_category_id', formState.sub_category)
-  formData.append('selling_unit_id', selectedSellingUnit.value)
+  formData.append('selling_unit_id', formState.sellingUnit)
   formData.append('selling_unit_capacity_id', selectedSellingCapacity.value)
   formData.append('purchase_unit_id', formState.purchaseUnit)
 
