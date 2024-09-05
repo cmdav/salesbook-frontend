@@ -13,7 +13,7 @@
                 <div
                   class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
                 >
-                  <span>Total Product Type</span>
+                  <span>Total Product</span>
                 </div>
                 <div
                   class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
@@ -26,7 +26,7 @@
                 </div>
               </div>
             </div>
-            
+
               <!-- <div>
                  <div class="icon">
                   <img src="/assets/customers-844da486.svg" alt="" />
@@ -68,7 +68,7 @@
                   </div>
                 </div>
               </div> -->
-            
+
             <div
               class="flex flex-row justify-between rounded-[8px] p-4"
               style="background-color: rgb(44, 43, 108)"
@@ -118,12 +118,12 @@
                 </div>
               </div>
             </div>
-            <div
+            <!-- <div
               class="flex flex-row justify-between rounded-[8px] p-4"
               style="background-color: rgb(123, 97, 255)"
             >
               <div>
-                <!-- <div class="icon"><img src="/assets/active-c00dd557.svg" alt="" /></div> -->
+                <div class="icon"><img src="/assets/active-c00dd557.svg" alt="" /></div>
                 <div
                   class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
                 >
@@ -139,7 +139,7 @@
                   }}
                 </div>
               </div>
-            </div>
+            </div> -->
             <div
               class="flex flex-row justify-between rounded-[8px] p-4"
               style="background-color: rgb(44, 43, 108)"
@@ -205,7 +205,9 @@
               :hideToggleButtonLabel="false"
               :key="forceRefresh"
               endpoint="daily-sales"
-            />
+            >
+          <button class="btn-brand" @click="checkExpiredProduct">Check Expired Products</button>
+          </DataTableLayout>
           </div>
           <div class="flex flex-row gap-4 mt-8">
             <div
@@ -278,7 +280,8 @@
 <script setup>
 import { onMounted, ref, watch } from "vue";
 import { startOfWeek, format } from "date-fns";
-
+import apiService from "@/services/apiService";
+import { catchAxiosError, catchAxiosSuccess } from "@/services/Response";
 import SalesChart from "@/components/UI/Chart/SalesChart.vue";
 import ChartComponentcopy from "@/components/UI/Chart/ChartComponentcopy.vue";
 import { useStore } from "@/stores/user";
@@ -379,6 +382,21 @@ onMounted(async () => {
     console.log(error);
   }
 });
+
+const checkExpiredProduct = async () => {
+  try {
+    const response = await apiService.get('/list-expired-products')
+    // purchaseUnit.value = response.data
+    console.log(response)
+    // if (formState.purchaseUnit) {
+    //   await fetchSellingUnit(formState.purchaseUnit)
+    // }
+    catchAxiosSuccess(response.message)
+  } catch (error) {
+    console.error('Error fetching purchasing unit:', error)
+    catchAxiosError(error)
+  }
+}
 onMounted(async () => {
   try {
     let res = await CustomerStore.allCompanyCustomers();

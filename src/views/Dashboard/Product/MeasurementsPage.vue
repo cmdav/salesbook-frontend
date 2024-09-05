@@ -150,6 +150,7 @@ import Pagination from '@/components/UI/Pagination/PaginatePage.vue'
 import CreateSellingUnitModal from '@/components/UI/Modal/sellingUnitModal.vue'
 import SellingUnitCapacityModal from '@/components/UI/Modal/sellingUnitCapacityModal.vue'
 
+const modalTitle = ref('Measurement')
 const purchaseUnits = ref([])
 const isModalOpen = ref(false)
 const isSellingUnitModalOpen = ref(false)

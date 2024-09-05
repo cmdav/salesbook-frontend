@@ -137,6 +137,7 @@ const errorMessage = ref('')
 
 const { useSelectComposable } = useSharedComponent('products')
 
+const purchaseUnits = ref([]);
 const sellingUnits = ref([]);
 const sellingCapacities = ref([]);
 
@@ -161,40 +162,33 @@ onMounted(async () => {
 });
 
 async function fetchSellingUnits(purchaseUnitId) {
-  if (purchaseUnitId) {
-    try {
-      const response = await apiService.get(`/list-purchase-units/${purchaseUnitId}`);
-      console.log(response)
-      sellingUnits.value = response.data;
+  const selectedPurchaseUnit = purchaseUnits.value.find(unit => unit.id === purchaseUnitId);
 
-      const sellingUnitField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_id');
-      if (sellingUnitField) {
-        sellingUnitField.options = sellingUnits.value.map(unit => ({
-          value: unit.id,
-          label: unit.selling_unit_name
-        }));
-      }
-    } catch (error) {
-      console.error('Error fetching selling units:', error);
+  if (selectedPurchaseUnit) {
+    sellingUnits.value = selectedPurchaseUnit.selling_units || [];
+
+    const sellingUnitField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_id');
+    if (sellingUnitField) {
+      sellingUnitField.options = sellingUnits.value.map(unit => ({
+        value: unit.id,
+        label: unit.selling_unit_name
+      }));
     }
   }
 }
 
-async function fetchSellingCapacities(purchaseUnitId, sellingUnitId) {
-  if (purchaseUnitId && sellingUnitId) {
-    try {
-      const response = await apiService.get(`/list-purchase-units/${purchaseUnitId}/${sellingUnitId}`);
-      sellingCapacities.value = response.data;
+async function fetchSellingCapacities(sellingUnitId) {
+  const selectedSellingUnit = sellingUnits.value.find(unit => unit.id === sellingUnitId);
 
-       const sellingCapacityField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_capacity_id');
-      if (sellingCapacityField) {
-        sellingCapacityField.options = sellingCapacities.value.map(capacity => ({
-          value: capacity.id,
-          label: capacity.capacity_name
-        }));
-      }
-    } catch (error) {
-      console.error('Error fetching selling capacities:', error);
+  if (selectedSellingUnit) {
+    sellingCapacities.value = selectedSellingUnit.selling_capacities || [];
+
+    const sellingCapacityField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_capacity_id');
+    if (sellingCapacityField) {
+      sellingCapacityField.options = sellingCapacities.value.map(capacity => ({
+        value: capacity.id,
+        label: capacity.capacity_name
+      }));
     }
   }
 }
@@ -205,6 +199,8 @@ async function fetchData(page = 1) {
     const response = await apiService.get(`/product-types?page=${page}`)
     console.log(response)
     data.value = response.data || []
+
+    purchaseUnits.value = response.data.purchase_unit
     console.log(data.value)
     if (data.value.length === 0) {
       errorMessage.value = 'No items found'
@@ -261,10 +257,8 @@ function changePage(page) {
 const openEditModal = async(item) => {
   itemToEdit.value = item
 
-    await fetchSellingUnits(item.purchase_unit_id);
-
-  // Fetch and update selling capacities
-  await fetchSellingCapacities(item.purchase_unit_id, item.selling_unit_id);
+   await fetchSellingUnits(item.purchase_unit_id);
+  await fetchSellingCapacities(item.selling_unit_id);
 
   productTypeFormFields.value.forEach(field => {
     if (field.databaseField === 'selling_unit_id') {
