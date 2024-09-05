@@ -2,10 +2,10 @@
   <DashboardLayout pageTitle="Measurement Page">
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
-      <div >
-          <button class="button upload-btn" @click="openUploadModal()">Upload</button>
-          <button class="button add-btn" @click="openCreateModal">Add</button>
-        </div>
+      <div>
+        <button class="button upload-btn" @click="openUploadModal()">Upload</button>
+        <button class="button add-btn" @click="openCreateModal">Add</button>
+      </div>
     </div>
 
     <section class="page-container">
@@ -33,9 +33,9 @@
                   <path fill="white" d="M19 12.998h-6v6h-2v-6H5v-2h6v-6h2v6h6z" />
                 </svg>
               </button>
-              <!-- <button class="add-selling-unit-button" @click="deletePurchase(id)">
+              <button class="add-selling-unit-button" @click="openDeleteModal(item)">
                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="white" fill-rule="evenodd" d="m6.774 6.4l.812 13.648a.8.8 0 0 0 .798.752h7.232a.8.8 0 0 0 .798-.752L17.226 6.4zm11.655 0l-.817 13.719A2 2 0 0 1 15.616 22H8.384a2 2 0 0 1-1.996-1.881L5.571 6.4H3.5v-.7a.5.5 0 0 1 .5-.5h16a.5.5 0 0 1 .5.5v.7zM14 3a.5.5 0 0 1 .5.5v.7h-5v-.7A.5.5 0 0 1 10 3zM9.5 9h1.2l.5 9H10zm3.8 0h1.2l-.5 9h-1.2z"/></svg>
-              </button> -->
+              </button>
             </div>
             <div v-if="purchaseUnit.selling_units.length > 0">
               <div
@@ -75,13 +75,16 @@
         </div>
 
         <div v-else>
-  <p class="text-center">No purchase units found.</p>
-</div>
-
+          <p class="text-center">No purchase units found.</p>
+        </div>
 
         <div v-if="!isSearching" class="mx-auto w-fit my-5">
-      <Pagination :currentPage="currentPage" :totalPages="totalPages" @changePage="changePage" />
-    </div>
+          <Pagination
+            :currentPage="currentPage"
+            :totalPages="totalPages"
+            @changePage="changePage"
+          />
+        </div>
         <!-- <div class="pagination">
           <button @click="changePage(currentPage - 1)" :disabled="!pagination.prev_page_url">
             Previous
@@ -98,6 +101,7 @@
           @updated="forceRefresh"
           :url="'/process-csv'"
           type="PurchaseUnit"
+          :downloadUrl="'purchase_unit'"
         />
         <!-- Purchase Unit Modal -->
         <create-edit-modal
@@ -129,7 +133,7 @@
       @close="closeDeleteModal"
       @updated="forceRefresh"
       :items="itemToDelete"
-      :url="'purchase-units'"
+      :url="'/purchase-units'"
       :modalTitle="modalTitle"
     />
   </DashboardLayout>
@@ -142,7 +146,7 @@ import DashboardLayout from '@/components/Layouts/dashboardLayout.vue'
 import CreateEditModal from '@/components/UI/Modal/purchaseUnitModal.vue'
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue'
 import UploadModal from '@/components/UI/Modal/UploadModal.vue'
-import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
+import Pagination from '@/components/UI/Pagination/PaginatePage.vue'
 import CreateSellingUnitModal from '@/components/UI/Modal/sellingUnitModal.vue'
 import SellingUnitCapacityModal from '@/components/UI/Modal/sellingUnitCapacityModal.vue'
 
@@ -184,18 +188,18 @@ const fetchPurchaseUnits = async (page = 1) => {
 
 function changePage(page) {
   if (page > 0 && page <= totalPages.value) {
-    fetchPurchaseUnits(page);
+    fetchPurchaseUnits(page)
   }
 }
 
-// const deletePurchase = async (id) => {
-//     console.log("Function Called")
-//     try {
-//         const response = await apiService.delete(`/purchase-units/${id}`)
-//         catchAxiosSuccess(response)
-//     } catch (error) {
-//         catchAxiosError(error);
-//     }
+// const download = async () => {
+//   console.log('Function Called')
+//   try {
+//     const response = await apiService.get(`/download-csv/currency`)
+//     console.log(response)
+//   } catch (error) {
+//     catchAxiosError(error)
+//   }
 // }
 
 const openCreateModal = () => {
@@ -220,10 +224,10 @@ const closeSellingUnitModal = () => {
   isSellingUnitModalOpen.value = false
 }
 
-// function openDeleteModal(item) {
-//   itemToDelete.value = item;
-//   showDeleteModal.value = true;
-// }
+function openDeleteModal(item) {
+  itemToDelete.value = item;
+  showDeleteModal.value = true;
+}
 
 function closeDeleteModal() {
   showDeleteModal.value = false
@@ -235,41 +239,42 @@ const closeSellingUnitCapacityModal = () => {
 }
 
 onMounted(() => fetchPurchaseUnits(currentPage.value))
-
+// onMounted(() => download())
 watch(search, async (newSearch) => {
   if (newSearch) {
     isSearching.value = true
     try {
       const response = await apiService.get(`search-purchase-units?search=${newSearch}`)
-      if (response.data.length > 0) {
-        purchaseUnits.value = response.data;
-      } else {
-        purchaseUnits.value = [];
-        errorMessage.value = response.data.message || 'No purchase units found for the search term.';
-      }
       console.log(response.data)
+      if (response.data.data.length > 0) {
+        purchaseUnits.value = response.data.data
+      } else {
+        purchaseUnits.value = []
+        errorMessage.value = response.data.message || 'No purchase units found for the search term.'
+      }
+      console.log(response.data.data)
       return purchaseUnits.value
     } catch (error) {
-      console.error('Failed to fetch data:', error.message);
-      purchaseUnits.value = [];
-      errorMessage.value = 'Error occurred while searching for purchase units.';
+      console.error('Failed to fetch data:', error.message)
+      purchaseUnits.value = []
+      errorMessage.value = 'Error occurred while searching for purchase units.'
     } finally {
-      isSearching.value = false;
+      isSearching.value = false
     }
   } else {
-    isSearching.value = false;
-    errorMessage.value = '';
+    isSearching.value = false
+    errorMessage.value = ''
     fetchPurchaseUnits(currentPage.value)
   }
 })
 
-function openUploadModal(){
-  showUploadModal.value = true;
-  console.log("Clickedd")
+function openUploadModal() {
+  showUploadModal.value = true
+  console.log('Clickedd')
 }
 
-function closeUploadModal(){
-  showUploadModal.value =false;
+function closeUploadModal() {
+  showUploadModal.value = false
 }
 
 function forceRefresh() {

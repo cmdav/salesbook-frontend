@@ -411,6 +411,7 @@ const fetchPurchasingUnit = async () => {
   try {
     const response = await apiService.get('/list-purchase-units')
     purchaseUnit.value = response.data
+    console.log(response.data)
     if (formState.purchaseUnit) {
       await fetchSellingUnit(formState.purchaseUnit)
     }

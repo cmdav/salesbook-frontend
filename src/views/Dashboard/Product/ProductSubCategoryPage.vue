@@ -8,11 +8,11 @@
         searchEndpoint="search-product-sub-categories"
         :excludedKeys="['id', 'sub_category_id']"
         :pageName="'product-sub-categories'"
-        :additionalColumns=additionalColumns
+        :additionalColumns="additionalColumns"
       >
-      <div v-if="canUploadPermission">
-        <button class="btn-brand" @click="closeUploadModal">Upload</button>
-      </div>
+        <div v-if="canUploadPermission">
+          <button class="btn-brand" @click="closeUploadModal">Upload</button>
+        </div>
       </DataTableLayout>
     </div>
     <FormModal
@@ -46,17 +46,18 @@
       @updated="forceRefresh"
       :url="'/product-sub-categories'"
       type="ProductSubCategory"
+      :downloadUrl="'product_sub_category'"
     />
   </DashboardLayout>
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { onMounted } from 'vue'
 
-import { productSubCategoryFormFields } from "@/formfields/formFields";
-import { useSharedComponent } from "@/composable/useSharedComponent";
+import { productSubCategoryFormFields } from '@/formfields/formFields'
+import { useSharedComponent } from '@/composable/useSharedComponent'
 
-const emit = defineEmits(['update', 'close']);
+const emit = defineEmits(['update', 'close'])
 
 const {
   DataTableLayout,
@@ -70,58 +71,50 @@ const {
   UploadModal,
   useUploadComposable,
   useStore,
-  computed,
-} = useSharedComponent('product-sub-categories');
-const { showUploadModal, closeUploadModal } = useUploadComposable(emit);
+  computed
+} = useSharedComponent('product-sub-categories')
+const { showUploadModal, closeUploadModal } = useUploadComposable(emit)
 
 // const emit = defineEmits(["forceRefresh",]);
 
-
-const {
-  handleDelete,
-  showDeleteModal,
-  itemsId,
-  closeDeleteModal,
-} = useDeleteComposable();
+const { handleDelete, showDeleteModal, itemsId, closeDeleteModal } = useDeleteComposable()
 
 const { showModal, forceUpdate, closeModal } = usePostComposable(
-  "/product-sub-categories",
+  '/product-sub-categories',
   productSubCategoryFormFields,
   emit
-);
-const {  handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit);
-const { fetchDataForSelect } = useSelectComposable(productSubCategoryFormFields);
+)
+const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit)
+const { fetchDataForSelect } = useSelectComposable(productSubCategoryFormFields)
 
 const forceRefresh = () => {
-  forceUpdate.value++;
-};
+  forceUpdate.value++
+}
 
-const store = useStore();
+const store = useStore()
 const permissions = computed(() => {
-    
-    return  store.getUser.user.permission.permissions.find(p => p.page_name === "product-sub-categories");
- })
+  return store.getUser.user.permission.permissions.find(
+    (p) => p.page_name === 'product-sub-categories'
+  )
+})
 
- const additionalColumns = computed(() => {
-  const cols = [];
-  if (permissions.value?.update == 1 ) {
-   
-    cols.push({ name: 'Edit', action: handleEdit });
+const additionalColumns = computed(() => {
+  const cols = []
+  if (permissions.value?.update == 1) {
+    cols.push({ name: 'Edit', action: handleEdit })
   }
-  if (permissions.value?.del  == 1) {
-    
-    cols.push({ name: 'Delete', action: handleDelete });
+  if (permissions.value?.del == 1) {
+    cols.push({ name: 'Delete', action: handleDelete })
   }
- 
-  return cols;
-});
+
+  return cols
+})
 
 const canUploadPermission = computed(() => {
-
-  return permissions.value?.write == 1;
-});
+  return permissions.value?.write == 1
+})
 // Fetch data for select options on component mount
 onMounted(async () => {
-  await fetchDataForSelect("Category", "/product-categories", "id", "category_name");
-});
+  await fetchDataForSelect('Category', '/product-categories', 'id', 'category_name')
+})
 </script>

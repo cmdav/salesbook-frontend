@@ -7,11 +7,11 @@
         endpoint="product-categories"
         searchEndpoint="search-product-categories"
         :pageName="'product-categories'"
-        :additionalColumns=additionalColumns
+        :additionalColumns="additionalColumns"
       >
-      <div v-if="canUploadPermission">
-        <button class="btn-brand" @click="closeUploadModal">Upload</button>
-       </div>
+        <div v-if="canUploadPermission">
+          <button class="btn-brand" @click="closeUploadModal">Upload</button>
+        </div>
       </DataTableLayout>
     </div>
     <FormModal
@@ -54,15 +54,16 @@
       @updated="forceRefresh"
       :url="'/product-categories'"
       type="ProductCategory"
+      :downloadUrl="'product_category'"
     />
   </DashboardLayout>
 </template>
 
 <script setup>
-import { productCategoryFormFields } from "@/formfields/formFields";
-import { useSharedComponent } from "@/composable/useSharedComponent";
+import { productCategoryFormFields } from '@/formfields/formFields'
+import { useSharedComponent } from '@/composable/useSharedComponent'
 
-console.log(productCategoryFormFields);
+console.log(productCategoryFormFields)
 const {
   DataTableLayout,
   FormModal,
@@ -75,50 +76,41 @@ const {
   useDeleteComposable,
   defineEmits,
   UploadModal,
-  useUploadComposable,
-  
-} = useSharedComponent('product-categories');
-const { showUploadModal, closeUploadModal } = useUploadComposable();
+  useUploadComposable
+} = useSharedComponent('product-categories')
+const { showUploadModal, closeUploadModal } = useUploadComposable()
 
 const { showModal, forceUpdate, closeModal } = usePostComposable(
-  "/product-categories",
+  '/product-categories',
   productCategoryFormFields
-);
-const emit = defineEmits("forceRefresh");
-const {  handleEdit,showEditModal, closeEditModal, items } = useEditComposable(emit);
+)
+const emit = defineEmits('forceRefresh')
+const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit)
 
 const forceRefresh = () => {
-  forceUpdate.value++;
-};
-const {
-  handleDelete,
-  showDeleteModal,
-  itemsId,
-  closeDeleteModal,
-} = useDeleteComposable();
+  forceUpdate.value++
+}
+const { handleDelete, showDeleteModal, itemsId, closeDeleteModal } = useDeleteComposable()
 
-const store = useStore();
+const store = useStore()
 const permissions = computed(() => {
-    return  store.getUser.user.permission.permissions.find(p => p.page_name === "product-categories");
- })
+  return store.getUser.user.permission.permissions.find((p) => p.page_name === 'product-categories')
+})
 
- const additionalColumns = computed(() => {
-  const cols = [];
-  if (permissions.value?.update == 1 ) {
-   
-    cols.push({ name: 'Edit', action: handleEdit });
+const additionalColumns = computed(() => {
+  const cols = []
+  if (permissions.value?.update == 1) {
+    cols.push({ name: 'Edit', action: handleEdit })
   }
-  if (permissions.value?.del  == 1) {
-    
-    cols.push({ name: 'Delete', action: handleDelete });
+  if (permissions.value?.del == 1) {
+    cols.push({ name: 'Delete', action: handleDelete })
   }
- 
-  return cols;
-});
 
-  //check upload permission
+  return cols
+})
+
+//check upload permission
 const canUploadPermission = computed(() => {
-
-return permissions.value?.write == 1;
-});
+  return permissions.value?.write == 1
+})
 </script>

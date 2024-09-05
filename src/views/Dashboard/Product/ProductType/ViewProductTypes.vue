@@ -35,7 +35,7 @@
             <th>SUPPLIER PHONE NUMBER</th>
             <th>CREATED BY</th>
             <th>UPDATED BY</th>
-            <!-- <th>EDIT</th> -->
+            <th>EDIT</th>
             <th>DELETE</th>
           </tr>
         </thead>
@@ -65,7 +65,7 @@
             <td>{{ item.supplier_phone_number }}</td>
             <td>{{ item.created_by }}</td>
             <td>{{ item.updated_by }}</td>
-            <!-- <td><button @click="openEditModal(item)">Edit</button></td> -->
+            <td><button @click="openEditModal(item)">Edit</button></td>
             <td><button @click="openDeleteModal(item)">Delete</button></td>
           </tr>
         </tbody>
@@ -73,21 +73,23 @@
       <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
     </div>
 
-    <!-- <EditModal
+    <EditModal
       v-if="showEditModal"
       @close="closeEditModal"
-      @fetchDataForSubCategory="fetchDataForSubCategory"
       :items="itemToEdit"
       @updated="forceRefresh"
+      @fetchDataForSubCategory="fetchDataForSubCategory"
       :formField="productTypeFormFields"
       :isLoadingMsg="isOptionLoadingMsg"
-      :url="product-types"
-    /> -->
+      :url="'/product-types'"
+    />
+
     <UploadModal
       v-if="showUploadModal"
       @close="closeUploadModal"
       @updated="forceRefresh"
       :url="'/process-csv'"
+      :downloadUrl="'product'"
       type="Product"
     />
 
@@ -110,9 +112,9 @@ import { ref, onMounted, watch } from 'vue'
 import apiService from '@/services/apiService'
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue'
 import UploadModal from '@/components/UI/Modal/UploadModal.vue'
-// import EditModal from '@/components/UI/Modal/EditModal.vue';
+import EditModal from '@/components/UI/Modal/EditModal.vue';
 import Pagination from '@/components/UI/Pagination/PaginatePage.vue'
-// import { productTypeFormFields } from '@/formfields/formFields';
+import { productTypeFormFields } from '@/formfields/formFields';
 import { useSharedComponent } from '@/composable/useSharedComponent'
 
 const search = ref('')
@@ -120,12 +122,12 @@ const isSearching = ref(false)
 
 const data = ref([])
 const pagination = ref({})
-// const showEditModal = ref(false)
+const showEditModal = ref(false)
 const showDeleteModal = ref(false)
 const showUploadModal = ref(false)
 const itemToDelete = ref(null)
-// const itemToEdit = ref(null)
-const modalTitle = 'Delete Sale'
+const itemToEdit = ref(null)
+const modalTitle = 'Delete Product'
 
 const currentPage = ref(1)
 const totalPages = ref(0)
@@ -135,29 +137,67 @@ const errorMessage = ref('')
 
 const { useSelectComposable } = useSharedComponent('products')
 
+const sellingUnits = ref([]);
+const sellingCapacities = ref([]);
+
 onMounted(async () => {
   await fetchData()
 })
 
-// const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg } = useSelectComposable(
-//   productTypeFormFields,
-//   '/products',
-//    'category_id',
-//   'sub_category_id',
-//   'sub_category_name'
-// )
+const url = '/all-product-sub-categories-by-category-id'
 
-// onMounted(async () => {
-//   await fetchDataForSelect('Product Name', '/all-products', 'id', 'product_name')
-//   // await fetchDataForSelect('Measurement', '/measurements', 'id', 'measurement_name')
-//   await fetchDataForSelect('Container', '/list-purchase-units', 'id', 'purchase_unit_name')
-//   await fetchDataForSelect(
-//     'Container Capacity',
-//     '/container-with-capacities',
-//     'id',
-//     'container_capacitity',
-//   )
-// });
+const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg } = useSelectComposable(
+  productTypeFormFields,
+  url,
+   'category_id',
+  'sub_category_id',
+  'sub_category_name'
+)
+
+onMounted(async () => {
+  await fetchDataForSelect('Product Category', '/product-categories', 'id', 'category_name')
+  await fetchDataForSelect('Purchase Unit', '/list-purchase-units', 'id', 'purchase_unit_name')
+  
+});
+
+async function fetchSellingUnits(purchaseUnitId) {
+  if (purchaseUnitId) {
+    try {
+      const response = await apiService.get(`/list-purchase-units/${purchaseUnitId}`);
+      console.log(response)
+      sellingUnits.value = response.data;
+
+      const sellingUnitField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_id');
+      if (sellingUnitField) {
+        sellingUnitField.options = sellingUnits.value.map(unit => ({
+          value: unit.id,
+          label: unit.selling_unit_name
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching selling units:', error);
+    }
+  }
+}
+
+async function fetchSellingCapacities(purchaseUnitId, sellingUnitId) {
+  if (purchaseUnitId && sellingUnitId) {
+    try {
+      const response = await apiService.get(`/list-purchase-units/${purchaseUnitId}/${sellingUnitId}`);
+      sellingCapacities.value = response.data;
+
+       const sellingCapacityField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_capacity_id');
+      if (sellingCapacityField) {
+        sellingCapacityField.options = sellingCapacities.value.map(capacity => ({
+          value: capacity.id,
+          label: capacity.capacity_name
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching selling capacities:', error);
+    }
+  }
+}
 
 async function fetchData(page = 1) {
   try {
@@ -188,15 +228,16 @@ watch(search, async (newSearch) => {
     isSearching.value = true
     try {
       const response = await apiService.get(`search-product-types/${newSearch}`)
-      console.log(response.data)
-      if(response.data.length>0){
-      data.value = response.data
-      return data.value
+      console.log(response)
+      if(response.length>0){
+      data.value = response
+      // return data.value
+      console.log(data.value)
       }else {
         data.value= [];
-        errorMessage.value = response.data.message || 'No Product found'
+        errorMessage.value = response.message || 'No Product found'
       }
-      
+
     } catch (error) {
       console.error('Failed to fetch data:', error)
       data.value = [];
@@ -217,15 +258,30 @@ function changePage(page) {
   }
 }
 
-// function openEditModal(item) {
-//   itemToEdit.value = item
-//   showEditModal.value = true
-// }
+const openEditModal = async(item) => {
+  itemToEdit.value = item
 
-// function closeEditModal() {
-//   showEditModal.value = false
-//   itemToEdit.value = null
-// }
+    await fetchSellingUnits(item.purchase_unit_id);
+
+  // Fetch and update selling capacities
+  await fetchSellingCapacities(item.purchase_unit_id, item.selling_unit_id);
+
+  productTypeFormFields.value.forEach(field => {
+    if (field.databaseField === 'selling_unit_id') {
+      field.value = item.selling_unit_id;
+    }
+    if (field.databaseField === 'selling_unit_capacity_id') {
+      field.value = item.selling_unit_capacity_id;
+    }
+  });
+
+  showEditModal.value = true
+}
+
+function closeEditModal() {
+  showEditModal.value = false
+  itemToEdit.value = null
+}
 
 function openDeleteModal(item) {
   itemToDelete.value = item

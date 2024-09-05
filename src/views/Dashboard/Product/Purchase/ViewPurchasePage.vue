@@ -21,7 +21,7 @@
             <th>SELLING UNIT</th>
             <th>SELLING UNIT CAPACITY</th>
             <!-- <th>CONTAINER QTY</th> -->
-            <th>CAPACITY QTY</th>
+            <th>PURCHASE QTY</th>
             <th>EXPIRY DATE</th>
             <th>COST PRICE(NGN)</th>
             <th>SELLING PRICE(NGN)</th>

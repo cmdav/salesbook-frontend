@@ -276,74 +276,92 @@ export const formFields = ref([
 export const productTypeFormFields = ref([
   {
     label: 'Product Name',
-    type: 'select',
+    type: 'text',
     value: '',
     required: false,
     placeholder: 'Choose Product Name',
     options: [],
-    databaseField: 'product_id'
-  },
-  {
-    label: 'Product Type',
-    type: 'text',
-    value: '',
-    required: true,
-    placeholder: 'Enter product type name',
     databaseField: 'product_type_name'
   },
   {
-    label: 'Product Type Image',
+    label: 'Product Image',
     type: 'image',
     value: '',
-    required: false,
-    placeholder: 'Enter image URL',
+    required: true,
+    placeholder: 'Choose Image Url',
     databaseField: 'product_type_image'
   },
   {
-    label: 'Product Type Description',
-    type: 'textarea',
+    label: 'Product Description',
+    type: 'text',
     value: '',
-    required: true,
-    placeholder: 'Enter product type description',
+    required: false,
+    placeholder: 'Enter Product Description',
     databaseField: 'product_type_description'
   },
-  
-  // {
-  //   label: 'Measurement',
-  //   type: 'select',
-  //   value: '',
-  //   required: true,
-  //   placeholder: 'Select Measurement',
-  //   options: [],
-  //   databaseField: 'measurement_id'
-  // },
-  // {
-  //   label: 'Purchase Unit',
-  //   type: 'select',
-  //   value: '',
-  //   required: true,
-  //   placeholder: 'Select Purchase Unit ',
-  //   options: [],
-  //   databaseField: 'container_type'
-  // },
-  // {
-  //   label: 'Selling Unit',
-  //   type: 'select',
-  //   value: '',
-  //   required: true,
-  //   placeholder: 'Select Selling Unit ',
-  //   options: [],
-  //   databaseField: 'container_type_capacity_id'
-  // },
   {
-    label: 'Selling Unit Capacity',
+    label: 'Barcode',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter Barcode',
+    databaseField: 'barcode'
+  },
+  {
+    label: 'Vat',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter VAT',
+    // options: [],
+    databaseField: 'vat'
+  },
+  {
+    label: 'Product Category',
+    type: 'select',
+    value: '',
+    required: true,
+    option: [],
+    placeholder: 'Select Product Category',
+    databaseField: 'category_id'
+  },
+  {
+    label: 'Product Sub Category',
+    type: 'select',
+    value: '',
+    required: true,
+    option: [],
+    placeholder: 'Select Product Sub Category',
+    databaseField: 'sub_category_id'
+  },
+   {
+    label: 'Purchase Unit',
+    type: 'select',
+    value: '',
+    required: true,
+    placeholder: 'Select Purchase Unit ',
+    options: [],
+    databaseField: 'purchase_unit_id'
+  },
+  {
+    label: 'Selling Unit',
+    type: 'select',
+    value: '',
+    required: true,
+    placeholder: 'Select Selling Unit ',
+    options: [],
+    databaseField: 'selling_unit_id'
+  },
+  {
+    label: 'How many selling unit equal a purchasing unit',
     type: 'select',
     value: '',
     required: true,
     placeholder: 'Select Selling Capacity Unit ',
     options: [],
     databaseField: 'selling_unit_capacity_id'
-  }
+  },
+ 
 ])
 
 export const purchaseFormFields = ref([
