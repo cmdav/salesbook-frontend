@@ -34,7 +34,18 @@
                 </svg>
               </button>
               <button class="add-selling-unit-button" @click="openDeleteModal(purchaseUnit.id)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="white" fill-rule="evenodd" d="m6.774 6.4l.812 13.648a.8.8 0 0 0 .798.752h7.232a.8.8 0 0 0 .798-.752L17.226 6.4zm11.655 0l-.817 13.719A2 2 0 0 1 15.616 22H8.384a2 2 0 0 1-1.996-1.881L5.571 6.4H3.5v-.7a.5.5 0 0 1 .5-.5h16a.5.5 0 0 1 .5.5v.7zM14 3a.5.5 0 0 1 .5.5v.7h-5v-.7A.5.5 0 0 1 10 3zM9.5 9h1.2l.5 9H10zm3.8 0h1.2l-.5 9h-1.2z"/></svg>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="1em"
+                  height="1em"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="white"
+                    fill-rule="evenodd"
+                    d="m6.774 6.4l.812 13.648a.8.8 0 0 0 .798.752h7.232a.8.8 0 0 0 .798-.752L17.226 6.4zm11.655 0l-.817 13.719A2 2 0 0 1 15.616 22H8.384a2 2 0 0 1-1.996-1.881L5.571 6.4H3.5v-.7a.5.5 0 0 1 .5-.5h16a.5.5 0 0 1 .5.5v.7zM14 3a.5.5 0 0 1 .5.5v.7h-5v-.7A.5.5 0 0 1 10 3zM9.5 9h1.2l.5 9H10zm3.8 0h1.2l-.5 9h-1.2z"
+                  />
+                </svg>
               </button>
             </div>
             <div v-if="purchaseUnit.selling_units.length > 0">
@@ -95,6 +106,19 @@
           </button>
         </div> -->
 
+        <div v-if="showDeleteModal" class="modal backdrop-blur z-[100] fixed animate__zoomIn animate__rubberBand animate__fadeOut min-h-screen h-full">
+          <div class="modal__body relative w-full md:max-w-[600px] bg-white m-0 md:px-5 py-4 px-4">
+            <header class="flex flex-row items-center justify-between border-b-[#000000] pb-[5px] mb-[35px] border-b-[1px]">
+            <h3 class="text-[22px] font-EBGaramond500 text-[#244034]">Confirm Deletion</h3>
+            </header>
+            <p class="text-center py-4">Are you sure you want to delete this purchase unit?</p>
+            <div class="flex justify-center">
+              <button @click="confirmDelete" class="btn-brand !bg-green-400 mr-6">Yes, Delete</button>
+              <button @click="closeDeleteModal" class="btn-brand !bg-red-600">Cancel</button>
+            </div>
+          </div>
+        </div>
+
         <UploadModal
           v-if="showUploadModal"
           @close="closeUploadModal"
@@ -130,28 +154,19 @@
 
     <!-- :items="itemToDelete"
       :url="'/purchase-units'" -->
-    <DeleteModal
-      v-if="showDeleteModal"
-      @close="closeDeleteModal"
-      @updated="forceRefresh"
-      
-      :modalTitle="modalTitle"
-    />
   </DashboardLayout>
 </template>
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import apiService from '@/services/apiService'
-import { catchAxiosError } from '@/services/Response'
+import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
 import DashboardLayout from '@/components/Layouts/dashboardLayout.vue'
 import CreateEditModal from '@/components/UI/Modal/purchaseUnitModal.vue'
-import DeleteModal from '@/components/UI/Modal/DeleteModals.vue'
 import UploadModal from '@/components/UI/Modal/UploadModal.vue'
 import Pagination from '@/components/UI/Pagination/PaginatePage.vue'
 import CreateSellingUnitModal from '@/components/UI/Modal/sellingUnitModal.vue'
 import SellingUnitCapacityModal from '@/components/UI/Modal/sellingUnitCapacityModal.vue'
 
-const modalTitle = ref('Delete Measurement')
 const purchaseUnits = ref([])
 const isModalOpen = ref(false)
 const isSellingUnitModalOpen = ref(false)
@@ -194,16 +209,6 @@ function changePage(page) {
   }
 }
 
-const deletePurchase = async (id) => {
-  console.log('Function Called')
-  try {
-    const response = await apiService.delete(`purchase-units/${id}`)
-    console.log(response)
-  } catch (error) {
-    catchAxiosError(error)
-  }
-}
-
 const openCreateModal = () => {
   isModalOpen.value = true
 }
@@ -227,14 +232,33 @@ const closeSellingUnitModal = () => {
 }
 
 function openDeleteModal(item) {
-  itemToDelete.value = item;
+  itemToDelete.value = item
   console.log(itemToDelete.value)
-  showDeleteModal.value = true;
+  showDeleteModal.value = true
 }
 
 function closeDeleteModal() {
   showDeleteModal.value = false
   itemToDelete.value = null
+}
+
+const confirmDelete = () => {
+  if (itemToDelete.value) {
+    deleteUnit(itemToDelete.value)
+    closeDeleteModal()
+  }
+}
+
+const deleteUnit = async (id) => {
+  console.log('Function Called')
+  try {
+    const response = await apiService.delete(`purchase-units/${id}`)
+    // console.log(response)
+    fetchPurchaseUnits(currentPage.value)
+    catchAxiosSuccess(response.data)
+  } catch (error) {
+    catchAxiosError(error)
+  }
 }
 
 const closeSellingUnitCapacityModal = () => {
@@ -449,5 +473,38 @@ function forceRefresh() {
   background-color: #c35214;
   border-radius: 4px;
   color: white;
+}
+
+/* modal Style */
+
+.modal {
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.modal__body {
+  position: relative;
+  max-width: 600px; 
+  background-color: #fff;
+  border-radius: 12px;
+  animation: slidedown 0.8s ease;
+  max-height: 90vh; 
+  overflow-y: auto; 
+}
+
+.close-button {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  background: none;
+  border: none;
+  font-size: 25px;
+  cursor: pointer;
 }
 </style>
