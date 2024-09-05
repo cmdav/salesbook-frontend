@@ -19,6 +19,7 @@ import ProductsPages from '@/views/Dashboard/Product/ProductPages.vue'
 import ProductCategoryPage from '@/views/Dashboard/Product/ProductCategoryPage.vue'
 import ProductSubCategoryPage from '@/views/Dashboard/Product/ProductSubCategoryPage.vue'
 import CurrencyPage from '@/views/Dashboard/Product/CurrencyPage.vue'
+import ReportPage from '@/views/Dashboard/Product/ReportPage.vue'
 // import StorePage from '@/views/Dashboard/Product/StorePage.vue'
 import StorePage from '@/views/Dashboard/Product/StorePagee.vue'
 import SalePage from '@/views/Dashboard/Product/Sale/ViewSalePage.vue'
@@ -74,6 +75,12 @@ const router = createRouter({
       name: 'register',
       component: Register,
       beforeEnter: [middleware.redirectDashboard]
+    },
+    {
+      path: '/report',
+      name: 'report',
+      component: ReportPage,
+      //beforeEnter: [middleware.redirectDashboard]
     },
     {
       path: '/new-supplier/:token',

@@ -108,7 +108,7 @@ const menuItems = computed(() => {
       backendKey: 'supplier-products'
     },
     { name: 'Records', route: '/', icon: recordsIcon, backendKey: 'records' },
-    { name: 'Reports', route: '/', icon: reportsIcon, backendKey: 'reports' },
+    { name: 'Reports', route: '/report', icon: reportsIcon, backendKey: 'reports' },
     {
       name: 'Subscription',
       route: '/c-subscriptions',
