@@ -13,21 +13,8 @@
                 <div class="title font-Satoshi700 text-white py-4 text-[16px]">
                   Monthly Sales Report
                   <br />
-                  <small>(total sales for this month)</small>
+                  <small>(Total sales for this month)</small>
                 </div>
-                <div class="amount font-Satoshi700 text-white text-[32px]">{{ monthlySalesCount }}</div>
-              </div>
-            </div>
-
-            <!-- Card for Item List -->
-            <div @click="showReport('item-list')" :class="getActiveClass('item-list')" class="flex flex-row justify-between rounded-[8px] p-4 cursor-pointer" style="background-color: rgb(123, 97, 255)">
-              <div>
-                <div class="title font-Satoshi700 text-white py-4 text-[16px]">
-                  Item List
-                  <br />
-                  <small>(all the item in the store within a given period)</small>
-                </div>
-                <div class="amount font-Satoshi700 text-white text-[32px]">{{ itemListCount }}</div>
               </div>
             </div>
 
@@ -37,9 +24,19 @@
                 <div class="title font-Satoshi700 text-white py-4 text-[16px]">
                   Total Sales Report
                   <br />
-                  <small>(total sale within a given period)</small>
+                  <small>(Total sale within a given period)</small>
                 </div>
-                <div class="amount font-Satoshi700 text-white text-[32px]">{{ totalSalesCount }}</div>
+              </div>
+            </div>
+
+            <!-- Card for Item List -->
+            <div @click="showReport('item-list')" :class="getActiveClass('item-list')" class="flex flex-row justify-between rounded-[8px] p-4 cursor-pointer" style="background-color: rgb(123, 97, 255)">
+              <div>
+                <div class="title font-Satoshi700 text-white py-4 text-[16px]">
+                  Item List
+                  <br />
+                  <small>(All the items in the store within a given period)</small>
+                </div>
               </div>
             </div>
 
@@ -49,9 +46,8 @@
                 <div class="title font-Satoshi700 text-white py-4 text-[16px]">
                   Price List
                   <br />
-                  <small>(product and their prices)</small>
+                  <small>(Products and their prices)</small>
                 </div>
-                <div class="amount font-Satoshi700 text-white text-[32px]">{{ priceListCount }}</div>
               </div>
             </div>
 
@@ -61,16 +57,15 @@
                 <div class="title font-Satoshi700 text-white py-4 text-[16px]">
                   Product Expiration Report
                   <br />
-                  <small>(all product that will soon expire within a given period)</small>
+                  <small>(All products that will expire within a given period)</small>
                 </div>
-                <div class="amount font-Satoshi700 text-white text-[32px]">{{ expiredProductCount }}</div>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Date picker form for reports that require date range -->
-        <div v-if="showDatePicker" class="my-4 flex flex-wrap items-center gap-4"> <!-- Added margin and gap -->
+        <div v-if="showDatePicker" class="my-4 flex flex-wrap items-center gap-4">
           <div class="form-group w-full md:w-1/4">
             <label for="start-date">Start Date:</label>
             <input type="date" id="start-date" v-model="startDate" class="form-input w-full" />
@@ -86,7 +81,10 @@
 
         <!-- Download PDF Button -->
         <div v-if="reportData.length > 0" class="flex justify-end mb-4">
-          <button @click="downloadPDF" class="btn-primary">Download PDF</button>
+          <button @click="downloadPDF" class="btn-primary" :disabled="loading">
+            <span v-if="loading">Downloading...</span>
+            <span v-else>Download PDF</span>
+          </button>
         </div>
 
         <!-- Table to show report data -->
@@ -121,13 +119,6 @@ import apiService from "@/services/apiService";
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
-// Data for each card counts
-const monthlySalesCount = ref(0);
-const itemListCount = ref(0);
-const totalSalesCount = ref(0);
-const priceListCount = ref(0);
-const expiredProductCount = ref(0);
-
 // To control the date picker and report data
 const showDatePicker = ref(false);
 const reportData = ref([]);
@@ -135,6 +126,7 @@ const columns = ref([]); // Dynamic columns based on report type
 const startDate = ref("");
 const endDate = ref("");
 const currentReportType = ref(""); // Track the current report type
+const loading = ref(false); // Loading state for PDF download
 
 // To control report title
 const reportTitles = {
@@ -222,68 +214,158 @@ const fetchReportData = async (reportType) => {
 
     if (response.success) {
       reportData.value = response.data.data;
-
-      // Update card counts based on the total value from the pagination metadata
-      switch (reportType) {
-        case "monthly-sales":
-          monthlySalesCount.value = response.data.total;
-          break;
-        case "item-list":
-          itemListCount.value = response.data.total;
-          break;
-        case "total-sales":
-          totalSalesCount.value = response.data.total;
-          break;
-        case "price-list":
-          priceListCount.value = response.data.total;
-          break;
-        case "expired-product":
-          expiredProductCount.value = response.data.total;
-          break;
-      }
     }
   } catch (error) {
     console.error("Error fetching report data:", error);
   }
 };
+const orgDetailsCache = ref(null); // Store the organization details response
 
-// Function to download table data as a PDF
-const downloadPDF = () => {
-  const doc = new jsPDF();
-  const tableData = reportData.value.map((item, index) => {
-    const rowData = [index + 1];
-    columns.value.forEach((column) => {
-      rowData.push(item[column]);
-    });
-    return rowData;
-  });
+const downloadPDF = async () => {
+  loading.value = true; // Start loading
 
-  // Define columns with capitalized and formatted headers
-  const tableHeaders = [
-    "S.No", 
-    ...columns.value.map((column) => column.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase()))
-  ];
+  let url = "";
 
-  // Add title
-  doc.setFontSize(18);
-  doc.text(currentReportTitle.value, 14, 22);
+  // Set API URL with all=true
+  switch (currentReportType.value) {
+    case "monthly-sales":
+      url = `/monthly-sale-reports?all=true`;
+      break;
+    case "item-list":
+      url = `/item-lists?start_date=${startDate.value}&end_date=${endDate.value}&all=true`;
+      break;
+    case "total-sales":
+      url = `/total-sale-reports?start_date=${startDate.value}&end_date=${endDate.value}&all=true`;
+      break;
+    case "price-list":
+      url = `/product-price-lists?all=true`;
+      break;
+    case "expired-product":
+      url = `/expired-product-by-dates?start_date=${startDate.value}&end_date=${endDate.value}&all=true`;
+      break;
+    default:
+      return;
+  }
 
-  // Generate table using jsPDF autoTable plugin
-  doc.autoTable({
-    head: [tableHeaders],
-    body: tableData,
-    startY: 30,
-    styles: {
-      fontSize: 10,
-      fontStyle: 'bold',
-    },
-    theme: 'grid',
-  });
+  try {
+    // Fetch report data
+    const reportResponse = await apiService.get(url);
 
-  doc.save(`${currentReportTitle.value}.pdf`);
+    // Check if organization details are already cached
+    if (!orgDetailsCache.value) {
+      const orgDetailsResponse = await apiService.get('/user-org-and-branch-details');
+      if (orgDetailsResponse.success) {
+        orgDetailsCache.value = orgDetailsResponse.data; // Cache the response
+      } else {
+        throw new Error("Failed to fetch organization details");
+      }
+    }
+
+    // Ensure report data is structured as expected
+    if (reportResponse.success && reportResponse.data.length > 0 && orgDetailsCache.value) {
+      const doc = new jsPDF();
+
+      // Extract organization and branch details from cache
+      const {
+        organization_name,
+        organization_logo,
+        company_address,
+        company_phone_number,
+        company_email,
+        branch_name,
+        branch_address,
+        branch_email,
+        branch_phone_number,
+        country_name,
+        state_name
+      } = orgDetailsCache.value;
+
+      // Add organization logo if available
+      if (organization_logo) {
+        const img = new Image();
+        img.src = organization_logo;
+        doc.addImage(img, 'PNG', 10, 10, 40, 20); // Adjust dimensions and position as necessary
+      }
+
+      // Organization details with reduced line spacing
+      let yPosition = 15;
+      const leftMargin = 60;
+      doc.setFontSize(12);
+
+      doc.text(organization_name || "", leftMargin, yPosition); // Organization name
+      yPosition += 6; // Reduced line spacing
+      doc.text(company_address || "", leftMargin, yPosition); // Company address
+      yPosition += 6;
+      doc.text(company_phone_number || "", leftMargin, yPosition); // Phone number
+      yPosition += 6;
+      doc.text(company_email || "", leftMargin, yPosition); // Email
+
+      // Branch details with reduced line spacing
+      yPosition += 10; // Space between organization and branch details
+      doc.text(`Branch: ${branch_name || ""}`, 10, yPosition);
+      yPosition += 6;
+      doc.text(`Address: ${branch_address || ""}`, 10, yPosition);
+      yPosition += 6;
+      doc.text(`Email: ${branch_email || ""}`, 10, yPosition);
+      yPosition += 6;
+      doc.text(`Phone: ${branch_phone_number || ""}`, 10, yPosition);
+      yPosition += 6;
+      doc.text(`State: ${state_name || ""}`, 10, yPosition);
+      yPosition += 6;
+      doc.text(`Country: ${country_name || ""}`, 10, yPosition);
+
+      // Ensure columns are populated
+      if (columns.value.length === 0) {
+        throw new Error("Columns are not properly defined for the report");
+      }
+
+      const tableData = reportResponse.data.map((item, index) => {
+        const rowData = [index + 1];
+        columns.value.forEach((column) => {
+          rowData.push(item[column] || "N/A"); // Provide a default value if a field is missing
+        });
+        return rowData;
+      });
+
+      // Define columns with capitalized and formatted headers
+      const tableHeaders = [
+        "S.No",
+        ...columns.value.map((column) => column.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase()))
+      ];
+
+      // Add title
+      doc.setFontSize(18);
+      yPosition += 15; // Adjust position below the header
+      doc.text(currentReportTitle.value, 14, yPosition);
+
+      // Generate table using jsPDF autoTable plugin
+      doc.autoTable({
+        head: [tableHeaders],
+        body: tableData,
+        startY: yPosition + 10, // Adjust startY to leave space for the header
+        styles: {
+          fontSize: 10,
+          fontStyle: 'bold',
+        },
+        theme: 'grid',
+      });
+
+      doc.save(`${currentReportTitle.value}.pdf`);
+    } else {
+      console.error("No data found for the report or organization details");
+      throw new Error("No data found for the report or organization details");
+    }
+  } catch (error) {
+    console.error("Error downloading PDF:", error);
+  } finally {
+    loading.value = false; // Stop loading
+  }
 };
 
+
 </script>
+
+
 
 <style scoped>
 /* Responsive Table */
