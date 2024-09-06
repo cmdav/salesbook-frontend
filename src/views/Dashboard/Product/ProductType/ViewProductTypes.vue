@@ -35,7 +35,7 @@
             <th>SUPPLIER PHONE NUMBER</th>
             <th>CREATED BY</th>
             <th>UPDATED BY</th>
-            <th>EDIT</th>
+            <!-- <th>EDIT</th> -->
             <th>DELETE</th>
           </tr>
         </thead>
@@ -65,7 +65,7 @@
             <td>{{ item.supplier_phone_number }}</td>
             <td>{{ item.created_by }}</td>
             <td>{{ item.updated_by }}</td>
-            <td><button @click="openEditModal(item)">Edit</button></td>
+            <!-- <td><button @click="openEditModal(item)">Edit</button></td> -->
             <td><button @click="openDeleteModal(item)">Delete</button></td>
           </tr>
         </tbody>

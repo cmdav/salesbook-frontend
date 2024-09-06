@@ -1,152 +1,173 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import apiService from '@/services/apiService';
-import { getDb, setDb } from '@/utils/db';
-import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue';
-import { useStore } from "@/stores/user";
+import { ref, computed, onMounted } from 'vue'
+import apiService from '@/services/apiService'
+import { getDb, setDb } from '@/utils/db'
+import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue'
+import { useStore } from '@/stores/user'
+import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
 
-const search = ref('');
-const data = ref([]);
-const pagination = ref({});
+const search = ref('')
+const data = ref([])
+const pagination = ref({})
 
-const currentPage = ref(1);
-const totalPages = ref(0);
-const branches = ref([]);
-const errorMessage = ref('');
+const currentPage = ref(1)
+const totalPages = ref(0)
+const branches = ref([])
+const errorMessage = ref('')
 
 onMounted(async () => {
   try {
-    const response = await apiService.get('/list-business-branches'); 
+    const response = await apiService.get('/list-business-branches')
     console.log(response)
-    branches.value = response || [];
+    branches.value = response || []
     console.log(branches.value)
   } catch (error) {
-    console.error('Failed to fetch branches:', error);
+    console.error('Failed to fetch branches:', error)
   }
-});
+})
 
 function handleBranchChange(selectedBranchId) {
   if (selectedBranchId) {
-    fetchBranch(selectedBranchId);
+    fetchBranch(selectedBranchId)
   } else {
-    fetchData(currentPage.value);
+    fetchData(currentPage.value)
   }
 }
 
 async function fetchBranch(branchId = 1) {
   try {
-    const response = await apiService.get(`stores?branch_id=${branchId}`);
+    const response = await apiService.get(`stores?branch_id=${branchId}`)
     if (response.data && response.data.length) {
-      data.value = response.data;
-      errorMessage.value = '';
+      data.value = response.data
+      errorMessage.value = ''
     } else {
-      data.value = [];
-      errorMessage.value = 'No items found for the selected branch.';
+      data.value = []
+      errorMessage.value = 'No items found for the selected branch.'
     }
   } catch (error) {
-    console.error('Failed to fetch sales data:', error);
-    errorMessage.value = 'An error occurred while fetching data.';
+    console.error('Failed to fetch sales data:', error)
+    errorMessage.value = 'An error occurred while fetching data.'
   }
 }
 
 const filteredData = computed(() => {
-  return data.value.filter(item => {
-    const description = item.product_description || '';
-    return description.toLowerCase().includes(search.value.toLowerCase());
-  });
-});
+  return data.value.filter((item) => {
+    const description = item.product_description || ''
+    return description.toLowerCase().includes(search.value.toLowerCase())
+  })
+})
 
 async function fetchData(page = 1) {
   try {
-    const response = await apiService.get(`stores?page=${page}`);
+    const response = await apiService.get(`stores?page=${page}`)
     // console.log(response.data)
     // console.log(response.data.data)
-    data.value = response.data || []; // Adjust if API response is nested differently
+    data.value = response.data || [] // Adjust if API response is nested differently
     pagination.value = {
       next_page_url: response.data.next_page_url,
-      prev_page_url: response.data.prev_page_url,
-    };
-    currentPage.value = page;
-    totalPages.value = response.data.last_page;
+      prev_page_url: response.data.prev_page_url
+    }
+    currentPage.value = page
+    totalPages.value = response.data.last_page
 
     // Cache the data in IndexedDB
-    await setDb('stores', { id: `page-${page}`, data: data.value });
-    console.log(`Data from API cached for page ${page}`);
+    await setDb('stores', { id: `page-${page}`, data: data.value })
+    console.log(`Data from API cached for page ${page}`)
   } catch (error) {
-    console.error("Failed to fetch data:", error);
+    console.error('Failed to fetch data:', error)
     // Retrieve data from IndexedDB if fetch fails
-    const cachedData = await getDb('stores', `page-${page}`);
+    const cachedData = await getDb('stores', `page-${page}`)
     if (cachedData) {
-      data.value = cachedData.data;
-      console.log(`Data retrieved from IndexedDB for page ${page}`);
+      data.value = cachedData.data
+      console.log(`Data retrieved from IndexedDB for page ${page}`)
       pagination.value = {
-        next_page_url: currentPage.value < totalPages.value ? `stores?page=${currentPage.value + 1}` : null,
-        prev_page_url: currentPage.value > 1 ? `stores?page=${currentPage.value - 1}` : null,
-      };
+        next_page_url:
+          currentPage.value < totalPages.value ? `stores?page=${currentPage.value + 1}` : null,
+        prev_page_url: currentPage.value > 1 ? `stores?page=${currentPage.value - 1}` : null
+      }
     } else {
-      console.log(`No cached data found for page ${page}`);
+      console.log(`No cached data found for page ${page}`)
     }
-  }
-};
-
-function changePage(page) {
-  if (page > 0 && page <= totalPages.value) {
-    fetchData(page);
   }
 }
 
-const store = useStore();
-const roles = computed(() => store.getUser.user.permission.role_name === "Admin");
+const checkExpiredProduct = async () => {
+  try {
+    const response = await apiService.get('/list-expired-products')
+    // purchaseUnit.value = response.data
+    console.log(response)
+    // if (formState.purchaseUnit) {
+    //   await fetchSellingUnit(formState.purchaseUnit)
+    // }
+    catchAxiosSuccess(response.message)
+  } catch (error) {
+    console.error('Error fetching purchasing unit:', error)
+    catchAxiosError(error)
+  }
+}
 
+function changePage(page) {
+  if (page > 0 && page <= totalPages.value) {
+    fetchData(page)
+  }
+}
 
-onMounted(() => fetchData(currentPage.value));
+const store = useStore()
+const roles = computed(() => store.getUser.user.permission.role_name === 'Admin')
+
+onMounted(() => fetchData(currentPage.value))
 </script>
 
 <template>
-    <DashboardLayout pageTitle="Store Page">
-      <div class="actions">
-        <input type="text" v-model="search" placeholder="Search..." class="search-input" />
-        <!-- <button class="button add-btn"><router-link to="/create-purchase" class="button add-btn">Add</router-link></button> -->
+  <DashboardLayout pageTitle="Store Page">
 
-          <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" />
-      </div>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>S.NO</th>
-              <th>PRODUCT TYPE</th>
-              <th>PRODUCT DESCRIPTION</th>
-              <th>BATCH NO</th>
-              <th>QUANTITY AVAILABLE</th>
-              <th>BRANCH</th>
-              <th>STATUS</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(item, index) in filteredData" :key="item.id">
-              <td>{{ index + 1 }}</td>
-              <td>{{ item.product_type }}</td>
-              <td>{{ item.product_description }}</td>
-              <td>{{ item.batch_no }}</td>
-              <td>{{ item.quantity_available }}</td>
-              <td>{{ item.branch_name }}</td>
-              <td>{{ item.status }}</td>
-            </tr>
-          </tbody>
-        </table>
+              <button class="btn-brand" @click="checkExpiredProduct">Check Expired Products</button>
+
+    <div class="actions">
+      <input type="text" v-model="search" placeholder="Search..." class="search-input" />
+      <!-- <button class="button add-btn"><router-link to="/create-purchase" class="button add-btn">Add</router-link></button> -->
+
+      <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" />
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>S.NO</th>
+            <th>PRODUCT TYPE</th>
+            <th>PRODUCT DESCRIPTION</th>
+            <th>BATCH NO</th>
+            <th>QUANTITY AVAILABLE</th>
+            <th>BRANCH</th>
+            <th>STATUS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item, index) in filteredData" :key="item.id">
+            <td>{{ index + 1 }}</td>
+            <td>{{ item.product_type }}</td>
+            <td>{{ item.product_description }}</td>
+            <td>{{ item.batch_no }}</td>
+            <td>{{ item.quantity_available }}</td>
+            <td>{{ item.branch_name }}</td>
+            <td>{{ item.status }}</td>
+          </tr>
+        </tbody>
+      </table>
       <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+    </div>
 
-      </div>
-  
-  
-      <div class="pagination">
-        <button @click="changePage(currentPage - 1)" :disabled="!pagination.prev_page_url">Previous</button>
-        <span>Page {{ currentPage }} of {{ totalPages }}</span>
-        <button @click="changePage(currentPage + 1)" :disabled="!pagination.next_page_url">Next</button>
-      </div>
-    </DashboardLayout>
-  </template>
+    <div class="pagination">
+      <button @click="changePage(currentPage - 1)" :disabled="!pagination.prev_page_url">
+        Previous
+      </button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button @click="changePage(currentPage + 1)" :disabled="!pagination.next_page_url">
+        Next
+      </button>
+    </div>
+  </DashboardLayout>
+</template>
 
 <style scoped>
 .actions {
@@ -178,11 +199,11 @@ onMounted(() => fetchData(currentPage.value));
 }
 
 .upload-btn {
-  background-color: #C35214;
+  background-color: #c35214;
 }
 
 .add-btn {
-  background-color: #C35214;
+  background-color: #c35214;
 }
 
 .table-container {
@@ -196,10 +217,11 @@ table {
   table-layout: auto;
 }
 
-th, td {
+th,
+td {
   padding: 8px;
   text-align: left;
-  border: 2px solid #C35214; 
+  border: 2px solid #c35214;
   white-space: nowrap;
 }
 
@@ -208,7 +230,7 @@ tbody tr:hover {
 }
 
 thead {
-  background-color: #C35214;
+  background-color: #c35214;
 }
 
 .pagination {
@@ -221,7 +243,7 @@ thead {
 
 .pagination button {
   padding: 8px 16px;
-  background-color: #C35214;
+  background-color: #c35214;
   border: none;
   border-radius: 4px;
   color: white;
@@ -230,7 +252,7 @@ thead {
 
 .pagination span {
   padding: 8px 16px;
-  background-color: #C35214;
+  background-color: #c35214;
   border-radius: 4px;
   color: white;
 }
