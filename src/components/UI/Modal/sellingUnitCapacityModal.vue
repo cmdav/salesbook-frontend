@@ -42,7 +42,7 @@ import { catchAxiosSuccess, catchAxiosError } from '@/services/Response'
 
 const props = defineProps({
   sellingUnitId: {
-    type: Number,
+    type: String,
     required: true
   }
 })

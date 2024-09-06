@@ -6,7 +6,7 @@
       <header
         class="flex flex-row items-center justify-between border-b-[#000000] mb-[0.6em] border-b-[1px]"
       >
-        <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">Add Purchase Unit</h4>
+        <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">{{ isEditing ? 'Edit Purchase Unit' : 'Add Purchase Unit' }}</h4>
         <button class="close-button" @click="$emit('close')">&#10005;</button>
       </header>
       <form @submit.prevent="submitForm" class="max-w-4xl mx-auto p-2">
@@ -28,7 +28,7 @@
           type="submit"
           class="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
-           Add Purchase Unit
+           {{ isEditing ? 'Update Purchase Unit' : 'Add Purchase Unit' }}
         </button>
       </form>
     </div>
@@ -36,26 +36,47 @@
 </template>
 
 <script setup>
-import { defineEmits, ref } from 'vue'
+import { defineProps, watch, defineEmits, ref } from 'vue'
 // import { useCustomerstore } from '@/stores/customers'
 import apiService from "@/services/apiService"
 import { catchAxiosSuccess, catchAxiosError } from '@/services/Response'
 
+const props = defineProps({
+  purchaseUnit: {
+    type: String,
+    default: null
+  }
+})
 
+const emits = defineEmits(['close', 'purchase-unit-updated', 'purchase-unit-added'])
 
-const emits = defineEmits(['close', 'purchase-unit-added'])
+const isEditing = ref(!!props.purchaseUnit)
+const purchaseUnit = ref(isEditing.value ? props.purchaseUnit.purchase_unit_name : '')
 
-
-const purchaseUnit = ref('')
+watch(() => props.purchaseUnit, (newVal) => {
+  if (newVal) {
+    purchaseUnit.value = newVal.purchase_unit_name
+  }
+})
 
 const submitForm = async () => {
   try {
-    const response = await apiService.post('/purchase-units', {
-      purchase_unit_name: purchaseUnit.value
-    })
-    console.log('Form submitted successfully:', response.data)
-    catchAxiosSuccess(response)
-    emits('purchase-unit-added', response.data)
+    
+    if (isEditing.value) {
+      const response = await apiService.update(`/purchase-units/${props.purchaseUnit.id}`, {
+        purchase_unit_name: purchaseUnit.value
+      })
+      console.log('Form submitted successfully:', response.data)
+      emits('purchase-unit-updated', response.data)
+      catchAxiosSuccess(response)
+    } else {
+      const response = await apiService.post('/purchase-units', {
+        purchase_unit_name: purchaseUnit.value
+      })
+      emits('purchase-unit-added', response.data)
+      catchAxiosSuccess(response)
+    }
+    
     emits('close')
   } catch (error) {
     console.error('Error submitting form:', error)
