@@ -3,8 +3,9 @@ import { ref, computed, onMounted } from 'vue'
 import apiService from '@/services/apiService'
 import { getDb, setDb } from '@/utils/db'
 import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue'
+import ExpiredModal from '@/components/UI/Modal/ExpiredModal.vue'
 import { useStore } from '@/stores/user'
-import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
+
 
 const search = ref('')
 const data = ref([])
@@ -14,6 +15,17 @@ const currentPage = ref(1)
 const totalPages = ref(0)
 const branches = ref([])
 const errorMessage = ref('')
+
+const isModalOpen = ref(false)
+
+function openModal() {
+  isModalOpen.value = true
+}
+
+function closeModal() {
+  isModalOpen.value = false
+}
+
 
 onMounted(async () => {
   try {
@@ -91,20 +103,20 @@ async function fetchData(page = 1) {
   }
 }
 
-const checkExpiredProduct = async () => {
-  try {
-    const response = await apiService.get('/list-expired-products')
-    // purchaseUnit.value = response.data
-    console.log(response)
-    // if (formState.purchaseUnit) {
-    //   await fetchSellingUnit(formState.purchaseUnit)
-    // }
-    catchAxiosSuccess(response.message)
-  } catch (error) {
-    console.error('Error fetching purchasing unit:', error)
-    catchAxiosError(error)
-  }
-}
+// const checkExpiredProduct = async () => {
+//   try {
+//     const response = await apiService.get('/list-expired-products')
+//     // purchaseUnit.value = response.data
+//     console.log(response)
+//     // if (formState.purchaseUnit) {
+//     //   await fetchSellingUnit(formState.purchaseUnit)
+//     // }
+//     catchAxiosSuccess(response.message)
+//   } catch (error) {
+//     console.error('Error fetching purchasing unit:', error)
+//     catchAxiosError(error)
+//   }
+// }
 
 function changePage(page) {
   if (page > 0 && page <= totalPages.value) {
@@ -120,8 +132,8 @@ onMounted(() => fetchData(currentPage.value))
 
 <template>
   <DashboardLayout pageTitle="Store Page">
-
-              <button class="btn-brand" @click="checkExpiredProduct">Check Expired Products</button>
+    
+    <button @click="openModal" class="button add-btn my-6">Show Expired Products</button>
 
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
@@ -167,6 +179,9 @@ onMounted(() => fetchData(currentPage.value))
       </button>
     </div>
   </DashboardLayout>
+
+  <ExpiredModal v-if="isModalOpen" @close="closeModal" />
+ 
 </template>
 
 <style scoped>
