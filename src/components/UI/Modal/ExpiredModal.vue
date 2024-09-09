@@ -51,9 +51,13 @@
 import { ref, onMounted } from 'vue'
 import apiService from '@/services/apiService'
 import { catchAxiosSuccess, catchAxiosError } from '@/services/Response';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+
 
 const expiredProducts = ref([])
 const isLoading = ref(true)
+const loading = ref(false)
 
 async function fetchExpiredProducts() {
   try {
@@ -71,19 +75,131 @@ async function fetchExpiredProducts() {
   }
 }
 
-function downloadExpiredProducts() {
-  apiService.get('/list-expired-products?download=true')
-    .then(response => {
-      const blob = new Blob([response.data], { type: 'text/csv' })
-      const link = document.createElement('a')
-      link.href = URL.createObjectURL(blob)
-      link.download = 'expired-products.csv'
-      link.click()
-    })
-    .catch(error => {
-      console.error('Error downloading expired products:', error)
-    })
-}
+
+const downloadExpiredProducts = async () => {
+  loading.value = true; // Start loading
+
+  try {
+    // Fetch expired products data
+    const expiredProductsResponse = await apiService.get('/list-expired-products', {
+  params: {
+    download: true
+  }
+});
+
+    const expiredProductsData = expiredProductsResponse.data || [];
+
+    // Fetch organization details from the API
+    const orgDetailsCache = ref(null);
+    const orgDetailsResponse = await apiService.get('/user-org-and-branch-details');
+    
+    if (orgDetailsResponse.success) {
+      orgDetailsCache.value = orgDetailsResponse.data;
+    } else {
+      throw new Error("Failed to fetch organization details");
+    }
+
+    if (expiredProductsData.length > 0 && orgDetailsCache.value) {
+      const doc = new jsPDF();
+
+      // Extract organization details
+      const {
+        organization_name,
+        organization_logo,
+        company_address,
+        company_phone_number,
+        company_email,
+        branch_name,
+        branch_address,
+        branch_email,
+        branch_phone_number,
+        country_name,
+        state_name
+      } = orgDetailsCache.value;
+
+      doc.setFontSize(12);
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const headerYPosition = 10;
+
+      // Header Information
+      doc.text(organization_name || "", pageWidth / 2, headerYPosition, { align: "center" });
+      doc.text(company_address || "", pageWidth / 2, headerYPosition + 6, { align: "center" });
+      doc.text(`${company_phone_number || ""} | ${company_email || ""}`, pageWidth / 2, headerYPosition + 12, { align: "center" });
+      doc.text(`${branch_name || ""} Branch`, pageWidth / 2, headerYPosition + 18, { align: "center" });
+      doc.text(`Address: ${branch_address || ""}, ${state_name || ""}, ${country_name || ""}`, pageWidth / 2, headerYPosition + 24, { align: "center" });
+      doc.text(`${branch_phone_number || ""} | ${branch_email || ""}`, pageWidth / 2, headerYPosition + 30, { align: "center" });
+
+      // Company Logo
+      if (organization_logo) {
+        const img = new Image();
+        img.src = organization_logo;
+        doc.addImage(img, 'PNG', 10, 10, 40, 20); // Adjust dimensions
+      }
+
+      // Set table headers for expired products
+      const tableHeaders = [
+        "S.No",
+        "Product Sub Category",
+        "Product Name",
+        "Batch No",
+        "Expiry Date",
+        "Purchase Unit",
+        "Selling Unit",
+        "Quantity Available" // Move quantity available to the last column
+      ];
+
+      // Prepare table data
+      const tableData = expiredProductsData.map((item, index) => {
+        return [
+          index + 1, // Serial number
+          item.product_sub_category || "N/A",
+          item.product_type_name || "N/A",
+          item.batch_no || "N/A",
+          item.expiry_date || "N/A",
+          item.purchase_unit_name || "N/A",
+          item.selling_unit_name || "N/A",
+          item.quantity_available || "N/A" // Quantity available as the last column
+        ];
+      });
+
+      // Calculate the grand total for Quantity Available
+      const grandTotalQuantityAvailable = expiredProductsData.reduce((total, item) => {
+        return total + (item.quantity_available || 0);
+      }, 0);
+
+      // Add grand total row at the end of the table
+      tableData.push([
+        "Grand Total", "", "", "", "", "", "", grandTotalQuantityAvailable.toString()
+      ]);
+
+      // Add the report title and table
+      doc.setFontSize(18);
+      doc.text("Expired Products Report", 14, headerYPosition + 40); // Adjust position below the header
+
+      doc.autoTable({
+        head: [tableHeaders],
+        body: tableData,
+        startY: headerYPosition + 50, // Adjust startY for spacing
+        styles: {
+          fontSize: 10,
+          fontStyle: 'bold',
+        },
+        theme: 'grid',
+      });
+
+      // Save the PDF
+      doc.save("expired-products-report.pdf");
+    } else {
+      console.error("No data found for expired products or organization details");
+    }
+  } catch (error) {
+    console.error("Error downloading expired products:", error);
+  } finally {
+    loading.value = false; // Stop loading
+  }
+};
+
+
 
 onMounted(() => {
   fetchExpiredProducts()
