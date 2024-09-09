@@ -72,7 +72,7 @@ async function fetchExpiredProducts() {
 }
 
 function downloadExpiredProducts() {
-  apiService.get('/expired-product-by-dates', { responseType: 'blob' })
+  apiService.get('/list-expired-products?download=true')
     .then(response => {
       const blob = new Blob([response.data], { type: 'text/csv' })
       const link = document.createElement('a')

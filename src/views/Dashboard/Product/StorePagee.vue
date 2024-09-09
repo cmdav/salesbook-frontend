@@ -1,3 +1,57 @@
+
+<template>
+  <DashboardLayout pageTitle="Store Page">
+    
+    <button @click="openModal" class="button add-btn my-6">View Expiring Products</button>
+
+    <div class="actions">
+      <input type="text" v-model="search" placeholder="Search..." class="search-input" />
+      <!-- <button class="button add-btn"><router-link to="/create-purchase" class="button add-btn">Add</router-link></button> -->
+
+      <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" />
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>S.NO</th>
+            <th>PRODUCT TYPE</th>
+            <th>PRODUCT DESCRIPTION</th>
+            <th>BATCH NO</th>
+            <th>QUANTITY AVAILABLE</th>
+            <th>BRANCH</th>
+            <th>STATUS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item, index) in filteredData" :key="item.id">
+            <td>{{ index + 1 }}</td>
+            <td>{{ item.product_type }}</td>
+            <td>{{ item.product_description }}</td>
+            <td>{{ item.batch_no }}</td>
+            <td>{{ item.quantity_available }}</td>
+            <td>{{ item.branch_name }}</td>
+            <td>{{ item.status }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+    </div>
+
+    <div class="pagination">
+      <button @click="changePage(currentPage - 1)" :disabled="!pagination.prev_page_url">
+        Previous
+      </button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button @click="changePage(currentPage + 1)" :disabled="!pagination.next_page_url">
+        Next
+      </button>
+    </div>
+  </DashboardLayout>
+
+  <ExpiredModal v-if="isModalOpen" @close="closeModal" />
+ 
+</template>
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import apiService from '@/services/apiService'
@@ -130,59 +184,7 @@ const roles = computed(() => store.getUser.user.permission.role_name === 'Admin'
 onMounted(() => fetchData(currentPage.value))
 </script>
 
-<template>
-  <DashboardLayout pageTitle="Store Page">
-    
-    <button @click="openModal" class="button add-btn my-6">View Expiring Products</button>
 
-    <div class="actions">
-      <input type="text" v-model="search" placeholder="Search..." class="search-input" />
-      <!-- <button class="button add-btn"><router-link to="/create-purchase" class="button add-btn">Add</router-link></button> -->
-
-      <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" />
-    </div>
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>S.NO</th>
-            <th>PRODUCT TYPE</th>
-            <th>PRODUCT DESCRIPTION</th>
-            <th>BATCH NO</th>
-            <th>QUANTITY AVAILABLE</th>
-            <th>BRANCH</th>
-            <th>STATUS</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, index) in filteredData" :key="item.id">
-            <td>{{ index + 1 }}</td>
-            <td>{{ item.product_type }}</td>
-            <td>{{ item.product_description }}</td>
-            <td>{{ item.batch_no }}</td>
-            <td>{{ item.quantity_available }}</td>
-            <td>{{ item.branch_name }}</td>
-            <td>{{ item.status }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
-    </div>
-
-    <div class="pagination">
-      <button @click="changePage(currentPage - 1)" :disabled="!pagination.prev_page_url">
-        Previous
-      </button>
-      <span>Page {{ currentPage }} of {{ totalPages }}</span>
-      <button @click="changePage(currentPage + 1)" :disabled="!pagination.next_page_url">
-        Next
-      </button>
-    </div>
-  </DashboardLayout>
-
-  <ExpiredModal v-if="isModalOpen" @close="closeModal" />
- 
-</template>
 
 <style scoped>
 .actions {
