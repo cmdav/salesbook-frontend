@@ -137,6 +137,8 @@
 <script setup>
 import { ref, computed } from "vue";
 import apiService from "@/services/apiService";
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 // To control the date picker and report data
 const showDatePicker = ref(false);
@@ -282,6 +284,150 @@ const showReport = async (reportType) => {
       break;
   }
 };
+const downloadPDF = async () => {
+  loading.value = true; // Start loading
+
+  let url = "";
+
+  // Set API URL with all=true
+  switch (currentReportType.value) {
+    case "monthly-sales":
+      url = `/monthly-sale-reports?all=true`;
+      break;
+    case "item-list":
+      url = `/item-lists?start_date=${startDate.value}&end_date=${endDate.value}&all=true`;
+      break;
+    case "total-sales":
+      url = `/total-sale-reports?start_date=${startDate.value}&end_date=${endDate.value}&all=true`;
+      break;
+    case "price-list":
+      url = `/product-price-lists?all=true`;
+      break;
+    case "expired-product":
+      url = `/expired-product-by-dates?start_date=${startDate.value}&end_date=${endDate.value}&all=true`;
+      break;
+    default:
+      return;
+  }
+  const orgDetailsCache = ref(null);
+
+  try {
+    // Fetch report data
+    const reportResponse = await apiService.get(url);
+
+    // Fetch organization details (from cache or API)
+    if (!orgDetailsCache.value) {
+      const orgDetailsResponse = await apiService.get('/user-org-and-branch-details');
+      if (orgDetailsResponse.success) {
+        orgDetailsCache.value = orgDetailsResponse.data;
+      } else {
+        throw new Error("Failed to fetch organization details");
+      }
+    }
+
+    if (reportResponse.success && reportResponse.data.length > 0 && orgDetailsCache.value) {
+      const doc = new jsPDF();
+
+      // Extract organization details
+      const {
+        organization_name,
+        organization_logo,
+        company_address,
+        company_phone_number,
+        company_email,
+        branch_name,
+        branch_address,
+        branch_email,
+        branch_phone_number,
+        country_name,
+        state_name
+      } = orgDetailsCache.value;
+
+      doc.setFontSize(12);
+const pageWidth = doc.internal.pageSize.getWidth();
+const headerYPosition = 10;
+
+doc.text(organization_name || "", pageWidth / 2, headerYPosition, { align: "center" });
+doc.text(company_address || "", pageWidth / 2, headerYPosition + 6, { align: "center" });
+doc.text(`${company_phone_number || ""} | ${company_email || ""}`, pageWidth / 2, headerYPosition + 12, { align: "center" });
+doc.text(`${branch_name || ""} Branch`, pageWidth / 2, headerYPosition + 18, { align: "center" });
+
+// Combine branch address, state, and country on one line
+doc.text(`Address: ${branch_address || ""}, ${state_name || ""}, ${country_name || ""}`, pageWidth / 2, headerYPosition + 24, { align: "center" });
+
+// Combine branch phone number and email on the last line, separated by a pipe
+doc.text(`${branch_phone_number || ""} | ${branch_email || ""}`, pageWidth / 2, headerYPosition + 30, { align: "center" });
+
+
+      // Company Logo
+      if (organization_logo) {
+        const img = new Image();
+        img.src = organization_logo;
+        doc.addImage(img, 'PNG', 10, 10, 40, 20); // Adjust dimensions
+      }
+
+      // Set columns and data for the table
+      const tableHeaders = [
+        "S.No",
+        ...columns.value.map((column) => column.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase()))
+      ];
+
+      const tableData = reportResponse.data.map((item, index) => {
+        const rowData = [index + 1];
+        columns.value.forEach((column) => {
+          rowData.push(item[column] || "N/A"); // Provide default value if missing
+        });
+        return rowData;
+      });
+
+      // Add Grand Total Row based on report type
+      let totalRow = [];
+      switch (currentReportType.value) {
+        case "monthly-sales":
+        case "total-sales":
+          totalRow = ["Grand Total", "", "", "", grandTotalPrice.value.toFixed(2)];
+          break;
+        case "item-list":
+          totalRow = ["Grand Total", "", "", "", "", grandTotalQuantityAvailable.value];
+          break;
+        case "expired-product":
+          totalRow = ["Grand Total", "", "", "", "", "", grandTotalQuantityAvailable.value];
+          break;
+      }
+
+      // Append grand total row if applicable
+      if (totalRow.length > 0) {
+        tableData.push(totalRow);
+      }
+
+      // Add the report title and table
+      doc.setFontSize(18);
+      doc.text(currentReportTitle.value, 14, headerYPosition + 40); // Adjust position below header
+
+      doc.autoTable({
+        head: [tableHeaders],
+        body: tableData,
+        startY: headerYPosition + 50, // Adjust startY for spacing
+        styles: {
+          fontSize: 10,
+          fontStyle: 'bold',
+        },
+        theme: 'grid',
+      });
+
+      // Save the PDF with dynamic title
+      doc.save(`${currentReportTitle.value}.pdf`);
+    } else {
+      console.error("No data found for the report or organization details");
+    }
+  } catch (error) {
+    console.error("Error downloading PDF:", error);
+  } finally {
+    loading.value = false; // Stop loading
+  }
+};
+
+
 </script>
 
 
