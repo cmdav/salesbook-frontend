@@ -35,7 +35,7 @@
             <th>SUPPLIER PHONE NUMBER</th>
             <th>CREATED BY</th>
             <th>UPDATED BY</th>
-            <!-- <th>EDIT</th> -->
+            <th>EDIT</th>
             <th>DELETE</th>
           </tr>
         </thead>
@@ -65,7 +65,7 @@
             <td>{{ item.supplier_phone_number }}</td>
             <td>{{ item.created_by }}</td>
             <td>{{ item.updated_by }}</td>
-            <!-- <td><button @click="openEditModal(item)">Edit</button></td> -->
+            <td><button @click="openEditModal(item)">Edit</button></td>
             <td><button @click="openDeleteModal(item)">Delete</button></td>
           </tr>
         </tbody>
@@ -129,6 +129,7 @@ const itemToDelete = ref({})
 const itemToEdit = ref(null)
 const modalTitle = 'Delete Product'
 
+// const editingProductId = ref(null);
 const currentPage = ref(1)
 const totalPages = ref(0)
 const itemsPerPage = ref(0)
@@ -143,7 +144,7 @@ const sellingCapacities = ref([]);
 
 onMounted(async () => {
   await fetchData()
-   await fetchPurchaseUnits();
+  //  await fetchPurchaseUnits();
 })
 
 const url = '/all-product-sub-categories-by-category-id'
@@ -158,9 +159,11 @@ const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg } = useS
 
 onMounted(async () => {
   await fetchDataForSelect('Product Category', '/product-categories', 'id', 'category_name')
-  await fetchDataForSelect('Purchase Unit', '/list-purchase-units', 'id', 'purchase_unit_name')
+  // await fetchDataForSelect('Purchase Unit', '/list-purchase-units', 'id', 'purchase_unit_name')
   
 });
+
+
 
 async function fetchPurchaseUnits() {
   try {
@@ -174,7 +177,7 @@ async function fetchPurchaseUnits() {
 
 async function fetchSellingUnits(purchaseUnitId) {
   const selectedPurchaseUnit = purchaseUnits.value.find(unit => unit.id === purchaseUnitId);
-
+  console.log(selectedPurchaseUnit)
   if (selectedPurchaseUnit) {
     sellingUnits.value = selectedPurchaseUnit.selling_units || [];
 
@@ -202,7 +205,7 @@ async function fetchSellingCapacities(sellingUnitId) {
       }));
     }
   }
-}
+};
 
 async function fetchData(page = 1) {
   try {
@@ -271,8 +274,8 @@ const openEditModal = async(item) => {
 
    await fetchPurchaseUnits();
 
-   await fetchSellingUnits(item.purchase_unit_id);
-  await fetchSellingCapacities(item.selling_unit_id);
+   await fetchSellingUnits(item.purchase_unit_name);
+  await fetchSellingCapacities(item.selling_unit_name);
 
   productTypeFormFields.value.forEach(field => {
     if (field.databaseField === 'selling_unit_id') {

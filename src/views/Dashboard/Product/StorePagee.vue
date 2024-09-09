@@ -133,7 +133,7 @@ onMounted(() => fetchData(currentPage.value))
 <template>
   <DashboardLayout pageTitle="Store Page">
     
-    <button @click="openModal" class="button add-btn my-6">Show Expired Products</button>
+    <button @click="openModal" class="button add-btn my-6">View Expiring Products</button>
 
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />

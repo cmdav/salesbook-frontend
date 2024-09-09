@@ -11,7 +11,7 @@
               <div>
                 <!-- <div class="icon"><img src="/assets/eruo-4d2c66c5.svg" alt="" /></div> -->
                 <div class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]">
-                  <span>Total Product</span>
+                  <span>Total Product Created</span>
                 </div>
                 <div class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]">
                   {{
@@ -74,7 +74,7 @@
                   <img src="/assets/verifiedusers-5d08be57.svg" alt="" />
                 </div> -->
                 <div class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]">
-                  <span>Total Suppliers</span>
+                  <span>Total Suppliers Created</span>
                 </div>
                 <div class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]">
                   {{ dashboardAutoSataus?.suppliers ? dashboardAutoSataus?.suppliers : 0 }}
@@ -89,7 +89,7 @@
               <div>
                 <!-- <div class="icon"><img src="/assets/active-c00dd557.svg" alt="" /></div> -->
                 <div class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]">
-                  <span>Total Customers</span>
+                  <span>Total Customers Created</span>
                 </div>
                 <div class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]">
                   {{ dashboardAutoSataus?.customers ? dashboardAutoSataus?.customers : 0 }}
@@ -131,7 +131,7 @@
               <div>
                 <!-- <div class="icon"><img src="/assets/active-c00dd557.svg" alt="" /></div> -->
                 <div class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]">
-                  <span>Total Profits Sold Today</span>
+                  <span>Total Profit Sold Today</span>
                 </div>
                 <div class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]">
                   {{

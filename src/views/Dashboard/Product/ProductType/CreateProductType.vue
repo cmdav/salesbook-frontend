@@ -8,15 +8,6 @@
 
       <!-- Form for adding a new sale -->
       <form @submit.prevent="handleSubmit">
-        <!-- <div class="input-group w-[70%]">
-          <label class="block text-sm font-medium text-gray-700">Product</label>
-          <select v-model="formState.product" class="select-input" required>
-            <option selected>Select Product...</option>
-            <option v-for="product in products" :key="product.id" :value="product.id">
-              {{ product.product_name }}
-            </option>
-          </select>
-        </div> -->
 
         <div class="input-group w-[70%]">
           <label class="block text-sm font-medium text-gray-700">Product Name</label>
@@ -380,15 +371,6 @@ const handleSellingCapacity = (newCapacity) => {
   selectedSellingCapacity.value = newCapacity.id
 }
 
-// const fetchProducts = async () => {
-//   try {
-//     const response = await apiService.get('/all-products')
-//     products.value = response
-//   } catch (error) {
-//     catchAxiosError(error)
-//     console.error('Error fetching products:', error)
-//   }
-// }
 const fetchCategory = async () => {
   try {
     const response = await apiService.get('/product-categories')
