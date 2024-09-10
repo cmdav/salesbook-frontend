@@ -152,6 +152,7 @@
           :url="'/process-csv'"
           type="PurchaseUnit"
           :downloadUrl="'purchase_unit'"
+          :modalTitle="modalTitle"
         />
         <!-- Purchase Unit Modal -->
         <create-edit-modal
@@ -215,6 +216,7 @@ const showUploadModal = ref(false);
 const search = ref('');
 const isSearching = ref(false);
 const errorMessage = ref('');
+const modalTitle =('Purchase Unit')
 
 const emit = defineEmits(['edit-purchase-unit', 'edit-selling-unit'])
 

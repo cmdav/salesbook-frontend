@@ -47,6 +47,7 @@
       :url="'/product-sub-categories'"
       type="ProductSubCategory"
       :downloadUrl="'product_sub_category'"
+      :modalTitle="'Sub Category'"
     />
   </DashboardLayout>
 </template>

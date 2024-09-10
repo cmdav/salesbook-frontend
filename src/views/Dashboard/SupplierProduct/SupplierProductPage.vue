@@ -23,16 +23,16 @@
       :loading="loading"
       @close="handleAcceptModal"
       @submitForm="acceptProduct"
-      title="Add Price"
+      title="Add New Selling Price"
     >
       <div class="my-8 flex flex-col gap-2">
         <div class="overflow-y-auto flex flex-col gap-2 max-h-[340px]">
           <div class="flex flex-col gap-2">
             <div class="flex flex-col gap-2">
               <div class="w-full">
-                <label class="block text-sm font-medium text-gray-700">Add Selling Price </label>
+                <!-- <label class="block text-sm font-medium text-gray-700">Add Selling Price </label> -->
                 <input
-                placeholder="Enter Selling Price"
+                placeholder="Enter New Selling Price"
                   v-model="formData.sellingPrice"
                   type="text"
                   class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"

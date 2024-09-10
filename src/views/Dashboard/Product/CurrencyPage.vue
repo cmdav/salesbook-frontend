@@ -47,6 +47,7 @@
       :url="'/currencies'"
       :downloadUrl="'currency'"
       type="Currency"
+      :modalTitle="'Currency'"
     />
   </DashboardLayout>
 </template>

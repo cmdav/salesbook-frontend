@@ -55,6 +55,7 @@
       :url="'/product-categories'"
       type="ProductCategory"
       :downloadUrl="'product_category'"
+      :modalTitle="'Category'"
     />
   </DashboardLayout>
 </template>

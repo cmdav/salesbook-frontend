@@ -93,6 +93,7 @@
       :url="'/process-csv'"
       :downloadUrl="'product'"
       type="Product"
+      :modalTitle="'Product'"
     />
 
     <DeleteModal

@@ -5,7 +5,7 @@
         class="flex flex-row items-center justify-between border-b-[#000000] pb-[35px] mb-[35px] border-b-[1px]"
       >
         <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">
-          Upload {{ props.type }}
+          Upload {{ modalTitle }}
         </h4>
         <button @click="$emit('close')" class="text-[30px]">X</button>
       </header>
@@ -79,6 +79,7 @@ const fileInput = ref(null);
 const fileName = ref("");
 let uploadedFile = ref(null);
 const props = defineProps({
+  modalTitle: String,
   type: String,
   url: String,
   downloadUrl: String,
@@ -93,7 +94,7 @@ const handleFileChange = () => {
     fileName.value = "";
   }
 };
-const { type, url, downloadUrl } = toRefs(props);
+const { type, url, downloadUrl, modalTitle } = toRefs(props);
 const { uploadForm, loading, forceUpdate, showUploadModal } = useUploadComposable(
   url,
   uploadedFile,
