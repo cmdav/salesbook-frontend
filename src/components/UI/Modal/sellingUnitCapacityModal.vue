@@ -9,6 +9,11 @@
         <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">How many selling unit equal a purchase unit</h4>
         <button class="close-button" @click="$emit('close')">&#10005;</button>
       </header>
+
+       <div v-if="isLoading" class="loader-overlay">
+        <div class="loader"></div>
+      </div>
+
       <form @submit.prevent="submitForm" class="max-w-4xl mx-auto p-2">
         
           <div class="mb-4">
@@ -49,7 +54,7 @@ const props = defineProps({
 
 const emits = defineEmits(['close', 'selling-capacity-added'])
 
-
+const isLoading = ref(false);
 const sellingCapacity = ref('')
 
 const submitForm = async () => {
@@ -99,5 +104,36 @@ const submitForm = async () => {
   border: none;
   font-size: 25px;
   cursor: pointer;
+}
+
+.loader-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 10;
+}
+
+.loader {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>

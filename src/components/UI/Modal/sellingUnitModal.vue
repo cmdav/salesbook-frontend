@@ -11,6 +11,11 @@
         </h4>
         <button class="close-button" @click="$emit('close')">&#10005;</button>
       </header>
+
+       <div v-if="isLoading" class="loader-overlay">
+        <div class="loader"></div>
+      </div>
+
       <form @submit.prevent="submitForm" class="max-w-4xl mx-auto p-2">
         <div class="mb-4">
           <label class="block text-sm font-medium text-gray-700 pb-1">Selling Unit</label>
@@ -56,6 +61,8 @@ const isEditing = ref(!!props.sellingUnit)
 const emits = defineEmits(['close', 'selling-unit-added', 'selling-unit-updated'])
 
 const sellingUnit = ref(isEditing.value ? props.sellingUnit.selling_unit_name : '')
+
+const isLoading = ref(false);
 
 watch(() => props.sellingUnit, (newVal) => {
   if (newVal) {
@@ -128,5 +135,36 @@ const submitForm = async () => {
   border: none;
   font-size: 25px;
   cursor: pointer;
+}
+
+.loader-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 10;
+}
+
+.loader {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>

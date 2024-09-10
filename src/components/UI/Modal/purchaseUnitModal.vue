@@ -9,6 +9,11 @@
         <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">{{ isEditing ? 'Edit Purchase Unit' : 'Add Purchase Unit' }}</h4>
         <button class="close-button" @click="$emit('close')">&#10005;</button>
       </header>
+
+       <div v-if="isLoading" class="loader-overlay">
+        <div class="loader"></div>
+      </div>
+
       <form @submit.prevent="submitForm" class="max-w-4xl mx-auto p-2">
         <!-- Dynamic form fields based on customer type with Tailwind CSS grid layout -->
         
@@ -52,6 +57,7 @@ const emits = defineEmits(['close', 'purchase-unit-updated', 'purchase-unit-adde
 
 const isEditing = ref(!!props.purchaseUnit)
 const purchaseUnit = ref(isEditing.value ? props.purchaseUnit.purchase_unit_name : '')
+const isLoading = ref(false)
 
 watch(() => props.purchaseUnit, (newVal) => {
   if (newVal) {
@@ -60,6 +66,8 @@ watch(() => props.purchaseUnit, (newVal) => {
 })
 
 const submitForm = async () => {
+  isLoading.value = true;
+
   try {
     
     if (isEditing.value) {
@@ -82,6 +90,8 @@ const submitForm = async () => {
     console.error('Error submitting form:', error)
    catchAxiosError(error);
     
+  } finally{
+    isLoading.value = false;
   }
 }
 </script>
@@ -116,5 +126,36 @@ const submitForm = async () => {
   border: none;
   font-size: 25px;
   cursor: pointer;
+}
+
+.loader-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 10;
+}
+
+.loader {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>
