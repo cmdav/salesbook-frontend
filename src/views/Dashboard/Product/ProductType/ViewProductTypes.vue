@@ -83,6 +83,7 @@
       :formField="productTypeFormFields"
       :isLoadingMsg="isOptionLoadingMsg"
       :url="'/product-types'"
+      :modalTitle="editModal"
     />
 
     <UploadModal
@@ -129,6 +130,7 @@ const showUploadModal = ref(false)
 const itemToDelete = ref({})
 const itemToEdit = ref(null)
 const modalTitle = 'Delete Product'
+const editModal = 'Edit Product'
 
 // const editingProductId = ref(null);
 const currentPage = ref(1)
