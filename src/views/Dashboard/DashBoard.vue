@@ -11,7 +11,7 @@
               <div>
                 <!-- <div class="icon"><img src="/assets/eruo-4d2c66c5.svg" alt="" /></div> -->
                 <div class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]">
-                  <span>Total Product Created</span>
+                  <span>Total Products Created</span>
                 </div>
                 <div class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]">
                   {{
