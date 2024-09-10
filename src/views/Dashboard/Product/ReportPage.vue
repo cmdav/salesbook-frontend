@@ -7,7 +7,7 @@
         <div class="lg:px-6 px-3 pt-8 grid grid-rows gap-6">
           <div class="grid lg:grid-cols-5 grid-cols-1 gap-6">
             
-            <!-- Card for Monthly Sales -->
+            <!-- Monthly Sales Card -->
             <div @click="showReport('monthly-sales')" :class="getActiveClass('monthly-sales')" class="flex flex-row justify-between rounded-[8px] p-4 cursor-pointer" style="background-color: rgb(44, 43, 108)">
               <div>
                 <div class="title font-Satoshi700 text-white py-4 text-[16px]">
@@ -18,18 +18,18 @@
               </div>
             </div>
 
-            <!-- Card for Total Sales -->
+            <!-- Total Sales Card -->
             <div @click="showReport('total-sales')" :class="getActiveClass('total-sales')" class="flex flex-row justify-between rounded-[8px] p-4 cursor-pointer" style="background-color: rgb(44, 43, 108)">
               <div>
                 <div class="title font-Satoshi700 text-white py-4 text-[16px]">
                   Total Sales Report
                   <br />
-                  <small>(Total sale within a given period)</small>
+                  <small>(Total sales within a given period)</small>
                 </div>
               </div>
             </div>
 
-            <!-- Card for Item List -->
+            <!-- Item List Card -->
             <div @click="showReport('item-list')" :class="getActiveClass('item-list')" class="flex flex-row justify-between rounded-[8px] p-4 cursor-pointer" style="background-color: rgb(123, 97, 255)">
               <div>
                 <div class="title font-Satoshi700 text-white py-4 text-[16px]">
@@ -40,7 +40,7 @@
               </div>
             </div>
 
-            <!-- Card for Price List -->
+            <!-- Price List Card -->
             <div @click="showReport('price-list')" :class="getActiveClass('price-list')" class="flex flex-row justify-between rounded-[8px] p-4 cursor-pointer" style="background-color: rgb(123, 97, 255)">
               <div>
                 <div class="title font-Satoshi700 text-white py-4 text-[16px]">
@@ -51,7 +51,7 @@
               </div>
             </div>
 
-            <!-- Card for Product Expiration -->
+            <!-- Product Expiration Card -->
             <div @click="showReport('expired-product')" :class="getActiveClass('expired-product')" class="flex flex-row justify-between rounded-[8px] p-4 cursor-pointer" style="background-color: rgb(44, 43, 108)">
               <div>
                 <div class="title font-Satoshi700 text-white py-4 text-[16px]">
@@ -61,6 +61,7 @@
                 </div>
               </div>
             </div>
+
           </div>
         </div>
 
@@ -89,7 +90,7 @@
 
         <!-- Table to show report data -->
         <div v-if="reportData.length > 0" class="overflow-x-auto mt-6">
-          <h3 class="text-xl font-bold mb-4">{{ currentReportTitle }}</h3> <!-- Report Title -->
+          <h3 class="text-xl font-bold mb-4">{{ currentReportTitle }}</h3>
           <table class="min-w-full table-auto">
             <thead>
               <tr>
@@ -98,13 +99,33 @@
               </tr>
             </thead>
             <tbody>
+              <!-- Render report data rows -->
               <tr v-for="(item, index) in reportData" :key="index" class="hover:bg-gray-200">
                 <td class="border px-4 py-2">{{ index + 1 }}</td>
-                <td v-for="(column, colIndex) in columns" :key="colIndex" class="border px-4 py-2">{{ item[column] }}</td>
+                <td v-for="(column, colIndex) in columns" :key="colIndex" class="border px-4 py-2">{{ formatData(item[column], column) }}</td>
+              </tr>
+
+              <!-- Grand Total Row for Product Expiration Report -->
+              <tr v-if="currentReportType === 'expired-product'" class="font-bold bg-gray-100">
+                <td class="border px-4 py-2" colspan="7">Total Quantity Available</td> <!-- Adjusted colspan -->
+                <td class="border px-4 py-2">{{ grandTotalQuantityAvailable }}</td>
+              </tr>
+
+              <!-- Grand Total Row for Item List Report -->
+              <tr v-if="currentReportType === 'item-list'" class="font-bold bg-gray-100">
+                <td class="border px-4 py-2" colspan="6">Total Quantity Available</td> <!-- Adjusted colspan -->
+                <td class="border px-4 py-2">{{ grandTotalQuantityAvailable }}</td>
+              </tr>
+
+              <!-- Grand Total Row for Monthly Sales and Total Sales Reports -->
+              <tr v-if="['monthly-sales', 'total-sales'].includes(currentReportType)" class="font-bold bg-gray-100">
+                <td class="border px-4 py-2" colspan="4">Grand Total</td> <!-- Adjusted colspan -->
+                <td class="border px-4 py-2">{{ grandTotalPrice }}</td>
               </tr>
             </tbody>
           </table>
         </div>
+
         <div v-else class="text-center my-4">
           <p>No records found.</p>
         </div>
@@ -128,6 +149,11 @@ const endDate = ref("");
 const currentReportType = ref(""); // Track the current report type
 const loading = ref(false); // Loading state for PDF download
 
+// Grand total tracking variables
+const grandTotalQuantity = ref(0);
+const grandTotalPrice = ref(0);
+const grandTotalQuantityAvailable = ref(0);
+
 // To control report title
 const reportTitles = {
   'monthly-sales': 'Monthly Sales Report',
@@ -142,53 +168,26 @@ const currentReportTitle = computed(() => reportTitles[currentReportType.value] 
 // Computed property to format column names
 const formattedColumns = computed(() => {
   return columns.value.map((column) => {
-    return column
-      .replace(/_/g, " ") // Replace underscores with spaces
-      .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize each word
+    return column.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
   });
 });
 
-// Function to handle the card click
-const showReport = async (reportType) => {
-  reportData.value = [];
-  currentReportType.value = reportType; // Set the current report type
-  if (["item-list", "total-sales", "expired-product"].includes(reportType)) {
-    showDatePicker.value = true; // Show date picker for these reports
-  } else {
-    showDatePicker.value = false; // No date picker needed for other reports
-    fetchReportData(reportType); // Fetch data directly
+// Format the data to prevent '0' padding issue and to display numbers correctly
+const formatData = (value, column) => {
+  if (typeof value === 'number') {
+    return value; // Return as is for numbers
   }
-
-  // Set columns based on report type
-  switch (reportType) {
-    case "monthly-sales":
-      columns.value = ["product_type_id", "price_sold_at", "quantity", "total_price"];
-      break;
-    case "item-list":
-      columns.value = ["product_type", "product_description", "batch_no", "branch_name", "quantity_available", "status"];
-      break;
-    case "total-sales":
-      columns.value = ["product_type_id", "price_sold_at", "quantity", "total_price"];
-      break;
-    case "price-list":
-      columns.value = ["product_type_name", "product_description", "cost_price", "selling_price"];
-      break;
-    case "expired-product":
-      columns.value = ["product_sub_category", "product_type_name", "quantity_available", "batch_no", "expiry_date", "purchase_unit_name", "selling_unit_name"];
-      break;
+  if (column === 'total_price') {
+    return parseFloat(value); // Ensure no leading zero is added
   }
+  return value || "N/A"; // Return "N/A" for undefined values
 };
 
-// Function to highlight the active card
-const getActiveClass = (reportType) => {
-  return currentReportType.value === reportType ? "bg-yellow-500" : "";
-};
-
-// Fetch report data based on report type
+// Function to handle report data fetching
 const fetchReportData = async (reportType) => {
   let url = "";
 
-  // Set API URL and query parameters based on report type
+  // Set the API endpoint based on report type
   switch (reportType) {
     case "monthly-sales":
       url = "/monthly-sale-reports";
@@ -213,14 +212,78 @@ const fetchReportData = async (reportType) => {
     const response = await apiService.get(url);
 
     if (response.success) {
-      reportData.value = response.data.data;
+      const data = response.data.data;
+      
+      // Reset grand totals
+      grandTotalQuantity.value = 0;
+      grandTotalPrice.value = 0;
+      grandTotalQuantityAvailable.value = 0;
+
+      // Calculate totals for different report types
+      if (["monthly-sales", "total-sales"].includes(reportType)) {
+        let totalPrice = 0;
+
+        data.forEach(item => {
+          totalPrice += parseFloat(item.total_price); // Ensure numeric values
+        });
+
+        grandTotalPrice.value = totalPrice;
+      }
+
+      if (["item-list", "expired-product"].includes(reportType)) {
+        let totalAvailableQuantity = 0;
+
+        data.forEach(item => {
+          totalAvailableQuantity += parseInt(item.quantity_available, 10);
+        });
+
+        grandTotalQuantityAvailable.value = totalAvailableQuantity;
+      }
+
+      // Assign data to reportData ref
+      reportData.value = data;
     }
   } catch (error) {
     console.error("Error fetching report data:", error);
   }
 };
-const orgDetailsCache = ref(null); // Store the organization details response
 
+// Function to highlight the active card
+const getActiveClass = (reportType) => {
+  return currentReportType.value === reportType ? "bg-yellow-500" : "";
+};
+
+// Function to show the report when card is clicked
+const showReport = async (reportType) => {
+  reportData.value = [];
+  currentReportType.value = reportType; // Set the current report type
+
+  if (["item-list", "total-sales", "expired-product"].includes(reportType)) {
+    showDatePicker.value = true; // Show date picker for these reports
+  } else {
+    showDatePicker.value = false; // No date picker needed for other reports
+    fetchReportData(reportType); // Fetch data directly
+  }
+
+  // Set columns based on report type
+  switch (reportType) {
+    case "monthly-sales":
+      columns.value = ["product_type_id", "price_sold_at", "quantity", "total_price"];
+      break;
+    case "item-list":
+      columns.value = ["product_type", "product_description", "batch_no", "branch_name", "status", "quantity_available"];
+      break;
+    case "total-sales":
+      columns.value = ["product_type_id", "price_sold_at", "quantity", "total_price"];
+      break;
+    case "price-list":
+      columns.value = ["product_type_name", "product_description", "cost_price", "selling_price"];
+      break;
+    case "expired-product":
+      columns.value = ["product_sub_category", "product_type_name", "batch_no", "expiry_date", "purchase_unit_name", "selling_unit_name", "quantity_available"];
+      break;
+  }
+};
 const downloadPDF = async () => {
   loading.value = true; // Start loading
 
@@ -246,26 +309,26 @@ const downloadPDF = async () => {
     default:
       return;
   }
+  const orgDetailsCache = ref(null);
 
   try {
     // Fetch report data
     const reportResponse = await apiService.get(url);
 
-    // Check if organization details are already cached
+    // Fetch organization details (from cache or API)
     if (!orgDetailsCache.value) {
       const orgDetailsResponse = await apiService.get('/user-org-and-branch-details');
       if (orgDetailsResponse.success) {
-        orgDetailsCache.value = orgDetailsResponse.data; // Cache the response
+        orgDetailsCache.value = orgDetailsResponse.data;
       } else {
         throw new Error("Failed to fetch organization details");
       }
     }
 
-    // Ensure report data is structured as expected
     if (reportResponse.success && reportResponse.data.length > 0 && orgDetailsCache.value) {
       const doc = new jsPDF();
 
-      // Extract organization and branch details from cache
+      // Extract organization details
       const {
         organization_name,
         organization_logo,
@@ -280,69 +343,71 @@ const downloadPDF = async () => {
         state_name
       } = orgDetailsCache.value;
 
-      // Add organization logo if available
+      doc.setFontSize(12);
+const pageWidth = doc.internal.pageSize.getWidth();
+const headerYPosition = 10;
+
+doc.text(organization_name || "", pageWidth / 2, headerYPosition, { align: "center" });
+doc.text(company_address || "", pageWidth / 2, headerYPosition + 6, { align: "center" });
+doc.text(`${company_phone_number || ""} | ${company_email || ""}`, pageWidth / 2, headerYPosition + 12, { align: "center" });
+doc.text(`${branch_name || ""} Branch`, pageWidth / 2, headerYPosition + 18, { align: "center" });
+
+// Combine branch address, state, and country on one line
+doc.text(`Address: ${branch_address || ""}, ${state_name || ""}, ${country_name || ""}`, pageWidth / 2, headerYPosition + 24, { align: "center" });
+
+// Combine branch phone number and email on the last line, separated by a pipe
+doc.text(`${branch_phone_number || ""} | ${branch_email || ""}`, pageWidth / 2, headerYPosition + 30, { align: "center" });
+
+
+      // Company Logo
       if (organization_logo) {
         const img = new Image();
         img.src = organization_logo;
-        doc.addImage(img, 'PNG', 10, 10, 40, 20); // Adjust dimensions and position as necessary
+        doc.addImage(img, 'PNG', 10, 10, 40, 20); // Adjust dimensions
       }
 
-      // Organization details with reduced line spacing
-      let yPosition = 15;
-      const leftMargin = 60;
-      doc.setFontSize(12);
-
-      doc.text(organization_name || "", leftMargin, yPosition); // Organization name
-      yPosition += 6; // Reduced line spacing
-      doc.text(company_address || "", leftMargin, yPosition); // Company address
-      yPosition += 6;
-      doc.text(company_phone_number || "", leftMargin, yPosition); // Phone number
-      yPosition += 6;
-      doc.text(company_email || "", leftMargin, yPosition); // Email
-
-      // Branch details with reduced line spacing
-      yPosition += 10; // Space between organization and branch details
-      doc.text(`Branch: ${branch_name || ""}`, 10, yPosition);
-      yPosition += 6;
-      doc.text(`Address: ${branch_address || ""}`, 10, yPosition);
-      yPosition += 6;
-      doc.text(`Email: ${branch_email || ""}`, 10, yPosition);
-      yPosition += 6;
-      doc.text(`Phone: ${branch_phone_number || ""}`, 10, yPosition);
-      yPosition += 6;
-      doc.text(`State: ${state_name || ""}`, 10, yPosition);
-      yPosition += 6;
-      doc.text(`Country: ${country_name || ""}`, 10, yPosition);
-
-      // Ensure columns are populated
-      if (columns.value.length === 0) {
-        throw new Error("Columns are not properly defined for the report");
-      }
-
-      const tableData = reportResponse.data.map((item, index) => {
-        const rowData = [index + 1];
-        columns.value.forEach((column) => {
-          rowData.push(item[column] || "N/A"); // Provide a default value if a field is missing
-        });
-        return rowData;
-      });
-
-      // Define columns with capitalized and formatted headers
+      // Set columns and data for the table
       const tableHeaders = [
         "S.No",
         ...columns.value.map((column) => column.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase()))
       ];
 
-      // Add title
-      doc.setFontSize(18);
-      yPosition += 15; // Adjust position below the header
-      doc.text(currentReportTitle.value, 14, yPosition);
+      const tableData = reportResponse.data.map((item, index) => {
+        const rowData = [index + 1];
+        columns.value.forEach((column) => {
+          rowData.push(item[column] || "N/A"); // Provide default value if missing
+        });
+        return rowData;
+      });
 
-      // Generate table using jsPDF autoTable plugin
+      // Add Grand Total Row based on report type
+      let totalRow = [];
+      switch (currentReportType.value) {
+        case "monthly-sales":
+        case "total-sales":
+          totalRow = ["Grand Total", "", "", "", grandTotalPrice.value.toFixed(2)];
+          break;
+        case "item-list":
+          totalRow = ["Grand Total", "", "", "", "", grandTotalQuantityAvailable.value];
+          break;
+        case "expired-product":
+          totalRow = ["Grand Total", "", "", "", "", "", grandTotalQuantityAvailable.value];
+          break;
+      }
+
+      // Append grand total row if applicable
+      if (totalRow.length > 0) {
+        tableData.push(totalRow);
+      }
+
+      // Add the report title and table
+      doc.setFontSize(18);
+      doc.text(currentReportTitle.value, 14, headerYPosition + 40); // Adjust position below header
+
       doc.autoTable({
         head: [tableHeaders],
         body: tableData,
-        startY: yPosition + 10, // Adjust startY to leave space for the header
+        startY: headerYPosition + 50, // Adjust startY for spacing
         styles: {
           fontSize: 10,
           fontStyle: 'bold',
@@ -350,10 +415,10 @@ const downloadPDF = async () => {
         theme: 'grid',
       });
 
+      // Save the PDF with dynamic title
       doc.save(`${currentReportTitle.value}.pdf`);
     } else {
       console.error("No data found for the report or organization details");
-      throw new Error("No data found for the report or organization details");
     }
   } catch (error) {
     console.error("Error downloading PDF:", error);
@@ -364,6 +429,10 @@ const downloadPDF = async () => {
 
 
 </script>
+
+
+
+
 
 
 

@@ -94,7 +94,7 @@ const menuItems = computed(() => {
       name: 'Products',
       route: '/product-type',
       icon: ProductsIcon,
-      backendKey: 'product-types'
+      backendKey: 'products'
     },
     { name: 'Purchase', route: '/purchase', icon: PurchaseIcon, backendKey: 'purchases' },
     { name: 'Sale', route: '/sale', icon: SalesIcon, backendKey: 'sales' },
@@ -121,7 +121,7 @@ const menuItems = computed(() => {
       icon: SubscriptionIcon,
       backendKey: 'subscriptions'
     },
-    { name: 'Settings', route: '/settings', icon: SettingsIcon, backendKey: 'permissions' },
+    { name: 'Settings', route: '/settings', icon: SettingsIcon, backendKey: 'settings' },
     { name: 'Log Out', route: '/logout', icon: logoutIcon, backendKey: '' }
   ]
 
