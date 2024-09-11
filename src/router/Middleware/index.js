@@ -13,7 +13,7 @@ const redirectLogin = () => {
 
 const redirectDashboard = () => {
   const user = getUserFromLocalStorage()
-  return user && user.token ? { name: 'dashboard' } : undefined
+  return user && user.token ? { name: 'welcome' } : undefined
 }
 
 const redirectSupplierDashboard = () => {

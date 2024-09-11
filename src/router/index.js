@@ -35,7 +35,7 @@ import ViewCustomerSubscriptionPage from '@/views/Dashboard/CustomerSubscription
 
 //import SalePage from '@/views/Dashboard/Product/SalePage.vue'
 // import ViewProductType from '@/views/Dashboard/Product/ProductType/ViewProductTypes.vue'
-// import ProductTypePage from '@/views/Dashboard/Product/ProductType/ViewProductTypes.vue'
+import WelcomeScreen from '@/views/welcomePage.vue'
 // import ProductTypePage from '@/views/Dashboard/Product/ProductTypePage.vue'
 import PricePage from '@/views/Dashboard/Product/PricePage.vue'
 import PurchasePage from '@/views/Dashboard/Product/Purchase/ViewPurchasePage.vue'
@@ -56,7 +56,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/dashboard'
+      redirect: '/welcome'
     },
     {
       path: '/login',
@@ -79,7 +79,7 @@ const router = createRouter({
     {
       path: '/report',
       name: 'report',
-      component: ReportPage,
+      component: ReportPage
       //beforeEnter: [middleware.redirectDashboard]
     },
     {
@@ -96,6 +96,7 @@ const router = createRouter({
       beforeEnter: [middleware.redirectSupplierDashboard]
       // beforeEnter: [middleware.redirectDashboard]
     },
+
     {
       path: '/email-verification/:token',
       name: 'email-verification',
@@ -189,6 +190,13 @@ const router = createRouter({
       name: 'measurement',
       component: MeasurementPage,
       beforeEnter: [middleware.redirectLogin]
+    },
+    {
+      path: '/welcome',
+      name: 'welcome',
+      component: WelcomeScreen
+      // beforeEnter: [middleware.redirectSupplierDashboard]
+      // beforeEnter: [middleware.redirectDashboard]
     },
 
     {

@@ -1,6 +1,5 @@
 <template>
-  <header class="h-screen bg-secondary-800/[40%]">
-    
+  <header class="h-screen bg-secondary-800/[40%]"> 
     <div class="logo lg:visible invisible">
       <img src="@/assets/iSalesbook-Option-02.png" class="h-[5rem]" alt=" logo" />
     </div>
@@ -41,7 +40,7 @@ import { useRoute } from 'vue-router'
 import { computed } from 'vue'
 import { useStore } from '@/stores/user'
 import homeIcon from '@/components/icons/homeIcon.vue'
-import StoreIcon from '@/components/icons/StoreIcon.vue'
+// import StoreIcon from '@/components/icons/StoreIcon.vue'
 import ProductIcon from '@/components/icons/ProductIcon.vue'
 import ProductsIcon from '@/components/icons/productsIcon.vue'
 import recordsIcon from '@/components/icons/recordsIcon.vue'
@@ -70,6 +69,12 @@ const menuItems = computed(() => {
   const allItems = [
     { name: 'Dashboard', route: '/dashboard', icon: homeIcon, backendKey: 'dashboards' },
     // { name: "Organisation", route: "/organisation", icon: StoreIcon , backendKey:"organizations"},
+    // {
+    //   name: 'Welcome',
+    //   route: '/welcome',
+    //   icon: MeasurementIcon,
+    //   backendKey: 'welcomescreen'
+    // },
     {
       name: 'Measurement',
       route: '/measurement',
