@@ -91,16 +91,19 @@
               </select>
             </div>
 
-            <!-- Quantity Sold -->
-            <div class="input-group w-20">
-              <label class="block text-sm font-medium text-gray-700">Qty Sold</label>
-              <input
-                type="number"
-                v-model="formState.products[index].quantity_sold"
-                class="input"
-                @change="checkQuantitySold(index)"
-              />
-            </div>
+           <!-- Quantity Sold -->
+<div class="input-group w-20">
+  <label class="block text-sm font-medium text-gray-700">Qty Sold</label>
+  <input
+    type="number"
+    v-model="formState.products[index].quantity_sold"
+    min="0"
+    class="input"
+    @change="checkQuantitySold(index)"
+    @input="preventNegativeQuantity(index)"
+  />
+</div>
+
 
             <!-- Selling Price -->
             <div class="input-group w-20">
@@ -213,6 +216,11 @@ const focusBarcodeInput = () => {
     emptyBarcodeField?.focus();
   });
 };
+const preventNegativeQuantity = (index) => {
+  if (formState.products[index].quantity_sold < 0) {
+    formState.products[index].quantity_sold = 0;
+  }
+};
 
 onMounted(async () => {
   try {
@@ -237,7 +245,7 @@ const formState = reactive({
       barcode: '',
       selling_price: '',
       selling_unit_name: '', // Add selling_unit_name field
-      quantity_sold: 1,
+      quantity_sold: 0,
       amount: '',
       vat: 'no'
     }
@@ -303,7 +311,7 @@ const addProducts = () => {
       barcode: '',
       selling_price: '',
       selling_unit_name: '', // Ensure new product object has selling_unit_name field
-      quantity_sold: 1,
+      quantity_sold: 0,
       amount: '',
       vat: 'no'
     });
