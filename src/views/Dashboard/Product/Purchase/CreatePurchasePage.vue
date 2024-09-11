@@ -40,27 +40,54 @@
               <label for="purchase_unit_name">Purchase Unit <span class="required">*</span></label>
               <input type="text" v-model="purchase.purchase_unit_name" class="short-input" readonly />
             </div>
-            <div>
-              <label for="cost_price">Cost Price <span class="required">*</span></label>
-              <div class="tooltip-container">
-                <input type="number" v-model="purchase.cost_price" maxlength="9" @mouseover="showTooltip" data-tooltip="Enter the cost price per item" required />
-                <span class="tooltip">Enter the cost price per item</span>
-              </div>
-              <label class="priceView">&#8358; {{ purchase.cost_price ? parseFloat(purchase.cost_price).toLocaleString() : '0.00' }}</label>
-            </div>
-            <div>
-              <label for="selling_price">Selling Price <span class="required">*</span></label>
-              <div class="tooltip-container">
-                <input type="number" v-model="purchase.selling_price" @change="handleSellingPriceChange(index)"
-                  maxlength="9" @mouseover="showTooltip" data-tooltip="Enter the selling price per item" required />
-                <span class="tooltip">Enter the selling price per item</span>
-              </div>
-              <label class="priceView">&#8358; {{ purchase.selling_price ? parseFloat(purchase.selling_price).toLocaleString() : '0.00' }}</label>
-            </div>
-            <div>
-              <label for="purchase_qty">Purchase Qty <span class="required">*</span></label>
-              <input type="number" v-model="purchase.capacity_qty" maxlength="9" />
-            </div>
+
+         <!-- Cost Price -->
+<div>
+  <label for="cost_price">Cost Price <span class="required">*</span></label>
+  <div class="tooltip-container">
+    <input 
+      type="number" 
+      v-model="purchase.cost_price" 
+      @blur="validateCostPrice(index)"  
+      @mouseover="showTooltip" 
+      data-tooltip="Enter the cost price per unit" 
+      required 
+    />
+    <span class="tooltip">Enter the cost price per unit</span>
+  </div>
+  <label class="priceView">&#8358; {{ purchase.cost_price ? parseFloat(purchase.cost_price).toLocaleString() : '0.00' }}</label>
+</div>
+
+<!-- Selling Price -->
+<div>
+  <label for="selling_price">Selling Price <span class="required">*</span></label>
+  <div class="tooltip-container">
+    <input 
+      type="number" 
+      v-model="purchase.selling_price" 
+      @blur="validateSellingPrice(index)" 
+      @mouseover="showTooltip" 
+      data-tooltip="Enter the selling price per unit" 
+      required 
+    />
+    <span class="tooltip">Enter the selling price per unit</span>
+  </div>
+  <label class="priceView">&#8358; {{ purchase.selling_price ? parseFloat(purchase.selling_price).toLocaleString() : '0.00' }}</label>
+</div>
+
+<!-- Purchase Qty -->
+<div>
+  <label for="purchase_qty">Purchase Qty <span class="required">*</span></label>
+  <input 
+    type="number" 
+    v-model="purchase.capacity_qty" 
+    @blur="validatePurchaseQty(index)" 
+    required 
+  />
+</div>
+
+
+
             <div>
               <label for="expiry_date">Expiry Date</label>
               <input type="date" v-model="purchase.expiry_date" :min="minExpiryDate" class="expiry-date" />
@@ -155,6 +182,26 @@ const fetchData = async () => {
     isLoading.value = false;
   }
 };
+//validate cost, sell price and purchase capacity
+const validateMinValues = () => {
+  purchases.forEach((purchase) => {
+    if (purchase.cost_price < 1) {
+      purchase.cost_price = 1;
+    }
+    if (purchase.selling_price < 1) {
+      purchase.selling_price = 1;
+    }
+    if (purchase.capacity_qty < 1) {
+      purchase.capacity_qty = 1;
+    }
+  });
+};
+
+
+
+
+
+
 
 const handleSupplierChange = async (index) => {
   const purchase = purchases[index];
@@ -233,13 +280,37 @@ watch(
   { deep: true }
 );
 
-const handleSellingPriceChange = (index) => {
+// Validate and prevent cost price from being less than 1, allowing modification.
+const validateCostPrice = (index) => {
   const purchase = purchases[index];
-  if (purchase.selling_price < purchase.cost_price) {
-    purchase.selling_price = '';
-    catchAxiosError({ message: 'Selling price cannot be lower than cost price.' });
+  if (purchase.cost_price < 1) {
+    alert('Cost price cannot be less than 1.');
+    purchase.cost_price = 1;
   }
 };
+
+// Validate and prevent selling price from being less than 1 or less than the cost price.
+const validateSellingPrice = (index) => {
+  const purchase = purchases[index];
+  if (purchase.selling_price < purchase.cost_price) {
+    alert('Selling price cannot be less than cost price.');
+    purchase.selling_price = purchase.cost_price; // Set selling price equal to cost price
+  } else if (purchase.selling_price < 1) {
+    alert('Selling price cannot be less than 1.');
+    purchase.selling_price = 1;
+  }
+};
+
+// Validate and prevent purchase quantity from being less than 1, allowing modification.
+const validatePurchaseQty = (index) => {
+  const purchase = purchases[index];
+  if (purchase.capacity_qty < 1) {
+    alert('Purchase quantity cannot be less than 1.');
+    purchase.capacity_qty = 1;
+  }
+};
+
+
 
 const calculateTotalCost = () => {
   totalCostPrice.value = purchases.reduce((acc, purchase) => {
@@ -252,6 +323,7 @@ const RowTotalCost = (purchase) => {
 };
 
 const handleSubmit = async () => {
+  validateMinValues();
   const lastPurchase = purchases[purchases.length - 1];
   if (!lastPurchase.supplier_id || !lastPurchase.product_type_id || !lastPurchase.cost_price || !lastPurchase.selling_price) {
     purchases.pop();
