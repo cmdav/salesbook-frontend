@@ -58,6 +58,7 @@ const isLoading = ref(false);
 const sellingCapacity = ref('')
 
 const submitForm = async () => {
+  isLoading.value =true;
   try {
     const response = await apiService.post('/selling-unit-capacities', {
       selling_unit_id: props.sellingUnitId,
@@ -70,6 +71,8 @@ const submitForm = async () => {
   } catch (error) {
     console.error('Error submitting form:', error)
    catchAxiosError(error);
+  } finally{
+    isLoading.value = false;
   }
 }
 </script>

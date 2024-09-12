@@ -162,7 +162,7 @@ const onFinish = async () => {
   try {
     let res = await login(data);
     store.saveUser(res.data);
-    router.push({ name: "dashboard" });
+    router.push({ name: "welcome" });
     loading.value = false;
     return res;
   } catch (error) {

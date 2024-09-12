@@ -1,18 +1,22 @@
 <template>
-  <div class="modal backdrop-blur z-[100] fixed animate__zoomIn animate__rubberBand animate__fadeOut min-h-screen h-full">
+  <div
+    class="modal backdrop-blur z-[100] fixed animate__zoomIn animate__rubberBand animate__fadeOut min-h-screen h-full"
+  >
     <div class="modal__body relative w-full md:max-w-[600px] bg-white m-0 md:px-5 py-4 px-4">
-      
-        <div class="flex flex-row items-center justify-between border-b-[#000000] pb-[5px] mb-[35px] border-b-[1px]">
-          <h3 class="text-[32px] font-EBGaramond500 text-[#244034]">Expiring Products List</h3>
-          <button class="close-btn" @click="$emit('close')">X</button>
-        </div>
+      <div
+        class="flex flex-row items-center justify-between border-b-[#000000] pb-[5px] mb-[35px] border-b-[1px]"
+      >
+        <h3 class="text-[32px] font-EBGaramond500 text-[#244034]">Expiring Products List</h3>
+        <button class="close-btn" @click="$emit('close')">X</button>
+      </div>
 
-        <div class="table-container">
-            <div v-if="isLoading" class="loader-container">
-            <div class="loader"></div>
-            <p>Loading expired products...</p>
-          </div>
-          <table v-else>
+      <div class="table-container">
+        <div v-if="isLoading" class="loader-container">
+          <div class="loader"></div>
+          <p>Loading expired products...</p>
+        </div>
+        <div v-else>
+          <table>
             <thead>
               <tr>
                 <th>S.NO</th>
@@ -26,6 +30,7 @@
               </tr>
             </thead>
             <tbody>
+           <p v-if="expiredProducts.length === 0" class="text-center mx-auto font-[1.5em] text-red-500">No product expiring within the next 7 days</p>
               <tr v-for="(item, index) in expiredProducts" :key="item.id">
                 <td>{{ index + 1 }}</td>
                 <td>{{ item.product_type_name }}</td>
@@ -39,21 +44,21 @@
             </tbody>
           </table>
         </div>
+      </div>
 
-        <div class="modal-footer my-6">
-          <button class="button download-btn" @click="downloadExpiredProducts">Download</button>
-        </div>
+      <div class="modal-footer my-6">
+        <button class="button download-btn" @click="downloadExpiredProducts">Download</button>
       </div>
     </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import apiService from '@/services/apiService'
-import { catchAxiosSuccess, catchAxiosError } from '@/services/Response';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
-
+import { catchAxiosSuccess, catchAxiosError } from '@/services/Response'
+import jsPDF from 'jspdf'
+import 'jspdf-autotable'
 
 const expiredProducts = ref([])
 const isLoading = ref(true)
@@ -61,7 +66,7 @@ const loading = ref(false)
 
 async function fetchExpiredProducts() {
   try {
-  isLoading.value = true
+    isLoading.value = true
     const response = await apiService.get('/list-expired-products')
     console.log(response)
     expiredProducts.value = response.data || []
@@ -69,38 +74,37 @@ async function fetchExpiredProducts() {
     console.log(expiredProducts.value)
   } catch (error) {
     console.error('Failed to fetch expired products:', error)
-    catchAxiosError()
-  } finally{
-  isLoading.value = false
+    catchAxiosError(error)
+  } finally {
+    isLoading.value = false
   }
 }
 
-
 const downloadExpiredProducts = async () => {
-  loading.value = true; // Start loading
+  loading.value = true // Start loading
 
   try {
     // Fetch expired products data
     const expiredProductsResponse = await apiService.get('/list-expired-products', {
-  params: {
-    download: true
-  }
-});
+      params: {
+        download: true
+      }
+    })
 
-    const expiredProductsData = expiredProductsResponse.data || [];
+    const expiredProductsData = expiredProductsResponse.data || []
 
     // Fetch organization details from the API
-    const orgDetailsCache = ref(null);
-    const orgDetailsResponse = await apiService.get('/user-org-and-branch-details');
-    
+    const orgDetailsCache = ref(null)
+    const orgDetailsResponse = await apiService.get('/user-org-and-branch-details')
+
     if (orgDetailsResponse.success) {
-      orgDetailsCache.value = orgDetailsResponse.data;
+      orgDetailsCache.value = orgDetailsResponse.data
     } else {
-      throw new Error("Failed to fetch organization details");
+      throw new Error('Failed to fetch organization details')
     }
 
     if (expiredProductsData.length > 0 && orgDetailsCache.value) {
-      const doc = new jsPDF();
+      const doc = new jsPDF()
 
       // Extract organization details
       const {
@@ -115,66 +119,90 @@ const downloadExpiredProducts = async () => {
         branch_phone_number,
         country_name,
         state_name
-      } = orgDetailsCache.value;
+      } = orgDetailsCache.value
 
-      doc.setFontSize(12);
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const headerYPosition = 10;
+      doc.setFontSize(12)
+      const pageWidth = doc.internal.pageSize.getWidth()
+      const headerYPosition = 10
 
       // Header Information
-      doc.text(organization_name || "", pageWidth / 2, headerYPosition, { align: "center" });
-      doc.text(company_address || "", pageWidth / 2, headerYPosition + 6, { align: "center" });
-      doc.text(`${company_phone_number || ""} | ${company_email || ""}`, pageWidth / 2, headerYPosition + 12, { align: "center" });
-      doc.text(`${branch_name || ""} Branch`, pageWidth / 2, headerYPosition + 18, { align: "center" });
-      doc.text(`Address: ${branch_address || ""}, ${state_name || ""}, ${country_name || ""}`, pageWidth / 2, headerYPosition + 24, { align: "center" });
-      doc.text(`${branch_phone_number || ""} | ${branch_email || ""}`, pageWidth / 2, headerYPosition + 30, { align: "center" });
+      doc.text(organization_name || '', pageWidth / 2, headerYPosition, { align: 'center' })
+      doc.text(company_address || '', pageWidth / 2, headerYPosition + 6, { align: 'center' })
+      doc.text(
+        `${company_phone_number || ''} | ${company_email || ''}`,
+        pageWidth / 2,
+        headerYPosition + 12,
+        { align: 'center' }
+      )
+      doc.text(`${branch_name || ''} Branch`, pageWidth / 2, headerYPosition + 18, {
+        align: 'center'
+      })
+      doc.text(
+        `Address: ${branch_address || ''}, ${state_name || ''}, ${country_name || ''}`,
+        pageWidth / 2,
+        headerYPosition + 24,
+        { align: 'center' }
+      )
+      doc.text(
+        `${branch_phone_number || ''} | ${branch_email || ''}`,
+        pageWidth / 2,
+        headerYPosition + 30,
+        { align: 'center' }
+      )
 
       // Company Logo
       if (organization_logo) {
-        const img = new Image();
-        img.src = organization_logo;
-        doc.addImage(img, 'PNG', 10, 10, 40, 20); // Adjust dimensions
+        const img = new Image()
+        img.src = organization_logo
+        doc.addImage(img, 'PNG', 10, 10, 40, 20) // Adjust dimensions
       }
 
       // Set table headers for expired products
       const tableHeaders = [
-        "S.No",
-        "Product Sub Category",
-        "Product Name",
-        "Batch No",
-        "Expiry Date",
-        "Purchase Unit",
-        "Selling Unit",
-        "Quantity Available" // Move quantity available to the last column
-      ];
+        'S.No',
+        'Product Sub Category',
+        'Product Name',
+        'Batch No',
+        'Expiry Date',
+        'Purchase Unit',
+        'Selling Unit',
+        'Quantity Available' // Move quantity available to the last column
+      ]
 
       // Prepare table data
       const tableData = expiredProductsData.map((item, index) => {
         return [
           index + 1, // Serial number
-          item.product_sub_category || "N/A",
-          item.product_type_name || "N/A",
-          item.batch_no || "N/A",
-          item.expiry_date || "N/A",
-          item.purchase_unit_name || "N/A",
-          item.selling_unit_name || "N/A",
-          item.quantity_available || "N/A" // Quantity available as the last column
-        ];
-      });
+          item.product_sub_category || 'N/A',
+          item.product_type_name || 'N/A',
+          item.batch_no || 'N/A',
+          item.expiry_date || 'N/A',
+          item.purchase_unit_name || 'N/A',
+          item.selling_unit_name || 'N/A',
+          item.quantity_available || 'N/A' // Quantity available as the last column
+        ]
+      })
 
       // Calculate the grand total for Quantity Available
       const grandTotalQuantityAvailable = expiredProductsData.reduce((total, item) => {
-        return total + (item.quantity_available || 0);
-      }, 0);
+        return total + (item.quantity_available || 0)
+      }, 0)
 
       // Add grand total row at the end of the table
       tableData.push([
-        "Grand Total", "", "", "", "", "", "", grandTotalQuantityAvailable.toString()
-      ]);
+        'Grand Total',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        grandTotalQuantityAvailable.toString()
+      ])
 
       // Add the report title and table
-      doc.setFontSize(18);
-      doc.text("Expired Products Report", 14, headerYPosition + 40); // Adjust position below the header
+      doc.setFontSize(18)
+      doc.text('Expired Products Report', 14, headerYPosition + 40) // Adjust position below the header
 
       doc.autoTable({
         head: [tableHeaders],
@@ -182,24 +210,22 @@ const downloadExpiredProducts = async () => {
         startY: headerYPosition + 50, // Adjust startY for spacing
         styles: {
           fontSize: 10,
-          fontStyle: 'bold',
+          fontStyle: 'bold'
         },
-        theme: 'grid',
-      });
+        theme: 'grid'
+      })
 
       // Save the PDF
-      doc.save("expired-products-report.pdf");
+      doc.save('expired-products-report.pdf')
     } else {
-      console.error("No data found for expired products or organization details");
+      console.error('No data found for expired products or organization details')
     }
   } catch (error) {
-    console.error("Error downloading expired products:", error);
+    console.error('Error downloading expired products:', error)
   } finally {
-    loading.value = false; // Stop loading
+    loading.value = false // Stop loading
   }
-};
-
-
+}
 
 onMounted(() => {
   fetchExpiredProducts()
@@ -250,7 +276,7 @@ onMounted(() => {
   border-radius: 12px;
   animation: slidedown 0.8s ease;
   max-height: 90vh;
-  overflow-y: auto; 
+  overflow-y: auto;
 }
 
 .modal-container {
