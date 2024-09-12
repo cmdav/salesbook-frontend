@@ -267,7 +267,7 @@ const populateProductDetails = (index, product) => {
 };
 
 const calculateAmountWithVat = (sellingPrice, quantitySold, vat) => {
-  let amount = parseFloat(sellingPrice) * parseFloat(quantitySold || 1); // Ensure quantitySold is never NaN
+  let amount = parseFloat(sellingPrice) * parseFloat(quantitySold || 0); // Ensure quantitySold is never NaN
   if (vat === 'yes') {
     amount *= 1.075;
   }
@@ -303,21 +303,21 @@ const isProductSelected = (productId) => {
   return formState.products.some((product) => product.product_type_id === productId);
 };
 
-const addProducts = () => {
-  const lastProduct = formState.products[formState.products.length - 1];
-  if (lastProduct.product_type_id || lastProduct.barcode) {
-    formState.products.push({
-      product_type_id: '',
-      barcode: '',
-      selling_price: '',
-      selling_unit_name: '', // Ensure new product object has selling_unit_name field
-      quantity_sold: 0,
-      amount: '',
-      vat: 'no'
-    });
-    nextTick(() => focusBarcodeInput());
-  }
-};
+// const addProducts = () => {
+//   const lastProduct = formState.products[formState.products.length - 1];
+//   if (lastProduct.product_type_id || lastProduct.barcode) {
+//     formState.products.push({
+//       product_type_id: '',
+//       barcode: '',
+//       selling_price: '',
+//       selling_unit_name: '', // Ensure new product object has selling_unit_name field
+//       quantity_sold: 0,
+//       amount: '',
+//       vat: 'no'
+//     });
+//     nextTick(() => focusBarcodeInput());
+//   }
+// };
 
 const removeProduct = (index) => {
   if (formState.products.length > 1) {
@@ -370,16 +370,55 @@ const isDuplicateBarcode = (barcode) => {
   return formState.products.filter(product => product.barcode === barcode).length > 1;
 };
 
+const addProducts = () => {
+  const lastProduct = formState.products[formState.products.length - 1];
+
+  // If the product is selected from the dropdown, ensure quantity_sold is > 0
+  // if (lastProduct.product_type_id && lastProduct.quantity_sold < 1) {
+  //   const productName = data.value.find(p => p.id === lastProduct.product_type_id)?.product_type_name || 'this product';
+  //   alert(`Enter a quantity for ${productName}`);
+  //   return;
+  // }
+
+  // Barcode-based products do not need the quantity check, allow adding a new row
+  if (lastProduct.barcode || lastProduct.product_type_id) {
+    formState.products.push({
+      product_type_id: '',
+      barcode: '',
+      selling_price: '',
+      selling_unit_name: '',
+      quantity_sold: 0,
+      amount: '',
+      vat: 'no'
+    });
+    nextTick(() => focusBarcodeInput());
+  }
+};
+
 const addSales = async () => {
   isSubmitting.value = true;
 
+  // Validate that all products with a selected product_type_id have quantity_sold > 0
+  const invalidProducts = formState.products.filter(product => product.product_type_id && product.quantity_sold <= 0);
+
+  if (invalidProducts.length > 0) {
+    const invalidProductNames = invalidProducts
+      .map(product => data.value.find(p => p.id === product.product_type_id)?.product_type_name || 'this product')
+      .join(', ');
+    
+    alert(`Enter a quantity for ${invalidProductNames}`);
+    isSubmitting.value = false;
+    return;
+  }
+
+  // Proceed with submitting only valid products (non-empty and with valid quantities)
   const products = formState.products
-    .filter((product) => product.amount > 0)
+    .filter((product) => product.amount > 0) // Only submit non-empty rows
     .map((product) => ({
       product_type_id: product.product_type_id,
       price_sold_at: parseInt(product.selling_price, 10),
       quantity: parseInt(product.quantity_sold, 10),
-      vat: product.vat ? product.vat : null
+      vat: product.vat === 'yes' ? 'yes' : 'no'  // Ensure VAT is properly included
     }));
 
   const payload = {
@@ -390,27 +429,25 @@ const addSales = async () => {
 
   try {
     res.value = await apiService.post('/sales', payload);
-    console.log(res.value)
     if (res.value.success) {
-    
       showReceiptModal.value = true;
     }
-
-    
     return res.value;
   } catch (error) {
-    catchAxiosError(error); 
-    console.error('Failed to submit sale:', error);
+    catchAxiosError(error);
   } finally {
     isSubmitting.value = false;
     resetForm();
   }
 };
 
+
+
 const handleReceiptChoice = (choice) => {
   showReceiptModal.value = false;
   console.log('User choice:', choice); // Log the choice to confirm it's being captured
   if (choice === 'yes') {
+    console.log(res.value.data)
     generateReceiptPDF(res.value.data);
   }
   catchAxiosSuccess(res.value);
