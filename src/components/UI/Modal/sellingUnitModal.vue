@@ -71,6 +71,7 @@ watch(() => props.sellingUnit, (newVal) => {
 })
 
 const submitForm = async () => {
+  isLoading.value = true;
   try {
 
      if (isEditing.value) {
@@ -101,6 +102,8 @@ const submitForm = async () => {
   } catch (error) {
     console.error('Error submitting form:', error)
     catchAxiosError(error)
+  } finally{
+    isLoading.value =false;
   }
 }
 </script>
