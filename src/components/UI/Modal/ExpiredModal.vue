@@ -15,32 +15,35 @@
           <div class="loader"></div>
           <p>Loading expired products...</p>
         </div>
-        <table v-else>
-          <thead>
-            <tr>
-              <th>S.NO</th>
-              <th>PRODUCT NAME</th>
-              <th>QUANTITY AVAILABLE</th>
-              <th>BATCH NO</th>
-              <th>SUB CATEGORY</th>
-              <th>PURCHASE UNIT</th>
-              <th>SELLING UNIT</th>
-              <th>EXPIRE DATE</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(item, index) in expiredProducts" :key="item.id">
-              <td>{{ index + 1 }}</td>
-              <td>{{ item.product_type_name }}</td>
-              <td>{{ item.quantity_available }}</td>
-              <td>{{ item.batch_no }}</td>
-              <td>{{ item.product_sub_category }}</td>
-              <td>{{ item.purchase_unit_name }}</td>
-              <td>{{ item.selling_unit_name }}</td>
-              <td>{{ item.expiry_date }}</td>
-            </tr>
-          </tbody>
-        </table>
+        <div v-else>
+          <table>
+            <thead>
+              <tr>
+                <th>S.NO</th>
+                <th>PRODUCT NAME</th>
+                <th>QUANTITY AVAILABLE</th>
+                <th>BATCH NO</th>
+                <th>SUB CATEGORY</th>
+                <th>PURCHASE UNIT</th>
+                <th>SELLING UNIT</th>
+                <th>EXPIRE DATE</th>
+              </tr>
+            </thead>
+            <tbody>
+           <p v-if="expiredProducts.length === 0" class="text-center mx-auto font-[1.5em] text-red-500">No product expiring within the next 7 days</p>
+              <tr v-for="(item, index) in expiredProducts" :key="item.id">
+                <td>{{ index + 1 }}</td>
+                <td>{{ item.product_type_name }}</td>
+                <td>{{ item.quantity_available }}</td>
+                <td>{{ item.batch_no }}</td>
+                <td>{{ item.product_sub_category }}</td>
+                <td>{{ item.purchase_unit_name }}</td>
+                <td>{{ item.selling_unit_name }}</td>
+                <td>{{ item.expiry_date }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div class="modal-footer my-6">
