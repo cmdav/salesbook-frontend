@@ -35,16 +35,21 @@ export const generateReceiptPDF = (receiptData) => {
   doc.text(`Payment Method: ${receiptData.transaction_details.payment_method || ''}`, 20, 132);
   doc.text(`Date: ${receiptData.transaction_details.created_at || ''}`, 20, 142);
 
-  const tableColumn = ["Product Name", "Price(NGN)", "Quantity", "VAT(NGN)", "Total Price(NGN)"];
+  const tableColumn = ["Product Name", "Price(NGN)", "Quantity", "VAT", "Total Price(NGN)"];
   const tableRows = [];
+  let totalVAT = 0;  // Track total VAT
 
   receiptData.items.forEach((item) => {
+    const vatAmount = item.vat_state === 'yes' ? item.price_sold_at * 0.075 : 0;  // 7.5% VAT
+    const totalPrice = item.price_sold_at * item.quantity + vatAmount;
+    totalVAT += vatAmount;
+
     const itemData = [
       item.product_type_name || '',
-      item.price_sold_at || '',
+      formatNumber(item.price_sold_at),
       item.quantity || '',
-      item.vat !== null ? item.vat.toFixed(2) : '',
-      `${item.total_price || ''}`
+      item.vat_state === 'yes' ?  vatAmount : 0,  // Correctly display "Yes" or "No" based on VAT
+      formatNumber(totalPrice)  // Include VAT in total price
     ];
     tableRows.push(itemData);
   });
@@ -64,12 +69,15 @@ export const generateReceiptPDF = (receiptData) => {
   });
 
   let finalY = doc.autoTable.previous.finalY + 10;
-  doc.setFont(invoiceStyle.fontStyle)
+  doc.setFont(invoiceStyle.fontStyle);
   doc.setFontSize(invoiceStyle.fontSize);
-  doc.text(`Total Amount (NGN): ${formatNumber(receiptData.transaction_details.transaction_amount?.toFixed(2) || '0.00')}`, doc.internal.pageSize.width - 20, finalY, null, null, 'right');
+
+  // Display total VAT and total amount with VAT included
+  doc.text(`Total VAT (NGN): ${formatNumber(totalVAT.toFixed(2))}`, doc.internal.pageSize.width - 20, finalY, null, null, 'right');
+  doc.text(`Total Amount (NGN): ${formatNumber(receiptData.transaction_details.transaction_amount?.toFixed(2) || '0.00')}`, doc.internal.pageSize.width - 20, finalY + 10, null, null, 'right');
 
   doc.setFontSize(itemStyle.fontSize);
-  doc.text('Thanks for your patronage!', 105, finalY + 15, null, null, 'center');
+  doc.text('Thanks for your patronage!', 105, finalY + 25, null, null, 'center');
 
   // Generate the PDF as a Blob
   const pdfBlob = doc.output('blob');
@@ -98,3 +106,4 @@ const formatNumber = (amount) => {
     maximumFractionDigits: 2,
   }).format(amount);
 };
+
