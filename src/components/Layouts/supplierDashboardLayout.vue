@@ -36,8 +36,8 @@ const toogleDropdown = () => {
 const items = [
   {
     id: 0,
-    name: "profile",
-    context: "profile",
+    name: "supplier-profile",
+    context: "Profile",
     // icon: UserIcon,
   },
   {

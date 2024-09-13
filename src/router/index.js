@@ -47,6 +47,7 @@ import RolesPage from '@/views/Dashboard/Security/Pages/RolesPagecopy.vue'
 import DefultPage from '@/views/Dashboard/Security/DefultPage.vue'
 import ResetPassword from '@/views/Auth/ResetPassword.vue'
 import ProfilePage from '@/views/Dashboard/Profile/ProfilePage.vue'
+import SupplierProfilePage from '@/views/Dashboard/Profile/SupplierProfilePage.vue'
 import ViewProductTypes from '@/views/Dashboard/Product/ProductType/ViewProductTypes.vue'
 import CreateProductType from '@/views/Dashboard/Product/ProductType/CreateProductType.vue'
 
@@ -133,6 +134,12 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: ProfilePage,
+      beforeEnter: [middleware.redirectLogin]
+    },
+    {
+      path: '/supplier-profile',
+      name: 'supplier-profile',
+      component: SupplierProfilePage,
       beforeEnter: [middleware.redirectLogin]
     },
     {
