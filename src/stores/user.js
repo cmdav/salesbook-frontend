@@ -13,7 +13,7 @@ export const useStore = defineStore('user', () => {
       user.value = decrypt(encryptedData, import.meta.env.VITE_ENCRYPT_KEY)
       return user.value
     } else {
-      return null // or any other appropriate default value
+      return null
     }
   })
 
@@ -39,15 +39,12 @@ export const useStore = defineStore('user', () => {
     }
   }
  
-  
- 
   return {
     user,
     getUser,
     saveUser,
     userProfileDetails,
     handleUserProfile,
-    //features,
     handleUploadCompanyLogo
   }
 })

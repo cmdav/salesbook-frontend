@@ -84,6 +84,7 @@ export const getToken = () => {
     }
     return null;
 }
+
 export const getUser = () => {
 
     let encryptedData  = localStorage.getItem("_user_data");

@@ -8,7 +8,32 @@
       <nav class="nav !font-light">
         
         <template v-for="item in menuItems" :key="item.name">
+          <div v-if="item.children">
+            <!-- Dropdown for products -->
+            <div class="relative group">
+              <div class="p-[10px] flex justify-start text-brand hover:bg-brand/[50%] hover:text-white rounded-[5px]">
+                <div class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]">
+                  <component :is="item.icon" />
+                </div>
+                <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]">
+                  {{ item.name }}
+                </span>
+              </div>
+              <!-- Dropdown content -->
+              <div class="absolute left-0 w-full bg-white shadow-lg rounded hidden group-hover:block">
+                <div v-for="child in item.children" :key="child.name" class="p-[10px] flex hover:bg-brand/[50%]">
+                  <router-link :to="child.route" class="w-full">
+                    <div class="flex justify-start">
+                    <component :is="child.icon" class="mr-[20px]"/>
+                    <span class="text-brand">{{ child.name }}</span>
+                    </div>
+                  </router-link>
+                </div>
+              </div>
+            </div>
+          </div>
           <router-link
+            v-else
             :to="item.route"
             class="p-[10px] flex justify-start hover:bg-brand/[50%] hover:text-white rounded-[5px]"
             :class="{
@@ -29,6 +54,27 @@
               {{ item.name }}
             </span>
           </router-link>
+          <!-- <router-link
+            :to="item.route"
+            class="p-[10px] flex justify-start hover:bg-brand/[50%] hover:text-white rounded-[5px]"
+            :class="{
+              'text-white bg-brand': route.name === item.route.substring(1),
+              'text-brand': route.name !== item.route.substring(1)
+            }"
+          >
+            <div
+              :class="{
+                'text-white': route.name === item.route.substring(1),
+                'text-brand': route.name !== item.route.substring(1)
+              }"
+              class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
+            >
+              <component :is="item.icon" />
+            </div>
+            <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]">
+              {{ item.name }}
+            </span>
+          </router-link> -->
         </template>
       </nav>
     </div>
@@ -63,6 +109,8 @@ const permissions = computed(() => {
   return store.getUser.user.permission.permissions
 })
 
+
+
 //console.log(permissions.value)
 
 const menuItems = computed(() => {
@@ -75,43 +123,86 @@ const menuItems = computed(() => {
     //   icon: MeasurementIcon,
     //   backendKey: 'welcomescreen'
     // },
+    // {
+    //   name: 'Measurement',
+    //   route: '/measurement',
+    //   icon: MeasurementIcon,
+    //   backendKey: 'measurements'
+    // },
+    { name: 'Currency', route: '/currency', icon: FireIcon, backendKey: 'currencies' },
     {
+      name: 'Products',
+      icon: ProductsIcon,
+      backendKey: 'products',
+      children: [
+        {
       name: 'Measurement',
       route: '/measurement',
       icon: MeasurementIcon,
       backendKey: 'measurements'
     },
-    { name: 'Currency', route: '/currency', icon: FireIcon, backendKey: 'currencies' },
-    {
-      name: 'Product Category',
-      route: '/product-category',
-      icon: CategoryIcon,
-      backendKey: 'product-categories'
+        {
+          name: 'Product Category',
+          route: '/product-category',
+          icon: CategoryIcon,
+          backendKey: 'product-categories'
+        },
+        {
+          name: 'Product Sub Category',
+          route: '/product-sub-category',
+          icon: CategoryIcon,
+          backendKey: 'product-sub-categories'
+        },
+        {
+          name: 'Products',
+          route: '/product-type',
+          icon: ProductsIcon,
+          backendKey: 'products'
+        }
+      ]
     },
-    {
-      name: 'Product Sub Category',
-      route: '/product-sub-category',
-      icon: CategoryIcon,
-      backendKey: 'product-sub-categories'
-    },
+    // {
+    //   name: 'Product Category',
+    //   route: '/product-category',
+    //   icon: CategoryIcon,
+    //   backendKey: 'product-categories'
+    // },
+    // {
+    //   name: 'Product Sub Category',
+    //   route: '/product-sub-category',
+    //   icon: CategoryIcon,
+    //   backendKey: 'product-sub-categories'
+    // },
     // { name: 'Products', route: '/products', icon: ProductsIcon, backendKey: 'products' },
-    {
-      name: 'Products',
-      route: '/product-type',
-      icon: ProductsIcon,
-      backendKey: 'products'
-    },
+    // {
+    //   name: 'Products',
+    //   route: '/product-type',
+    //   icon: ProductsIcon,
+    //   backendKey: 'products'
+    // },
     { name: 'Purchase', route: '/purchase', icon: PurchaseIcon, backendKey: 'purchases' },
     { name: 'Sale', route: '/sale', icon: SalesIcon, backendKey: 'sales' },
     { name: 'Store', route: '/store', icon: ProductIcon, backendKey: 'stores' },
     { name: 'Customers', route: '/customers', icon: CustomerIcon, backendKey: 'customers' },
-    { name: 'Suppliers', route: '/supplier', icon: SuppliersIcon, backendKey: 'suppliers' },
-    {
+    { name: 'Suppliers',
+      icon: SuppliersIcon, 
+      backendKey: 'suppliers',
+      children: [
+        {
+        name: 'Suppliers',
+        route: '/supplier',
+        icon: SuppliersIcon, 
+      backendKey: 'suppliers',
+        },
+        {
       name: 'Supplier Product',
       route: '/supplier-product',
       icon: ProductIcon,
       backendKey: 'supplier-products'
     },
+      ] 
+    },
+    
     { name: 'Records', route: '/', icon: recordsIcon, backendKey: 'records' },
     { name: 'Reports', route: '/report', icon: reportsIcon, backendKey: 'reports' },
     {
@@ -127,7 +218,7 @@ const menuItems = computed(() => {
       backendKey: 'subscriptions'
     },
     { name: 'Settings', route: '/settings', icon: SettingsIcon, backendKey: 'settings' },
-    { name: 'Log Out', route: '/logout', icon: logoutIcon, backendKey: '' }
+    { name: 'Log Out', route: '/logout', icon: logoutIcon, backendKey: 'logout' }
   ]
 
   return allItems.filter((item) => {
