@@ -201,9 +201,9 @@ const router = createRouter({
     {
       path: '/welcome',
       name: 'welcome',
-      component: WelcomeScreen
+      component: WelcomeScreen,
       // beforeEnter: [middleware.redirectSupplierDashboard]
-      // beforeEnter: [middleware.redirectDashboard]
+      beforeEnter: [middleware.redirectLogin]
     },
 
     {
