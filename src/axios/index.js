@@ -18,7 +18,7 @@ axios.interceptors.response.use(
             toast.error(error?.response?.data?.message, {
               timeout: 4000
             })
-            localStorage.clear()
+            sessionStorage.clear()
             useRouter.push('/logout')
         }
         return Promise.reject(error);
