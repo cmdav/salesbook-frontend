@@ -131,7 +131,7 @@ const handleForgotPassword = async () => {
   };
   try {
     let res = await resendEmail(payload);
-    localStorage.setItem("email", formData.email);
+    sessionStorage.setItem("email", formData.email);
     router.push({ name: "login" });
     if (res.data.status === true) {
       router.push({ name: "login" });

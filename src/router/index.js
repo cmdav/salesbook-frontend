@@ -313,12 +313,10 @@ const router = createRouter({
       beforeEnter: [middleware.redirectLogin]
     },
     {
-      path: '/logout',
       name: 'logout',
       beforeEnter: [middleware.deleteSession]
     },
     {
-      path: '/logout-supplier',
       name: 'signout',
       beforeEnter: [middleware.deleteSupplierSession]
     },
