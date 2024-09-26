@@ -37,8 +37,8 @@
         <div class="form-group">
           <label class="block text-sm font-medium text-gray-700">Payment method</label>
           <select required v-model="formState.payment_method" class="select-input">
-            <option v-for="option in paymentMethods" :key="option.value" :value="option.value">
-              {{ option.label }}
+            <option v-for="option in paymentList" :key="option.value" :value="option.value">
+              {{ option.payment_identifier }}
             </option>
           </select>
         </div>
@@ -49,7 +49,11 @@
             <span class="font-medium text-gray-700">
               Total Price: <span v-html="'&#8358;'"></span> {{ totalPrice }}
             </span>
-            <button type="button" @click="addProducts" class="button btn-brand !bg-brand/[20%] !text-black !px-3 ml-4">
+            <button
+              type="button"
+              @click="addProducts"
+              class="button btn-brand !bg-brand/[20%] !text-black !px-3 ml-4"
+            >
               Add product
             </button>
           </div>
@@ -63,8 +67,17 @@
             <!-- Product Type Select -->
             <div class="input-group">
               <label class="block text-sm font-medium text-gray-700">Product</label>
-              <select v-model="formState.products[index].product_type_id" class="select-input" @change="handleProductTypeSelect(index)">
-                <option v-for="name in data" :key="name.id" :value="name.id" :disabled="isProductSelected(name.id)">
+              <select
+                v-model="formState.products[index].product_type_id"
+                class="select-input"
+                @change="handleProductTypeSelect(index)"
+              >
+                <option
+                  v-for="name in data"
+                  :key="name.id"
+                  :value="name.id"
+                  :disabled="isProductSelected(name.id)"
+                >
                   {{ name.product_type_name }}
                 </option>
               </select>
@@ -91,20 +104,18 @@
               </select>
             </div>
 
-           <!-- Quantity Sold -->
-<div class="input-group w-20">
-  <label class="block text-sm font-medium text-gray-700">Qty Sold</label>
-  <input
-    type="number"
-    v-model="formState.products[index].quantity_sold"
-    min="0"
-    class="input"
-    @change="checkQuantitySold(index)"
-    @input="preventNegativeQuantity(index)"
-  />
-</div>
-
-
+            <!-- Quantity Sold -->
+            <div class="input-group w-20">
+              <label class="block text-sm font-medium text-gray-700">Qty Sold</label>
+              <input
+                type="number"
+                v-model="formState.products[index].quantity_sold"
+                min="0"
+                class="input"
+                @change="checkQuantitySold(index)"
+                @input="preventNegativeQuantity(index)"
+              />
+            </div>
             <!-- Selling Price -->
             <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Selling Price</label>
@@ -175,66 +186,77 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, onMounted, nextTick } from 'vue';
-import { useRouter } from 'vue-router';
-import apiService from '@/services/apiService';
-import { useCustomerstore } from '@/stores/customers';
-import CustomerFormModal from '@/components/UI/Modal/CustomerFormModal.vue';
-import ReceiptModal from '@/components/UI/Modal/ReceiptModal.vue';
-import { storeToRefs } from 'pinia';
-import { generateReceiptPDF } from './sentToPrinter';
-import { catchAxiosError, catchAxiosSuccess } from '@/services/Response';
+import { ref, reactive, watch, onMounted, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
+import apiService from '@/services/apiService'
+import { useCustomerstore } from '@/stores/customers'
+import CustomerFormModal from '@/components/UI/Modal/CustomerFormModal.vue'
+import ReceiptModal from '@/components/UI/Modal/ReceiptModal.vue'
+import { storeToRefs } from 'pinia'
+import { generateReceiptPDF } from './sentToPrinter'
+import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
 
-const router = useRouter();
-const customersStore = useCustomerstore();
+const router = useRouter()
+const customersStore = useCustomerstore()
 
-const barcodeInputRefs = ref([]);
-const data = ref([]);
-const totalPrice = ref(0);
-const res = ref(null);
+const barcodeInputRefs = ref([])
+const data = ref([])
+const paymentList = ref([])
+const totalPrice = ref(0)
+const res = ref(null)
 
-const { allCustomersNames } = storeToRefs(customersStore);
+const { allCustomersNames } = storeToRefs(customersStore)
 
-const showModal = ref(false);
-const isSubmitting = ref(false);
+const showModal = ref(false)
+const isSubmitting = ref(false)
 
 const addNewCustomer = () => {
-  showModal.value = true;
-};
+  showModal.value = true
+}
 
 const closeModal = () => {
-  showModal.value = false;
-};
+  showModal.value = false
+}
 
 const setBarcodeRef = (el, index) => {
-  barcodeInputRefs.value[index] = el;
-};
+  barcodeInputRefs.value[index] = el
+}
 
 const focusBarcodeInput = () => {
   nextTick(() => {
-    const emptyBarcodeField = barcodeInputRefs.value.find((el) => el && !el.value);
-    emptyBarcodeField?.focus();
-  });
-};
+    const emptyBarcodeField = barcodeInputRefs.value.find((el) => el && !el.value)
+    emptyBarcodeField?.focus()
+  })
+}
 const preventNegativeQuantity = (index) => {
   if (formState.products[index].quantity_sold < 0) {
-    formState.products[index].quantity_sold = 0;
+    formState.products[index].quantity_sold = 0
   }
-};
+}
 
 onMounted(async () => {
   try {
-    await customersStore.handleAllCustomersName();
-    const response = await apiService.get('/all-product-type-name');
-    data.value = response.data;
-    focusBarcodeInput();
+    await customersStore.handleAllCustomersName()
+    const response = await apiService.get('/all-product-type-name')
+    data.value = response.data
+    focusBarcodeInput()
   } catch (error) {
-    console.error('Failed to fetch product type names:', error);
+    console.error('Failed to fetch product type names:', error)
   }
-});
+})
 
-const printReceipt = ref('no');
-const showReceiptModal = ref(false);
+onMounted(async () => {
+  try {
+    const response = await apiService.get('/list-payment-methods')
+    console.log(response)
+    paymentList.value = response.data
+  } catch (e) {
+    console.log('erro getting list of payment', e)
+  }
+})
+
+const printReceipt = ref('no')
+const showReceiptModal = ref(false)
 
 const formState = reactive({
   customer_id: '',
@@ -250,29 +272,29 @@ const formState = reactive({
       vat: 'no'
     }
   ]
-});
+})
 
 const populateProductDetails = (index, product) => {
-  formState.products[index].product_type_id = product.id;
-  formState.products[index].barcode = product.barcode;
-  formState.products[index].selling_price = product.selling_price;
-  formState.products[index].selling_unit_name = product.selling_unit_name; // Populate selling unit
-  formState.products[index].vat = product.vat.toLowerCase();
+  formState.products[index].product_type_id = product.id
+  formState.products[index].barcode = product.barcode
+  formState.products[index].selling_price = product.selling_price
+  formState.products[index].selling_unit_name = product.selling_unit_name // Populate selling unit
+  formState.products[index].vat = product.vat.toLowerCase()
   formState.products[index].amount = calculateAmountWithVat(
     formState.products[index].selling_price,
     formState.products[index].quantity_sold,
     formState.products[index].vat
-  );
-  nextTick(() => focusBarcodeInput());
-};
+  )
+  nextTick(() => focusBarcodeInput())
+}
 
 const calculateAmountWithVat = (sellingPrice, quantitySold, vat) => {
-  let amount = parseFloat(sellingPrice) * parseFloat(quantitySold || 0); // Ensure quantitySold is never NaN
+  let amount = parseFloat(sellingPrice) * parseFloat(quantitySold || 0) // Ensure quantitySold is never NaN
   if (vat === 'yes') {
-    amount *= 1.075;
+    amount *= 1.075
   }
-  return isNaN(amount) ? 0 : amount;
-};
+  return isNaN(amount) ? 0 : amount
+}
 
 watch(
   () =>
@@ -287,21 +309,21 @@ watch(
         product.selling_price,
         product.quantity_sold,
         product.vat
-      );
-    });
-    calculateTotalPrice();
+      )
+    })
+    calculateTotalPrice()
   },
   { deep: true }
-);
+)
 
 const calculateTotalPrice = () => {
-  const total = formState.products.reduce((acc, product) => acc + (product.amount || 0), 0);
-  totalPrice.value = isNaN(total) ? '0.00' : total.toFixed(2); // Ensure total is never NaN
-};
+  const total = formState.products.reduce((acc, product) => acc + (product.amount || 0), 0)
+  totalPrice.value = isNaN(total) ? '0.00' : total.toFixed(2) // Ensure total is never NaN
+}
 
 const isProductSelected = (productId) => {
-  return formState.products.some((product) => product.product_type_id === productId);
-};
+  return formState.products.some((product) => product.product_type_id === productId)
+}
 
 // const addProducts = () => {
 //   const lastProduct = formState.products[formState.products.length - 1];
@@ -321,57 +343,59 @@ const isProductSelected = (productId) => {
 
 const removeProduct = (index) => {
   if (formState.products.length > 1) {
-    formState.products.splice(index, 1);
-    barcodeInputRefs.value.splice(index, 1);
-    nextTick(() => focusBarcodeInput());
-    calculateTotalPrice();
+    formState.products.splice(index, 1)
+    barcodeInputRefs.value.splice(index, 1)
+    nextTick(() => focusBarcodeInput())
+    calculateTotalPrice()
   }
-};
+}
 
 const handleBarcodeEnter = (index) => {
-  const product = data.value.find((p) => p.barcode === formState.products[index].barcode);
+  const product = data.value.find((p) => p.barcode === formState.products[index].barcode)
 
   if (isDuplicateBarcode(formState.products[index].barcode)) {
-    alert("This barcode has already been scanned.");
-    formState.products[index].barcode = ''; // Clear the duplicate barcode
-    return;
+    alert('This barcode has already been scanned.')
+    formState.products[index].barcode = '' // Clear the duplicate barcode
+    return
   }
 
   if (product) {
-    populateProductDetails(index, product);
-    addProducts();
+    populateProductDetails(index, product)
+    addProducts()
   }
-};
+}
 
 const handleProductTypeSelect = (index) => {
-  const product = data.value.find((p) => p.id === formState.products[index].product_type_id);
+  const product = data.value.find((p) => p.id === formState.products[index].product_type_id)
   if (product) {
-    populateProductDetails(index, product);
+    populateProductDetails(index, product)
   }
-};
+}
 
 const checkQuantitySold = (index) => {
-  const product = data.value.find(p => p.id === formState.products[index].product_type_id);
-  
+  const product = data.value.find((p) => p.id === formState.products[index].product_type_id)
+
   if (product && formState.products[index].quantity_sold > product.quantity_available) {
-    formState.products[index].quantity_sold = product.quantity_available; // Reset to available quantity if exceeds
-    alert(`Quantity sold exceeds available stock. Resetting to available quantity: ${product.quantity_available}.`);
+    formState.products[index].quantity_sold = product.quantity_available // Reset to available quantity if exceeds
+    alert(
+      `Quantity sold exceeds available stock. Resetting to available quantity: ${product.quantity_available}.`
+    )
   }
-  
+
   formState.products[index].amount = calculateAmountWithVat(
     formState.products[index].selling_price,
     formState.products[index].quantity_sold,
     formState.products[index].vat
-  );
-  calculateTotalPrice();
-};
+  )
+  calculateTotalPrice()
+}
 
 const isDuplicateBarcode = (barcode) => {
-  return formState.products.filter(product => product.barcode === barcode).length > 1;
-};
+  return formState.products.filter((product) => product.barcode === barcode).length > 1
+}
 
 const addProducts = () => {
-  const lastProduct = formState.products[formState.products.length - 1];
+  const lastProduct = formState.products[formState.products.length - 1]
 
   // If the product is selected from the dropdown, ensure quantity_sold is > 0
   // if (lastProduct.product_type_id && lastProduct.quantity_sold < 1) {
@@ -390,25 +414,31 @@ const addProducts = () => {
       quantity_sold: 0,
       amount: '',
       vat: 'no'
-    });
-    nextTick(() => focusBarcodeInput());
+    })
+    nextTick(() => focusBarcodeInput())
   }
-};
+}
 
 const addSales = async () => {
-  isSubmitting.value = true;
+  isSubmitting.value = true
 
   // Validate that all products with a selected product_type_id have quantity_sold > 0
-  const invalidProducts = formState.products.filter(product => product.product_type_id && product.quantity_sold <= 0);
+  const invalidProducts = formState.products.filter(
+    (product) => product.product_type_id && product.quantity_sold <= 0
+  )
 
   if (invalidProducts.length > 0) {
     const invalidProductNames = invalidProducts
-      .map(product => data.value.find(p => p.id === product.product_type_id)?.product_type_name || 'this product')
-      .join(', ');
-    
-    alert(`Enter a quantity for ${invalidProductNames}`);
-    isSubmitting.value = false;
-    return;
+      .map(
+        (product) =>
+          data.value.find((p) => p.id === product.product_type_id)?.product_type_name ||
+          'this product'
+      )
+      .join(', ')
+
+    alert(`Enter a quantity for ${invalidProductNames}`)
+    isSubmitting.value = false
+    return
   }
 
   // Proceed with submitting only valid products (non-empty and with valid quantities)
@@ -418,45 +448,43 @@ const addSales = async () => {
       product_type_id: product.product_type_id,
       price_sold_at: parseInt(product.selling_price, 10),
       quantity: parseInt(product.quantity_sold, 10),
-      vat: product.vat === 'yes' ? 'yes' : 'no'  // Ensure VAT is properly included
-    }));
+      vat: product.vat === 'yes' ? 'yes' : 'no' // Ensure VAT is properly included
+    }))
 
   const payload = {
     customer_id: formState.customer_id ? formState.customer_id : null,
     payment_method: formState.payment_method,
     products
-  };
+  }
 
   try {
-    res.value = await apiService.post('/sales', payload);
+    res.value = await apiService.post('/sales', payload)
     if (res.value.success) {
-      showReceiptModal.value = true;
+      showReceiptModal.value = true
     }
-    return res.value;
+    return res.value
   } catch (error) {
-    catchAxiosError(error);
+    catchAxiosError(error)
   } finally {
-    isSubmitting.value = false;
-    resetForm();
+    isSubmitting.value = false
+    resetForm()
   }
-};
-
-
+}
 
 const handleReceiptChoice = (choice) => {
-  showReceiptModal.value = false;
-  console.log('User choice:', choice); // Log the choice to confirm it's being captured
+  showReceiptModal.value = false
+  console.log('User choice:', choice) // Log the choice to confirm it's being captured
   if (choice === 'yes') {
     console.log(res.value.data)
-    generateReceiptPDF(res.value.data);
+    generateReceiptPDF(res.value.data)
   }
-  catchAxiosSuccess(res.value);
-  router.push('/sale');
-};
+  catchAxiosSuccess(res.value)
+  router.push('/sale')
+}
 
 const resetForm = () => {
-  formState.customer_id = '';
-  formState.payment_method = '';
+  formState.customer_id = ''
+  formState.payment_method = ''
   formState.products = [
     {
       product_type_id: '',
@@ -467,15 +495,15 @@ const resetForm = () => {
       amount: '',
       vat: 'no'
     }
-  ];
-  nextTick(() => focusBarcodeInput());
-};
+  ]
+  nextTick(() => focusBarcodeInput())
+}
 
 const paymentMethods = [
   { value: 'cash', label: 'Cash' },
   { value: 'pos', label: 'Pos' },
   { value: 'bank-transfer', label: 'Bank Transfer' }
-];
+]
 </script>
 
 <style scoped>

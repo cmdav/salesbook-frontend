@@ -203,7 +203,7 @@ const menuItems = computed(() => {
       ] 
     },
     
-    { name: 'Records', route: '/', icon: recordsIcon, backendKey: 'records' },
+    // { name: 'Records', route: '/', icon: recordsIcon, backendKey: 'records' },
     { name: 'Reports', route: '/report', icon: reportsIcon, backendKey: 'reports' },
     {
       name: 'Subscription',

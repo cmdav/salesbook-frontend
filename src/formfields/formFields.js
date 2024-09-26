@@ -711,6 +711,52 @@ export const roleFormFields = ref([
   }
 ])
 
+export const paymentFormFields = ref([
+  {
+    label: 'Payment Method',
+    type: 'select',
+    value: '',
+    required: true,
+    option: [],
+    // placeholder: 'Ekc',
+    databaseField: 'payment_method_id'
+  },
+  {
+    label: 'Account Name',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter Account Name',
+    databaseField: 'account_name'
+  },
+  {
+    label: 'Account Number',
+    type: 'num',
+    value: '',
+    required: true,
+    placeholder: 'Enter Account Number',
+    databaseField: 'account_number'
+  },
+  {
+    label: 'Payment Identifier',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter Payment Identifier',
+    databaseField: 'payment_identifier'
+  }
+])
+export const payMethodFormFields = ref([
+  {
+    label: 'Payment Method',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter Payment Method',
+    databaseField: 'payment_name'
+  }
+])
+
 export const branchFormFields = ref([
   {
     label: 'Branch Name',

@@ -80,6 +80,10 @@ export function usePostComposable(
         field.value = field.type === 'file' ? null : ''
       })
 
+      if (url === 'payment-methods') {
+        // Check if it's the payment methods form
+        emit('method-added')
+      }
       
       showModal.value = false
       forceUpdate.value++

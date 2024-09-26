@@ -54,7 +54,7 @@
 
 <script setup>
 import { currenciesFormFields } from '@/formfields/formFields'
-const modalTitle = 'currency_name'
+const modalTitle = 'Delete Currency'
 
 import { useSharedComponent } from '@/composable/useSharedComponent'
 

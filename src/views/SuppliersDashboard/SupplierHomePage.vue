@@ -1,5 +1,6 @@
 <template>
     <SupplierDashboardLayout pageTitle="Suppliers Page">
+      
       <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
 
         <!-- Button to Open Modal -->
