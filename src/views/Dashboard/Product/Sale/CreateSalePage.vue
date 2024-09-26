@@ -181,9 +181,9 @@ import { useCustomerstore } from '@/stores/customers'; // Pinia store for custom
 import CustomerFormModal from '@/components/UI/Modal/CustomerFormModal.vue'; // Modal component for adding a new customer
 import ReceiptModal from '@/components/UI/Modal/ReceiptModal.vue'; // Modal component for showing the receipt
 import { storeToRefs } from 'pinia';
+import { openDB } from 'idb';
 import { generateReceiptPDF } from './sentToPrinter'; // Function to generate PDF for the receipt
 import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'; // Services to handle success and error messages for API responses
-import '@/utils/idb.js'
 
 const router = useRouter();
 const customersStore = useCustomerstore(); // Access the Pinia customer store
@@ -231,40 +231,42 @@ const preventNegativeQuantity = (index) => {
 };
 
 // Lifecycle hook that runs when the component is mounted
-onMounted(async () => {
-  try {
-    // Open the IndexedDB database and create an object store for products
-    const db = await idb.open('sales-db', 1, upgradeDB => {
-      if (!upgradeDB.objectStoreNames.contains('products')) {
-        upgradeDB.createObjectStore('products', { keyPath: 'id' });
-      }
-    });
 
-    if (navigator.onLine) {
-      // If online, fetch the product data from the API
-      const response = await apiService.get('/all-product-type-name');
-      data.value = response.data; // Store the fetched data in 'data' ref
+// onMounted(async () => {
+//   try {
+//     // Open IndexedDB using openDB method, or create it if not exists
+//     const db = await openDB('sales-db', 1, {
+//       upgrade(db) {
+//         if (!db.objectStoreNames.contains('products')) {
+//           db.createObjectStore('products', { keyPath: 'id' });
+//         }
+//       }
+//     });
 
-      // Store the product data in IndexedDB
-      const tx = db.transaction('products', 'readwrite');
-      const store = tx.objectStore('products');
-      response.data.forEach(product => {
-        store.put(product);
-      });
+//     if (navigator.onLine) {
+//       // Fetch product data from the API if the app is online
+//       const response = await apiService.get('/all-product-type-name');
+//       data.value = response.data; // Store the fetched data in the reactive `data` variable
 
-      await tx.complete; // Complete the transaction
-    } else {
-      // If offline, retrieve product data from IndexedDB
-      const tx = db.transaction('products', 'readonly');
-      const store = tx.objectStore('products');
-      data.value = await store.getAll(); // Load all products from IndexedDB
-    }
+//       // Store product data in IndexedDB
+//       const tx = db.transaction('products', 'readwrite');
+//       const store = tx.objectStore('products');
+//       response.data.forEach((product) => {
+//         store.put(product);
+//       });
+//       await tx.done; // Ensure transaction is complete
+//     } else {
+//       // If offline, load product data from IndexedDB
+//       const tx = db.transaction('products', 'readonly');
+//       const store = tx.objectStore('products');
+//       data.value = await store.getAll(); // Get all products from the IndexedDB
+//     }
 
-    focusBarcodeInput(); // Focus on the first empty barcode input
-  } catch (error) {
-    console.error('Failed to fetch product type names:', error); // Handle error if product types can't be fetched
-  }
-});
+//     focusBarcodeInput(); // Focus on the first empty barcode input
+//   } catch (error) {
+//     console.error('Error fetching product data:', error);
+//   }
+// });
 
 
 // State variables for form inputs and product list
@@ -288,12 +290,29 @@ const formState = reactive({
 });
 
 // Function to populate product details based on product selection
+// const populateProductDetails = (index, product) => {
+//   formState.products[index].product_type_id = product.id;
+//   formState.products[index].barcode = product.barcode;
+//   formState.products[index].selling_price = product.selling_price;
+//   formState.products[index].selling_unit_name = product.selling_unit_name; // Populate selling unit name
+//   formState.products[index].vat = product.vat.toLowerCase(); // Set VAT value
+//   formState.products[index].amount = calculateAmountWithVat(
+//     formState.products[index].selling_price,
+//     formState.products[index].quantity_sold,
+//     formState.products[index].vat
+//   );
+//   nextTick(() => focusBarcodeInput()); // Focus on the next empty barcode input
+// };
 const populateProductDetails = (index, product) => {
+  if (!product) {
+    console.error(`Product not found at index ${index}`);
+    return;
+  }
   formState.products[index].product_type_id = product.id;
-  formState.products[index].barcode = product.barcode;
-  formState.products[index].selling_price = product.selling_price;
-  formState.products[index].selling_unit_name = product.selling_unit_name; // Populate selling unit name
-  formState.products[index].vat = product.vat.toLowerCase(); // Set VAT value
+  formState.products[index].barcode = product.barcode || ''; // Handle missing barcode
+  formState.products[index].selling_price = product.selling_price || 0;
+  formState.products[index].selling_unit_name = product.selling_unit_name || ''; // Populate selling unit name
+  formState.products[index].vat = product.vat ? product.vat.toLowerCase() : 'no'; // Set VAT value, default to 'no'
   formState.products[index].amount = calculateAmountWithVat(
     formState.products[index].selling_price,
     formState.products[index].quantity_sold,
@@ -301,8 +320,6 @@ const populateProductDetails = (index, product) => {
   );
   nextTick(() => focusBarcodeInput()); // Focus on the next empty barcode input
 };
-
-// Function to calculate the amount with VAT
 const calculateAmountWithVat = (sellingPrice, quantitySold, vat) => {
   let amount = parseFloat(sellingPrice) * parseFloat(quantitySold || 0); // Calculate the amount
   if (vat === 'yes') {
@@ -310,6 +327,43 @@ const calculateAmountWithVat = (sellingPrice, quantitySold, vat) => {
   }
   return isNaN(amount) ? 0 : amount; // Return the calculated amount or 0 if NaN
 };
+
+// Function to handle product type selection
+const handleProductTypeSelect = async (index) => {
+  const productId = formState.products[index].product_type_id;
+  let product;
+
+  try {
+    if (navigator.onLine) {
+      // If online, get product from the fetched API data
+      product = data.value.find(p => p.id === productId);
+    } else {
+      // If offline, retrieve product from IndexedDB
+      const db = await openDB('sales-db', 2); // Ensure using version 2
+      const tx = db.transaction('products', 'readonly');
+      const store = tx.objectStore('products');
+      product = await store.get(productId); // Get the product by ID from IndexedDB
+      await tx.done; // Ensure transaction is complete
+    }
+
+    if (product) {
+      populateProductDetails(index, product); // Populate the product details in the form
+    } else {
+      console.error('Product not found for the selected type');
+    }
+  } catch (error) {
+    console.error('Error during product selection:', error);
+  }
+};
+
+// Function to calculate the amount with VAT
+// const calculateAmountWithVat = (sellingPrice, quantitySold, vat) => {
+//   let amount = parseFloat(sellingPrice) * parseFloat(quantitySold || 0); // Calculate the amount
+//   if (vat === 'yes') {
+//     amount *= 1.075; // Add 7.5% VAT if applicable
+//   }
+//   return isNaN(amount) ? 0 : amount; // Return the calculated amount or 0 if NaN
+// };
 
 // Watcher to update product amounts and total price when any product changes
 watch(
@@ -369,33 +423,26 @@ const handleBarcodeEnter = (index) => {
   }
 };
 
-// Function to handle product type selection
-// const handleProductTypeSelect = (index) => {
-//   const product = data.value.find((p) => p.id === formState.products[index].product_type_id); // Find product by ID
+
+// const handleProductTypeSelect = async (index) => {
+//   const productId = formState.products[index].product_type_id;
+//   let product;
+
+//   if (navigator.onLine) {
+//     // If online, get product from the fetched API data
+//     product = data.value.find(p => p.id === productId);
+//   } else {
+//     // If offline, retrieve product from IndexedDB
+//     const db = await openDB('sales-db', 1);
+//     const tx = db.transaction('products', 'readonly');
+//     const store = tx.objectStore('products');
+//     product = await store.get(productId);
+//   }
+
 //   if (product) {
-//     populateProductDetails(index, product); // Populate product details
+//     populateProductDetails(index, product); // Populate the product details in the form
 //   }
 // };
-const handleProductTypeSelect = async (index) => {
-  const productId = formState.products[index].product_type_id;
-  let product;
-
-  if (navigator.onLine) {
-    // Online mode: Get product from the fetched API data
-    product = data.value.find(p => p.id === productId);
-  } else {
-    // Offline mode: Fetch product from IndexedDB
-    const db = await idb.open('sales-db', 1);
-    const tx = db.transaction('products', 'readonly');
-    const store = tx.objectStore('products');
-    product = await store.get(productId);
-  }
-
-  if (product) {
-    populateProductDetails(index, product); // Populate the product details in the form
-  }
-};
-
 
 // Function to check if the quantity sold exceeds available stock
 const checkQuantitySold = (index) => {
@@ -437,18 +484,15 @@ const addProducts = () => {
   }
 };
 
-// Function to handle form submission for adding sales
+
 // const addSales = async () => {
 //   isSubmitting.value = true;
 
+//   // Validate that all products have quantities greater than 0
 //   const invalidProducts = formState.products.filter(product => product.product_type_id && product.quantity_sold <= 0);
 
 //   if (invalidProducts.length > 0) {
-//     const invalidProductNames = invalidProducts
-//       .map(product => data.value.find(p => p.id === product.product_type_id)?.product_type_name || 'this product')
-//       .join(', ');
-    
-//     alert(`Enter a quantity for ${invalidProductNames}`);
+//     alert(`Enter a quantity for all selected products`);
 //     isSubmitting.value = false;
 //     return;
 //   }
@@ -468,23 +512,114 @@ const addProducts = () => {
 //     products
 //   };
 
-//   try {
-//     res.value = await apiService.post('/sales', payload); // Post the sales data to the API
+//  ///////offline start
+//  try {
+//   if (navigator.onLine) {
+//     console.log('this application is online');
+//     // If online, send the sales data to the server
+//     res.value = await apiService.post('/sales', payload);
 //     if (res.value.success) {
-//       showReceiptModal.value = true; // Show receipt modal if successful
+//       showReceiptModal.value = true; // Show the receipt modal if successful
 //     }
-//     return res.value;
-//   } catch (error) {
-//     catchAxiosError(error); // Handle any errors during the API call
-//   } finally {
-//     isSubmitting.value = false;
-//     resetForm(); // Reset the form after submission
+//   } else {
+//     // If offline, store the sales data in IndexedDB
+//     console.log('this application is offline');
+
+//     // Attempt to open (or upgrade) the IndexedDB database
+//     const db = await openDB('sales-db', 2, { // Increment the version to force upgrade
+//       upgrade(db, oldVersion, newVersion, transaction) {
+//         if (!db.objectStoreNames.contains('sales')) {
+//           console.log('Creating object store for sales');
+//           db.createObjectStore('sales', { autoIncrement: true });
+//         } else {
+//           console.log('Object store "sales" already exists');
+//         }
+//       }
+//     });
+
+//     console.log('Database opened successfully:', db);
+
+//     // Initiate the transaction and store
+//     const tx = db.transaction('sales', 'readwrite');
+//     const store = tx.objectStore('sales');
+
+//     try {
+//       // Attempt to add the sales payload to the store
+//       console.log('Adding sales data to IndexedDB:', payload);
+//       await store.put(payload);
+//       console.log('Sales data stored successfully');
+      
+//       // Only show the alert if the data was successfully added
+//       alert('You are offline. Your sales will be synced when you are online.');
+      
+//     } catch (error) {
+//       // Catch and log any errors encountered when adding the data
+//       console.error('Error adding data to IndexedDB store:', error);
+//       alert('Failed to store sales data offline. Please try again.');
+//     }
+
+//     // Ensure the transaction is complete
+//     await tx.done;
+//     console.log('Transaction complete');
 //   }
+// } catch (error) {
+//   // Catch any higher-level errors
+//   console.error('An error occurred during the operation:', error);
+//   catchAxiosError(error); // Handle any errors
+// } finally {
+//   isSubmitting.value = false;
+//   resetForm(); // Reset the form after submission
+// }
+
+
+//  //offline end
+
 // };
+
+onMounted(async () => {
+  try {
+    // Always open the IndexedDB using the current version (2)
+    const db = await openDB('sales-db', 2, {
+      upgrade(db, oldVersion, newVersion) {
+        // Upgrade logic for version 1 to version 2
+        if (oldVersion < 1) {
+          db.createObjectStore('products', { keyPath: 'id' });
+        }
+        if (oldVersion < 2) {
+          db.createObjectStore('sales', { autoIncrement: true });
+        }
+      }
+    });
+
+    if (navigator.onLine) {
+      // Fetch product data from the API if the app is online
+      const response = await apiService.get('/all-product-type-name');
+      data.value = response.data; // Store the fetched data in the reactive `data` variable
+
+      // Store product data in IndexedDB
+      const tx = db.transaction('products', 'readwrite');
+      const store = tx.objectStore('products');
+      response.data.forEach((product) => {
+        store.put(product);
+      });
+      await tx.done; // Ensure transaction is complete
+    } else {
+      // If offline, load product data from IndexedDB
+      const tx = db.transaction('products', 'readonly');
+      const store = tx.objectStore('products');
+      data.value = await store.getAll(); // Get all products from the IndexedDB
+    }
+
+    focusBarcodeInput(); // Focus on the first empty barcode input
+  } catch (error) {
+    console.error('Error fetching product data:', error);
+  }
+});
+
 const addSales = async () => {
   isSubmitting.value = true;
 
-  // Validate that all products with a selected product_type_id have quantity_sold > 0
+  // Validate that all products have quantities greater than 0
   const invalidProducts = formState.products.filter(product => product.product_type_id && product.quantity_sold <= 0);
 
   if (invalidProducts.length > 0) {
@@ -510,27 +645,43 @@ const addSales = async () => {
 
   try {
     if (navigator.onLine) {
-      // Online: send the sales data to the server
+      // If online, send the sales data to the server
+      console.log('this application is online');
       res.value = await apiService.post('/sales', payload);
       if (res.value.success) {
         showReceiptModal.value = true; // Show the receipt modal if successful
       }
     } else {
-      // Offline: store the sales data in IndexedDB
-      const db = await idb.open('sales-db', 1, upgradeDB => {
-        if (!upgradeDB.objectStoreNames.contains('sales')) {
-          upgradeDB.createObjectStore('sales', { autoIncrement: true });
+      // If offline, store the sales data in IndexedDB
+      console.log('this application is offline');
+
+      // Open the IndexedDB with version 2, which has both 'products' and 'sales' stores
+      const db = await openDB('sales-db', 2, {
+        upgrade(db, oldVersion) {
+          if (oldVersion < 1) {
+            db.createObjectStore('products', { keyPath: 'id' });
+          }
+          if (oldVersion < 2) {
+            db.createObjectStore('sales', { autoIncrement: true });
+          }
         }
       });
 
+      console.log('Database opened successfully:', db);
+
+      // Initiate the transaction and store the sales data
       const tx = db.transaction('sales', 'readwrite');
       const store = tx.objectStore('sales');
-      await store.put(payload); // Store sales data in IndexedDB
 
+      await store.put(payload); // Store sales data in IndexedDB
+      console.log('Sales data stored successfully');
       alert('You are offline. Your sales will be synced when you are online.');
+      
+      await tx.done; // Ensure the transaction is complete
     }
   } catch (error) {
-    catchAxiosError(error); // Handle errors
+    console.error('An error occurred during the operation:', error);
+    catchAxiosError(error); // Handle any errors
   } finally {
     isSubmitting.value = false;
     resetForm(); // Reset the form after submission
