@@ -183,7 +183,6 @@ import ReceiptModal from '@/components/UI/Modal/ReceiptModal.vue'; // Modal comp
 import { storeToRefs } from 'pinia';
 import { generateReceiptPDF } from './sentToPrinter'; // Function to generate PDF for the receipt
 import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'; // Services to handle success and error messages for API responses
-import '@/utils/idb.js'
 
 const router = useRouter();
 const customersStore = useCustomerstore(); // Access the Pinia customer store
@@ -233,39 +232,14 @@ const preventNegativeQuantity = (index) => {
 // Lifecycle hook that runs when the component is mounted
 onMounted(async () => {
   try {
-    // Open the IndexedDB database and create an object store for products
-    const db = await idb.open('sales-db', 1, upgradeDB => {
-      if (!upgradeDB.objectStoreNames.contains('products')) {
-        upgradeDB.createObjectStore('products', { keyPath: 'id' });
-      }
-    });
-
-    if (navigator.onLine) {
-      // If online, fetch the product data from the API
-      const response = await apiService.get('/all-product-type-name');
-      data.value = response.data; // Store the fetched data in 'data' ref
-
-      // Store the product data in IndexedDB
-      const tx = db.transaction('products', 'readwrite');
-      const store = tx.objectStore('products');
-      response.data.forEach(product => {
-        store.put(product);
-      });
-
-      await tx.complete; // Complete the transaction
-    } else {
-      // If offline, retrieve product data from IndexedDB
-      const tx = db.transaction('products', 'readonly');
-      const store = tx.objectStore('products');
-      data.value = await store.getAll(); // Load all products from IndexedDB
-    }
-
+    await customersStore.handleAllCustomersName(); // Fetch all customer names from the store
+    const response = await apiService.get('/all-product-type-name'); // Fetch all product types from the API
+    data.value = response.data; // Store product types in the 'data' ref
     focusBarcodeInput(); // Focus on the first empty barcode input
   } catch (error) {
     console.error('Failed to fetch product type names:', error); // Handle error if product types can't be fetched
   }
 });
-
 
 // State variables for form inputs and product list
 const printReceipt = ref('no'); // Tracks whether the user wants to print a receipt
@@ -370,32 +344,12 @@ const handleBarcodeEnter = (index) => {
 };
 
 // Function to handle product type selection
-// const handleProductTypeSelect = (index) => {
-//   const product = data.value.find((p) => p.id === formState.products[index].product_type_id); // Find product by ID
-//   if (product) {
-//     populateProductDetails(index, product); // Populate product details
-//   }
-// };
-const handleProductTypeSelect = async (index) => {
-  const productId = formState.products[index].product_type_id;
-  let product;
-
-  if (navigator.onLine) {
-    // Online mode: Get product from the fetched API data
-    product = data.value.find(p => p.id === productId);
-  } else {
-    // Offline mode: Fetch product from IndexedDB
-    const db = await idb.open('sales-db', 1);
-    const tx = db.transaction('products', 'readonly');
-    const store = tx.objectStore('products');
-    product = await store.get(productId);
-  }
-
+const handleProductTypeSelect = (index) => {
+  const product = data.value.find((p) => p.id === formState.products[index].product_type_id); // Find product by ID
   if (product) {
-    populateProductDetails(index, product); // Populate the product details in the form
+    populateProductDetails(index, product); // Populate product details
   }
 };
-
 
 // Function to check if the quantity sold exceeds available stock
 const checkQuantitySold = (index) => {
@@ -438,57 +392,17 @@ const addProducts = () => {
 };
 
 // Function to handle form submission for adding sales
-// const addSales = async () => {
-//   isSubmitting.value = true;
-
-//   const invalidProducts = formState.products.filter(product => product.product_type_id && product.quantity_sold <= 0);
-
-//   if (invalidProducts.length > 0) {
-//     const invalidProductNames = invalidProducts
-//       .map(product => data.value.find(p => p.id === product.product_type_id)?.product_type_name || 'this product')
-//       .join(', ');
-    
-//     alert(`Enter a quantity for ${invalidProductNames}`);
-//     isSubmitting.value = false;
-//     return;
-//   }
-
-//   const products = formState.products
-//     .filter((product) => product.amount > 0)
-//     .map((product) => ({
-//       product_type_id: product.product_type_id,
-//       price_sold_at: parseInt(product.selling_price, 10),
-//       quantity: parseInt(product.quantity_sold, 10),
-//       vat: product.vat === 'yes' ? 'yes' : 'no'
-//     }));
-
-//   const payload = {
-//     customer_id: formState.customer_id ? formState.customer_id : null,
-//     payment_method: formState.payment_method,
-//     products
-//   };
-
-//   try {
-//     res.value = await apiService.post('/sales', payload); // Post the sales data to the API
-//     if (res.value.success) {
-//       showReceiptModal.value = true; // Show receipt modal if successful
-//     }
-//     return res.value;
-//   } catch (error) {
-//     catchAxiosError(error); // Handle any errors during the API call
-//   } finally {
-//     isSubmitting.value = false;
-//     resetForm(); // Reset the form after submission
-//   }
-// };
 const addSales = async () => {
   isSubmitting.value = true;
 
-  // Validate that all products with a selected product_type_id have quantity_sold > 0
   const invalidProducts = formState.products.filter(product => product.product_type_id && product.quantity_sold <= 0);
 
   if (invalidProducts.length > 0) {
-    alert(`Enter a quantity for all selected products`);
+    const invalidProductNames = invalidProducts
+      .map(product => data.value.find(p => p.id === product.product_type_id)?.product_type_name || 'this product')
+      .join(', ');
+    
+    alert(`Enter a quantity for ${invalidProductNames}`);
     isSubmitting.value = false;
     return;
   }
@@ -509,28 +423,13 @@ const addSales = async () => {
   };
 
   try {
-    if (navigator.onLine) {
-      // Online: send the sales data to the server
-      res.value = await apiService.post('/sales', payload);
-      if (res.value.success) {
-        showReceiptModal.value = true; // Show the receipt modal if successful
-      }
-    } else {
-      // Offline: store the sales data in IndexedDB
-      const db = await idb.open('sales-db', 1, upgradeDB => {
-        if (!upgradeDB.objectStoreNames.contains('sales')) {
-          upgradeDB.createObjectStore('sales', { autoIncrement: true });
-        }
-      });
-
-      const tx = db.transaction('sales', 'readwrite');
-      const store = tx.objectStore('sales');
-      await store.put(payload); // Store sales data in IndexedDB
-
-      alert('You are offline. Your sales will be synced when you are online.');
+    res.value = await apiService.post('/sales', payload); // Post the sales data to the API
+    if (res.value.success) {
+      showReceiptModal.value = true; // Show receipt modal if successful
     }
+    return res.value;
   } catch (error) {
-    catchAxiosError(error); // Handle errors
+    catchAxiosError(error); // Handle any errors during the API call
   } finally {
     isSubmitting.value = false;
     resetForm(); // Reset the form after submission

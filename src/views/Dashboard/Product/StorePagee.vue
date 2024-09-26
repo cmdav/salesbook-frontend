@@ -55,7 +55,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import apiService from '@/services/apiService'
-import { getDb, setDb } from '@/utils/db'
+//import { getDb, setDb } from '@/utils/db'
 import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue'
 import ExpiredModal from '@/components/UI/Modal/ExpiredModal.vue'
 import { useStore } from '@/stores/user'
@@ -137,23 +137,23 @@ async function fetchData(page = 1) {
     totalPages.value = response.data.last_page
 
     // Cache the data in IndexedDB
-    await setDb('stores', { id: `page-${page}`, data: data.value })
+   // await setDb('stores', { id: `page-${page}`, data: data.value })
     console.log(`Data from API cached for page ${page}`)
   } catch (error) {
     console.error('Failed to fetch data:', error)
     // Retrieve data from IndexedDB if fetch fails
-    const cachedData = await getDb('stores', `page-${page}`)
-    if (cachedData) {
-      data.value = cachedData.data
-      console.log(`Data retrieved from IndexedDB for page ${page}`)
-      pagination.value = {
-        next_page_url:
-          currentPage.value < totalPages.value ? `stores?page=${currentPage.value + 1}` : null,
-        prev_page_url: currentPage.value > 1 ? `stores?page=${currentPage.value - 1}` : null
-      }
-    } else {
-      console.log(`No cached data found for page ${page}`)
-    }
+    // const cachedData = await getDb('stores', `page-${page}`)
+    // if (cachedData) {
+    //   data.value = cachedData.data
+    //   console.log(`Data retrieved from IndexedDB for page ${page}`)
+    //   pagination.value = {
+    //     next_page_url:
+    //       currentPage.value < totalPages.value ? `stores?page=${currentPage.value + 1}` : null,
+    //     prev_page_url: currentPage.value > 1 ? `stores?page=${currentPage.value - 1}` : null
+    //   }
+    // } else {
+    //   console.log(`No cached data found for page ${page}`)
+    // }
   }
 }
 

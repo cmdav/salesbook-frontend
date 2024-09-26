@@ -1,7 +1,7 @@
 import axios from '../axios'
 import { catchAxiosError, catchAxiosSuccess } from './Response'
 import { getToken } from './Auth';
-import { setDb, getDb, getAllDb, deleteDb } from '@/utils/db';
+//import { setDb, getDb, getAllDb, deleteDb } from '@/utils/db';
 
 
 const isOnline = () => navigator.onLine;
@@ -17,10 +17,10 @@ export const getProductCategories = async () => {
         }
       });
       catchAxiosSuccess(res);
-      res.data.forEach(category => setDb('product-categories', category));
+     // res.data.forEach(category => setDb('product-categories', category));
       return res.data;
     } else {
-      return await getAllDb('product-categories');
+      //return await getAllDb('product-categories');
     }
   } catch (error) {
     console.log(error);
@@ -56,14 +56,14 @@ export const addProductCategories = async (payload) => {
       catchAxiosSuccess(res);
       return res.data;
     } else {
-      await setDb('sync-queue', {
-        url: 'product-categories',
-        method: 'POST',
-        data: payload,
-        headers: {
-          Authorization: 'Bearer ' + token
-        }
-      });
+      // await setDb('sync-queue', {
+      //   url: 'product-categories',
+      //   method: 'POST',
+      //   data: payload,
+      //   headers: {
+      //     Authorization: 'Bearer ' + token
+      //   }
+      // });
       return payload;
     }
   } catch (error) {
