@@ -301,11 +301,11 @@
     }
   };
 
-  // if (typeof module !== 'undefined') {
-  //   module.exports = exp;
-  //   module.exports.default = module.exports;
-  // }
-  // else {
+  if (typeof module !== 'undefined') {
+    module.exports = exp;
+    module.exports.default = module.exports;
+  }
+  else {
     self.idb = exp;
-  // }
+  }
 }());

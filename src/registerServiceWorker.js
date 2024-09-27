@@ -4,7 +4,7 @@ import { register } from 'register-service-worker'
 
 // Use `import.meta.env` instead of `process.env`
 if (import.meta.env.MODE === 'production' || import.meta.env.VITE_SW_MODE === 'development') {
-  console.log('working in offline mode')
+  
 // if (import.meta.env.MODE === 'production') {
   // register(`${import.meta.env.VITE_BASE_URL}service-worker.js`, {
     register('/dev-dist/sw.js', {
@@ -29,8 +29,10 @@ if (import.meta.env.MODE === 'production' || import.meta.env.VITE_SW_MODE === 'd
     offline() {
       console.log('No internet connection found. App is running in offline mode.')
     },
+    
     error(error) {
       console.error('Error during service worker registration:', error)
     }
+    
   })
 }

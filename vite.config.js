@@ -58,8 +58,19 @@ export default defineConfig({
         ],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB
       },
+      
       devOptions: {
         enabled: true,
+      },
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'customWorker.js',
+      injectRegister: {
+        inline: false,
+        type: 'module', 
+      },
+      injectManifest: {
+        injectionPoint: undefined,
       },
     }),
   ],
