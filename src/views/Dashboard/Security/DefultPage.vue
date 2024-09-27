@@ -6,7 +6,7 @@
         <template #tab2> Permissions </template>
         <template #tab3> Users </template>
         <template #tab4> Branches </template>
-        <template #tab5> Add Payment </template>
+        <template #tab5> Payment Method </template>
         
          <template #view1><RolesPage /></template>
         <template #view2><Permissions /></template>

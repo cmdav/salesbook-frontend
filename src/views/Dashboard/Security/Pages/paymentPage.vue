@@ -2,10 +2,10 @@
 <div class="actions">
      
       <div>
-        <button class="button add-btn l-btn" @click="toggleModal">
+        <button class="button add-btn l-btn" @click="openPayMthdModal">
           Add Payment Method
         </button>
-        <button class="button add-btn" @click="openPayMthdModal" >
+        <button class="button add-btn" @click="toggleModal" >
           Add Payment Details
         </button>
       </div>
