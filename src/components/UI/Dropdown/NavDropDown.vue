@@ -31,10 +31,13 @@ const emit = defineEmits(["closeDropdown", "clickedItem"]);
 
 const onClickOutside = (element, callback) => {
   document.addEventListener("click", (e) => {
-    let dropdown = document.getElementById(props.id);
-    if (!dropdown.contains(e.target)) callback();
+    let dropdown = document.getElementById(element); // Use element parameter directly
+    if (dropdown && !dropdown.contains(e.target)) {
+      callback();
+    }
   });
 };
+
 
 const props = defineProps({
   showDropdown: Boolean,

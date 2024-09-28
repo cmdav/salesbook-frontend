@@ -294,7 +294,9 @@ const handleProductTypeSelect = async (index) => {
       const db = await openDB('sales-db', 2); // Ensure using version 2
       const tx = db.transaction('products', 'readonly');
       const store = tx.objectStore('products');
+      
       product = await store.get(productId); // Get the product by ID from IndexedDB
+      //console.log(product)
       await tx.done; // Ensure transaction is complete
     }
 
