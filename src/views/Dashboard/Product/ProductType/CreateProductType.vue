@@ -550,7 +550,7 @@ button {
 }
 
 .btn-brand {
-  background-color: #c35214;
+  background-color: #c35114;
   color: #fff;
   padding: 10px 20px;
   border: none;

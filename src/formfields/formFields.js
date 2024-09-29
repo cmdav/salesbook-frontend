@@ -713,7 +713,7 @@ export const roleFormFields = ref([
 
 export const paymentFormFields = ref([
   {
-    label: 'Payment Method',
+    label: 'Payment Type',
     type: 'select',
     value: '',
     required: true,
@@ -748,7 +748,7 @@ export const paymentFormFields = ref([
 ])
 export const payMethodFormFields = ref([
   {
-    label: 'Payment Method',
+    label: 'Payment Type',
     type: 'text',
     value: '',
     required: true,

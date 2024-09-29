@@ -63,6 +63,7 @@ const { supplierProducts } = storeToRefs(supplierStore)
     useStore
   } = useSharedComponent('supplier-home-page');
 
+
   const emit = defineEmits("forceRefresh");
   const {
     forceUpdate,

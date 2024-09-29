@@ -15,7 +15,6 @@
       </div>
 
       <form @submit.prevent="submitForm" class="max-w-4xl mx-auto p-2">
-        <!-- Dynamic form fields based on customer type with Tailwind CSS grid layout -->
         
           <div class="mb-4">
             <label  class="block text-sm font-medium text-gray-700 pb-1">Purchase Unit</label>

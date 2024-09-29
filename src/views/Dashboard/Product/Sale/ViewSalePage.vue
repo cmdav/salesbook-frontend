@@ -54,7 +54,7 @@
             <td>{{ item.created_by }}</td>
             <td>{{ item.updated_by }}</td>
             <td><button @click="generateReceipt(item.transaction_id)">Receipt</button></td>
-            <td v-if="permissions"><button @click="openDeleteModal(item)">Delete</button></td>
+            <td v-if="delPermissions"><button @click="openDeleteModal(item)">Delete</button></td>
           </tr>
         </tbody>
       </table>

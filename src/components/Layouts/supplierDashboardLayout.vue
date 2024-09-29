@@ -78,7 +78,7 @@ defineProps({ pageTitle: String });
             Welcome
             {{ userProfileDetails?.first_name ?? userProfileDetails?.company_name }},
           </h4>
-
+          
           <div class="lg:hidden">
             <div class="logo">
               <router-link :to="{ name: 'supplier-dashboard' }"
@@ -86,6 +86,7 @@ defineProps({ pageTitle: String });
               /></router-link>
             </div>
           </div>
+
           <div></div>
           <div class="links flex">
             <div class="flex justify-end gap-1 items-center ml-auto">
@@ -156,7 +157,7 @@ defineProps({ pageTitle: String });
         </nav>
 
         <div class="flex-grow pb-20">
-          <h3 class="container mt-8 text-[19px] font-bold">{{ pageTitle }}</h3>
+          <h3 class="container mt-2 text-[1.5em] font-bold">{{ userProfileDetails?.company_name }} {{ pageTitle }}</h3>
           <slot></slot>
         </div>
       </div>

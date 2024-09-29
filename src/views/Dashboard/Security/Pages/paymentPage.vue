@@ -2,11 +2,11 @@
 <div class="actions">
      
       <div>
-        <button class="button add-btn l-btn" @click="openPayMthdModal">
+        <!-- <button class="button add-btn l-btn" @click="openPayMthdModal">
           Add Payment Method
-        </button>
+        </button> -->
         <button class="button add-btn" @click="toggleModal" >
-          Add Payment Details
+          Add Payment Type Details
         </button>
       </div>
     </div>
@@ -18,7 +18,7 @@
             <th>ACCOUNT NAME</th>
             <th>ACCOUNT NUMBER</th>
             <th>PAYMENT IDENTIFIER</th>
-            <th>PAYMENT NAME</th>
+            <th>PAYMENT TYPE</th>
             <th>EDIT</th>
             <th>DELETE</th>
           </tr>
@@ -38,11 +38,17 @@
       <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
     </div>
    
-   <FormModal v-if="showModal" @close="closeModal" :key="forceUpdate" @updated="forceRefresh" :formTitle="'Add Payment Details'" :fields="paymentFormFields"
+   <!-- <FormModal v-if="showModal" @close="closeModal" :key="forceUpdate" @updated="forceRefresh" :formTitle="'Add Payment Details'" :fields="paymentFormFields"
        :url="'payment-details'" />
 
    <FormModal v-if="showMthdModal" @close="closeMthdModal" :key="forceUpdate" @updated="forceRefresh" @method-added="refreshPaymentMethods" :formTitle="'Add Payment Methods'" :fields="payMethodFormFields"
-       :url="'payment-methods'" />
+       :url="'payment-methods'" /> -->
+
+       <AddPaymentModal
+      v-if="showModal"
+      @close="closeModal"
+       @paymentDetailsUpdated="refreshPaymentDetails"
+    />
 
        <EditModal 
        v-if="showEditModal" 
@@ -58,8 +64,9 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { paymentFormFields, payMethodFormFields } from "@/formfields/formFields";
+import { paymentFormFields } from "@/formfields/formFields";
 import { useSharedComponent } from "@/composable/useSharedComponent";
+import AddPaymentModal from "@/components/UI/Modal/AddPaymentModal.vue";
 import apiService from '@/services/apiService';
 
 const {
@@ -68,7 +75,7 @@ const {
   EditModal,
   DeleteModal,
   useDeleteComposable,
-  FormModal,
+
 } = useSharedComponent("payment-details");
 
 const { fetchDataForSelect } = useSelectComposable(paymentFormFields, 'payment-details', "payment_method_id");
@@ -79,7 +86,7 @@ const { handleDelete, showDeleteModal, itemsId, closeDeleteModal } = useDeleteCo
 const data = ref([]);
 const errorMessage = ref('');
 const showModal = ref(false);
-const showMthdModal = ref(false);
+// const showMthdModal = ref(false);
 const modalTitle = ref('Delete Payment Details')
 
 const fetchPayment = async() => {
@@ -98,21 +105,21 @@ const fetchPayment = async() => {
   }
 }
 
-const refreshPaymentMethods = async () => {
-  try {
+// const refreshPaymentMethods = async () => {
+//   try {
     
-    await fetchDataForSelect("Payment Method", "/payment-methods", "id", "payment_name");
-  } catch (error) {
-    console.error("Error refreshing payment methods:", error);
-  }
-};
+//     await fetchDataForSelect("Payment Type", "/payment-methods", "id", "payment_name");
+//   } catch (error) {
+//     console.error("Error refreshing payment methods:", error);
+//   }
+// };
 
 onMounted(async () => {
   fetchPayment()
 })
 
 onMounted(async () => {
-  await fetchDataForSelect("Payment Method", "/payment-methods", "id", "payment_name");
+  await fetchDataForSelect("Payment Type", "/payment-methods", "id", "payment_name");
 });
 
 const toggleModal = () => {
@@ -123,16 +130,21 @@ const closeModal = () => {
   showModal.value = false;
 }
 
-const openPayMthdModal = () => {
-  showMthdModal.value = true;
-}
+// const openPayMthdModal = () => {
+//   showMthdModal.value = true;
+// }
 
-const closeMthdModal = () => {
-  showMthdModal.value = false;
-}
+// const closeMthdModal = () => {
+//   showMthdModal.value = false;
+// }
 
-function forceUpdate(){
-  fetchPayment()
+// function forceUpdate(){
+//   fetchPayment()
+// }
+
+const refreshPaymentDetails = () => {
+  fetchPayment() 
+  closeModal();  
 }
 
 function forceRefresh() {

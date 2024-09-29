@@ -37,7 +37,7 @@
         <div class="form-group">
           <label class="block text-sm font-medium text-gray-700">Payment method</label>
           <select required v-model="formState.payment_method" class="select-input">
-            <option v-for="option in paymentList" :key="option.value" :value="option.value">
+            <option v-for="option in paymentList" :key="option.id" :value="option.id">
               {{ option.payment_identifier }}
             </option>
           </select>
@@ -260,7 +260,7 @@ const showReceiptModal = ref(false)
 
 const formState = reactive({
   customer_id: '',
-  payment_method: 'cash',
+  payment_method: '',
   products: [
     {
       product_type_id: '',
@@ -421,7 +421,7 @@ const addProducts = () => {
 
 const addSales = async () => {
   isSubmitting.value = true
-
+  console.log(formState)
   // Validate that all products with a selected product_type_id have quantity_sold > 0
   const invalidProducts = formState.products.filter(
     (product) => product.product_type_id && product.quantity_sold <= 0
@@ -499,11 +499,11 @@ const resetForm = () => {
   nextTick(() => focusBarcodeInput())
 }
 
-const paymentMethods = [
-  { value: 'cash', label: 'Cash' },
-  { value: 'pos', label: 'Pos' },
-  { value: 'bank-transfer', label: 'Bank Transfer' }
-]
+// const paymentMethods = [
+//   { value: 'cash', label: 'Cash' },
+//   { value: 'pos', label: 'Pos' },
+//   { value: 'bank-transfer', label: 'Bank Transfer' }
+// ]
 </script>
 
 <style scoped>
