@@ -1,5 +1,5 @@
 <template>
-    <SupplierDashboardLayout pageTitle="Suppliers Page">
+    <SupplierDashboardLayout pageTitle="Supplier's Page">
       
       <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
 
