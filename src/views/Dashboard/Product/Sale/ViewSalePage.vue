@@ -79,6 +79,7 @@ import { useStore } from "@/stores/user";
 import { storeToRefs } from 'pinia';
 import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue';
 import { generateReceiptPDF } from './receipts';
+import { openDB } from 'idb';
 
 
 const store = useStore();
@@ -152,26 +153,49 @@ watch(search, async (newSearch) => {
 });
 
 async function fetchData(page = 1) {
-  try {
-    const response = await apiService.get(`sales?page=${page}`);
-    data.value = response.data || []; 
-    console.log(data.value)
-     if (data.value.length === 0) {
-      errorMessage.value = 'No items found';
-    } else {
-      errorMessage.value = '';
+  if (!navigator.onLine) {
+    // If offline, load sales data from IndexedDB
+    try {
+      const db = await openDB('sales-db', 2);
+      const tx = db.transaction('sales', 'readonly');
+      const store = tx.objectStore('sales');
+      data.value = await store.getAll(); // Get all sales from the IndexedDB
+      console.log(data.value)
+      await tx.done;
+      
+      if (data.value.length === 0) {
+        errorMessage.value = 'No offline sales data found';
+      } else {
+        errorMessage.value = '';
+      }
+    } catch (error) {
+      console.error("Failed to fetch offline sales data:", error);
+      errorMessage.value = 'An error occurred while fetching offline data.';
     }
-    pagination.value = {
-      next_page_url: response.next_page_url,
-      prev_page_url: response.prev_page_url,
-    };
-    currentPage.value = response.current_page;
-    totalPages.value = response.last_page;
-    itemsPerPage.value = response.per_page;
-  } catch (error) {
-    console.error("Failed to fetch data:", error);
+  } else {
+    // If online, fetch data from the server
+    try {
+      const response = await apiService.get(`sales?page=${page}`);
+      data.value = response.data || [];
+      if (data.value.length === 0) {
+        errorMessage.value = 'No items found';
+      } else {
+        errorMessage.value = '';
+      }
+      pagination.value = {
+        next_page_url: response.next_page_url,
+        prev_page_url: response.prev_page_url,
+      };
+      currentPage.value = response.current_page;
+      totalPages.value = response.last_page;
+      itemsPerPage.value = response.per_page;
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+      errorMessage.value = 'An error occurred while fetching online data.';
+    }
   }
 }
+
 
 function changePage(page) {
   if (page > 0 && page <= totalPages.value) {

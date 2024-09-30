@@ -62,16 +62,16 @@ export default defineConfig({
       devOptions: {
         enabled: true,
       },
-      strategies: 'injectManifest',
-      srcDir: 'src',
-      filename: 'customWorker.js',
-      injectRegister: {
-        inline: false,
-        type: 'module', 
-      },
-      injectManifest: {
-        injectionPoint: undefined,
-      },
+      // strategies: 'injectManifest',
+      // srcDir: 'src',
+      // filename: 'customWorker.js',
+      // injectRegister: {
+      //   inline: false,
+      //   type: 'module', 
+      // },
+      // injectManifest: {
+      //   injectionPoint: undefined,
+      // },
     }),
   ],
   resolve: {
