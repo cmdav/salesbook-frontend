@@ -160,7 +160,7 @@ async function fetchData(page = 1) {
       const tx = db.transaction('sales', 'readonly');
       const store = tx.objectStore('sales');
       data.value = await store.getAll(); // Get all sales from the IndexedDB
-      console.log(data.value)
+      
       await tx.done;
       
       if (data.value.length === 0) {
