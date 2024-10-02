@@ -1,11 +1,11 @@
-import { fileURLToPath, URL } from 'node:url'
+import { fileURLToPath, URL } from 'node:url';
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import { VitePWA } from 'vite-plugin-pwa';
 
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import { VitePWA } from 'vite-plugin-pwa'
+let src = '/images/iSalesbook-Logo-Icon.png';
 
-// https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     vue(),
     VitePWA({
@@ -17,12 +17,12 @@ export default defineConfig({
         theme_color: '#F58A07',
         icons: [
           {
-            src: './public/images/iSalesbook-Logo-Icon.png',
+            src: src,
             sizes: '192x192',
             type: 'image/png',
           },
           {
-            src: './public/images/iSalesbook-Logo-Icon.png',
+            src: src,
             sizes: '512x512',
             type: 'image/png',
           },
@@ -58,26 +58,31 @@ export default defineConfig({
         ],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB
       },
+
+      // Conditionally enable devOptions only in development mode
+      ...(mode === 'development' && {
+        devOptions: {
+          enabled: true,
+          type: 'module',
+        },
+      }),
       
-      devOptions: {
-        enabled: true,
+      strategies: 'injectManifest',
+      srcDir: '',
+      filename: 'customSw.js',
+      injectRegister: false,
+      injectManifest: {
+        injectionPoint: undefined,
+        globPatterns: [
+          '**/*.{js,css,html,png,jpg,jpeg,svg}', // Exclude customSw.js from caching
+        ],
+        globIgnores: ['customSw.js'], // Ensure that customSw.js is excluded from precaching
       },
-      // strategies: 'injectManifest',
-      // srcDir: 'src',
-      // filename: 'customWorker.js',
-      // injectRegister: {
-      //   inline: false,
-      //   type: 'module', 
-      // },
-      // injectManifest: {
-      //   injectionPoint: undefined,
-      // },
     }),
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
-  }
-})
-
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
+}));

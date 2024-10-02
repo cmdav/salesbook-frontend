@@ -34,9 +34,23 @@ app.component('CloudUploadIcon', CloudUploadIcon)
 app.component('LoaderComponent', LoaderComponent)
 app.component('AngleRight', AngleRight)
 app.use(VueTelInput)
-app.use(Toast, { position: POSITION.TOP_RIGHT })
+
 app.use(VueQueryPlugin)
 
 //syncData()
 
 app.mount('#app')
+
+// // src/main.js
+// if ('serviceWorker' in navigator) {
+//     window.addEventListener('load', () => {
+//       navigator.serviceWorker.register('/src/customSw.js')
+//         .then((registration) => {
+//           console.log('ServiceWorker registered with scope: ', registration.scope);
+//         })
+//         .catch((error) => {
+//           console.log('ServiceWorker registration failed:', error);
+//         });
+//     });
+//   }
+  

@@ -444,7 +444,7 @@ onMounted(async () => {
       });
       await tx.done; // Ensure transaction is complete
     } else {
-      console.log("offline")
+      
       // If offline, load product data from IndexedDB
       const tx = db.transaction('products', 'readonly');
       const store = tx.objectStore('products');
@@ -505,12 +505,16 @@ const addSales = async () => {
 
       // Register a sync event with the service worker
       if ('serviceWorker' in navigator && 'SyncManager' in window) {
-        const registration = await navigator.serviceWorker.ready;
-        await registration.sync.register('sync-sales');
-        alert('You are offline. Sales will sync when you are back online.');
-      } else {
-        alert('Background Sync is not supported in your browser. Sales will be saved locally.');
-      }
+  navigator.serviceWorker.ready.then((registration) => {
+    return registration.sync.register('sync-sales').then(() => {
+      console.log('Sync event registered successfully');
+      alert('Offline data has been submitted')
+    }).catch((err) => {
+      console.error('Failed to register sync event:', err);
+    });
+  });
+}
+
     }
   } catch (error) {
     console.error('Error while adding sales:', error);
