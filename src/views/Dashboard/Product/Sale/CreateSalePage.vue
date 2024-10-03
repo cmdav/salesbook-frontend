@@ -174,7 +174,7 @@
   </DashboardLayout>
 </template>
 <script setup>
-import { ref, reactive, watch, onMounted, nextTick } from 'vue';
+import { ref, reactive, watch, onMounted, nextTick} from 'vue';
 import { useRouter } from 'vue-router';
 import apiService from '@/services/apiService'; // Service to interact with the backend API
 import { useCustomerstore } from '@/stores/customers'; // Pinia store for customer data
@@ -184,6 +184,7 @@ import { storeToRefs } from 'pinia';
 import { openDB } from 'idb';
 import { generateReceiptPDF } from './sentToPrinter'; // Function to generate PDF for the receipt
 import { catchAxiosSuccess } from '@/services/Response'; // Services to handle success and error messages for API responses
+import { isOnline } from '@/isOnline'; 
 
 const router = useRouter();
 const customersStore = useCustomerstore(); // Access the Pinia customer store
@@ -193,6 +194,7 @@ const barcodeInputRefs = ref([]); // Ref to track barcode input fields
 const data = ref([]); // Holds the product data fetched from the API
 const totalPrice = ref(0); // Holds the total price of all products
 const res = ref(null); // Ref to store the API response
+const isOnlineFlag = ref(true);
 
 const { allCustomersNames } = storeToRefs(customersStore); // Store all customer names from the Pinia store
 
@@ -279,24 +281,24 @@ const calculateAmountWithVat = (sellingPrice, quantitySold, vat) => {
   return isNaN(amount) ? 0 : amount; // Return the calculated amount or 0 if NaN
 };
 
+
 // Function to handle product type selection
 const handleProductTypeSelect = async (index) => {
   const productId = formState.products[index].product_type_id;
   let product;
 
   try {
-    if (navigator.onLine) {
+    const online = await isOnline();  // Check the network status on-demand
+    if (online) {
       // If online, get product from the fetched API data
-      
       product = data.value.find(p => p.id === productId);
     } else {
+      //alert('offline mode')
       // If offline, retrieve product from IndexedDB
       const db = await openDB('sales-db', 2); // Ensure using version 2
       const tx = db.transaction('products', 'readonly');
       const store = tx.objectStore('products');
-      
       product = await store.get(productId); // Get the product by ID from IndexedDB
-      //console.log(product)
       await tx.done; // Ensure transaction is complete
     }
 
@@ -309,6 +311,8 @@ const handleProductTypeSelect = async (index) => {
     console.error('Error during product selection:', error);
   }
 };
+
+
 
 
 
@@ -414,6 +418,16 @@ const addProducts = () => {
 };
 
 
+// Function to check online status
+async function checkOnlineStatus() {
+  try {
+    isOnlineFlag.value = await isOnline(); // Call the imported isOnline function
+   
+  } catch (error) {
+    console.error('Error checking online status:', error); // Handle any potential errors
+  }
+}
+
 onMounted(async () => {
   try {
     // Always open the IndexedDB using the current version (2)
@@ -429,9 +443,10 @@ onMounted(async () => {
         }
       }
     });
-
-    if (navigator.onLine) {
-      console.log("online")
+   await checkOnlineStatus();
+    
+    if (isOnlineFlag.value) {
+     
       // Fetch product data from the API if the app is online
       const response = await apiService.get('/all-product-type-name');
       data.value = response.data; // Store the fetched data in the reactive `data` variable
@@ -444,7 +459,7 @@ onMounted(async () => {
       });
       await tx.done; // Ensure transaction is complete
     } else {
-      
+      alert('You are offline')
       // If offline, load product data from IndexedDB
       const tx = db.transaction('products', 'readonly');
       const store = tx.objectStore('products');
@@ -485,8 +500,10 @@ const addSales = async () => {
   };
 
   try {
-    if (navigator.onLine) {
+    const online = await isOnline();  // Re-check the network status dynamically
+    if (online) { 
       // If online, send the sales data to the server
+      alert("You are online");
       res.value = await apiService.post('/sales', payload);
       if (res.value.success) {
         showReceiptModal.value = true;
@@ -505,16 +522,15 @@ const addSales = async () => {
 
       // Register a sync event with the service worker
       if ('serviceWorker' in navigator && 'SyncManager' in window) {
-  navigator.serviceWorker.ready.then((registration) => {
-    return registration.sync.register('sync-sales').then(() => {
-      console.log('Sync event registered successfully');
-      alert('Offline data has been submitted')
-    }).catch((err) => {
-      console.error('Failed to register sync event:', err);
-    });
-  });
-}
-
+        navigator.serviceWorker.ready.then((registration) => {
+          return registration.sync.register('sync-sales').then(() => {
+            console.log('Sync event registered successfully');
+            alert('Offline data has been submitted');
+          }).catch((err) => {
+            console.error('Failed to register sync event:', err);
+          });
+        });
+      }
     }
   } catch (error) {
     console.error('Error while adding sales:', error);
@@ -523,6 +539,7 @@ const addSales = async () => {
     resetForm();
   }
 };
+
 
 
 // Function to handle receipt choice (whether to print or not)

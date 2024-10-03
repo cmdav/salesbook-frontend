@@ -19,12 +19,13 @@ import CloudUploadIcon from '@/components/icons/cloudUploadIcon.vue'
 //import syncData from '@/utils/sync'
 import './registerServiceWorker'
 
+
 const app = createApp(App)
 
 app.use(Toast, { position: POSITION.TOP_RIGHT })
 const toast = useToast()
 console.log(toast)
-
+//app.config.globalProperties.$isOnline = isOnline;
 app.use(createPinia())
 app.use(router)
 app.use(Antd)

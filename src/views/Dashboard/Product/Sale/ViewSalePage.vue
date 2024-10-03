@@ -1,5 +1,8 @@
 <template>
   <DashboardLayout pageTitle="Sales Page">
+    <div :class="{'online-indicator': isOnlineFlag, 'offline-indicator': !isOnlineFlag}">
+      {{ isOnlineFlag ? 'Online' : 'Offline' }}
+    </div>
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
       <div v-if="addPermissions" class="action">
@@ -67,7 +70,7 @@
 </div>
 
 <!-- Offline Table Section -->
-<div v-if="!isOnline.value && offlineData.length > 0" class="offline-table-container">
+<div v-if="!isOnlineFlag.value && offlineData.length > 0" class="offline-table-container">
   <h3 class="text-lg font-semibold mb-4">Offline Sales Data</h3>
   <table>
     <thead>
@@ -95,7 +98,7 @@
   </DashboardLayout>
 </template>
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, onMounted, onUnmounted} from 'vue';
 import apiService from '@/services/apiService';
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue';
 import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
@@ -104,6 +107,8 @@ import { storeToRefs } from 'pinia';
 import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue';
 import { generateReceiptPDF } from './receipts';
 import { openDB } from 'idb';
+import { isOnline, listenForNetworkStatusChanges } from '@/isOnline'; 
+import { syncSalesToServer } from '/customSync'
 
 const store = useStore();
 const { userProfileDetails } = storeToRefs(store);
@@ -123,30 +128,40 @@ const itemsPerPage = ref(0);
 const branches = ref([]);
 const errorMessage = ref('');
 const offlineData = ref([]);
-const isOnline = ref(navigator.onLine); // Reactive property to track online status
+const isOnlineFlag = ref(true); // Reactive property to track online status
 //alert(isOnline.value)
-
+async function checkOnlineStatus() {
+  try {
+    isOnlineFlag.value = await isOnline(); // Call the imported isOnline function
+   
+  } catch (error) {
+    console.error('Error checking online status:', error); // Handle any potential errors
+  }
+}
 // Listen for online/offline changes
-onMounted(() => {
-  window.addEventListener('online', updateOnlineStatus);
-  window.addEventListener('offline', updateOnlineStatus);
-  
+onMounted( async() => {
+
+  await checkOnlineStatus();
   // Fetch initial data
   fetchData(currentPage.value);
+
+  const stopListening = listenForNetworkStatusChanges((isOnline) => {
+    isOnlineFlag.value = isOnline; // Update online status in the UI
+    if (isOnline) {
+      console.log('Network is back online. Syncing sales...');
+      syncSalesToServer(); // Sync sales when the network is restored
+    }
+  });
+
+  onUnmounted(() => {
+    stopListening(); // Stops the interval and event listeners
+  });
 });
 
-onBeforeUnmount(() => {
-  window.removeEventListener('online', updateOnlineStatus);
-  window.removeEventListener('offline', updateOnlineStatus);
-});
 
-// Update the online status
-function updateOnlineStatus() {
-  isOnline.value = navigator.onLine;
-}
 
 async function fetchData(page = 1) {
-  if (!isOnline.value) {
+  if (!isOnlineFlag.value) {
     alert('Offline mode detected');
     // If offline, load sales data from IndexedDB
     try {
@@ -362,5 +377,20 @@ thead {
   font-size: 16px;
   text-align: center;
   margin: 20px 0;
+}
+.online-indicator {
+  background-color: #4caf50; /* Green for online */
+  color: white;
+  padding: 10px;
+  text-align: center;
+  width:10%;
+}
+
+.offline-indicator {
+  background-color: #f44336; /* Red for offline */
+  color: white;
+  padding: 10px;
+  text-align: center;
+  width:10%;
 }
 </style>
