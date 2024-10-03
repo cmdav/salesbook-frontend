@@ -527,14 +527,14 @@ const addSales = async () => {
     const online = await isOnline();  // Re-check the network status dynamically
     if (online) { 
       // If online, send the sales data to the server
-      alert("You are online");
+      //alert("You are online");
       res.value = await apiService.post('/sales', payload);
       if (res.value.success) {
         showReceiptModal.value = true;
       }
     } else {
       // If offline, store sales data in IndexedDB
-      console.log('App is offline. Storing sales data.');
+      alert('App is offline. Storing sales data.');
 
       // Open IndexedDB
       const db = await openDB('sales-db', 2);
@@ -549,7 +549,7 @@ const addSales = async () => {
         navigator.serviceWorker.ready.then((registration) => {
           return registration.sync.register('sync-sales').then(() => {
             console.log('Sync event registered successfully');
-            alert('Offline data has been submitted');
+         
           }).catch((err) => {
             console.error('Failed to register sync event:', err);
           });
