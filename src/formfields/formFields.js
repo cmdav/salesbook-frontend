@@ -278,7 +278,7 @@ export const productTypeFormFields = ref([
     label: 'Product Name',
     type: 'text',
     value: '',
-    required: false,
+    required: trueq```,
     placeholder: 'Choose Product Name',
     options: [],
     databaseField: 'product_type_name'
@@ -287,7 +287,7 @@ export const productTypeFormFields = ref([
     label: 'Product Image',
     type: 'image',
     value: '',
-    required: true,
+    required: false,
     placeholder: 'Choose Image Url',
     databaseField: 'product_type_image'
   },
