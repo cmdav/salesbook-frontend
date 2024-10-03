@@ -278,7 +278,7 @@ export const productTypeFormFields = ref([
     label: 'Product Name',
     type: 'text',
     value: '',
-    required: trueq```,
+    required: true,
     placeholder: 'Choose Product Name',
     options: [],
     databaseField: 'product_type_name'
