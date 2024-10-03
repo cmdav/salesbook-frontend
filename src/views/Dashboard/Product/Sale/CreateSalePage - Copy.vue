@@ -37,8 +37,8 @@
         <div class="form-group">
           <label class="block text-sm font-medium text-gray-700">Payment method</label>
           <select required v-model="formState.payment_method" class="select-input">
-            <option v-for="option in paymentList" :key="option.id" :value="option.id">
-              {{ option.payment_identifier }}
+            <option v-for="option in paymentMethods" :key="option.value" :value="option.value">
+              {{ option.label }}
             </option>
           </select>
         </div>
@@ -49,11 +49,7 @@
             <span class="font-medium text-gray-700">
               Total Price: <span v-html="'&#8358;'"></span> {{ totalPrice }}
             </span>
-            <button
-              type="button"
-              @click="addProducts"
-              class="button btn-brand !bg-brand/[20%] !text-black !px-3 ml-4"
-            >
+            <button type="button" @click="addProducts" class="button btn-brand !bg-brand/[20%] !text-black !px-3 ml-4">
               Add product
             </button>
           </div>
@@ -67,17 +63,8 @@
             <!-- Product Type Select -->
             <div class="input-group">
               <label class="block text-sm font-medium text-gray-700">Product</label>
-              <select
-                v-model="formState.products[index].product_type_id"
-                class="select-input"
-                @change="handleProductTypeSelect(index)"
-              >
-                <option
-                  v-for="name in data"
-                  :key="name.id"
-                  :value="name.id"
-                  :disabled="isProductSelected(name.id)"
-                >
+              <select v-model="formState.products[index].product_type_id" class="select-input" @change="handleProductTypeSelect(index)">
+                <option v-for="name in data" :key="name.id" :value="name.id" :disabled="isProductSelected(name.id)">
                   {{ name.product_type_name }}
                 </option>
               </select>
@@ -104,18 +91,20 @@
               </select>
             </div>
 
-            <!-- Quantity Sold -->
-            <div class="input-group w-20">
-              <label class="block text-sm font-medium text-gray-700">Qty Sold</label>
-              <input
-                type="number"
-                v-model="formState.products[index].quantity_sold"
-                min="0"
-                class="input"
-                @change="checkQuantitySold(index)"
-                @input="preventNegativeQuantity(index)"
-              />
-            </div>
+           <!-- Quantity Sold -->
+<div class="input-group w-20">
+  <label class="block text-sm font-medium text-gray-700">Qty Sold</label>
+  <input
+    type="number"
+    v-model="formState.products[index].quantity_sold"
+    min="0"
+    class="input"
+    @change="checkQuantitySold(index)"
+    @input="preventNegativeQuantity(index)"
+  />
+</div>
+
+
             <!-- Selling Price -->
             <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Selling Price</label>
@@ -185,17 +174,15 @@
   </DashboardLayout>
 </template>
 <script setup>
-import { ref, reactive, watch, onMounted, nextTick} from 'vue';
+import { ref, reactive, watch, onMounted, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import apiService from '@/services/apiService'; // Service to interact with the backend API
 import { useCustomerstore } from '@/stores/customers'; // Pinia store for customer data
 import CustomerFormModal from '@/components/UI/Modal/CustomerFormModal.vue'; // Modal component for adding a new customer
 import ReceiptModal from '@/components/UI/Modal/ReceiptModal.vue'; // Modal component for showing the receipt
 import { storeToRefs } from 'pinia';
-import { openDB } from 'idb';
 import { generateReceiptPDF } from './sentToPrinter'; // Function to generate PDF for the receipt
-import { catchAxiosSuccess } from '@/services/Response'; // Services to handle success and error messages for API responses
-import { isOnline } from '@/isOnline'; 
+import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'; // Services to handle success and error messages for API responses
 
 const router = useRouter();
 const customersStore = useCustomerstore(); // Access the Pinia customer store
@@ -205,7 +192,6 @@ const barcodeInputRefs = ref([]); // Ref to track barcode input fields
 const data = ref([]); // Holds the product data fetched from the API
 const totalPrice = ref(0); // Holds the total price of all products
 const res = ref(null); // Ref to store the API response
-const isOnlineFlag = ref(true);
 
 const { allCustomersNames } = storeToRefs(customersStore); // Store all customer names from the Pinia store
 
@@ -215,18 +201,18 @@ const isSubmitting = ref(false);
 
 // Function to open the 'Add Customer' modal
 const addNewCustomer = () => {
-  showModal.value = true
-}
+  showModal.value = true;
+};
 
 // Function to close the 'Add Customer' modal
 const closeModal = () => {
-  showModal.value = false
-}
+  showModal.value = false;
+};
 
 // Function to set a reference to the barcode input element
 const setBarcodeRef = (el, index) => {
-  barcodeInputRefs.value[index] = el
-}
+  barcodeInputRefs.value[index] = el;
+};
 
 // Function to focus on the next barcode input field
 const focusBarcodeInput = () => {
@@ -239,19 +225,29 @@ const focusBarcodeInput = () => {
 // Function to prevent entering a negative quantity
 const preventNegativeQuantity = (index) => {
   if (formState.products[index].quantity_sold < 0) {
-    formState.products[index].quantity_sold = 0
+    formState.products[index].quantity_sold = 0;
   }
 };
 
-
+// Lifecycle hook that runs when the component is mounted
+onMounted(async () => {
+  try {
+    await customersStore.handleAllCustomersName(); // Fetch all customer names from the store
+    const response = await apiService.get('/all-product-type-name'); // Fetch all product types from the API
+    data.value = response.data; // Store product types in the 'data' ref
+    focusBarcodeInput(); // Focus on the first empty barcode input
+  } catch (error) {
+    console.error('Failed to fetch product type names:', error); // Handle error if product types can't be fetched
+  }
+});
 
 // State variables for form inputs and product list
 const printReceipt = ref('no'); // Tracks whether the user wants to print a receipt
 const showReceiptModal = ref(false); // Controls whether the receipt modal is shown
 
 const formState = reactive({
-  customer_id: '',
-  payment_method: '',
+  customer_id: '', // Selected customer ID
+  payment_method: 'cash', // Selected payment method
   products: [
     {
       product_type_id: '',
@@ -263,18 +259,15 @@ const formState = reactive({
       vat: 'no' // VAT applied to the product
     }
   ]
-})
+});
 
+// Function to populate product details based on product selection
 const populateProductDetails = (index, product) => {
-  if (!product) {
-    console.error(`Product not found at index ${index}`);
-    return;
-  }
   formState.products[index].product_type_id = product.id;
-  formState.products[index].barcode = product.barcode || ''; // Handle missing barcode
-  formState.products[index].selling_price = product.selling_price || 0;
-  formState.products[index].selling_unit_name = product.selling_unit_name || ''; // Populate selling unit name
-  formState.products[index].vat = product.vat ? product.vat.toLowerCase() : 'no'; // Set VAT value, default to 'no'
+  formState.products[index].barcode = product.barcode;
+  formState.products[index].selling_price = product.selling_price;
+  formState.products[index].selling_unit_name = product.selling_unit_name; // Populate selling unit name
+  formState.products[index].vat = product.vat.toLowerCase(); // Set VAT value
   formState.products[index].amount = calculateAmountWithVat(
     formState.products[index].selling_price,
     formState.products[index].quantity_sold,
@@ -282,6 +275,8 @@ const populateProductDetails = (index, product) => {
   );
   nextTick(() => focusBarcodeInput()); // Focus on the next empty barcode input
 };
+
+// Function to calculate the amount with VAT
 const calculateAmountWithVat = (sellingPrice, quantitySold, vat) => {
   let amount = parseFloat(sellingPrice) * parseFloat(quantitySold || 0); // Calculate the amount
   if (vat === 'yes') {
@@ -289,41 +284,6 @@ const calculateAmountWithVat = (sellingPrice, quantitySold, vat) => {
   }
   return isNaN(amount) ? 0 : amount; // Return the calculated amount or 0 if NaN
 };
-
-
-// Function to handle product type selection
-const handleProductTypeSelect = async (index) => {
-  const productId = formState.products[index].product_type_id;
-  let product;
-
-  try {
-    const online = await isOnline();  // Check the network status on-demand
-    if (online) {
-      // If online, get product from the fetched API data
-      product = data.value.find(p => p.id === productId);
-    } else {
-      //alert('offline mode')
-      // If offline, retrieve product from IndexedDB
-      const db = await openDB('sales-db', 2); // Ensure using version 2
-      const tx = db.transaction('products', 'readonly');
-      const store = tx.objectStore('products');
-      product = await store.get(productId); // Get the product by ID from IndexedDB
-      await tx.done; // Ensure transaction is complete
-    }
-
-    if (product) {
-      populateProductDetails(index, product); // Populate the product details in the form
-    } else {
-      console.error('Product not found for the selected type');
-    }
-  } catch (error) {
-    console.error('Error during product selection:', error);
-  }
-};
-
-
-
-
 
 // Watcher to update product amounts and total price when any product changes
 watch(
@@ -344,7 +304,7 @@ watch(
     calculateTotalPrice(); // Recalculate the total price
   },
   { deep: true }
-)
+);
 
 // Function to calculate the total price of all products
 const calculateTotalPrice = () => {
@@ -365,7 +325,7 @@ const removeProduct = (index) => {
     nextTick(() => focusBarcodeInput()); // Focus on the next empty barcode input
     calculateTotalPrice(); // Recalculate total price
   }
-}
+};
 
 // Function to handle when a barcode is entered
 const handleBarcodeEnter = (index) => {
@@ -381,22 +341,25 @@ const handleBarcodeEnter = (index) => {
     populateProductDetails(index, product); // Populate product details if found
     addProducts(); // Add a new product row
   }
-}
+};
 
-
-
+// Function to handle product type selection
+const handleProductTypeSelect = (index) => {
+  const product = data.value.find((p) => p.id === formState.products[index].product_type_id); // Find product by ID
+  if (product) {
+    populateProductDetails(index, product); // Populate product details
+  }
+};
 
 // Function to check if the quantity sold exceeds available stock
 const checkQuantitySold = (index) => {
   const product = data.value.find(p => p.id === formState.products[index].product_type_id); // Find product by ID
   
   if (product && formState.products[index].quantity_sold > product.quantity_available) {
-    formState.products[index].quantity_sold = product.quantity_available // Reset to available quantity if exceeds
-    alert(
-      `Quantity sold exceeds available stock. Resetting to available quantity: ${product.quantity_available}.`
-    )
+    formState.products[index].quantity_sold = product.quantity_available; // Reset to available quantity if exceeds
+    alert(`Quantity sold exceeds available stock. Resetting to available quantity: ${product.quantity_available}.`);
   }
-
+  
   formState.products[index].amount = calculateAmountWithVat(
     formState.products[index].selling_price,
     formState.products[index].quantity_sold,
@@ -407,8 +370,8 @@ const checkQuantitySold = (index) => {
 
 // Function to check if the barcode has already been scanned
 const isDuplicateBarcode = (barcode) => {
-  return formState.products.filter((product) => product.barcode === barcode).length > 1
-}
+  return formState.products.filter(product => product.barcode === barcode).length > 1;
+};
 
 // Function to add a new product row
 const addProducts = () => {
@@ -428,69 +391,18 @@ const addProducts = () => {
   }
 };
 
-
-// Function to check online status
-async function checkOnlineStatus() {
-  try {
-    isOnlineFlag.value = await isOnline(); // Call the imported isOnline function
-   
-  } catch (error) {
-    console.error('Error checking online status:', error); // Handle any potential errors
-  }
-}
-
-onMounted(async () => {
-  try {
-    // Always open the IndexedDB using the current version (2)
-    const db = await openDB('sales-db', 2, {
-      upgrade(db, oldVersion, newVersion) {
-        console.log(newVersion)
-        // Upgrade logic for version 1 to version 2
-        if (oldVersion < 1) {
-          db.createObjectStore('products', { keyPath: 'id' });
-        }
-        if (oldVersion < 2) {
-          db.createObjectStore('sales', { autoIncrement: true });
-        }
-      }
-    });
-   await checkOnlineStatus();
-    
-    if (isOnlineFlag.value) {
-     
-      // Fetch product data from the API if the app is online
-      const response = await apiService.get('/all-product-type-name');
-      data.value = response.data; // Store the fetched data in the reactive `data` variable
-
-      // Store product data in IndexedDB
-      const tx = db.transaction('products', 'readwrite');
-      const store = tx.objectStore('products');
-      response.data.forEach((product) => {
-        store.put(product);
-      });
-      await tx.done; // Ensure transaction is complete
-    } else {
-      alert('You are offline')
-      // If offline, load product data from IndexedDB
-      const tx = db.transaction('products', 'readonly');
-      const store = tx.objectStore('products');
-      data.value = await store.getAll(); // Get all products from the IndexedDB
-    }
-
-    focusBarcodeInput(); // Focus on the first empty barcode input
-  } catch (error) {
-    console.error('Error fetching product data:', error);
-  }
-});
-
+// Function to handle form submission for adding sales
 const addSales = async () => {
   isSubmitting.value = true;
 
-  // Validate that all products have quantities greater than 0
   const invalidProducts = formState.products.filter(product => product.product_type_id && product.quantity_sold <= 0);
 
   if (invalidProducts.length > 0) {
-    alert(`Enter a quantity for all selected products`);
+    const invalidProductNames = invalidProducts
+      .map(product => data.value.find(p => p.id === product.product_type_id)?.product_type_name || 'this product')
+      .join(', ');
+    
+    alert(`Enter a quantity for ${invalidProductNames}`);
     isSubmitting.value = false;
     return;
   }
@@ -508,50 +420,21 @@ const addSales = async () => {
     customer_id: formState.customer_id ? formState.customer_id : null,
     payment_method: formState.payment_method,
     products
-  }
+  };
 
   try {
-    const online = await isOnline();  // Re-check the network status dynamically
-    if (online) { 
-      // If online, send the sales data to the server
-      alert("You are online");
-      res.value = await apiService.post('/sales', payload);
-      if (res.value.success) {
-        showReceiptModal.value = true;
-      }
-    } else {
-      // If offline, store sales data in IndexedDB
-      console.log('App is offline. Storing sales data.');
-
-      // Open IndexedDB
-      const db = await openDB('sales-db', 2);
-
-      const tx = db.transaction('sales', 'readwrite');
-      const store = tx.objectStore('sales');
-      await store.put(payload);
-      await tx.done;
-
-      // Register a sync event with the service worker
-      if ('serviceWorker' in navigator && 'SyncManager' in window) {
-        navigator.serviceWorker.ready.then((registration) => {
-          return registration.sync.register('sync-sales').then(() => {
-            console.log('Sync event registered successfully');
-            alert('Offline data has been submitted');
-          }).catch((err) => {
-            console.error('Failed to register sync event:', err);
-          });
-        });
-      }
+    res.value = await apiService.post('/sales', payload); // Post the sales data to the API
+    if (res.value.success) {
+      showReceiptModal.value = true; // Show receipt modal if successful
     }
+    return res.value;
   } catch (error) {
-    console.error('Error while adding sales:', error);
+    catchAxiosError(error); // Handle any errors during the API call
   } finally {
-    isSubmitting.value = false
-    resetForm()
+    isSubmitting.value = false;
+    resetForm(); // Reset the form after submission
   }
-}
-
-
+};
 
 // Function to handle receipt choice (whether to print or not)
 const handleReceiptChoice = (choice) => {
@@ -565,8 +448,8 @@ const handleReceiptChoice = (choice) => {
 
 // Function to reset the form after submission
 const resetForm = () => {
-  formState.customer_id = ''
-  formState.payment_method = ''
+  formState.customer_id = '';
+  formState.payment_method = '';
   formState.products = [
     {
       product_type_id: '',

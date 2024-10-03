@@ -1,5 +1,8 @@
 <template>
   <DashboardLayout pageTitle="Sales Page">
+    <div :class="{'online-indicator': isOnlineFlag, 'offline-indicator': !isOnlineFlag}">
+      {{ isOnlineFlag ? 'Online' : 'Offline' }}
+    </div>
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
       <div v-if="addPermissions" class="action">
@@ -65,13 +68,37 @@
     <div v-if="!isSearching" class="mx-auto w-fit my-5">
   <Pagination :currentPage="currentPage" :totalPages="totalPages" @changePage="changePage" />
 </div>
+
+<!-- Offline Table Section -->
+<div v-if="!isOnlineFlag.value && offlineData.length > 0" class="offline-table-container">
+  <h3 class="text-lg font-semibold mb-4">Offline Sales Data</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>S.NO</th>
+        <th>PRODUCT TYPE</th>
+        <th>PRICE SOLD AT(NGN)</th>
+        <th>QUANTITY SOLD</th>
+        <th>QUANTITY AVAILABLE</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(item, index) in offlineData" :key="item.id">
+        <td>{{ index + 1 }}</td>
+        <td>{{ item.product_type_name }}</td>
+        <td>{{ item.products[0]['price_sold_at']}}</td>
+        <td>{{ item.products[0]['quantity']}}</td>
+        <td>{{ item.quantity_available }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+</div>
+
   </DashboardLayout>
 </template>
-
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
-//import jsPDF from 'jspdf';
-//import 'jspdf-autotable';
+import { ref, computed, onMounted, onUnmounted} from 'vue';
 import apiService from '@/services/apiService';
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue';
 import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
@@ -79,7 +106,9 @@ import { useStore } from "@/stores/user";
 import { storeToRefs } from 'pinia';
 import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue';
 import { generateReceiptPDF } from './receipts';
-
+import { openDB } from 'idb';
+import { isOnline, listenForNetworkStatusChanges } from '@/isOnline'; 
+import { syncSalesToServer } from '/customSync'
 
 const store = useStore();
 const { userProfileDetails } = storeToRefs(store);
@@ -98,78 +127,100 @@ const totalPages = ref(0);
 const itemsPerPage = ref(0);
 const branches = ref([]);
 const errorMessage = ref('');
-
-onMounted(async () => {
+const offlineData = ref([]);
+const isOnlineFlag = ref(true); // Reactive property to track online status
+//alert(isOnline.value)
+async function checkOnlineStatus() {
   try {
-    const response = await apiService.get('/list-business-branches'); 
-    console.log(response)
-    branches.value = response || [];
-    console.log(branches.value)
+    isOnlineFlag.value = await isOnline(); // Call the imported isOnline function
+   
   } catch (error) {
-    console.error('Failed to fetch branches:', error);
-  }
-});
-
-function handleBranchChange(selectedBranchId) {
-  if (selectedBranchId) {
-    fetchBranch(selectedBranchId);
-  } else {
-    fetchData(currentPage.value);
+    console.error('Error checking online status:', error); // Handle any potential errors
   }
 }
+// Listen for online/offline changes
+onMounted( async() => {
 
+  await checkOnlineStatus();
+  // Fetch initial data
+  fetchData(currentPage.value);
 
-async function fetchBranch(branchId) {
-  try {
-    const response = await apiService.get(`/sales?branch_id=${branchId}`);
-    if (response.data && response.data.length) {
-      data.value = response.data;
-      errorMessage.value = '';
-    } else {
-      data.value = [];
-      errorMessage.value = 'No items found for the selected branch.';
+  const stopListening = listenForNetworkStatusChanges((isOnline) => {
+    isOnlineFlag.value = isOnline; // Update online status in the UI
+    if (isOnline) {
+      console.log('Network is back online. Syncing sales...');
+      syncSalesToServer(); // Sync sales when the network is restored
     }
-  } catch (error) {
-    console.error('Failed to fetch sales data:', error);
-    errorMessage.value = 'An error occurred while fetching data.';
-  }
-}
+  });
 
-watch(search, async (newSearch) => {
-  if (newSearch) {
-    isSearching.value = true;
-    try {
-      const response = await apiService.get(`search-sales/${newSearch}`);
-      data.value = response;
-      return data.value;
-    } catch (error) {
-      console.error('Failed to fetch data:', error);
-    }
-  } else {
-    isSearching.value = false;
-    fetchData();
-  }
+  onUnmounted(() => {
+    stopListening(); // Stops the interval and event listeners
+  });
 });
+
+
 
 async function fetchData(page = 1) {
-  try {
-    const response = await apiService.get(`sales?page=${page}`);
-    data.value = response.data || []; 
-    console.log(data.value)
-     if (data.value.length === 0) {
-      errorMessage.value = 'No items found';
-    } else {
-      errorMessage.value = '';
+  if (!isOnlineFlag.value) {
+    alert('Offline mode detected');
+    // If offline, load sales data from IndexedDB
+    try {
+      // Get sales record
+      const db = await openDB('sales-db', 2);
+      const salesTx = db.transaction('sales', 'readonly');
+      const salesStore = salesTx.objectStore('sales');
+      const storeSales = await salesStore.getAll(); // Get all sales from the IndexedDB
+      await salesTx.done;
+      console.log(storeSales);
+
+      // Get product record
+      const productTx = db.transaction('products', 'readonly'); // Create a new transaction for products
+      const productStore = productTx.objectStore('products');
+      const storeProducts = await productStore.getAll(); // Get all products from IndexedDB
+      await productTx.done;
+      console.log(storeProducts);
+
+      offlineData.value = storeSales.map(sale => {
+        const product = storeProducts.find(p => p.id === sale.products[0].product_type_id); // Find matching product by ID
+        return {
+          ...sale,
+          product_type_name: product ? product.product_type_name : 'Unknown', // Add product name
+          quantity_available: product ? product.quantity_available : 'N/A',  // Add available quantity from product
+        };
+      });
+
+      console.log(offlineData.value);
+      
+      if (offlineData.value.length === 0) {
+        errorMessage.value = 'No offline sales data found';
+      } else {
+        errorMessage.value = '';
+      }
+    } catch (error) {
+      console.error("Failed to fetch offline sales data:", error);
+      errorMessage.value = 'An error occurred while fetching offline data.';
     }
-    pagination.value = {
-      next_page_url: response.next_page_url,
-      prev_page_url: response.prev_page_url,
-    };
-    currentPage.value = response.current_page;
-    totalPages.value = response.last_page;
-    itemsPerPage.value = response.per_page;
-  } catch (error) {
-    console.error("Failed to fetch data:", error);
+  } else {
+    // If online, fetch data from the server
+    try {
+      const response = await apiService.get(`sales?page=${page}`);
+      data.value = response.data || [];
+      if (data.value.length === 0) {
+        errorMessage.value = 'No items found';
+      } else {
+        errorMessage.value = '';
+      }
+      pagination.value = {
+        next_page_url: response.next_page_url,
+        prev_page_url: response.prev_page_url,
+      };
+      currentPage.value = response.current_page;
+      totalPages.value = response.last_page;
+      itemsPerPage.value = response.per_page;
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+      errorMessage.value = 'An error occurred while fetching online data.';
+    }
   }
 }
 
@@ -207,10 +258,7 @@ const generateReceipt = async (transactionId) => {
   }
 };
 
-
 const roles = computed(() => store.getUser.user.permission.role_name === "Admin");
-
-onMounted(() => fetchData(currentPage.value));
 
 const delPermissions = computed(() => {
   const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'sales');
@@ -220,7 +268,9 @@ const addPermissions = computed(() => {
   const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'sales');
   return perm.write == 1; 
 });
+
 </script>
+
 
 <style scoped>
 .actions {
@@ -327,5 +377,20 @@ thead {
   font-size: 16px;
   text-align: center;
   margin: 20px 0;
+}
+.online-indicator {
+  background-color: #4caf50; /* Green for online */
+  color: white;
+  padding: 10px;
+  text-align: center;
+  width:10%;
+}
+
+.offline-indicator {
+  background-color: #f44336; /* Red for offline */
+  color: white;
+  padding: 10px;
+  text-align: center;
+  width:10%;
 }
 </style>
