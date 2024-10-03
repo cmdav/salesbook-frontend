@@ -108,8 +108,9 @@ if (allSales.length > 0) {
     const saleKey = allKeys[i]; // Corresponding key for the sale
 
     try {
-      let url="http://127.0.0.1:8000/api/v1/sales"
+      //let url="http://127.0.0.1:8000/api/v1/sales"
       //let url ="https://staging-backend.rdas.com.ng/api/v1/sales"
+      let url ="https://backend-isalesbook.isalesbook.com/api/v1"
       const response = await fetch(url, {
         method: 'POST',
         headers: {
