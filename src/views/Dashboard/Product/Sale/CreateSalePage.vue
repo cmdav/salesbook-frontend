@@ -207,11 +207,24 @@ const totalPrice = ref(0); // Holds the total price of all products
 const res = ref(null); // Ref to store the API response
 const isOnlineFlag = ref(true);
 
+const paymentList = ref([]);
+
 const { allCustomersNames } = storeToRefs(customersStore); // Store all customer names from the Pinia store
 
 // Control variables for modals and form submission
 const showModal = ref(false);
 const isSubmitting = ref(false);
+
+onMounted( async() => {
+  try{
+  const response = await apiService.get('/list-payment-methods')
+  console.log('This is response:', response);
+  paymentList.value = response.data
+  }catch(e){
+    console.error(`naable to fetch: ${e.message}`)
+  }
+  
+})
 
 // Function to open the 'Add Customer' modal
 const addNewCustomer = () => {
@@ -582,11 +595,11 @@ const resetForm = () => {
 };
 
 // List of available payment methods
-const paymentMethods = [
-  { value: 'cash', label: 'Cash' },
-  { value: 'pos', label: 'Pos' },
-  { value: 'bank-transfer', label: 'Bank Transfer' }
-];
+// const paymentMethods = [
+//   { value: 'cash', label: 'Cash' },
+//   { value: 'pos', label: 'Pos' },
+//   { value: 'bank-transfer', label: 'Bank Transfer' }
+// ];
 </script>
 
 <style scoped>
