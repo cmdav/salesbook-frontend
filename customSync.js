@@ -24,8 +24,8 @@ export async function syncSalesToServer() {
         }
 
         try {
-         // const url = "http://127.0.0.1:8000/api/v1/sales";
-           let url ="https://staging-backend.rdas.com.ng/api/v1/sales"
+          const url = "http://127.0.0.1:8000/api/v1/sales";
+          // let url ="https://staging-backend.rdas.com.ng/api/v1/sales"
           const response = await fetch(url, {
             method: 'POST',
             headers: {
