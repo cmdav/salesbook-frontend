@@ -532,7 +532,7 @@ const addSales = async () => {
 
       // Open IndexedDB
       await addSale(payload);
-      router.push('/sale');
+      //router.push('/sale');
 
       // Register a sync event with the service worker
       if ('serviceWorker' in navigator && 'SyncManager' in window) {

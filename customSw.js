@@ -30,7 +30,7 @@ self.addEventListener('sync', function(event) {
 });
 
 // Open the sales database using idb
-const dbPromise = idb.openDB('sales-db', 2, {
+const dbPromise = idb.openDB('sales-db', 1, {
   upgrade(db) {
     if (!db.objectStoreNames.contains('sales')) {
       db.createObjectStore('sales', { keyPath: 'id', autoIncrement: true });
