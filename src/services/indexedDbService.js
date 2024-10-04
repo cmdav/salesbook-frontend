@@ -1,34 +1,84 @@
-import idb from '@/utils/idb';
+// services/indexedDBService.js
+import { openDB } from 'idb';
 
-// Open or create the IndexedDB
-const dbPromise = idb.open('registration-store', 1, (upgradeDB) => {
-  if (!upgradeDB.objectStoreNames.contains('registrations')) {
-    upgradeDB.createObjectStore('registrations', { keyPath: 'id' });
-  }
-});
-
-// Store data in IndexedDB
-export async function storeDataInIndexedDB(data) {
-  const db = await dbPromise;
-  const tx = db.transaction('registrations', 'readwrite');
-  const store = tx.objectStore('registrations');
-  await store.put(data);
-  return tx.complete;
+// Function to initialize Sales DB
+export async function initializeSalesDB() {
+  return openDB('sales-db', 1, { // Fixed version number during development
+    upgrade(db, oldVersion) {
+      if (oldVersion < 1) {
+        db.createObjectStore('products', { keyPath: 'id' });
+        db.createObjectStore('sales', { autoIncrement: true });
+        db.createObjectStore('payment-methods', { keyPath: 'id' });
+      }
+    }
+  });
+}
+//Initialize User Db
+export async function initializeUserDB() {
+  return openDB('user-db', 1, {
+    upgrade(db, oldVersion) {
+      if (oldVersion < 1) {
+        db.createObjectStore('user', { keyPath: 'id' });
+      }
+    }
+  });
 }
 
-// Retrieve all data from IndexedDB
-export async function getAllDataFromIndexedDB() {
-  const db = await dbPromise;
-  const tx = db.transaction('registrations', 'readonly');
-  const store = tx.objectStore('registrations');
+// Function to add a product to IndexedDB
+export async function addProduct(product) {
+  const db = await initializeSalesDB();
+  const tx = db.transaction('products', 'readwrite');
+  const store = tx.objectStore('products');
+  await store.put(product);
+  await tx.done;
+}
+
+// Function to get all products from IndexedDB
+export async function getAllProducts() {
+  const db = await initializeSalesDB();
+  const tx = db.transaction('products', 'readonly');
+  const store = tx.objectStore('products');
   return store.getAll();
 }
 
-// Delete data from IndexedDB after syncing
-export async function deleteDataFromIndexedDB(id) {
-  const db = await dbPromise;
-  const tx = db.transaction('registrations', 'readwrite');
-  const store = tx.objectStore('registrations');
-  await store.delete(id);
-  return tx.complete;
+// Function to add a sale to IndexedDB
+export async function addSale(saleData) {
+  const db = await initializeSalesDB();
+  const tx = db.transaction('sales', 'readwrite');
+  const store = tx.objectStore('sales');
+  await store.put(saleData);
+  await tx.done;
+}
+
+// Function to get all sales from IndexedDB
+export async function getAllSales() {
+  const db = await initializeSalesDB();
+  const tx = db.transaction('sales', 'readonly');
+  const store = tx.objectStore('sales');
+  return store.getAll();
+}
+
+// Function to get a specific product by ID
+export async function getProductById(productId) {
+  const db = await initializeSalesDB();
+  const tx = db.transaction('products', 'readonly');
+  const store = tx.objectStore('products');
+  return store.get(productId);
+}
+export async function addPaymentMethods(paymentMethods) {
+  const db = await initializeSalesDB();
+  const tx = db.transaction('payment-methods', 'readwrite');
+  const store = tx.objectStore('payment-methods');
+  paymentMethods.forEach(method => {
+    store.put(method);  // Store each payment method
+  });
+  await tx.done;
+}
+
+// Function to get all payment methods from IndexedDB
+export async function getAllPaymentMethods() {
+  const db = await initializeSalesDB();
+  const tx = db.transaction('payment-methods', 'readonly');
+  const store = tx.objectStore('payment-methods');
+  return store.getAll();
 }

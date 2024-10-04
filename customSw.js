@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* global idb, CryptoJS */
 
 // Import idb from CDN and crypto-js for decryption

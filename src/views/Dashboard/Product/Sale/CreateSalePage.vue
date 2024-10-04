@@ -192,10 +192,10 @@ import { useCustomerstore } from '@/stores/customers'; // Pinia store for custom
 import CustomerFormModal from '@/components/UI/Modal/CustomerFormModal.vue'; // Modal component for adding a new customer
 import ReceiptModal from '@/components/UI/Modal/ReceiptModal.vue'; // Modal component for showing the receipt
 import { storeToRefs } from 'pinia';
-import { openDB } from 'idb';
 import { generateReceiptPDF } from './sentToPrinter'; // Function to generate PDF for the receipt
 import { catchAxiosSuccess } from '@/services/Response'; // Services to handle success and error messages for API responses
 import { isOnline } from '@/isOnline'; 
+import { getProductById, addSale, getAllProducts, initializeSalesDB, getAllPaymentMethods, addPaymentMethods} from '@/services/indexedDbService'
 
 const router = useRouter();
 const customersStore = useCustomerstore(); // Access the Pinia customer store
@@ -215,16 +215,7 @@ const { allCustomersNames } = storeToRefs(customersStore); // Store all customer
 const showModal = ref(false);
 const isSubmitting = ref(false);
 
-onMounted( async() => {
-  try{
-  const response = await apiService.get('/list-payment-methods')
-  console.log('This is response:', response);
-  paymentList.value = response.data
-  }catch(e){
-    console.error(`naable to fetch: ${e.message}`)
-  }
-  
-})
+
 
 // Function to open the 'Add Customer' modal
 const addNewCustomer = () => {
@@ -316,12 +307,7 @@ const handleProductTypeSelect = async (index) => {
       product = data.value.find(p => p.id === productId);
     } else {
       //alert('offline mode')
-      // If offline, retrieve product from IndexedDB
-      const db = await openDB('sales-db', 2); // Ensure using version 2
-      const tx = db.transaction('products', 'readonly');
-      const store = tx.objectStore('products');
-      product = await store.get(productId); // Get the product by ID from IndexedDB
-      await tx.done; // Ensure transaction is complete
+      product = await getProductById(productId);
     }
 
     if (product) {
@@ -454,47 +440,51 @@ async function checkOnlineStatus() {
 
 onMounted(async () => {
   try {
-    // Always open the IndexedDB using the current version (2)
-    const db = await openDB('sales-db', 2, {
-      upgrade(db, oldVersion, newVersion) {
-        console.log(newVersion)
-        // Upgrade logic for version 1 to version 2
-        if (oldVersion < 1) {
-          db.createObjectStore('products', { keyPath: 'id' });
-        }
-        if (oldVersion < 2) {
-          db.createObjectStore('sales', { autoIncrement: true });
-        }
-      }
-    });
-   await checkOnlineStatus();
-    
-    if (isOnlineFlag.value) {
-     
-      // Fetch product data from the API if the app is online
-      const response = await apiService.get('/all-product-type-name');
-      data.value = response.data; // Store the fetched data in the reactive `data` variable
+    // Open IndexedDB
+    const db = await initializeSalesDB();
 
-      // Store product data in IndexedDB
+    // Check if the app is online
+    await checkOnlineStatus();
+
+    if (isOnlineFlag.value) {
+      // Fetch both payment methods and product data together if online
+      const [paymentMethodsResponse, productResponse] = await Promise.all([
+        apiService.get('/list-payment-methods'),
+        apiService.get('/all-product-type-name')
+      ]);
+
+      console.log('Payment Methods Response:', paymentMethodsResponse);
+      console.log('Product Response:', productResponse);
+
+      // Store payment methods in IndexedDB
+      await addPaymentMethods(paymentMethodsResponse.data);
+      paymentList.value = paymentMethodsResponse.data;  // Store payment methods in reactive data
+
+      // Store product data from the API in IndexedDB
+      data.value = productResponse.data;  // Store API response in reactive data
       const tx = db.transaction('products', 'readwrite');
       const store = tx.objectStore('products');
-      response.data.forEach((product) => {
+      productResponse.data.forEach(product => {
         store.put(product);
       });
-      await tx.done; // Ensure transaction is complete
+      await tx.done;  // Ensure transaction is complete
     } else {
-      alert('You are offline')
-      // If offline, load product data from IndexedDB
-      const tx = db.transaction('products', 'readonly');
-      const store = tx.objectStore('products');
-      data.value = await store.getAll(); // Get all products from the IndexedDB
+      //alert('You are offline');
+
+      // Load product data from IndexedDB
+      data.value = await getAllProducts();
+
+      // Load payment methods from IndexedDB
+      paymentList.value = await getAllPaymentMethods();
     }
 
-    focusBarcodeInput(); // Focus on the first empty barcode input
+    focusBarcodeInput();  // Focus on the first empty barcode input
   } catch (error) {
-    console.error('Error fetching product data:', error);
+    console.error('Error during initialization:', error);
   }
 });
+
+
 
 const addSales = async () => {
   isSubmitting.value = true;
@@ -537,12 +527,7 @@ const addSales = async () => {
       alert('App is offline. Storing sales data.');
 
       // Open IndexedDB
-      const db = await openDB('sales-db', 2);
-
-      const tx = db.transaction('sales', 'readwrite');
-      const store = tx.objectStore('sales');
-      await store.put(payload);
-      await tx.done;
+      await addSale(payload);
 
       // Register a sync event with the service worker
       if ('serviceWorker' in navigator && 'SyncManager' in window) {
@@ -594,12 +579,7 @@ const resetForm = () => {
   nextTick(() => focusBarcodeInput()); // Focus on the next empty barcode input
 };
 
-// List of available payment methods
-// const paymentMethods = [
-//   { value: 'cash', label: 'Cash' },
-//   { value: 'pos', label: 'Pos' },
-//   { value: 'bank-transfer', label: 'Bank Transfer' }
-// ];
+
 </script>
 
 <style scoped>

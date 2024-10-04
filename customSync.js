@@ -1,13 +1,14 @@
 // customSync.js
-import { openDB } from 'idb';
+
 import CryptoJS from 'crypto-js';
+import { initializeSalesDB, initializeUserDB} from '@/services/indexedDbService'
 
 const encryptionKey = "RadsDashboard#$%245";
 
 // Open sales and user DB
 export async function syncSalesToServer() {
   try {
-    const db = await openDB('sales-db', 2);
+    const db = await initializeSalesDB(); 
     const salesTx = db.transaction('sales', 'readonly');
     const salesStore = salesTx.objectStore('sales');
     const allSales = await salesStore.getAll();
@@ -24,7 +25,8 @@ export async function syncSalesToServer() {
         }
 
         try {
-          const url = import.meta.env.VITE_BACKEND_BASEURL
+          const url = import.meta.env.VITE_BACKEND_BASEURL+"sales"
+          
           const response = await fetch(url, {
             method: 'POST',
             headers: {
@@ -55,7 +57,7 @@ export async function syncSalesToServer() {
 
 // Function to open the user DB and get the decrypted token
 async function getDecryptedToken() {
-  const db = await openDB('user-db', 1);
+  const db = await initializeUserDB();
   const tx = db.transaction('user', 'readonly');
   const store = tx.objectStore('user');
   const userEntry = await store.get(1);

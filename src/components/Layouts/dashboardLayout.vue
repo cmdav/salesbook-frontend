@@ -1,60 +1,3 @@
-<script setup>
-import BaseSidebar from "@/components/SideBar/indexPage.vue";
-import { ref, onMounted } from "vue";
-import "animate.css";
-const closeNav = ref(false);
-const sideNav = ref(false)
-const closeBackdrop = ref(false);
-const showDropdown = ref(false);
-// const showNotificationDropdown = ref(false);
-import { useStore } from "@/stores/user";
-import { storeToRefs } from "pinia";
-import NavDropDown from "@/components/UI/Dropdown/NavDropDown.vue";
-import CaretDown from "@/components/icons/CaretDown.vue";
-const store = useStore();
-const { userProfileDetails } = storeToRefs(store);
-
-onMounted(() => {
-  store.handleUserProfile();
-});
-
-const toggleSidebar = () => {
-  sideNav.value = !sideNav.value;
-}
-
-const toggle = () => {
-  closeNav.value = !closeNav.value;
-
-  if (closeNav.value) {
-    closeBackdrop.value = !closeBackdrop.value;
-  }
-
-  if (!closeNav.value) {
-    setTimeout(() => {
-      closeBackdrop.value = !closeBackdrop.value;
-    }, 1000);
-  }
-};
-const toogleDropdown = () => {
-  showDropdown.value = !showDropdown.value;
-};
-const items = [
-  {
-    id: 0,
-    name: "profile",
-    context: "profile",
-    // icon: UserIcon,
-  },
-  {
-    id: 1,
-    name: "logout",
-    context: "Logout",
-    // icon: SignOutIcon,
-  },
-];
-defineProps({ pageTitle: String });
-</script>
-
 <template>
   <div class="bg-[#FDFDF6]">
     <div class="lg:flex">
@@ -164,6 +107,12 @@ defineProps({ pageTitle: String });
 
         <div class="flex-grow pb-20">
           <h3 class="container mt-8 text-[19px] font-bold">{{ pageTitle }}</h3>
+
+
+          <div :class="['network-status', { 'online': isOnline, 'offline': !isOnline }]">
+            <span>{{ isOnline ? 'Online' : 'Offline' }}</span>
+          </div>
+         
           <slot></slot>
         </div>
       </div>
@@ -174,6 +123,68 @@ defineProps({ pageTitle: String });
           <img src="@/assets/svg/sidebarIcon.svg" alt="" class="w-6" >
         </div>
 </template>
+<script setup>
+import BaseSidebar from "@/components/SideBar/indexPage.vue";
+import { ref, onMounted } from "vue";
+import "animate.css";
+const closeNav = ref(false);
+const sideNav = ref(false)
+const closeBackdrop = ref(false);
+const showDropdown = ref(false);
+// const showNotificationDropdown = ref(false);
+import { useStore } from "@/stores/user";
+import { storeToRefs } from "pinia";
+import NavDropDown from "@/components/UI/Dropdown/NavDropDown.vue";
+import CaretDown from "@/components/icons/CaretDown.vue";
+import { useNetworkStore } from '@/stores/network';
+
+const store = useStore();
+const { userProfileDetails } = storeToRefs(store);
+
+const networkStore = useNetworkStore();
+const { isOnline } = storeToRefs(networkStore);
+onMounted(() => {
+  store.handleUserProfile();
+  networkStore.checkNetworkStatus(); // Initial check of network status
+  networkStore.listenForChanges(); 
+});
+
+const toggleSidebar = () => {
+  sideNav.value = !sideNav.value;
+}
+
+const toggle = () => {
+  closeNav.value = !closeNav.value;
+
+  if (closeNav.value) {
+    closeBackdrop.value = !closeBackdrop.value;
+  }
+
+  if (!closeNav.value) {
+    setTimeout(() => {
+      closeBackdrop.value = !closeBackdrop.value;
+    }, 1000);
+  }
+};
+const toogleDropdown = () => {
+  showDropdown.value = !showDropdown.value;
+};
+const items = [
+  {
+    id: 0,
+    name: "profile",
+    context: "profile",
+    // icon: UserIcon,
+  },
+  {
+    id: 1,
+    name: "logout",
+    context: "Logout",
+    // icon: SignOutIcon,
+  },
+];
+defineProps({ pageTitle: String });
+</script>
 
 <style lang="scss" scoped>
 .menubg {
@@ -202,4 +213,20 @@ defineProps({ pageTitle: String });
 .content-container ::-webkit-scrollbar-track {
   background: #efefef; // Optional: change the color of the scrollbar track to your preference
 }
+.network-status {
+  padding: 10px;
+  color: white;
+  border-radius: 5px;
+  width:10%;
+}
+
+.online {
+  background-color: #4caf50; /* Green for online */
+}
+
+.offline {
+  background-color: #f44336; /* Red for offline */
+}
+
+
 </style>

@@ -1,8 +1,6 @@
 <template>
   <DashboardLayout pageTitle="Sales Page">
-    <div :class="{'online-indicator': isOnlineFlag, 'offline-indicator': !isOnlineFlag}">
-      {{ isOnlineFlag ? 'Online' : 'Offline' }}
-    </div>
+   
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
       <div v-if="addPermissions" class="action">
@@ -13,8 +11,8 @@
         <router-link to="/create-sale" class="button add-btn">Add</router-link>
       </button>
       </div>
-    </div>
-    <div class="table-container">
+    </div>{{ isOnlineFlag }}
+    <div v-if="isOnlineFlag" class="table-container">
       <table>
         <thead>
           <tr>
@@ -65,12 +63,12 @@
     </div>
 
     <DeleteModal v-if="showDeleteModal" @close="closeDeleteModal" @updated="forceRefresh" :items="itemToDelete" :url="'purchases'" :modalTitle="modalTitle" />
-    <div v-if="!isSearching" class="mx-auto w-fit my-5">
+<div v-if="!isSearching && isOnlineFlag" class="mx-auto w-fit my-5">
   <Pagination :currentPage="currentPage" :totalPages="totalPages" @changePage="changePage" />
 </div>
 
 <!-- Offline Table Section -->
-<div v-if="!isOnlineFlag.value && offlineData.length > 0" class="offline-table-container">
+<div v-if="!isOnlineFlag && offlineData.length > 0" class="offline-table-container">
   <h3 class="text-lg font-semibold mb-4">Offline Sales Data</h3>
   <table>
     <thead>
@@ -106,8 +104,8 @@ import { useStore } from "@/stores/user";
 import { storeToRefs } from 'pinia';
 import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue';
 import { generateReceiptPDF } from './receipts';
-import { openDB } from 'idb';
 import { isOnline, listenForNetworkStatusChanges } from '@/isOnline'; 
+import { getAllProducts, getAllSales } from '@/services/indexedDbService'
 import { syncSalesToServer } from '/customSync'
 
 const store = useStore();
@@ -149,7 +147,7 @@ onMounted( async() => {
     isOnlineFlag.value = isOnline; // Update online status in the UI
     if (isOnline) {
       console.log('Network is back online. Syncing sales...');
-      syncSalesToServer(); // Sync sales when the network is restored
+      syncSalesToServer(); 
     }
   });
 
@@ -162,23 +160,11 @@ onMounted( async() => {
 
 async function fetchData(page = 1) {
   if (!isOnlineFlag.value) {
-    alert('Offline mode detected');
+    console.log('Offline mode detected');
     // If offline, load sales data from IndexedDB
     try {
-      // Get sales record
-      const db = await openDB('sales-db', 2);
-      const salesTx = db.transaction('sales', 'readonly');
-      const salesStore = salesTx.objectStore('sales');
-      const storeSales = await salesStore.getAll(); // Get all sales from the IndexedDB
-      await salesTx.done;
-      console.log(storeSales);
-
-      // Get product record
-      const productTx = db.transaction('products', 'readonly'); // Create a new transaction for products
-      const productStore = productTx.objectStore('products');
-      const storeProducts = await productStore.getAll(); // Get all products from IndexedDB
-      await productTx.done;
-      console.log(storeProducts);
+      const storeSales = await getAllSales();
+      const storeProducts = await getAllProducts();
 
       offlineData.value = storeSales.map(sale => {
         const product = storeProducts.find(p => p.id === sale.products[0].product_type_id); // Find matching product by ID
