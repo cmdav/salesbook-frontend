@@ -11,7 +11,11 @@
         <router-link to="/create-sale" class="button add-btn">Add</router-link>
       </button>
       </div>
-    </div>{{ isOnlineFlag }}
+    </div>
+    <div :class="['network-status', { 'online': isOnlineFlag, 'offline': !isOnlineFlag }]">
+            <span>{{ isOnlineFlag ? 'Online' : 'Offline' }}</span>
+          </div>
+    <!-- {{ isOnlineFlag }} -->
     <div v-if="isOnlineFlag" class="table-container">
       <table>
         <thead>
@@ -364,19 +368,18 @@ thead {
   text-align: center;
   margin: 20px 0;
 }
-.online-indicator {
-  background-color: #4caf50; /* Green for online */
-  color: white;
+.network-status {
   padding: 10px;
-  text-align: center;
+  color: white;
+  border-radius: 5px;
   width:10%;
 }
 
-.offline-indicator {
+.online {
+  background-color: #4caf50; /* Green for online */
+}
+
+.offline {
   background-color: #f44336; /* Red for offline */
-  color: white;
-  padding: 10px;
-  text-align: center;
-  width:10%;
 }
 </style>

@@ -109,9 +109,9 @@
           <h3 class="container mt-8 text-[19px] font-bold">{{ pageTitle }}</h3>
 
 
-          <div :class="['network-status', { 'online': isOnline, 'offline': !isOnline }]">
+          <!-- <div :class="['network-status', { 'online': isOnline, 'offline': !isOnline }]">
             <span>{{ isOnline ? 'Online' : 'Offline' }}</span>
-          </div>
+          </div> -->
          
           <slot></slot>
         </div>
@@ -136,17 +136,17 @@ import { useStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 import NavDropDown from "@/components/UI/Dropdown/NavDropDown.vue";
 import CaretDown from "@/components/icons/CaretDown.vue";
-import { useNetworkStore } from '@/stores/network';
+//import { useNetworkStore } from '@/stores/network';
 
 const store = useStore();
 const { userProfileDetails } = storeToRefs(store);
 
-const networkStore = useNetworkStore();
-const { isOnline } = storeToRefs(networkStore);
+// const networkStore = useNetworkStore();
+// const { isOnline } = storeToRefs(networkStore);
 onMounted(() => {
   store.handleUserProfile();
-  networkStore.checkNetworkStatus(); // Initial check of network status
-  networkStore.listenForChanges(); 
+  //networkStore.checkNetworkStatus(); // Initial check of network status
+  //networkStore.listenForChanges(); 
 });
 
 const toggleSidebar = () => {

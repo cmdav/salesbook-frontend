@@ -1,6 +1,9 @@
 <template>
   <DashboardLayout pageTitle="Add Sale">
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
+      <!-- <div :class="['network-status', { 'online': isOnline, 'offline': !isOnline }]">
+            <span>{{ isOnline ? 'Online' : 'Offline' }}</span>
+          </div> -->
       <div class="top-buttons">
         <router-link to="/sale" class="button back-btn">Back</router-link>
       </div>
@@ -441,6 +444,7 @@ async function checkOnlineStatus() {
 onMounted(async () => {
   try {
     // Open IndexedDB
+    await customersStore.handleAllCustomersName(); 
     const db = await initializeSalesDB();
 
     // Check if the app is online
@@ -528,6 +532,7 @@ const addSales = async () => {
 
       // Open IndexedDB
       await addSale(payload);
+      router.push('/sale');
 
       // Register a sync event with the service worker
       if ('serviceWorker' in navigator && 'SyncManager' in window) {
@@ -701,5 +706,19 @@ button {
 
 .btn-danger:hover {
   background-color: #c82333;
+}
+.network-status {
+  padding: 10px;
+  color: white;
+  border-radius: 5px;
+  width:10%;
+}
+
+.online {
+  background-color: #4caf50; /* Green for online */
+}
+
+.offline {
+  background-color: #f44336; /* Red for offline */
 }
 </style>
