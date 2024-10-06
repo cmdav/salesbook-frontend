@@ -25,14 +25,7 @@ async function storeUserInIndexedDB(userData) {
   await tx.done;
 }
 
-// Retrieve encrypted user data from IndexedDB
-// async function getUserFromIndexedDB() {
-//   const db = await openUserDB();
-//   const tx = db.transaction('user', 'readonly');
-//   const store = tx.objectStore('user');
-//   const userEntry = await store.get(1);
-//   return userEntry ? userEntry.encryptedUser : null;
-// }
+
 
 // Delete user data from IndexedDB
 async function deleteUserFromIndexedDB() {

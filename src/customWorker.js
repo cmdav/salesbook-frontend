@@ -16,7 +16,7 @@ self.addEventListener('activate', (event) => {
 });
 
 // Open the sales database using idb.js
-var dbPromise = idb.open('sales-db', 2, function(db) {
+var dbPromise = idb.open('sales-db', 1, function(db) {
   if (!db.objectStoreNames.contains('sales')) {
     db.createObjectStore('sales', { keyPath: 'id', autoIncrement: true });
   }
