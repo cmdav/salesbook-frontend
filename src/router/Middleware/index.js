@@ -32,7 +32,7 @@ const deleteSupplierSession = async () => {
   if (sessionStorage.getItem('_user_data')) {
     logout()
     sessionStorage.removeItem('_user_data')
-    return { name: 'supplier-login' }
+    return { name: 'supplier-login' };
   }
 }
 export default {
