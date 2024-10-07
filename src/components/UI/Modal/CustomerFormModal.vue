@@ -56,6 +56,9 @@
 import { defineEmits, ref, computed, watch } from "vue";
 import { useCustomerstore } from '@/stores/customers';
 import { catchAxiosSuccess } from '@/services/Response';
+import { isOnline } from '@/isOnline'; 
+import { addCustomer} from '@/services/indexedDbService'
+import { v4 as uuidv4 } from 'uuid';
 
 const customerStore = useCustomerstore();
 
@@ -98,12 +101,20 @@ watch(customerType, (newType) => {
 
 const submitForm = async () => {
   isSubmitting.value = true;  // Disable the submit button and show "Submitting..."
+  let response;
   const payload = { ...formData.value };
   
   try {
     console.log(payload);
-    const response = await customerStore.handleAddCustomer(payload);
-    console.log(response);
+    const online = await isOnline();
+    if (online) { 
+       response = await customerStore.handleAddCustomer(payload);
+       console.log(response);
+    }else{
+      payload.id = uuidv4();
+      response = await addCustomer(payload);
+    }
+   
     catchAxiosSuccess(response);
     formData.value = {};
     emits('close');
