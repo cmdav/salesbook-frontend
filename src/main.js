@@ -20,6 +20,8 @@ import CloudUploadIcon from '@/components/icons/cloudUploadIcon.vue'
 import './registerServiceWorker'
 
 
+
+
 const app = createApp(App)
 
 app.use(Toast, { position: POSITION.TOP_RIGHT })

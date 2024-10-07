@@ -57,7 +57,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/welcome'
+      redirect: { path: '/login'},
     },
     {
       path: '/login',
@@ -118,6 +118,12 @@ const router = createRouter({
       path: '/verify/:email',
       name: 'verify',
       component: VerifyPage
+    },
+    {
+      path: '/welcome',
+      name: 'welcome',
+      component: WelcomeScreen,
+      beforeEnter: [middleware.redirectLogin]
     },
     {
       path: '/dashboard',
@@ -196,13 +202,6 @@ const router = createRouter({
       path: '/measurement',
       name: 'measurement',
       component: MeasurementPage,
-      beforeEnter: [middleware.redirectLogin]
-    },
-    {
-      path: '/welcome',
-      name: 'welcome',
-      component: WelcomeScreen,
-      // beforeEnter: [middleware.redirectSupplierDashboard]
       beforeEnter: [middleware.redirectLogin]
     },
 
@@ -313,10 +312,12 @@ const router = createRouter({
       beforeEnter: [middleware.redirectLogin]
     },
     {
+      path:'/logout',
       name: 'logout',
       beforeEnter: [middleware.deleteSession]
     },
     {
+      path:'/signout',
       name: 'signout',
       beforeEnter: [middleware.deleteSupplierSession]
     },
