@@ -6,7 +6,8 @@
       <header
         class="flex flex-row items-center justify-between border-b-[#000000] mb-[0.6em] border-b-[1px]"
       >
-        <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">How many selling unit equal a purchase unit</h4>
+        <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">
+          {{ isEditing ? 'Edit how many selling unit equal a purchase unit' : 'Add how many selling unit equal a purchase unit' }}</h4>
         <button class="close-button" @click="$emit('close')">&#10005;</button>
       </header>
 
@@ -32,7 +33,7 @@
           type="submit"
           class="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
-          Add Selling Capacity
+          {{ isEditing ? 'Update Selling Capacity' : 'Add Selling Capacity' }}
         </button>
       </form>
     </div>
@@ -40,7 +41,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref } from 'vue'
+import { defineProps, defineEmits, ref, watch } from 'vue'
 // import { useCustomerstore } from '@/stores/customers'
 import apiService from "@/services/apiService"
 import { catchAxiosSuccess, catchAxiosError } from '@/services/Response'
@@ -49,25 +50,57 @@ const props = defineProps({
   sellingUnitId: {
     type: String,
     required: true
+  },
+  sellingCapacity: {
+    type: Object,
+    default: null
   }
 })
 
-const emits = defineEmits(['close', 'selling-capacity-added'])
+const isEditing = ref(!!props.sellingCapacity);
+
+
+const emits = defineEmits(['close', 'selling-capacity-added', 'selling-capacity-updated'])
 
 const isLoading = ref(false);
-const sellingCapacity = ref('')
+const sellingCapacity = ref(isEditing.value ? props.sellingCapacity.selling_capacity : '');
+
+
+
+
+watch(() => props.sellingCapacity, (newVal) => {
+  if (newVal) {
+    isEditing.value = true; 
+    sellingCapacity.value = newVal.selling_capacity;
+  } else {
+    isEditing.value = false;
+    sellingCapacity.value = '';
+  }
+}, { immediate: true })
 
 const submitForm = async () => {
   isLoading.value =true;
   try {
-    const response = await apiService.post('/selling-unit-capacities', {
+
+    if (isEditing.value){
+      const response = await apiService.update(`/selling-unit-capacities/${props.sellingCapacity.id}`, {
       selling_unit_id: props.sellingUnitId,
       selling_unit_capacity: sellingCapacity.value
     })
     console.log('Form submitted successfully:', response.data)
     catchAxiosSuccess(response)
-     emits('selling-capacity-added', response.data)
+     emits('selling-capacity-updated', response.data)
+   
+    }else {
+       const response = await apiService.post('/selling-unit-capacities', {
+      selling_unit_id: props.sellingUnitId,
+      selling_unit_capacity: sellingCapacity.value
+    })
+    catchAxiosSuccess(response)
+    emits('selling-capacity-added', response.data)
+    }
     emits('close')
+    
   } catch (error) {
     console.error('Error submitting form:', error)
    catchAxiosError(error);
