@@ -29,7 +29,7 @@
             v-model="dob" :max="minDate" :errorsMsg="dobErrorMsg" />
         </div>
         <div class="mb-3 flex flex-col w-full">
-          <AuthInput label="Phone number*" :error="false" type="tel" placeholder="Enter Phone number"
+          <AuthInput label="Phone number*" :error="errors.phone_no" :errorsMsg="errorsMsg.phone_num" type="number" placeholder="Enter Phone number"
             v-model="phoneNo" />
         </div>
       </div>
@@ -107,7 +107,7 @@
 
     <div class="flex flex-col lg:flex-row w-full gap-[30px] mt-4">
       <button :disabled="loading" @click="handleSignup()"
-        :class="!isFormValid ? '!bg-primary-100/[30%] cursor-not-allowed' : 'bg-brand'"
+        :class="!isFormFullyValid ? '!bg-primary-100/[30%] cursor-not-allowed' : 'bg-brand'"
         class="btn-brand !rounded-[5px] flex gap-2 items-center justify-center !text-white text-[14px] !py-[16px] font-semibold w-full">
         <span v-if="!loading" class="font-semibold !text-[15px]">Submit</span>
         <Loader v-else />
@@ -130,11 +130,15 @@ import AuthInput from "@/components/UI/Input/AuthInput.vue";
 import PasswordInput from "@/components/UI/Input/PasswordInput.vue";
 import Loader from "@/components/UI/Loader.vue";
 import { useRouter } from "vue-router";
-import { useStore } from "@/stores/user";
+// import { useStore } from "@/stores/user";
 import { register } from "@/services/Auth";
 
 const router = useRouter();
-const store = useStore();
+// const store = useStore();
+
+const nameRegex = /^[A-Za-z\s-_()]+$/; 
+
+const isValidName = (name) => nameRegex.test(name);
 
 const middelName = ref("");
 const phoneNo = ref("");
@@ -156,6 +160,7 @@ const errors = reactive({
   firstName: false,
   lastName: false,
   company_name: false,
+  phone_no:false,
   address: false,
   email: false,
   password: false,
@@ -169,6 +174,7 @@ const errorsMsg = {
   firstName: "First name is required",
   lastName: "Last name is required",
   company_name: "Company Name is required",
+  phone_num: "Phone Number is required",
   address: "Address is required",
   email: "Email is required",
   password: "Password is required",
@@ -185,6 +191,7 @@ function getMinDate() {
 console.log(minDate.value);
 const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/;
+// const textRegex = //;
 const isValidEmail = computed(() => {
   return emailRegex.test(formData.email);
 });
@@ -214,6 +221,18 @@ const isAtLeastOneLowercase = computed(() => {
 const isAtLeastOneUppercase = computed(() => {
   return /[A-Z]/.test(formData.password);
 });
+
+const isFormFullyValid = computed(() => {
+  return (
+    isValidName(formData.firstName) &&
+    isValidName(formData.lastName) &&
+    isValidName(formData.company_name) &&
+    isValidEmail.value &&
+    isValidPassword.value &&
+    passwordsMatch.value 
+  );
+});
+
 const validateForm = () => {
   // Reset errorsMsg
   Object.keys(errors).forEach((key) => {
@@ -229,6 +248,55 @@ const validateForm = () => {
       isValid = false;
     }
   });
+
+   if (!formData.firstName) {
+    errors.firstName = true;
+    errorsMsg.firstName = "First Name is required";
+    isValid = false;
+  } else if(!isValidName(formData.firstName)){
+    errors.firstName=true;
+    errorsMsg.firstName = "Invalid characters in First Name"
+    isValid = false;
+  }
+
+   if (!formData.lastName) {
+    errors.lastName = true;
+    errorsMsg.lastName = "Last Name is required";
+    isValid = false;
+  } else if(!isValidName(formData.lastName)){
+    errors.lastName = true;
+    errorsMsg.lastName = "Invalid characters in Last Name"
+    isValid = false;
+  }
+
+   if (!formData.company_name) {
+    errors.company_name = true;
+    errorsMsg.company_name = "Company Name is required";
+    isValid = false;
+  } else if(!isValidName(formData.company_name)){
+    errors.company_name = true;
+    errorsMsg.company_name = "Invalid characters in Company Name"
+    isValid = false;
+  }
+
+  // if (!isValidName(formData.lastName)) {
+  //   errors.lastName = true;
+  //   errorsMsg.lastName = "Invalid characters in Last Name";
+  //   isValid = false;
+  // } 
+
+  // if (!isValidName(formData.company_name)) {
+  //   errors.company_name = true;
+  //   errorsMsg.company_name = "Invalid characters in Company Name";
+  //   isValid = false;
+  // }
+
+  if(!phoneNo.value){
+    errors.phone_no = true;
+    errorsMsg.phone_num = "Phone Number is required";
+    isValid = false;
+  }
+
   if (!formData.email) {
     errors.email = true;
     errorsMsg.email = "Email is required";
@@ -260,6 +328,8 @@ const validateForm = () => {
 
   return isValid;
 };
+
+
 // Function to clear input errors
 const clearInputErrors = () => {
   Object.keys(errors).forEach((key) => {
@@ -270,17 +340,7 @@ const clearInputErrors = () => {
     errorsMsg[key] = "";
   });
 };
-const isFormValid = computed(() => {
-  return (
-    formData.firstName.trim() !== "" &&
-    formData.lastName.trim() !== "" &&
-    formData.email.trim() !== "" &&
-    formData.password.trim() !== "" &&
-    formData.company_name.trim() !== "" &&
-    formData.company_address !== "" &&
-    confirmPassword.value.trim() !== ""
-  );
-});
+
 const clearInputs = () => {
   (formData.firstName = ""),
     (formData.lastName = ""),
