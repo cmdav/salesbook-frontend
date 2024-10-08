@@ -5,32 +5,32 @@
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
         <div class="mb-3 flex flex-col w-full">
           <AuthInput label="First Name*" :error="errors.firstName" :errorsMsg="errorsMsg.firstName" type="text"
-            placeholder="Enter first name" v-model="formData.firstName" />
+            placeholder="Enter first name" v-model="formData.firstName" required />
         </div>
         <div class="mb-3 flex flex-col w-full">
           <AuthInput label="Last Name*" :error="errors.lastName" type="text" placeholder="Enter last name"
-            :errorsMsg="errorsMsg.lastName" v-model="formData.lastName" />
+            :errorsMsg="errorsMsg.lastName" v-model="formData.lastName" required />
         </div>
       </div>
 
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
         <div class="mb-3 flex flex-col w-full">
           <AuthInput label="Company Name*" :error="errors.company_name" :errorsMsg="errorsMsg.company_name" type="text"
-            placeholder="Enter company name" v-model="formData.company_name" />
+            placeholder="Enter company name" v-model="formData.company_name" required />
         </div>
         <div class="mb-3 flex flex-col w-full">
           <AuthInput label="Email Address*" :error="errors.email" :errorsMsg="errorsMsg.email" type="email"
-            placeholder="Enter email address" v-model="formData.email" />
+            placeholder="Enter email address" v-model="formData.email" required />
         </div>
       </div>
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
         <div class="mb-3 flex flex-col w-full">
-          <AuthInput label="Date of Birth (Optional)"  type="text" placeholder="Enter DOB"
+          <AuthInput label="Date of Birth (Optional)"  type="date" placeholder="Enter DOB"
             v-model="dob" :max="minDate" :errorsMsg="dobErrorMsg" />
         </div>
         <div class="mb-3 flex flex-col w-full">
           <AuthInput label="Phone number*" :error="errors.phone_no" :errorsMsg="errorsMsg.phone_num" type="number" placeholder="Enter Phone number"
-            v-model="phoneNo" />
+            v-model="phoneNo" required/>
         </div>
       </div>
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
@@ -38,11 +38,12 @@
           <AuthInput
             label="Address*"
             :error="errors.address"
+            :errorsMsg="errorsMsg.address"
             type="text"
             placeholder="Enter Address"
             v-model="formData.address"
             :max="minDate"
-            :errorsMsg="errorsMsg.address"
+            required
           />
         </div>
       </div>
@@ -51,11 +52,11 @@
 
         <div class="mb-3 flex flex-col w-full">
           <PasswordInput label="Password*" :error="errors.password" :errorsMsg="errorsMsg.password"
-            v-model="formData.password" placeholder="**********" />
+            v-model="formData.password" placeholder="**********" required />
         </div>
         <div class="mb-3 flex flex-col w-full">
           <PasswordInput label="Confirm Password" :error="errors.confirmPassword || !passwordsMatch"
-            :errorsMsg="errorsMsg.confirmPassword" placeholder="Confirm Password*" v-model="formData.confirmPassword" />
+            :errorsMsg="errorsMsg.confirmPassword" placeholder="Confirm Password*" v-model="formData.confirmPassword" required />
         </div>
       </div>
       <!-- password reg dropdown -->

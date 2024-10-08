@@ -39,9 +39,11 @@
               <button
                 :disabled="loading"
                 @click="handleForgotPassword"
-                :class="!isFormValid ? '!bg-primary-100 cursor-not-allowed' : 'bg-brand'"
-                class="btn-brand !rounded-[5px] flex gap-2 items-center justify-center !text-text-black-200 text-[14px] !py-[16px] font-semibold w-full"
-              >
+               :class="[
+      (!isValidEmail || loading) ? 'bg-primary-100 cursor-not-allowed opacity-50' : 'bg-brand',
+      'btn-brand !rounded-[5px] flex gap-2 items-center justify-center !text-white text-[14px] !py-[16px] font-semibold w-full'
+    ]"
+                >
                 <span v-if="!loading" class="font-semibold !text-[15px]">Proceed</span>
                 <Loader v-else />
               </button>
@@ -110,9 +112,9 @@ const clearInputErrors = () => {
     errorsMsg[key] = "";
   });
 };
-const isFormValid = computed(() => {
-  return formData.email.trim() !== "";
-});
+// const isFormValid = computed(() => {
+//   return formData.email.trim() !== "";
+// });
 const clearInputs = () => {
   formData.email = "";
 };

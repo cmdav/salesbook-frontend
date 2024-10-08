@@ -32,12 +32,12 @@
                   <!-- <AuthInput :error="false" type="text" placeholder="search" /> -->
                 </div>
                 <div class="flex flex-row gap-[12px]">
-                  <button
+                  <!-- <button
                     @click="HandleToggleUploadModal"
                     class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
                   >
                     Upload Suppliers
-                  </button>
+                  </button> -->
                   <button
                     @click="HandleToggleModal"
                     class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
@@ -134,6 +134,7 @@
                     <AuthInput
                       label="First Name"
                       :error="errors.firstName"
+                      :errorsMsg="errorsMsg.firstName"
                       type="text"
                       placeholder="Enter first name"
                       v-model="formData.firstName"
@@ -143,6 +144,7 @@
                     <AuthInput
                       label="Last Name"
                       :error="errors.lastName"
+                      :errorsMsg="errorsMsg.lastName"
                       type="text"
                       placeholder="Enter last name"
                       v-model="formData.lastName"
@@ -155,6 +157,7 @@
                     <AuthInput
                       label="Email Address"
                       :error="errors.email"
+                      :errorsMsg="errorsMsg.email"
                       type="email"
                       placeholder="Enter email address"
                       v-model="formData.email"
@@ -180,7 +183,8 @@
                 <div class="w-full flex justify-center">
                   <button
                     type="submit"
-                    class="btn-brand !border-none !w-[30%] mx-auto !py-3 lg:!px-10 !px-5 !text-[#FFFFFF] text-center"
+                    :class="!isFormValid ? '!bg-primary-100/[30%] cursor-not-allowed' : 'bg-brand'"
+            class="btn-brand !rounded-[5px] flex gap-2 items-center justify-center !text-white text-[14px] !py-[16px] font-semibold w-full"
                   >
                     <span v-if="!loading" class="text-[12.067px]">Invite</span>
                     <Loader v-else />
@@ -292,11 +296,44 @@ const roles = computed(() => store.getUser.user.permission.role_name === "Admin"
 
 let showModal = ref(false);
 let showUploadModal = ref(false);
+
+const nameRegex = /^[A-Za-z\s-_()]+$/; 
+const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+const isValidName = (name) => nameRegex.test(name);
+const isValidEmail = computed(() => {
+  return emailRegex.test(formData.email);
+});
+
+
 const formData = reactive({
   firstName: "",
   lastName: "",
   email: "",
   orgId: ""
+});
+
+const clearInputErrors = () => {
+  Object.keys(errors).forEach((key) => {
+    errors[key] = false;
+  });
+
+  Object.keys(errorsMsg).forEach((key) => {
+    errorsMsg[key] = "";
+  });
+};
+
+const isFormValid = computed(() => {
+  return (
+    isValidName(formData.firstName) &&
+    isValidName(formData.lastName) &&
+    isValidEmail.value 
+    
+  );
+});
+
+watch(formData, () => {
+  clearInputErrors();
 });
 let loading = ref(false);
 let sortInput = reactive({
@@ -330,7 +367,7 @@ const filteredSupplier = computed(() => {
   return filtered; // Return the filtered array
 });
 
-const branchId = ref(null);
+// const branchId = ref(null);
 const branches = ref([])
 
 // const fetchBusinessBranches = async () => {
@@ -379,6 +416,12 @@ const errors = reactive({
   lastName: false,
   email: false,
 });
+
+const errorsMsg = {
+  firstName: "First name is required",
+  lastName: "Last name is required",
+  email: "Email is required",
+};
 const validateForm = () => {
   // Reset errorsMsg
   Object.keys(errors).forEach((key) => {
@@ -395,21 +438,45 @@ const validateForm = () => {
     }
   });
 
+   if (!formData.firstName) {
+    errors.firstName = true;
+    errorsMsg.firstName = "First Name is required";
+    isValid = false;
+  } else if(!isValidName(formData.firstName)){
+    errors.firstName=true;
+    errorsMsg.firstName = "Invalid characters in First Name"
+    isValid = false;
+  }
+
+   if (!formData.lastName) {
+    errors.lastName = true;
+    errorsMsg.lastName = "Last Name is required";
+    isValid = false;
+  } else if(!isValidName(formData.lastName)){
+    errors.lastName = true;
+    errorsMsg.lastName = "Invalid characters in Last Name"
+    isValid = false;
+  }
+   
+  if (!formData.email) {
+    errors.email = true;
+    errorsMsg.email = "Email is required";
+    isValid = false;
+  } else if (!isValidEmail.value) {
+    errors.email = true;
+    errorsMsg.email = "Invalid email";
+    isValid = false;
+  }
+
   return isValid;
 };
 // Function to clear input errors
-const clearInputErrors = () => {
-  Object.keys(errors).forEach((key) => {
-    errors[key] = false;
-  });
-};
+
 
 const clearInputs = () => {
   (formData.firstName = ""), (formData.lastName = ""), (formData.email = "");
 };
-watch(formData, () => {
-  clearInputErrors();
-});
+
 function HandleToggleModal() {
   showModal.value = !showModal.value;
   clearInputs();

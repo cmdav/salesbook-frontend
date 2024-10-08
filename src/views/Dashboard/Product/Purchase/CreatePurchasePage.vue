@@ -94,7 +94,7 @@
             </div>
             <div>
               <label for="amount">Amount</label>
-              <span class="priceView">&#8358; {{ RowTotalCost(purchase).toLocaleString() }}</span>
+              <span class="amountView">&#8358; {{ RowTotalCost(purchase).toLocaleString() }}</span>
             </div>
             <input type="hidden" v-model="purchase.price_id" />
             <div v-if="index !== 0" class="remove-button">
@@ -515,6 +515,14 @@ button {
   background-color: rgb(195 82 20 / 50%);
   color: #fff;
   padding: 0.3%;
+  border-radius: 4px;
+}
+.amountView {
+  font-size: 1.2em;
+  border: 2px solid rgb(195 82 20 / 50%);
+  background-color: rgb(195 82 20 / 50%);
+  color: #fff;
+  padding: 0.8;
   border-radius: 4px;
 }
 
