@@ -63,7 +63,7 @@ const isEditing = ref(!!props.sellingCapacity);
 const emits = defineEmits(['close', 'selling-capacity-added', 'selling-capacity-updated'])
 
 const isLoading = ref(false);
-const sellingCapacity = ref(isEditing.value ? props.sellingCapacity.selling_capacity : '');
+const sellingCapacity = ref(isEditing.value ? props.sellingCapacity.selling_capacity || '' : '');
 
 
 
@@ -83,10 +83,10 @@ const submitForm = async () => {
   try {
 
     if (isEditing.value){
-      const response = await apiService.update(`/selling-unit-capacities/${props.sellingCapacity.id}`, {
-      selling_unit_id: props.sellingUnitId,
-      selling_unit_capacity: sellingCapacity.value
-    })
+    const response = await apiService.update(`/selling-unit-capacities/${props.sellingCapacity.id}`, {
+   selling_unit_id: props.sellingUnitId,
+   selling_unit_capacity: sellingCapacity.value
+});
     console.log('Form submitted successfully:', response.data)
     catchAxiosSuccess(response)
      emits('selling-capacity-updated', response.data)

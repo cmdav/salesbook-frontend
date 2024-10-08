@@ -75,7 +75,7 @@
                 <ul class="capacity">
                   <li v-for="capacity in sellingUnit.selling_unit_capacities" :key="capacity.id" class="capacity_sell">
                     Quantity: {{ capacity.selling_unit_capacity }}
-                    <!-- <span class="update-selling-unit-button capacity_btn" @click="openEditSellingCapacity(sellingCapacity)">Edit Capacity</span> -->
+                    <span class="update-selling-unit-button capacity_btn" @click="openEditSellingCapacity(sellingUnit.id, capacity)">Edit Capacity</span>
                   </li>
                 </ul>
                 <button class="update-selling-unit-button" @click="openEditSellingUnitModal(sellingUnit)">
@@ -356,8 +356,9 @@ const openEditSellingUnitModal = (sellingUnit) => {
   emit('edit-selling-unit', sellingUnit)
 }
 
-const openEditSellingCapacity = (sellingCapacity) => {
+const openEditSellingCapacity = (sellingUnitId, sellingCapacity) => {
   console.log('clickeddd')
+  selectedSellingUnitId.value = sellingUnitId
   selectedSellingCapacity.value = sellingCapacity;
   isSellingUnitCapacityModalOpen.value = true;
 
