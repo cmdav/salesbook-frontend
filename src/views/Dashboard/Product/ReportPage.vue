@@ -183,8 +183,16 @@ const formatData = (value, column) => {
   return value || "N/A"; // Return "N/A" for undefined values
 };
 
-// Function to handle report data fetching
+
+
+// Function to highlight the active card
+const getActiveClass = (reportType) => {
+  return currentReportType.value === reportType ? "bg-yellow-500" : "";
+};
+
 const fetchReportData = async (reportType) => {
+  loading.value = true;  // Start loading when fetching begins
+
   let url = "";
 
   // Set the API endpoint based on report type
@@ -213,18 +221,24 @@ const fetchReportData = async (reportType) => {
 
     if (response.success) {
       const data = response.data.data;
-      
+
       // Reset grand totals
       grandTotalQuantity.value = 0;
       grandTotalPrice.value = 0;
       grandTotalQuantityAvailable.value = 0;
 
-      // Calculate totals for different report types
+      // Calculate totals for monthly-sales and total-sales
       if (["monthly-sales", "total-sales"].includes(reportType)) {
         let totalPrice = 0;
 
         data.forEach(item => {
-          totalPrice += parseFloat(item.total_price); // Ensure numeric values
+          // Correct multiplication for total price
+          const quantity = parseInt(item.quantity, 10);
+          const priceSoldAt = parseFloat(item.price_sold_at);
+          const itemTotalPrice = priceSoldAt * quantity;
+
+          totalPrice += itemTotalPrice;  // Accumulate the total price
+          item.total_price = itemTotalPrice.toFixed(2);  // Store the calculated total price in the data
         });
 
         grandTotalPrice.value = totalPrice;
@@ -245,15 +259,12 @@ const fetchReportData = async (reportType) => {
     }
   } catch (error) {
     console.error("Error fetching report data:", error);
+  } finally {
+    loading.value = false;  // Stop loading once the data has been fetched
   }
 };
 
-// Function to highlight the active card
-const getActiveClass = (reportType) => {
-  return currentReportType.value === reportType ? "bg-yellow-500" : "";
-};
-
-// Function to show the report when card is clicked
+// Function to show the report when a card is clicked
 const showReport = async (reportType) => {
   reportData.value = [];
   currentReportType.value = reportType; // Set the current report type
@@ -262,7 +273,6 @@ const showReport = async (reportType) => {
     showDatePicker.value = true; // Show date picker for these reports
   } else {
     showDatePicker.value = false; // No date picker needed for other reports
-    fetchReportData(reportType); // Fetch data directly
   }
 
   // Set columns based on report type
@@ -283,7 +293,16 @@ const showReport = async (reportType) => {
       columns.value = ["product_sub_category", "product_type_name", "batch_no", "expiry_date", "purchase_unit_name", "selling_unit_name", "quantity_available"];
       break;
   }
+
+  // Fetch data directly for reports without a date picker
+  if (!showDatePicker.value) {
+    loading.value = true;  // Show loading indicator for monthly and price-list reports
+    await fetchReportData(reportType);  // Fetch report data immediately
+    loading.value = false;  // Hide loading indicator after fetching
+  }
 };
+
+
 const downloadPDF = async () => {
   loading.value = true; // Start loading
 
