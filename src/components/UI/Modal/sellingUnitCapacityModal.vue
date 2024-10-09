@@ -6,8 +6,11 @@
       <header
         class="flex flex-row items-center justify-between border-b-[#000000] mb-[0.6em] border-b-[1px]"
       >
+
+
         <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">
           {{ isEditing ? 'Edit how many selling unit equal a purchase unit' : 'Add how many selling unit equal a purchase unit' }}</h4>
+
         <button class="close-button" @click="$emit('close')">&#10005;</button>
       </header>
 

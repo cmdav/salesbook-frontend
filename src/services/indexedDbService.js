@@ -9,6 +9,7 @@ export async function initializeSalesDB() {
         db.createObjectStore('products', { keyPath: 'id' });
         db.createObjectStore('sales', { autoIncrement: true });
         db.createObjectStore('payment-methods', { keyPath: 'id' });
+        db.createObjectStore('customers', {  autoIncrement: true});
       }
     }
   });
@@ -50,6 +51,15 @@ export async function addSale(saleData) {
   await tx.done;
 }
 
+// Function to add a customer to IndexedDB
+export async function addCustomer(customerData) {
+  const db = await initializeSalesDB();
+  const tx = db.transaction('customers', 'readwrite');
+  const store = tx.objectStore('customers');
+  await store.put(customerData);
+  await tx.done;
+}
+
 // Function to get all sales from IndexedDB
 export async function getAllSales() {
   const db = await initializeSalesDB();
@@ -57,6 +67,15 @@ export async function getAllSales() {
   const store = tx.objectStore('sales');
   return store.getAll();
 }
+
+
+export async function getAllCustomers() {
+  const db = await initializeSalesDB();
+  const tx = db.transaction('customers', 'readonly');
+  const store = tx.objectStore('customers');
+  return store.getAll();
+}
+
 
 // Function to get a specific product by ID
 export async function getProductById(productId) {
