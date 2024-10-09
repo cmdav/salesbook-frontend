@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="flex flex-col gap-[17px]">
     <div class="flex flex-col gap-[17px]">
@@ -10,6 +11,7 @@
             type="text"
             placeholder="Enter company name"
             v-model="CompanyformData.company_name"
+            required
           />
         </div>
         <div class="mb-3 flex flex-col w-full">
@@ -20,6 +22,7 @@
             placeholder="Enter contact person name"
             :errorsMsg="CompanyErrorsMsg.contact_person"
             v-model="CompanyformData.contact_person"
+            required
           />
         </div>
       </div>
@@ -33,6 +36,7 @@
             type="text"
             placeholder="Enter company address "
             v-model="CompanyformData.company_address"
+            required
           />
         </div>
         <div class="mb-3 flex flex-col w-full">
@@ -43,18 +47,20 @@
             type="email"
             placeholder="Enter company email address"
             v-model="CompanyformData.email"
+            required
           />
         </div>
       </div>
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
         <div class="mb-3 flex flex-col w-full">
           <AuthInput
-            label="Company contact number"
+            label="Company contact number*"
             :error="CompanyErrors.phone_number"
             :errorsMsg="CompanyErrorsMsg.phone_number"
-            type="tel"
+            type="number"
             placeholder="Enter Company contact number"
             v-model="CompanyformData.phone_number"
+            required
           />
         </div>
         <!-- <div class="mb-3 flex flex-col w-full">
@@ -76,6 +82,7 @@
             :errorsMsg="CompanyErrorsMsg.password"
             v-model="CompanyformData.password"
             placeholder="**********"
+            required
           />
         </div>
         <div class="mb-3 flex flex-col w-full">
@@ -85,6 +92,7 @@
             :errorsMsg="CompanyErrorsMsg.confirmPassword"
             placeholder="Confirm Password*"
             v-model="CompanyformData.confirmPassword"
+            required
           />
         </div>
       </div>
@@ -191,6 +199,8 @@ import { register } from "@/services/Auth";
 const router = useRouter();
 // const store = useStore();
 
+
+
 const CompanyformData = reactive({
   company_name: "",
   contact_person: "",
@@ -227,6 +237,8 @@ const CompanyErrorsMsg = {
 
 const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/;
+const nameRegex = /^[A-Za-z\s-_()]+$/; 
+
 const isValidEmail = computed(() => {
   return emailRegex.test(CompanyformData.email);
 });
@@ -287,6 +299,28 @@ const validateForm = () => {
     isValid = false;
   }
 
+  if (!nameRegex.test(CompanyformData.company_name)) {
+    CompanyErrors.company_name = true;
+    CompanyErrorsMsg.company_name = "Invalid company name";
+    isValid = false;
+  }
+  if(!CompanyformData.company_address){
+    CompanyErrors.company_address = true;
+    CompanyErrorsMsg.company_address = "Company Address is required"
+    isValid = false;
+  }
+  if(!CompanyformData.contact_person){
+    CompanyErrors.contact_person = true;
+    CompanyErrorsMsg.contact_person = "Contact Person is required"
+    isValid = false;
+  }
+
+   if (!nameRegex.test(CompanyformData.contact_person)) {
+    CompanyErrors.contact_person = true;
+    CompanyErrorsMsg.contact_person = "Invalid contact person name";
+    isValid = false;
+  }
+
   if (!isValidPassword.value) {
     CompanyErrors.password = true;
     CompanyErrorsMsg.password = "Password is required";
@@ -312,6 +346,7 @@ const clearInputErrors = () => {
     CompanyErrorsMsg[key] = "";
   });
 };
+
 const isFormValid = computed(() => {
   return (
     CompanyformData.company_name.trim() !== "" &&

@@ -31,20 +31,7 @@
                 </svg>
               </button>
               
-              <button class="add-selling-unit-button" @click="openDeleteModal(purchaseUnit.id)">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="1em"
-                  height="1em"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    fill="white"
-                    fill-rule="evenodd"
-                    d="m6.774 6.4l.812 13.648a.8.8 0 0 0 .798.752h7.232a.8.8 0 0 0 .798-.752L17.226 6.4zm11.655 0l-.817 13.719A2 2 0 0 1 15.616 22H8.384a2 2 0 0 1-1.996-1.881L5.571 6.4H3.5v-.7a.5.5 0 0 1 .5-.5h16a.5.5 0 0 1 .5.5v.7zM14 3a.5.5 0 0 1 .5.5v.7h-5v-.7A.5.5 0 0 1 10 3zM9.5 9h1.2l.5 9H10zm3.8 0h1.2l-.5 9h-1.2z"
-                  />
-                </svg>
-              </button>
+             
             </div>
             <div v-if="purchaseUnit.selling_units.length > 0">
               <div
@@ -85,9 +72,10 @@
                 </svg>
               </button> -->
                 </div>
-                <ul>
-                  <li v-for="capacity in sellingUnit.selling_unit_capacities" :key="capacity.id">
+                <ul class="capacity">
+                  <li v-for="capacity in sellingUnit.selling_unit_capacities" :key="capacity.id" class="capacity_sell">
                     Quantity: {{ capacity.selling_unit_capacity }}
+                    <span class="update-selling-unit-button capacity_btn" @click="openEditSellingCapacity(sellingUnit.id, capacity)">Edit Capacity</span>
                   </li>
                 </ul>
                 <button class="update-selling-unit-button" @click="openEditSellingUnitModal(sellingUnit)">
@@ -98,9 +86,27 @@
             <div v-else>
               <p class="text-center">No Selling Units Available</p>
             </div>
-            <button class="update-selling-unit-button" @click="openEditPurchaseUnitModal(purchaseUnit)">
+            <div>
+              <button class="update-selling-unit-button" @click="openEditPurchaseUnitModal(purchaseUnit)">
                 Edit Purchase Unit
               </button>
+               <button class="delete-pur update-selling-unit-button" @click="openDeleteModal(purchaseUnit.id)">
+                Delete Purchase Unit
+                <!-- <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="1em"
+                  height="1em"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="white"
+                    fill-rule="evenodd"
+                    d="m6.774 6.4l.812 13.648a.8.8 0 0 0 .798.752h7.232a.8.8 0 0 0 .798-.752L17.226 6.4zm11.655 0l-.817 13.719A2 2 0 0 1 15.616 22H8.384a2 2 0 0 1-1.996-1.881L5.571 6.4H3.5v-.7a.5.5 0 0 1 .5-.5h16a.5.5 0 0 1 .5.5v.7zM14 3a.5.5 0 0 1 .5.5v.7h-5v-.7A.5.5 0 0 1 10 3zM9.5 9h1.2l.5 9H10zm3.8 0h1.2l-.5 9h-1.2z"
+                  />
+                </svg> -->
+              </button>
+            </div>
+            
           </div>
           
 
@@ -179,6 +185,8 @@
           :sellingUnitId="selectedSellingUnitId"
           @close="closeSellingUnitCapacityModal"
           @selling-capacity-added="fetchPurchaseUnits"
+          @selling-capacity-updated="fetchPurchaseUnits"
+          :sellingCapacity="selectedSellingCapacity"
         />
       </div>
     </section>
@@ -205,6 +213,7 @@ const selectedPurchaseUnitId = ref(null);
 const selectedSellingUnitId = ref(null);
 const selectedPurchaseUnit = ref(null); 
 const selectedSellingUnit = ref(null);
+const selectedSellingCapacity = ref(null);
 
 const showDeleteModal = ref(false);
 const itemToDelete = ref(null);
@@ -218,7 +227,7 @@ const isSearching = ref(false);
 const errorMessage = ref('');
 const modalTitle =('Purchase Unit')
 
-const emit = defineEmits(['edit-purchase-unit', 'edit-selling-unit'])
+const emit = defineEmits(['edit-purchase-unit', 'edit-selling-unit', 'edit-selling-capacity'])
 
 const fetchPurchaseUnits = async (page = 1) => {
   try {
@@ -347,6 +356,15 @@ const openEditSellingUnitModal = (sellingUnit) => {
   emit('edit-selling-unit', sellingUnit)
 }
 
+const openEditSellingCapacity = (sellingUnitId, sellingCapacity) => {
+  console.log('clickeddd')
+  selectedSellingUnitId.value = sellingUnitId
+  selectedSellingCapacity.value = sellingCapacity;
+  isSellingUnitCapacityModalOpen.value = true;
+
+  emit('edit-selling-capacity', sellingCapacity)
+}
+
 function openUploadModal() {
   showUploadModal.value = true
   console.log('Clickedd')
@@ -428,6 +446,10 @@ function forceRefresh() {
   align-items: center;
 }
 
+.delete-pur{
+ margin-left: 50px;
+}
+
 .button {
   padding: 10px 15px;
   border: none;
@@ -483,7 +505,7 @@ function forceRefresh() {
   font-size: 1em;
   border-radius: 0.3em;
   width: fit-content;
-  margin: 0 auto;
+  
 }
 
 .update-selling-unit-button:hover {
@@ -513,7 +535,12 @@ function forceRefresh() {
   cursor: pointer;
   border-radius: 5px;
 }
-
+.capacity_sell{
+  padding: 12px 0;
+}
+.capacity_btn{
+  margin-left: 2em;
+}
 .delete-button:hover {
   background-color: #e53935;
 }
