@@ -78,7 +78,7 @@
                     <span class="update-selling-unit-button capacity_btn" @click="openEditSellingCapacity(sellingUnit.id, capacity)">Edit Capacity</span>
                   </li>
                 </ul>
-                <button class="update-selling-unit-button" @click="openEditSellingUnitModal(sellingUnit)">
+                <button class="update-selling-unit-button" @click="openEditSellingUnitModal(purchaseUnit.id, sellingUnit)">
                 Edit Selling Unit
               </button>
               </div>
@@ -348,8 +348,9 @@ const openEditPurchaseUnitModal = (purchaseUnit) => {
   emit('edit-purchase-unit', purchaseUnit)
 }
 
-const openEditSellingUnitModal = (sellingUnit) => {
+const openEditSellingUnitModal = (purchaseUnitId, sellingUnit) => {
   console.log('clicked')
+  selectedPurchaseUnitId.value = purchaseUnitId
   selectedSellingUnit.value = sellingUnit;
   isSellingUnitModalOpen.value = true;
 

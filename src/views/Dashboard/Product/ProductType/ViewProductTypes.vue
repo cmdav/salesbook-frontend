@@ -162,7 +162,7 @@ const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg } = useS
 )
 
 onMounted(async () => {
-  await fetchDataForSelect('Product Category', '/product-categories', 'id', 'category_name')
+  await fetchDataForSelect('Product Category', '/product-categories', 'id', 'category_name');
   // await fetchDataForSelect('Purchase Unit', '/list-purchase-units', 'id', 'purchase_unit_name')
 })
 
@@ -174,6 +174,7 @@ async function fetchPurchaseUnits() {
     console.log('See you:', purchaseUnits.value)
 
     const purchaseUnitField = productTypeFormFields.value.find(f => f.databaseField === 'purchase_unit_id');
+    console.log(purchaseUnitField)
     if (purchaseUnitField) {
       purchaseUnitField.options = purchaseUnits.value.map(unit => ({
         value: unit.id,
@@ -190,11 +191,13 @@ const fetchSellingUnits = (purchaseUnitId) => {
   
   if (selectedPurchaseUnit && selectedPurchaseUnit.selling_units) {
     const sellingUnitField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_id');
+    
     if (sellingUnitField) {
       sellingUnitField.options = selectedPurchaseUnit.selling_units.map(sellingUnit => ({
         value: sellingUnit.id,
         label: sellingUnit.selling_unit_name
       }));
+      console.log('Selling Units:', sellingUnitField.options)
     }
   }
 };
@@ -210,18 +213,20 @@ const fetchSellingCapacities = (sellingUnitId) => {
 
   if (selectedSellingUnit && selectedSellingUnit.selling_unit_capacities) {
     const capacityField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_capacity_id');
+    console.log(capacityField)
     if (capacityField) {
       capacityField.options = selectedSellingUnit.selling_unit_capacities.map(capacity => ({
         value: capacity.id,
         label: capacity.selling_unit_capacity
       }));
+      console.log('Capacities:', capacityField.options);
     }
   }
 };
 
 async function fetchData(page = 1) {
   try {
-    console.log('abcd')
+    
     const response = await apiService.get(`/product-types?page=${page}`)
     console.log(response)
     data.value = response.data || []
@@ -278,8 +283,12 @@ function changePage(page) {
   }
 }
 
-const openEditModal = async(item) => {
+const openEditModal = async (item) => {
+
   itemToEdit.value = item;
+
+  // Open the edit modal
+  showEditModal.value = true;
 
   await fetchPurchaseUnits();
 
@@ -288,14 +297,11 @@ const openEditModal = async(item) => {
     purchaseUnitField.value = item.purchase_unit_id;
   }
 
-   fetchSellingUnits(item.purchase_unit_id);
+    fetchSellingUnits(item.purchase_unit_id);
    fetchSellingCapacities(item.selling_unit_id);
 
-  // Open the edit modal
-  showEditModal.value = true;
+  
 };
-
-
 
 function closeEditModal() {
   showEditModal.value = false
@@ -331,6 +337,7 @@ function forceRefresh() {
   justify-content: space-between;
   margin-bottom: 20px;
 }
+
 .action {
   width: 25%;
   display: flex;

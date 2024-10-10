@@ -69,7 +69,7 @@ import homeIcon from '@/components/icons/homeIcon.vue'
 // import StoreIcon from '@/components/icons/StoreIcon.vue'
 import ProductIcon from '@/components/icons/ProductIcon.vue'
 import ProductsIcon from '@/components/icons/productsIcon.vue'
-import recordsIcon from '@/components/icons/recordsIcon.vue'
+// import recordsIcon from '@/components/icons/recordsIcon.vue'
 import reportsIcon from '@/components/icons/reportsIcon.vue'
 import logoutIcon from '@/components/icons/logoutIcon.vue'
 import SuppliersIcon from '@/components/icons/SuppliersIcon.vue'
@@ -80,7 +80,7 @@ import MeasurementIcon from '@/components/icons/MeasurementIcon.vue'
 import FireIcon from '@/components/icons/FireIcon.vue'
 import SalesIcon from '@/components/icons/SalesIcon.vue'
 import PurchaseIcon from '@/components/icons/PurchaseIcon.vue'
-import SubscriptionIcon from '@/components/icons/subscriptionIcon.vue'
+// import SubscriptionIcon from '@/components/icons/subscriptionIcon.vue'
 // import SideBarIcon from '@/components/icons/SideBarIcon.vue'
 
 const route = useRoute()
@@ -112,6 +112,7 @@ const menuItems = computed(() => {
     { name: 'Customers', route: '/customers', icon: CustomerIcon, backendKey: 'customers' },
     {
       name: 'Suppliers',
+      route: '/supplier',
       icon: SuppliersIcon,
       backendKey: 'suppliers',
       children: [
