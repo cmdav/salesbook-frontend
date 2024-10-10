@@ -6,6 +6,7 @@ importScripts('https://cdn.jsdelivr.net/npm/idb@8/build/umd.js');
 importScripts('https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js');
 
 let encryptionKey = "RadsDashboard#$%245";
+let backendUrl;
 
 self.addEventListener('install', (event) => {
   console.log('Service worker installed', event);
@@ -16,11 +17,14 @@ self.addEventListener('activate', (event) => {
   console.log('Service worker activated');
   event.waitUntil(self.clients.claim()); // Take control of any open clients (pages)
 });
-self.addEventListener('online', (event) => {
-  console.log('Service worker detected online status. Syncing sales...', event);
-  //syncSalesToServer(); // Directly call the sync function when back online
-});
 
+
+self.addEventListener('message', (event) => {
+  
+  if (event.data && event.data.type === 'SET_ENV') {
+    backendUrl=event.data.baseUrl;
+  }
+});
 // Sync event listener for offline sales
 self.addEventListener('sync', function(event) {
   if (event.tag === 'sync-sales') {
@@ -109,10 +113,11 @@ if (allSales.length > 0) {
     const saleKey = allKeys[i]; // Corresponding key for the sale
 
     try {
-      //let url="http://127.0.0.1:8000/api/v1/sales"
-      //let url ="https://staging-backend.rdas.com.ng/api/v1/sales"
-      let url ="https://backend-isalesbook.isalesbook.com/api/v1"
-      const response = await fetch(url, {
+      //let  backendUrl="http://127.0.0.1:8000/api/v1/sales"
+      //let backendUrl ="https://staging-backend.rdas.com.ng/api/v1/sales"
+      //let backendUrl ="https://backend-isalesbook.isalesbook.com/api/v1"
+      console.log('service-worker', backendUrl)
+      const response = await fetch(backendUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

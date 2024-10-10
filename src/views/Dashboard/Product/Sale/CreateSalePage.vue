@@ -25,9 +25,9 @@
         <!-- Customer selection if sending receipt -->
         <div v-if="printReceipt === 'yes'" class="form-group flex items-center">
           <div class="flex-grow">
-            <select v-model="formState.customer_id" class="select-input">
-              <option v-for="name in allCustomersNames" :key="name.id" :value="name.id">
-                {{ name.customer_detail }}
+            <select v-model="formState.customer_id" class="select-input"  @focus="loadCustomers">
+              <option v-for="name in allCustomers" :key="name.id" :value="name.id">
+                {{ name.customer_detail }}{{ name.first_name}} {{ name.last_name}}
               </option>
             </select>
           </div>
@@ -198,7 +198,7 @@ import { storeToRefs } from 'pinia';
 import { generateReceiptPDF } from './sentToPrinter'; // Function to generate PDF for the receipt
 import { catchAxiosSuccess } from '@/services/Response'; // Services to handle success and error messages for API responses
 import { isOnline } from '@/isOnline'; 
-import { getProductById, addSale, getAllProducts, initializeSalesDB, getAllPaymentMethods, addPaymentMethods} from '@/services/indexedDbService'
+import { getAllCustomers, getProductById, addSale, getAllProducts, initializeSalesDB, getAllPaymentMethods, addPaymentMethods} from '@/services/indexedDbService'
 
 const router = useRouter();
 const customersStore = useCustomerstore(); // Access the Pinia customer store
@@ -217,7 +217,7 @@ const { allCustomersNames } = storeToRefs(customersStore); // Store all customer
 // Control variables for modals and form submission
 const showModal = ref(false);
 const isSubmitting = ref(false);
-
+const allCustomers = ref([]);
 
 
 // Function to open the 'Add Customer' modal
@@ -441,10 +441,25 @@ async function checkOnlineStatus() {
   }
 }
 
+const loadCustomers = async () => {
+  try {
+    const online = await isOnline();  // Check if the app is online
+    if (online) {
+      await customersStore.handleAllCustomersName();  // Fetch from API using Pinia
+      allCustomers.value = allCustomersNames.value;   // Assign to allCustomers if online
+    } else {
+      allCustomers.value = await getAllCustomers();  // Fetch from IndexedDB if offline
+    }
+  } catch (error) {
+    console.error('Error loading customers:', error);
+  }
+};
+
 onMounted(async () => {
   try {
     // Open IndexedDB
-    await customersStore.handleAllCustomersName(); 
+    //await customersStore.handleAllCustomersName(); 
+    await loadCustomers(); 
     const db = await initializeSalesDB();
 
     // Check if the app is online
@@ -529,7 +544,7 @@ const addSales = async () => {
     } else {
       // If offline, store sales data in IndexedDB
       alert('App is offline. Storing sales data.');
-
+      payload.is_offline = 1;
       // Open IndexedDB
       await addSale(payload);
       //router.push('/sale');

@@ -110,7 +110,7 @@ import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue';
 import { generateReceiptPDF } from './receipts';
 import { isOnline, listenForNetworkStatusChanges } from '@/isOnline'; 
 import { getAllProducts, getAllSales } from '@/services/indexedDbService'
-import { syncSalesToServer } from '/customSync'
+import { syncSalesToServer,  syncCustomersToServer } from '/customSync'
 
 const store = useStore();
 const { userProfileDetails } = storeToRefs(store);
@@ -152,6 +152,7 @@ onMounted( async() => {
     if (isOnline) {
       console.log('Network is back online. Syncing sales...');
       syncSalesToServer(); 
+      syncCustomersToServer(); 
     }
   });
 

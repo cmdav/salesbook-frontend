@@ -2,7 +2,8 @@
 
 let idleTimeout;
 let isIdle = false; // Flag to track if the user is in idle mode
-let second = 20000
+//let second = 20000
+let second = 1000
 
 export async function isOnline() {
   try {

@@ -16,12 +16,12 @@ if (import.meta.env.MODE === 'production' || import.meta.env.VITE_SW_MODE === 'd
     },
     registered(registration) {
       console.log('Service worker has been registered.'+ "=>"+ registration)
-      // navigator.serviceWorker.ready.then(() => {
-      //   navigator.serviceWorker.controller.postMessage({
-      //     type: 'SET_ENCRYPT_KEY',
-      //     VITE_ENCRYPT_KEY: import.meta.env.VITE_ENCRYPT_KEY // Pass the encryption key
-      //   });
-      // });
+      navigator.serviceWorker.ready.then(() => {
+        navigator.serviceWorker.controller.postMessage({
+          type: 'SET_ENV',
+          baseUrl: import.meta.env.VITE_BACKEND_BASEURL,
+        });
+      });
     },
     cached() {
       console.log('Content has been cached for offline use.')
