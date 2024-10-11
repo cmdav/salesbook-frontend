@@ -186,8 +186,8 @@ async function fetchPurchaseUnits() {
   }
 }
 
-const fetchSellingUnits = (purchaseUnitId) => {
-  const selectedPurchaseUnit = purchaseUnits.value.find(unit => unit.id === purchaseUnitId);
+const fetchSellingUnits = async (purchaseUnitId) => {
+  const selectedPurchaseUnit = await purchaseUnits.value.find(unit => unit.id === purchaseUnitId);
   
   if (selectedPurchaseUnit && selectedPurchaseUnit.selling_units) {
     const sellingUnitField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_id');
@@ -202,10 +202,10 @@ const fetchSellingUnits = (purchaseUnitId) => {
   }
 };
 
-const fetchSellingCapacities = (sellingUnitId) => {
+const fetchSellingCapacities = async (sellingUnitId) => {
   let selectedSellingUnit;
   
-  purchaseUnits.value.forEach(purchaseUnit => {
+   purchaseUnits.value.forEach(purchaseUnit => {
     if (purchaseUnit.selling_units) {
       selectedSellingUnit = purchaseUnit.selling_units.find(unit => unit.id === sellingUnitId);
     }
@@ -219,6 +219,7 @@ const fetchSellingCapacities = (sellingUnitId) => {
         value: capacity.id,
         label: capacity.selling_unit_capacity
       }));
+      capacityField.value = itemToEdit.value.selling_unit_capacity_id;
       console.log('Capacities:', capacityField.options);
     }
   }
@@ -297,8 +298,8 @@ const openEditModal = async (item) => {
     purchaseUnitField.value = item.purchase_unit_id;
   }
 
-    fetchSellingUnits(item.purchase_unit_id);
-   fetchSellingCapacities(item.selling_unit_id);
+  await fetchSellingUnits(item.purchase_unit_id);
+  await fetchSellingCapacities(item.selling_unit_id);
 
   
 };
