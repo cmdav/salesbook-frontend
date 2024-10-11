@@ -139,7 +139,7 @@ export const getProducts = async (page) => {
   const token = await getToken()
 
   try {
-    let res = await axios.get(`products?page=${page}`, {
+    let res = await axios.get(`product-types?page=${page}`, {
       headers: {
         Authorization: 'Bearer ' + token
       }
