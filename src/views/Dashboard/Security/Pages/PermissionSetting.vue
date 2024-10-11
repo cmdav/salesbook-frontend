@@ -60,7 +60,9 @@ const emit = defineEmits(["close"]);
 onMounted(async () => {
   try {
     await securityStore.handleGetAllRole();
-    await securityStore.handleGetPages();
+    const response = await securityStore.handleGetPages();
+
+    console.log(response);
     formData.permissions = allPages.value.map(page => ({
       page_id: page.id,
       page_name: page.page_name, 

@@ -72,9 +72,13 @@ watch(() => props.sellingUnit, (newVal) => {
 
 const submitForm = async () => {
   isLoading.value = true;
+  console.log('purchaseUnit:', props.purchaseUnitId)
+
   try {
 
      if (isEditing.value) {
+  console.log('purchaseUnit:', props.purchaseUnitId)
+
       const response = await apiService.update(`/selling-units/${props.sellingUnit.id}`, {
         purchase_unit_id: props.purchaseUnitId,
         selling_unit_name: sellingUnit.value

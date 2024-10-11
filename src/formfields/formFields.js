@@ -303,7 +303,7 @@ export const productTypeFormFields = ref([
     label: 'Barcode',
     type: 'text',
     value: '',
-    required: true,
+    required: false,
     placeholder: 'Enter Barcode',
     databaseField: 'barcode'
   },
@@ -360,8 +360,7 @@ export const productTypeFormFields = ref([
     placeholder: 'Select Selling Capacity Unit ',
     options: [],
     databaseField: 'selling_unit_capacity_id'
-  },
- 
+  }
 ])
 
 export const purchaseFormFields = ref([

@@ -54,27 +54,7 @@
               {{ item.name }}
             </span>
           </router-link>
-          <!-- <router-link
-            :to="item.route"
-            class="p-[10px] flex justify-start hover:bg-brand/[50%] hover:text-white rounded-[5px]"
-            :class="{
-              'text-white bg-brand': route.name === item.route.substring(1),
-              'text-brand': route.name !== item.route.substring(1)
-            }"
-          >
-            <div
-              :class="{
-                'text-white': route.name === item.route.substring(1),
-                'text-brand': route.name !== item.route.substring(1)
-              }"
-              class="mr-[20px] justify-center flex items-center rounded-[5px] h-[40px] w-[40px]"
-            >
-              <component :is="item.icon" />
-            </div>
-            <span class="place-self-center text-[16px] font-Satoshi500 leading-[20.23px]">
-              {{ item.name }}
-            </span>
-          </router-link> -->
+        
         </template>
       </nav>
     </div>
@@ -89,7 +69,7 @@ import homeIcon from '@/components/icons/homeIcon.vue'
 // import StoreIcon from '@/components/icons/StoreIcon.vue'
 import ProductIcon from '@/components/icons/ProductIcon.vue'
 import ProductsIcon from '@/components/icons/productsIcon.vue'
-import recordsIcon from '@/components/icons/recordsIcon.vue'
+// import recordsIcon from '@/components/icons/recordsIcon.vue'
 import reportsIcon from '@/components/icons/reportsIcon.vue'
 import logoutIcon from '@/components/icons/logoutIcon.vue'
 import SuppliersIcon from '@/components/icons/SuppliersIcon.vue'
@@ -100,7 +80,7 @@ import MeasurementIcon from '@/components/icons/MeasurementIcon.vue'
 import FireIcon from '@/components/icons/FireIcon.vue'
 import SalesIcon from '@/components/icons/SalesIcon.vue'
 import PurchaseIcon from '@/components/icons/PurchaseIcon.vue'
-import SubscriptionIcon from '@/components/icons/subscriptionIcon.vue'
+// import SubscriptionIcon from '@/components/icons/subscriptionIcon.vue'
 // import SideBarIcon from '@/components/icons/SideBarIcon.vue'
 
 const route = useRoute()
@@ -109,130 +89,70 @@ const permissions = computed(() => {
   return store.getUser.user.permission.permissions
 })
 
-
-
-//console.log(permissions.value)
-
+console.log(permissions.value)
 const menuItems = computed(() => {
   const allItems = [
     { name: 'Dashboard', route: '/dashboard', icon: homeIcon, backendKey: 'dashboards' },
-    // { name: "Organisation", route: "/organisation", icon: StoreIcon , backendKey:"organizations"},
-    // {
-    //   name: 'Welcome',
-    //   route: '/welcome',
-    //   icon: MeasurementIcon,
-    //   backendKey: 'welcomescreen'
-    // },
-    // {
-    //   name: 'Measurement',
-    //   route: '/measurement',
-    //   icon: MeasurementIcon,
-    //   backendKey: 'measurements'
-    // },
     { name: 'Currency', route: '/currency', icon: FireIcon, backendKey: 'currencies' },
     {
       name: 'Products',
+      route: '/product-type',
       icon: ProductsIcon,
       backendKey: 'products',
       children: [
-        {
-      name: 'Measurement',
-      route: '/measurement',
-      icon: MeasurementIcon,
-      backendKey: 'measurements'
-    },
-        {
-          name: 'Product Category',
-          route: '/product-category',
-          icon: CategoryIcon,
-          backendKey: 'product-categories'
-        },
-        {
-          name: 'Product Sub Category',
-          route: '/product-sub-category',
-          icon: CategoryIcon,
-          backendKey: 'product-sub-categories'
-        },
-        {
-          name: 'Products',
-          route: '/product-type',
-          icon: ProductsIcon,
-          backendKey: 'products'
-        }
+        { name: 'Measurement', route: '/measurement', icon: MeasurementIcon, backendKey: 'measurements' },
+        { name: 'Product Category', route: '/product-category', icon: CategoryIcon, },
+        { name: 'Product Sub Category', route: '/product-sub-category', icon: CategoryIcon, backendKey: 'product-sub-categories' },
+        { name: 'Products', route: '/product-type', icon: ProductsIcon, backendKey: 'products' }
       ]
     },
-    // {
-    //   name: 'Product Category',
-    //   route: '/product-category',
-    //   icon: CategoryIcon,
-    //   backendKey: 'product-categories'
-    // },
-    // {
-    //   name: 'Product Sub Category',
-    //   route: '/product-sub-category',
-    //   icon: CategoryIcon,
-    //   backendKey: 'product-sub-categories'
-    // },
-    // { name: 'Products', route: '/products', icon: ProductsIcon, backendKey: 'products' },
-    // {
-    //   name: 'Products',
-    //   route: '/product-type',
-    //   icon: ProductsIcon,
-    //   backendKey: 'products'
-    // },
     { name: 'Purchase', route: '/purchase', icon: PurchaseIcon, backendKey: 'purchases' },
     { name: 'Sale', route: '/sale', icon: SalesIcon, backendKey: 'sales' },
     { name: 'Store', route: '/store', icon: ProductIcon, backendKey: 'stores' },
     { name: 'Customers', route: '/customers', icon: CustomerIcon, backendKey: 'customers' },
-    { name: 'Suppliers',
-      icon: SuppliersIcon, 
+    {
+      name: 'Suppliers',
+      route: '/supplier',
+      icon: SuppliersIcon,
       backendKey: 'suppliers',
       children: [
-        {
-        name: 'Suppliers',
-        route: '/supplier',
-        icon: SuppliersIcon, 
-      backendKey: 'suppliers',
-        },
-        {
-      name: 'Supplier Product',
-      route: '/supplier-product',
-      icon: ProductIcon,
-      backendKey: 'supplier-products'
+        { name: 'Suppliers', route: '/supplier', icon: SuppliersIcon, backendKey: 'suppliers' },
+        { name: 'Supplier Product', route: '/supplier-product', icon: ProductIcon, backendKey: 'supplier-products' }
+      ]
     },
-      ] 
-    },
-    
-    // { name: 'Records', route: '/', icon: recordsIcon, backendKey: 'records' },
     { name: 'Reports', route: '/report', icon: reportsIcon, backendKey: 'reports' },
-    {
-      name: 'Subscription',
-      route: '/c-subscriptions',
-      icon: SubscriptionIcon,
-      backendKey: 'c-subscriptions'
-    },
-    {
-      name: 'Subscribers',
-      route: '/subscriptions',
-      icon: SubscriptionIcon,
-      backendKey: 'subscriptions'
-    },
     { name: 'Settings', route: '/settings', icon: SettingsIcon, backendKey: 'settings' },
     { name: 'Log Out', route: '/logout', icon: logoutIcon, backendKey: 'logout' }
-  ]
+  ];
 
   return allItems.filter((item) => {
-    if (item.backendKey === null) {
-      return true
-    } else {
-      const perm = permissions.value.find((p) => p.page_name == item.backendKey)
-      return perm && perm.read == 1
-    }
-  })
-})
+    // If item does not have a backendKey, always include it
+    if (!item.backendKey) return true;
 
-//const perm = permissions.value.find(p => console.log(p.page_name));
-//console.log(menuItems.value)
+    // Check permission for parent
+    const parentPerm = permissions.value.find((p) => p.page_name.trim().toLowerCase() === item.backendKey.trim().toLowerCase());
+
+    // If parent has read permission, include the parent
+    if (parentPerm && parentPerm.read === 1) return true;
+
+    // Check permission for children
+    if (item.children) {
+      // Filter children based on permission
+      item.children = item.children.filter((child) => {
+        const childPerm = permissions.value.find((p) => p.page_name.trim().toLowerCase() === child.backendKey?.trim().toLowerCase());
+        return childPerm && childPerm.read === 1; // Only return children with read permission
+      });
+      return item.children.length > 0; // Include the parent if any child has permission
+    }
+
+    return false; // Exclude parent if no permission found
+  });
+
+
+});
+
+
+
 </script>
 
 <style lang="scss" scoped>
@@ -267,6 +187,11 @@ header {
     margin-bottom: 20px;
   }
 
+  router-link {
+  cursor: pointer;
+  text-decoration: none;
+}
+
   nav {
     width: 90%;
     // border-top: 1px solid $color-grey-100;
@@ -284,6 +209,8 @@ header {
         font-weight: 700;
       }
     }
+
+    
 
     .link {
       display: flex;
