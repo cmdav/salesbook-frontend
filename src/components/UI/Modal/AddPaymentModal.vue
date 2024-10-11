@@ -33,6 +33,7 @@
                   {{ type.payment_name }}
                 </option>
               </select>
+              <p v-if="errors.payment_method" class="text-red-600 text-sm">{{ errors.payment_method }}</p>
             </div>
             <button type="button" class="button btn-brand ml-3" @click=openPaymentTypeModal >
               Add Payment Type
@@ -45,9 +46,10 @@
               type="text"
               v-model="form.account_name"
               placeholder="Enter Account Name"
-              required
+              
               class="mt-1 block w-[90%] px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
+            <p v-if="errors.account_name" class="text-red-600 text-sm">{{ errors.account_name }}</p>
           </div>
           <div class="mb-4">
             <label  class="block text-sm font-medium text-gray-700 pb-1">Account Number</label>
@@ -57,9 +59,10 @@
               placeholder="Enter Account Number"
               minlength="10"
               maxlength="10"
-              required
+              
               class="mt-1 block w-[90%] px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
+            <p v-if="errors.account_number" class="text-red-600 text-sm">{{ errors.account_number }}</p>
           </div>
           <div class="mb-4">
             <label  class="block text-sm font-medium text-gray-700 pb-1">Payment Method</label>
@@ -67,9 +70,10 @@
               type="text"
               v-model="form.paymentIdentifier"
               placeholder="Enter Payment Method"
-              required
+              
               class="mt-1 block w-[90%] px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
+            <p v-if="errors.paymentIdentifier" class="text-red-600 text-sm">{{ errors.paymentIdentifier }}</p>
           </div>
 
 
@@ -94,6 +98,8 @@ import { catchAxiosSuccess, catchAxiosError } from '@/services/Response'
 const isLoading = ref(false)
 const showPaymentType = ref(false)
 const paymentType = ref([]);
+
+
 
 const form = reactive({
     payment_method: '',
@@ -137,8 +143,56 @@ const addPaymentType = (newType) => {
   paymentType.value.push(newType);
 };
 
+const errors = reactive({
+  payment_method: '',
+  account_name: '',
+  account_number: '',
+  paymentIdentifier: ''
+});
+
+const validateForm = () => {
+  let isValid = true;
+
+  if (!form.payment_method) {
+    errors.payment_method = 'Please select a payment type';
+    isValid = false;
+  } else {
+    errors.payment_method = '';
+  }
+
+  if (!form.account_name) {
+    errors.account_name = 'Please enter the account name';
+    isValid = false;
+  } else {
+    errors.account_name = '';
+  }
+
+  if (!form.account_number) {
+    errors.account_number = 'Please enter the account number';
+    isValid = false;
+  } else if (form.account_number.length !== 10) {
+    errors.account_number = 'Account number must be 10 digits';
+    isValid = false;
+  } else {
+    errors.account_number = '';
+  }
+
+  if (!form.paymentIdentifier) {
+    errors.paymentIdentifier = 'Please enter the payment method';
+    isValid = false;
+  } else {
+    errors.paymentIdentifier = '';
+  }
+
+  return isValid;
+};
+
 
 const submitForm = async () => {
+
+  if (!validateForm()) {
+    return;  // Stop submission if form is invalid
+  }
   isLoading.value = true;
 
   const payload = {
