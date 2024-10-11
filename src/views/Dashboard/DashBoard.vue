@@ -254,6 +254,7 @@ import { useDashboardStore } from '@/stores/dashboardStatus'
 const dashboardStore = useDashboardStore()
 const productsStore = useProductStore()
 const { products } = storeToRefs(productsStore)
+console.log(products);
 const { dashboardSataus, dashboardAutoSataus } = storeToRefs(dashboardStore)
 console.log(dashboardAutoSataus)
 import { storeToRefs } from 'pinia'

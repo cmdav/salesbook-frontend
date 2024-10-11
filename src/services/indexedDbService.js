@@ -10,6 +10,7 @@ export async function initializeSalesDB() {
         db.createObjectStore('sales', { autoIncrement: true });
         db.createObjectStore('payment-methods', { keyPath: 'id' });
         db.createObjectStore('customers', {  autoIncrement: true});
+        db.createObjectStore('purchases', {  autoIncrement: true});
       }
     }
   });
@@ -51,15 +52,6 @@ export async function addSale(saleData) {
   await tx.done;
 }
 
-// Function to add a customer to IndexedDB
-export async function addCustomer(customerData) {
-  const db = await initializeSalesDB();
-  const tx = db.transaction('customers', 'readwrite');
-  const store = tx.objectStore('customers');
-  await store.put(customerData);
-  await tx.done;
-}
-
 // Function to get all sales from IndexedDB
 export async function getAllSales() {
   const db = await initializeSalesDB();
@@ -68,7 +60,15 @@ export async function getAllSales() {
   return store.getAll();
 }
 
-
+// Function to add a customer to IndexedDB
+export async function addCustomer(customerData) {
+  const db = await initializeSalesDB();
+  const tx = db.transaction('customers', 'readwrite');
+  const store = tx.objectStore('customers');
+  await store.put(customerData);
+  await tx.done;
+}
+// Function to get all customers from IndexedDB
 export async function getAllCustomers() {
   const db = await initializeSalesDB();
   const tx = db.transaction('customers', 'readonly');
@@ -84,6 +84,7 @@ export async function getProductById(productId) {
   const store = tx.objectStore('products');
   return store.get(productId);
 }
+//Function to add paymethod to store
 export async function addPaymentMethods(paymentMethods) {
   const db = await initializeSalesDB();
   const tx = db.transaction('payment-methods', 'readwrite');
@@ -99,5 +100,21 @@ export async function getAllPaymentMethods() {
   const db = await initializeSalesDB();
   const tx = db.transaction('payment-methods', 'readonly');
   const store = tx.objectStore('payment-methods');
+  return store.getAll();
+}
+// Function to add purchase to the store
+export async function addPurchases(purchaseData) {
+  const db = await initializeSalesDB();
+  const tx = db.transaction('purchases', 'readwrite');
+  const store = tx.objectStore('purchases');
+  await store.put(purchaseData);
+  await tx.done;
+}
+
+// Function to get all payment methods from IndexedDB
+export async function getPurchases() {
+  const db = await initializeSalesDB();
+  const tx = db.transaction('purchases', 'readonly');
+  const store = tx.objectStore('purchases');
   return store.getAll();
 }
