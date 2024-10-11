@@ -186,26 +186,66 @@ async function fetchPurchaseUnits() {
   }
 }
 
-const fetchSellingUnits = async (purchaseUnitId) => {
-  const selectedPurchaseUnit = await purchaseUnits.value.find(unit => unit.id === purchaseUnitId);
+// const fetchSellingUnits = async (purchaseUnitId) => {
+//   const selectedPurchaseUnit = await purchaseUnits.value.find(unit => unit.id === purchaseUnitId);
   
+//   if (selectedPurchaseUnit && selectedPurchaseUnit.selling_units) {
+//     const sellingUnitField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_id');
+    
+//     if (sellingUnitField) {
+//       sellingUnitField.options = selectedPurchaseUnit.selling_units.map(sellingUnit => ({
+//         value: sellingUnit.id,
+//         label: sellingUnit.selling_unit_name
+//       }));
+//       console.log('Selling Units:', sellingUnitField.options)
+//     }
+//   }
+// };
+
+// const fetchSellingCapacities = async (sellingUnitId) => {
+//   let selectedSellingUnit;
+  
+//    purchaseUnits.value.forEach(purchaseUnit => {
+//     if (purchaseUnit.selling_units) {
+//       selectedSellingUnit = purchaseUnit.selling_units.find(unit => unit.id === sellingUnitId);
+//     }
+//   });
+
+//   if (selectedSellingUnit && selectedSellingUnit.selling_unit_capacities) {
+//     const capacityField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_capacity_id');
+//     console.log(capacityField)
+//     if (capacityField) {
+//       capacityField.options = selectedSellingUnit.selling_unit_capacities.map(capacity => ({
+//         value: capacity.id,
+//         label: capacity.selling_unit_capacity
+//       }));
+//       capacityField.value = itemToEdit.value.selling_unit_capacity_id;
+//       console.log('Capacities:', capacityField.options);
+//     }
+//   }
+// };
+
+const fetchSellingUnits = async (purchaseUnitId) => {
+  if (!purchaseUnitId) return;  // Guard clause to ensure valid purchase unit ID
+
+  const selectedPurchaseUnit = purchaseUnits.value.find(unit => unit.id === purchaseUnitId);
+
   if (selectedPurchaseUnit && selectedPurchaseUnit.selling_units) {
     const sellingUnitField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_id');
-    
     if (sellingUnitField) {
       sellingUnitField.options = selectedPurchaseUnit.selling_units.map(sellingUnit => ({
         value: sellingUnit.id,
         label: sellingUnit.selling_unit_name
       }));
-      console.log('Selling Units:', sellingUnitField.options)
     }
   }
 };
 
 const fetchSellingCapacities = async (sellingUnitId) => {
+  if (!sellingUnitId) return;  // Guard clause to ensure valid selling unit ID
+
   let selectedSellingUnit;
-  
-   purchaseUnits.value.forEach(purchaseUnit => {
+  purchaseUnits.value.forEach(purchaseUnit => {
     if (purchaseUnit.selling_units) {
       selectedSellingUnit = purchaseUnit.selling_units.find(unit => unit.id === sellingUnitId);
     }
@@ -213,14 +253,12 @@ const fetchSellingCapacities = async (sellingUnitId) => {
 
   if (selectedSellingUnit && selectedSellingUnit.selling_unit_capacities) {
     const capacityField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_capacity_id');
-    console.log(capacityField)
     if (capacityField) {
       capacityField.options = selectedSellingUnit.selling_unit_capacities.map(capacity => ({
         value: capacity.id,
         label: capacity.selling_unit_capacity
       }));
-      capacityField.value = itemToEdit.value.selling_unit_capacity_id;
-      console.log('Capacities:', capacityField.options);
+      capacityField.value = itemToEdit.value ? itemToEdit.value.selling_unit_capacity_id : null;
     }
   }
 };
