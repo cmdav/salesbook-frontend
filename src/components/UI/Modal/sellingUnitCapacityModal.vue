@@ -4,14 +4,13 @@
   >
     <div class="modal__body relative w-full md:max-w-[600px] bg-white m-0 md:px-5 py-4 px-4">
       <header
-        class="flex flex-row items-center justify-between border-b-[#000000] mb-[0.6em] border-b-[1px]"
+        class="flex items-center justify-between border-b-[#000000] mb-[0.6em] border-b-[1px]"
       >
 
+        <h4 class="text-[18px] font-EBGaramond500 text-[#244034]">
+          {{ isEditing ? 'Update how many selling unit equal a purchase unit' : 'How many selling unit equal a purchase unit' }}</h4>
 
-        <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">
-          {{ isEditing ? 'Edit how many selling unit equal a purchase unit' : 'Add how many selling unit equal a purchase unit' }}</h4>
-
-        <button class="close-button" @click="$emit('close')">&#10005;</button>
+        <p class="close-button" @click="$emit('close')">&#10005;</p>
       </header>
 
        <div v-if="isLoading" class="loader-overlay">
@@ -136,9 +135,6 @@ const submitForm = async () => {
 }
 
 .close-button {
-  position: absolute;
-  right: 20px;
-  top: 20px;
   background: none;
   border: none;
   font-size: 25px;

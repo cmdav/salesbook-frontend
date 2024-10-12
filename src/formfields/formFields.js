@@ -248,10 +248,6 @@ export const formFields = ref([
       { value: '0', label: 'No' }
     ]
   },
-  // // { label: 'Purchasing price', type: 'text', value: '', required: false, placeholder: 'Enter purchasing price', databaseField: "purchasing_price" },
-  // // { label: 'Selling Price', type: 'text', value: '', required: false, placeholder: 'Enter selling price', databaseField: "selling_price" },
-  // { label: 'Actual Price', type: 'text', value: '', required: false, placeholder: 'Enter actual price', databaseField: "actual_price" },
-  
   {
     label: 'Category',
     type: 'select',
