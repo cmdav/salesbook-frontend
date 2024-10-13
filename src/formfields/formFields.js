@@ -353,7 +353,7 @@ export const productTypeFormFields = ref([
     type: 'select',
     value: '',
     required: true,
-    placeholder: 'Select Selling Capacity Unit ',
+    placeholder: 'Select Selling Capacity ',
     options: [],
     databaseField: 'selling_unit_capacity_id'
   }
