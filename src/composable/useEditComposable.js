@@ -46,21 +46,24 @@ export function useEditComposable(formFields, url, itemId, emit) {
       loading.value = true
 
       const formData = new FormData()
+      console.log(formData)
 
       formFields.value.forEach((field) => {
-        //console.log(field.databaseField)
-        //console.log(field.value)
+        // console.log(field.databaseField)
+        // console.log(field.value)
         formData.append(field.databaseField, field.value)
       })
 
+      console.log(formData)
+
       const Url = constructUrl(url, itemId)
 
-      //console.log(Url)
+      console.log(Url)
 
       formData.append('_method', 'PUT')
       const response = await apiService.post(Url, formData)
 
-      // console.log(response);
+      console.log(response);
 
       // Clear form fields
       formFields.value.forEach((field) => {
@@ -80,7 +83,7 @@ export function useEditComposable(formFields, url, itemId, emit) {
       //  isError.value = true;
       if (error.response && error.response.data) {
         // //   //list all message
-        console.log(error.response.data.errors)
+        console.log(error.response.data)
         // //   allError.value = error.response.data.errors
         // //   //display msg error
         console.log(error.response.data.message)
