@@ -547,7 +547,7 @@ const addSales = async () => {
       payload.is_offline = 1;
       // Open IndexedDB
       await addSale(payload);
-      //
+      //router.push('/sale');
 
       // Register a sync event with the service worker
       if ('serviceWorker' in navigator && 'SyncManager' in window) {
@@ -560,7 +560,6 @@ const addSales = async () => {
           });
         });
       }
-      router.push('/sale');
     }
   } catch (error) {
     console.error('Error while adding sales:', error);
