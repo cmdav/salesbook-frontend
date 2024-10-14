@@ -126,26 +126,21 @@ const menuItems = computed(() => {
   ];
 
   return allItems.filter((item) => {
-    // If item does not have a backendKey, always include it
     if (!item.backendKey) return true;
 
-    // Check permission for parent
     const parentPerm = permissions.value.find((p) => p.page_name.trim().toLowerCase() === item.backendKey.trim().toLowerCase());
 
-    // If parent has read permission, include the parent
     if (parentPerm && parentPerm.read === 1) return true;
 
-    // Check permission for children
     if (item.children) {
-      // Filter children based on permission
       item.children = item.children.filter((child) => {
         const childPerm = permissions.value.find((p) => p.page_name.trim().toLowerCase() === child.backendKey?.trim().toLowerCase());
-        return childPerm && childPerm.read === 1; // Only return children with read permission
+        return childPerm && childPerm.read === 1; 
       });
-      return item.children.length > 0; // Include the parent if any child has permission
+      return item.children.length > 0; 
     }
 
-    return false; // Exclude parent if no permission found
+    return false; 
   });
 
 

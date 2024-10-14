@@ -27,7 +27,8 @@
           </div>
           <div class="flex justify-between mt-6 ">
             <div>
-              <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" />
+              <BranchDropDown v-if="roles" :branches="branches" 
+               @change="(selectedBranchId) => handleBranchChange(userType, selectedBranchId)" />
             </div>
             <div class="flex flex-row gap-2 items-center">
               <AuthInput
@@ -74,14 +75,20 @@
                         {{(parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1}}
                       </td>
                       <td v-if="userType === 'individual'" class="text-left p-4 pr-0 pl-6 border-x capitalize">
-                        <button @click="redirectToSingleCustomerPage(i.id)" class="">
+                        <button class="">
                           {{ i.first_name }} {{ i.last_name }}
                         </button>
+                        <!-- <button @click="redirectToSingleCustomerPage(i.id)" class="">
+                          {{ i.first_name }} {{ i.last_name }}
+                        </button> -->
                       </td>
                       <td v-if="userType === 'company'" class="text-left p-4 pr-0 pl-6 border-x capitalize">
-                        <button @click="redirectToSingleCustomerPage(i.id)" class="">
+                        <button class="">
                           {{ i.company_name }}
                         </button>
+                        <!-- <button @click="redirectToSingleCustomerPage(i.id)" class="">
+                          {{ i.company_name }}
+                        </button> -->
                       </td>
                       <td v-if="userType === 'company'" class="text-left p-4 pr-0 pl-6 border-x">{{ i.contact_person }}</td>
                       <td class="text-left p-4 pr-0 pl-6 border-x">{{ i.email }}</td>
@@ -111,14 +118,15 @@ import DashboardLayout from '@/components/Layouts/dashboardLayout.vue';
 import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue';
 import AuthInput from '@/components/UI/Input/AuthInput.vue';
 import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
-import { useRouter } from 'vue-router';
+// import { useRouter } from 'vue-router';
 import apiService from '@/services/apiService';
 import { useStore } from "@/stores/user";
+// import { UnderlineOutlined } from '@ant-design/icons';
 
 const store = useStore();
 const roles = computed(() => store.getUser.user.permission.role_name === "Admin");
 
-const router = useRouter();
+// const router = useRouter();
 const isSearching = ref(false);
 
 const currentPage = ref(1);
@@ -132,6 +140,7 @@ const toggleCompanyTable = ref(false);
 const userType = ref('individual');
 const branches = ref([]);
 const errorMessage = ref('');
+const selectedBranch = ref(null);
 
 
 onMounted(async () => {
@@ -146,6 +155,7 @@ onMounted(async () => {
 });
 
 function handleBranchChange(type, selectedBranchId) {
+  selectedBranch.value = selectedBranchId;
   if (selectedBranchId) {
     fetchBranch(type, selectedBranchId);
   } else {
@@ -154,9 +164,10 @@ function handleBranchChange(type, selectedBranchId) {
 }
 
 
-async function fetchBranch( type = 'individual', branchId = 1) {
+async function fetchBranch( type = 'individual', branchId = selectedBranch.value) {
   try {
     const response = await apiService.get(`customers?type=${type}&branch_id=${branchId}`);
+    console.log(response)
     if (type === 'individual') {
       if (response.data && response.data.length) {
       data.value = response.data.map((i) => ({
@@ -207,9 +218,9 @@ let sortInput = reactive({
 
 const data = ref([]);
 
-const redirectToSingleCustomerPage = (id) => {
-  router.push({ name: 'view-customers', params: { id } });
-};
+// const redirectToSingleCustomerPage = (id) => {
+//   router.push({ name: 'view-customers', params: { id } });
+// };
 
 function handleToggleTableButton() {
   toggleCompanyTable.value = false;
@@ -250,7 +261,8 @@ watch(() => sortInput.search, async (newSearch) => {
 
 async function fetchData(page = 1, type = 'individual', search = '') {
   try {
-    const response = await apiService.get(`customers?type=${type}&page=${page}&search=${search}`);
+    const url = `customers?type=${type}&page=${page}&search=${search}${selectedBranch.value ? `&branch_id=${selectedBranch.value}` : ''}`;
+    const response = await apiService.get(url);
     console.log(response);
     if (type === 'individual') {
       data.value = response.data.map((i) => ({

@@ -234,6 +234,12 @@ table {
   table-layout: auto;
 }
 
+th{
+  color: white;
+}
+td{
+  color: #c35214;
+}
 th,
 td {
   padding: 8px;

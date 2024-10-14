@@ -169,9 +169,9 @@
           <div class="flex">
             <div class="w-[70%]">
               <select
-                v-model="formState.sellingUnit"
+                v-model="selectedSellingUnit"
                 class="select-input"
-                @change="fetchSellingCapacities(formState.sellingUnit)"
+                @change="fetchSellingCapacities(selectedSellingUnit)"
               >
                 <option selected>Select Selling Unit...</option>
                 <option v-for="unit in sellingUnit" :key="unit.id" :value="unit.id">
@@ -290,12 +290,11 @@ const formState = reactive({
   vat: '1',
   selling_unit: '',
   selling_unit_cty: '',
-  purchaseUnit: '', // Now using formState.purchaseUnit
+  purchaseUnit: '', 
   sellingUnit: '',
   // other form states...
 })
 
-// const products = ref([])
 const purchaseUnit = ref([])
 const sellingUnit = ref([])
 const sellingCapacity = ref([])
@@ -307,15 +306,12 @@ const subCategories = ref([])
 const handleBarcodeEntry = (event) => {
   const newBarcode = event.target.value.trim();
 
-  // Allows any barcode after clearing the previous one
-
   if (newBarcode !== lastScannedBarcode.value || !newBarcode) {
     formState.barcode = newBarcode;
     lastScannedBarcode.value = newBarcode;
     isBarcodeReadonly.value = true;
   }
 
-  // Resets the input field after setting the barcode
   barcodeInput.value.value = '';
 };
 
@@ -335,8 +331,11 @@ const addSellingUnit = (purchaseUnitId) => {
   displayModal.value = true
 }
 
-const addSellingCapacity = (sellingUnitId) => {
-  selectedSellingCapacity.value = sellingUnitId
+const addSellingCapacity = (selectedSellingUnit) => {
+   if (!selectedSellingUnit) {
+    alert('Please select a selling unit first');
+    return;
+  }
   displayCapModal.value = true
 }
 
@@ -353,7 +352,7 @@ const preventSubmitOnEnter = (event) => {
 }
 
 const handlePurchaseUnit = (newType) => {
-  console.log()
+  // console.log()
   purchaseUnit.value.push(newType)
   formState.purchaseUnit = newType.id
 }
@@ -386,7 +385,7 @@ const fetchCategory = async () => {
 const fetchSubCategory = async (categoryId) => {
   try {
     const response = await apiService.get(`/all-product-sub-categories-by-category-id/${categoryId}`)
-    subCategories.value = response
+    subCategories.value = response;
     // console.log('Hello Bro');
     console.log(response);
   } catch (error) {
@@ -465,7 +464,7 @@ const handleSubmit = async () => {
   formData.append('category_id', formState.category)
   formData.append('vat', formState.vat)
   formData.append('sub_category_id', formState.sub_category)
-  formData.append('selling_unit_id', formState.sellingUnit)
+  formData.append('selling_unit_id', selectedSellingUnit.value)
   formData.append('selling_unit_capacity_id', selectedSellingCapacity.value)
   formData.append('purchase_unit_id', formState.purchaseUnit)
 

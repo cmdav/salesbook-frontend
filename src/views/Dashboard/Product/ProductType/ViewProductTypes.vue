@@ -3,7 +3,7 @@
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
 
-      <!-- <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" /> -->
+      <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" />
       <div>
         <button class="button upload-btn" @click="openUploadModal()">
           Upload
@@ -111,13 +111,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import apiService from '@/services/apiService'
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue'
 import UploadModal from '@/components/UI/Modal/UploadModal.vue'
+import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue';
 import EditModal from '@/components/UI/Modal/EditModal.vue'
 import Pagination from '@/components/UI/Pagination/PaginatePage.vue'
 import { productTypeFormFields } from '@/formfields/formFields'
+import { useStore } from "@/stores/user";
 import { useSharedComponent } from '@/composable/useSharedComponent'
 
 const search = ref('')
@@ -137,8 +139,10 @@ const editModal = 'Edit Product'
 const currentPage = ref(1)
 const totalPages = ref(0)
 const itemsPerPage = ref(0)
-// const branches = ref([]);
+const branches = ref([]);
 const errorMessage = ref('')
+
+const store = useStore();
 
 const { useSelectComposable } = useSharedComponent('products')
 
@@ -150,8 +154,49 @@ onMounted(async () => {
   await fetchData()
    await fetchPurchaseUnits();
 })
+const roles = computed(() => store.getUser.user.permission.role_name === "Admin");
 
-const url = '/all-product-sub-categories-by-category-id'
+const url = '/all-product-sub-categories-by-category-id';
+
+onMounted(async () => {
+  try {
+    const response = await apiService.get('/list-business-branches'); 
+    console.log(response)
+    branches.value = response || [];
+    console.log(branches.value)
+  } catch (error) {
+    console.error('Failed to fetch branches:', error);
+  }
+});
+
+function handleBranchChange(selectedBranchId) {
+  if (selectedBranchId) {
+    fetchBranch(selectedBranchId);
+  } else {
+    fetchData();
+  }
+};
+
+
+async function fetchBranch(branchId = 1) {
+  try {
+    console.log('called')
+    const response = await apiService.get(`/product-types?branch_id=${branchId}`);
+    console.log('response called:', response)
+      if (response.data && response.data.length) {
+      data.value = response.data;
+      errorMessage.value = '';
+    } else {
+      data.value = [];
+      errorMessage.value = 'No items found for the selected branch.';
+    }
+    
+    return data.value;
+  } catch (error) {
+    console.error('Failed to fetch sales data:', error);
+    errorMessage.value = 'An error occurred while fetching data.';
+  }
+}
 
 const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg } = useSelectComposable(
   productTypeFormFields,
@@ -186,44 +231,7 @@ async function fetchPurchaseUnits() {
   }
 }
 
-// const fetchSellingUnits = async (purchaseUnitId) => {
-//   const selectedPurchaseUnit = await purchaseUnits.value.find(unit => unit.id === purchaseUnitId);
-  
-//   if (selectedPurchaseUnit && selectedPurchaseUnit.selling_units) {
-//     const sellingUnitField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_id');
-    
-//     if (sellingUnitField) {
-//       sellingUnitField.options = selectedPurchaseUnit.selling_units.map(sellingUnit => ({
-//         value: sellingUnit.id,
-//         label: sellingUnit.selling_unit_name
-//       }));
-//       console.log('Selling Units:', sellingUnitField.options)
-//     }
-//   }
-// };
 
-// const fetchSellingCapacities = async (sellingUnitId) => {
-//   let selectedSellingUnit;
-  
-//    purchaseUnits.value.forEach(purchaseUnit => {
-//     if (purchaseUnit.selling_units) {
-//       selectedSellingUnit = purchaseUnit.selling_units.find(unit => unit.id === sellingUnitId);
-//     }
-//   });
-
-//   if (selectedSellingUnit && selectedSellingUnit.selling_unit_capacities) {
-//     const capacityField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_capacity_id');
-//     console.log(capacityField)
-//     if (capacityField) {
-//       capacityField.options = selectedSellingUnit.selling_unit_capacities.map(capacity => ({
-//         value: capacity.id,
-//         label: capacity.selling_unit_capacity
-//       }));
-//       capacityField.value = itemToEdit.value.selling_unit_capacity_id;
-//       console.log('Capacities:', capacityField.options);
-//     }
-//   }
-// };
 
 const fetchSellingUnits = async (purchaseUnitId) => {
   if (!purchaseUnitId) return;  // Guard clause to ensure valid purchase unit ID
@@ -237,29 +245,60 @@ const fetchSellingUnits = async (purchaseUnitId) => {
         value: sellingUnit.id,
         label: sellingUnit.selling_unit_name
       }));
+
+      console.log('sellingunit:', sellingUnitField.options)
+      sellingUnitField.value = null
+      const capacityField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_capacity_id')
+      if (capacityField) {
+        capacityField.options = []
+        capacityField.value = null
+      };
     }
   }
 };
 
 const fetchSellingCapacities = async (sellingUnitId) => {
-  if (!sellingUnitId) return;  // Guard clause to ensure valid selling unit ID
+  if (!sellingUnitId) return;
 
-  let selectedSellingUnit;
-  purchaseUnits.value.forEach(purchaseUnit => {
+  let selectedSellingUnit = null;
+
+  for (const purchaseUnit of purchaseUnits.value) {
     if (purchaseUnit.selling_units) {
       selectedSellingUnit = purchaseUnit.selling_units.find(unit => unit.id === sellingUnitId);
+      if (selectedSellingUnit) {
+        console.log('Found selling unit:', selectedSellingUnit);
+        break;
+      }
     }
-  });
+  }
 
-  if (selectedSellingUnit && selectedSellingUnit.selling_unit_capacities) {
+  if (!selectedSellingUnit) {
+    console.error('Selected selling unit not found');
+    return;
+  }
+  // purchaseUnits.value.forEach(purchaseUnit => {
+  //   if (purchaseUnit.selling_units) {
+  //     selectedSellingUnit = purchaseUnit.selling_units.find(unit => unit.id === sellingUnitId);
+  //     console.log('sellingUnit:', selectedSellingUnit)
+  //   }
+    
+  // console.log('FindUnit:', purchaseUnit.selling_units)
+  // });
+
+  if ( selectedSellingUnit.selling_unit_capacities) {
     const capacityField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_capacity_id');
     if (capacityField) {
       capacityField.options = selectedSellingUnit.selling_unit_capacities.map(capacity => ({
         value: capacity.id,
         label: capacity.selling_unit_capacity
       }));
-      capacityField.value = itemToEdit.value ? itemToEdit.value.selling_unit_capacity_id : null;
+      console.log('capacity:', capacityField.options)
+      // capacityField.value = itemToEdit.value ? itemToEdit.value.selling_unit_capacity_id : null;
+    } else {
+      console.log('Capacity field not found')
     }
+  } else {
+    console.log('No selling unit capacity in the selling unit')
   }
 };
 
@@ -326,7 +365,6 @@ const openEditModal = async (item) => {
 
   itemToEdit.value = item;
 
-  // Open the edit modal
   showEditModal.value = true;
 
   await fetchPurchaseUnits();
@@ -337,10 +375,39 @@ const openEditModal = async (item) => {
   }
 
   await fetchSellingUnits(item.purchase_unit_id);
-  await fetchSellingCapacities(item.selling_unit_id);
 
+
+  const sellingUnitField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_id')
+  if (sellingUnitField) {
+    sellingUnitField.value = item.selling_unit_id
+  }
+
+    await fetchSellingCapacities(item.selling_unit_id);
+
+  const capacityField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_capacity_id')
+  if (capacityField) {
+    capacityField.value = item.selling_unit_capacity_id
+  }
   
 };
+
+watch(() => {
+  const purchaseUnitField = productTypeFormFields.value.find(f => f.databaseField === 'purchase_unit_id')
+  return purchaseUnitField?.value
+}, (newPurchaseUnitId) => {
+  if (newPurchaseUnitId) {
+    fetchSellingUnits(newPurchaseUnitId)
+  }
+})
+
+watch(() => {
+  const sellingUnitField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_id')
+  return sellingUnitField?.value
+}, (newSellingUnitId) => {
+  if (newSellingUnitId) {
+    fetchSellingCapacities(newSellingUnitId)
+  }
+})
 
 function closeEditModal() {
   showEditModal.value = false
