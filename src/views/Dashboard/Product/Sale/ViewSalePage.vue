@@ -118,7 +118,7 @@ const { userProfileDetails } = storeToRefs(store);
 const search = ref('');
 const isSearching = ref(false);
 
-const data = ref([]); // Initialize as an empty array
+const data = ref([]); 
 const pagination = ref({});
 const showDeleteModal = ref(false);
 const itemToDelete = ref(null);
@@ -250,6 +250,43 @@ const generateReceipt = async (transactionId) => {
 };
 
 const roles = computed(() => store.getUser.user.permission.role_name === "Admin");
+
+onMounted(async () => {
+  try {
+    const response = await apiService.get('/list-business-branches'); 
+    console.log(response)
+    branches.value = response || [];
+    console.log(branches.value)
+  } catch (error) {
+    console.error('Failed to fetch branches:', error);
+  }
+});
+
+function handleBranchChange(selectedBranchId) {
+  if (selectedBranchId) {
+    fetchBranch(selectedBranchId);
+  } else {
+    fetchData();
+  }
+}
+
+async function fetchBranch(branchId = 1) {
+  try {
+    const response = await apiService.get(`sales?branch_id=${branchId}`);
+      if (response.data && response.data.length) {
+      data.value = response.data;
+      errorMessage.value = '';
+    } else {
+      data.value = [];
+      errorMessage.value = 'No items found for the selected branch.';
+    }
+    
+    return data.value;
+  } catch (error) {
+    console.error('Failed to fetch sales data:', error);
+    errorMessage.value = 'An error occurred while fetching data.';
+  }
+}
 
 const delPermissions = computed(() => {
   const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'sales');

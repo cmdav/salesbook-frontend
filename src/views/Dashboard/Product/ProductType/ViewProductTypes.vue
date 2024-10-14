@@ -3,7 +3,7 @@
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
 
-      <!-- <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" /> -->
+      <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" />
       <div>
         <button class="button upload-btn" @click="openUploadModal()">
           Upload
@@ -111,13 +111,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import apiService from '@/services/apiService'
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue'
 import UploadModal from '@/components/UI/Modal/UploadModal.vue'
+import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue';
 import EditModal from '@/components/UI/Modal/EditModal.vue'
 import Pagination from '@/components/UI/Pagination/PaginatePage.vue'
 import { productTypeFormFields } from '@/formfields/formFields'
+import { useStore } from "@/stores/user";
 import { useSharedComponent } from '@/composable/useSharedComponent'
 
 const search = ref('')
@@ -137,8 +139,10 @@ const editModal = 'Edit Product'
 const currentPage = ref(1)
 const totalPages = ref(0)
 const itemsPerPage = ref(0)
-// const branches = ref([]);
+const branches = ref([]);
 const errorMessage = ref('')
+
+const store = useStore();
 
 const { useSelectComposable } = useSharedComponent('products')
 
@@ -150,8 +154,49 @@ onMounted(async () => {
   await fetchData()
    await fetchPurchaseUnits();
 })
+const roles = computed(() => store.getUser.user.permission.role_name === "Admin");
 
-const url = '/all-product-sub-categories-by-category-id'
+const url = '/all-product-sub-categories-by-category-id';
+
+onMounted(async () => {
+  try {
+    const response = await apiService.get('/list-business-branches'); 
+    console.log(response)
+    branches.value = response || [];
+    console.log(branches.value)
+  } catch (error) {
+    console.error('Failed to fetch branches:', error);
+  }
+});
+
+function handleBranchChange(selectedBranchId) {
+  if (selectedBranchId) {
+    fetchBranch(selectedBranchId);
+  } else {
+    fetchData();
+  }
+}
+
+
+async function fetchBranch(branchId = 1) {
+  try {
+    console.log('called')
+    const response = await apiService.get(`/product-types?branch_id=${branchId}`);
+    console.log('response called:', response)
+      if (response.data && response.data.length) {
+      data.value = response.data;
+      errorMessage.value = '';
+    } else {
+      data.value = [];
+      errorMessage.value = 'No items found for the selected branch.';
+    }
+    
+    return data.value;
+  } catch (error) {
+    console.error('Failed to fetch sales data:', error);
+    errorMessage.value = 'An error occurred while fetching data.';
+  }
+}
 
 const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg } = useSelectComposable(
   productTypeFormFields,
