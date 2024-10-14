@@ -175,7 +175,7 @@ function handleBranchChange(selectedBranchId) {
   } else {
     fetchData();
   }
-}
+};
 
 
 async function fetchBranch(branchId = 1) {
