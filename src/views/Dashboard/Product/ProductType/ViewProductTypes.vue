@@ -82,7 +82,7 @@
       @fetchDataForSubCategory="fetchDataForSubCategory"
       :formField="productTypeFormFields"
       :isLoadingMsg="isOptionLoadingMsg"
-      :url="'/product-types'"
+      :url="'product-types'"
       :modalTitle="editModal"
     />
 
@@ -144,8 +144,9 @@ const errorMessage = ref('')
 
 const store = useStore();
 
-const { useSelectComposable } = useSharedComponent('products')
+const { useSelectComposable } = useSharedComponent('product-types')
 
+// const { itemToEdit } = useEditComposable()
 const purchaseUnits = ref([])
 // const sellingUnits = ref([])
 // const sellingCapacities = ref([])

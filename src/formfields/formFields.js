@@ -305,11 +305,14 @@ export const productTypeFormFields = ref([
   },
   {
     label: 'Vat',
-    type: 'text',
+    type: 'select',
     value: '',
     required: true,
-    placeholder: 'Enter VAT',
-    // options: [],
+    placeholder: 'Select VAT',
+     options: [
+      { value: '1', label: 'Yes' },
+      { value: '0', label: 'No' }
+    ],
     databaseField: 'vat'
   },
   {

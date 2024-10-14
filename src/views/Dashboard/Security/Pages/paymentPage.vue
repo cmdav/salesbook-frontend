@@ -196,7 +196,7 @@ table {
 th {
   padding: 8px;
   text-align: left;
-  border: 1px solid #fff; /* Add borders around cells */
+  border: 1px solid #fff;
   white-space: nowrap;
   color: #fff;
 }
@@ -205,7 +205,6 @@ td {
   padding: 8px;
   text-align: left;
   border: 1px solid #c35214;
-  /* Add borders around cells */
   white-space: nowrap;
   color: #c35214;
   font-size: 0.9em;
