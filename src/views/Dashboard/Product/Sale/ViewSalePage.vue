@@ -100,7 +100,7 @@
   </DashboardLayout>
 </template>
 <script setup>
-import { ref, computed, onMounted, onUnmounted} from 'vue';
+import { ref, computed, onMounted, onUnmounted,watch} from 'vue';
 import apiService from '@/services/apiService';
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue';
 import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
@@ -161,6 +161,26 @@ onMounted( async() => {
   });
 });
 
+watch(search, async (newSearch) => {
+  if (newSearch) {
+    isSearching.value = true;
+    try {
+
+     
+      const response = await apiService.get(`search-sales/${newSearch}`);
+      console.log(response)
+      data.value = response;
+      return data.value;
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+    }
+  }else{
+    console.log('seraching')
+
+    isSearching.value = false;
+    fetchData();
+  }
+});
 
 
 async function fetchData(page = 1) {
