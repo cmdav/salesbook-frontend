@@ -52,7 +52,11 @@
                 :src="item.product_type_image"
               />
             </td>
-            <td>{{ item.product_type_description }}</td>
+            <td>
+              <span :title="item.product_type_description">
+              {{ truncateText(item.product_type_description, 70) }}
+              </span>
+            </td>
             <td>{{ item.product_category }}</td>
             <td>{{ item.product_sub_category }}</td>
             <td>{{ item.quantity_available }}</td>
@@ -150,6 +154,11 @@ const { useSelectComposable } = useSharedComponent('product-types')
 const purchaseUnits = ref([])
 // const sellingUnits = ref([])
 // const sellingCapacities = ref([])
+
+function truncateText(text, length) {
+  if (!text) return ''
+  return text.length > length ? text.substring(0, length) + '...' : text
+};
 
 onMounted(async () => {
   await fetchData()
@@ -500,11 +509,13 @@ td {
   padding: 8px;
   text-align: left;
   border: 1px solid #c35214;
-  /* Add borders around cells */
+  
   white-space: nowrap;
   color: #c35214;
   font-size: 0.9em;
+
 }
+
 
 tbody tr:hover {
   background-color: #f1f5f9;

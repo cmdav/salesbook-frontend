@@ -515,6 +515,7 @@ const handleSupplierInvite = async () => {
 };
 onMounted(async () => {
   let response= await supplierStore.allSupplier();
+  console.log(response)
   await store.handleUserProfile();
   totalPages.value = response.last_page;
   itemsPerPage.value = response.per_page

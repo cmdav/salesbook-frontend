@@ -37,7 +37,11 @@
             <td>{{(parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1}}</td>
             <td>{{ item.product_type_name }}</td>
             <td><img class="w-10 h-10 bg-slate-500/[30%] rounded-lg mx-auto object-cover" :src="item.product_type_image"/></td>
-            <td>{{ item.product_type_description }}</td>
+            <td>
+              <span :title="item.product_type_description">
+              {{ truncateText(item.product_type_description, 70) }}
+              </span>
+            </td>
             <td>{{ item.batch_no }}</td>
             <!-- <td>{{ item.quantity }}</td> -->
             <td>{{ item.purchase_unit_name }}</td>
@@ -108,6 +112,11 @@ function handleBranchChange(selectedBranchId) {
     fetchData();
   }
 }
+
+function truncateText(text, length) {
+  if (!text) return ''
+  return text.length > length ? text.substring(0, length) + '...' : text
+};
 
 
 async function fetchBranch(branchId = 1) {

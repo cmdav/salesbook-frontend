@@ -8,7 +8,7 @@
       >
 
         <h4 class="text-[18px] font-EBGaramond500 text-[#244034]">
-          {{ isEditing ? 'Update how many selling unit equal a purchase unit' : 'How many selling unit equal a purchase unit' }}</h4>
+          {{ isEditing ? 'Update how many selling units equal a purchase unit' : 'How many selling units equal a purchase unit' }}</h4>
 
         <p class="close-button" @click="$emit('close')">&#10005;</p>
       </header>
