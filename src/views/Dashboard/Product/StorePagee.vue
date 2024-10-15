@@ -27,7 +27,12 @@
           <tr v-for="(item, index) in filteredData" :key="item.id">
             <td>{{ index + 1 }}</td>
             <td>{{ item.product_type }}</td>
-            <td>{{ item.product_description }}</td>
+            <!-- <td>{{ item.product_description }}</td> -->
+            <td>
+              <div class="prod_des">
+                {{item.product_description}}
+              </div>
+            </td>
             <td>{{ item.batch_no }}</td>
             <td>{{ item.quantity_available }}</td>
             <td>{{ item.branch_name }}</td>
@@ -232,6 +237,12 @@ table {
   width: 100%;
   border-collapse: collapse;
   table-layout: auto;
+}
+
+.prod_des{
+    max-width: 30em; 
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 th{

@@ -466,6 +466,9 @@ th, td {
   text-align: left;
   padding: 8px;
   border: 1px solid #ddd;
+   max-width: 30em; 
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 th {

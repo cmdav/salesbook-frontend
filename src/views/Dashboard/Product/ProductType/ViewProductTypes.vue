@@ -53,10 +53,15 @@
               />
             </td>
             <td>
+              <div class="prod_des">
+                {{item.product_type_description}}
+              </div>
+            </td>
+            <!-- <td>
               <span :title="item.product_type_description">
               {{ truncateText(item.product_type_description, 70) }}
               </span>
-            </td>
+            </td> -->
             <td>{{ item.product_category }}</td>
             <td>{{ item.product_sub_category }}</td>
             <td>{{ item.quantity_available }}</td>
@@ -155,10 +160,10 @@ const purchaseUnits = ref([])
 // const sellingUnits = ref([])
 // const sellingCapacities = ref([])
 
-function truncateText(text, length) {
-  if (!text) return ''
-  return text.length > length ? text.substring(0, length) + '...' : text
-};
+//function truncateText(text, length) {
+  //if (!text) return ''
+  //return text.length > length ? text.substring(0, length) + '...' : text
+//};
 
 onMounted(async () => {
   await fetchData()
@@ -497,10 +502,16 @@ table {
   table-layout: auto;
 }
 
+.prod_des{
+    max-width: 30em;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
 th {
   padding: 8px;
   text-align: left;
-  border: 1px solid #fff; /* Add borders around cells */
+  border: 1px solid #fff;
   white-space: nowrap;
   color: #fff;
 }
