@@ -28,22 +28,28 @@
         </div>
 
         <!-- Dynamic Form Fields -->
-        <div class="grid grid-cols-2 gap-4">
-          <div v-for="field in currentFormFields" :key="field.databaseField" class="mb-4">
-            <label :for="field.databaseField" class="block text-sm font-medium text-gray-700">{{ field.label }}</label>
-            <input 
-              :type="field.type"
-              v-model="formData[field.databaseField]"
-              :placeholder="field.placeholder"
-              :required="field.required"
-              :id="field.databaseField"
-              :maxlength="field.maxLength || null"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-            <!-- Error messages will be displayed below the input -->
-            <div :id="field.databaseField + '-error'"></div>
-          </div>
-        </div>
+        <!-- Dynamic Form Fields -->
+<div class="grid grid-cols-2 gap-4">
+  <div v-for="field in currentFormFields" :key="field.databaseField" class="mb-4">
+    <label :for="field.databaseField" class="block text-sm font-medium text-gray-700">
+      {{ field.label }}<span v-if="field.required" class="text-red-500">*</span>
+    </label>
+    <input 
+      :type="field.type"
+      v-model="formData[field.databaseField]"
+      :placeholder="field.placeholder"
+      :required="field.required"
+      :id="field.databaseField"
+      :maxlength="field.maxLength || null"
+      class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+    />
+    <!-- Validation rule message displayed below the input -->
+    <span v-if="field.validationRule" class="text-gray-500 text-sm">{{ field.validationRule }}</span>
+    <!-- Error messages will be displayed below the input -->
+    <div :id="field.databaseField + '-error'"></div>
+  </div>
+</div>
+
 
         <button 
           type="submit" 
@@ -73,20 +79,20 @@ let validation;
 
 // Form fields for individual and company customers
 const individualFields = [
-  { label: 'First Name', type: 'text', databaseField: 'first_name', placeholder: 'Enter first name', required: true, maxLength: 55 },
-  { label: 'Last Name', type: 'text', databaseField: 'last_name', placeholder: 'Enter last name', required: true, maxLength: 55 },
-  { label: 'Phone Number', type: 'text', databaseField: 'phone_number', placeholder: 'Enter phone number', required: true, maxLength: 15 },
-  { label: 'Email', type: 'email', databaseField: 'email', placeholder: 'Enter email', required: true },
-  { label: 'Address', type: 'text', databaseField: 'address', placeholder: 'Enter customer address', required: false, maxLength: 150 },
+  { label: 'First Name', type: 'text', databaseField: 'first_name', placeholder: 'Enter first name', required: true, maxLength: 55, validationRule: 'Min length 1, Max length 55' },
+  { label: 'Last Name', type: 'text', databaseField: 'last_name', placeholder: 'Enter last name', required: true, maxLength: 55, validationRule: 'Min length 1, Max length 55' },
+  { label: 'Phone Number', type: 'text', databaseField: 'phone_number', placeholder: 'Enter phone number', required: true, maxLength: 15, validationRule: 'Min length 11, Max length 15' },
+  { label: 'Email', type: 'email', databaseField: 'email', placeholder: 'Enter email', required: true, validationRule: 'Valid email required' },
+  { label: 'Address', type: 'text', databaseField: 'address', placeholder: 'Enter customer address', required: false, maxLength: 150, validationRule: 'Max length 150' },
   { type: 'hidden', databaseField: 'type_id', value: 'individual' }
 ];
 
 const companyFields = [
-  { label: 'Company Name', type: 'text', databaseField: 'company_name', placeholder: 'Enter company name', required: true, maxLength: 55 },
-  { label: 'Contact Person', type: 'text', databaseField: 'contact_person', placeholder: 'Enter contact person', required: true, maxLength: 55 },
-  { label: 'Phone Number', type: 'text', databaseField: 'phone_number', placeholder: 'Enter phone number', required: true, maxLength: 15 },
-  { label: 'Email', type: 'email', databaseField: 'email', placeholder: 'Enter email', required: true },
-  { label: 'Address', type: 'text', databaseField: 'address', placeholder: 'Enter customer address', required: false, maxLength: 150 },
+  { label: 'Company Name', type: 'text', databaseField: 'company_name', placeholder: 'Enter company name', required: true, maxLength: 55, validationRule: 'Min length 1, Max length 55' },
+  { label: 'Contact Person', type: 'text', databaseField: 'contact_person', placeholder: 'Enter contact person', required: true, maxLength: 55, validationRule: 'Min length 1, Max length 55' },
+  { label: 'Phone Number', type: 'text', databaseField: 'phone_number', placeholder: 'Enter phone number', required: true, maxLength: 15, validationRule: 'Min length 11, Max length 15' },
+  { label: 'Email', type: 'email', databaseField: 'email', placeholder: 'Enter email', required: true, validationRule: 'Valid email required' },
+  { label: 'Address', type: 'text', databaseField: 'address', placeholder: 'Enter company address', required: false, maxLength: 150, validationRule: 'Max length 150' },
   { type: 'hidden', databaseField: 'type_id', value: 'company' }
 ];
 
@@ -134,10 +140,15 @@ const setUpValidation = () => {
         { rule: 'maxLength', value: 55, errorMessage: 'Last name cannot exceed 55 characters' },
       ])
       .addField('#phone_number', [
-        { rule: 'required', errorMessage: 'Phone number is required' },
-        { rule: 'minLength', value: 11, errorMessage: 'Phone number must be at least 11 characters' },
-        { rule: 'maxLength', value: 15, errorMessage: 'Phone number cannot exceed 15 characters' },
-      ])
+    { rule: 'required', errorMessage: 'Phone number is required' },
+    { rule: 'minLength', value: 11, errorMessage: 'Phone number must be at least 11 characters' },
+    { rule: 'maxLength', value: 15, errorMessage: 'Phone number cannot exceed 15 characters' },
+    {
+      rule: 'customRegexp',
+      value: /^[+]?[\d\s().-]{7,15}$/,
+      errorMessage: 'Please enter a valid phone number, fax, or landline',
+    },
+  ])
       .addField('#email', [
         { rule: 'required', errorMessage: 'Email is required' },
         { rule: 'email', errorMessage: 'Email is invalid' },
@@ -157,10 +168,15 @@ const setUpValidation = () => {
         { rule: 'maxLength', value: 55, errorMessage: 'Contact person cannot exceed 55 characters' },
       ])
       .addField('#phone_number', [
-        { rule: 'required', errorMessage: 'Phone number is required' },
-        { rule: 'minLength', value: 11, errorMessage: 'Phone number must be at least 11 characters' },
-        { rule: 'maxLength', value: 15, errorMessage: 'Phone number cannot exceed 15 characters' },
-      ])
+    { rule: 'required', errorMessage: 'Phone number is required' },
+    { rule: 'minLength', value: 11, errorMessage: 'Phone number must be at least 11 characters' },
+    { rule: 'maxLength', value: 15, errorMessage: 'Phone number cannot exceed 15 characters' },
+    {
+      rule: 'customRegexp',
+      value: /^[+]?[\d\s().-]{7,15}$/,
+      errorMessage: 'Please enter a valid phone number, fax, or landline',
+    },
+  ])
       .addField('#email', [
         { rule: 'required', errorMessage: 'Email is required' },
         { rule: 'email', errorMessage: 'Email is invalid' },
