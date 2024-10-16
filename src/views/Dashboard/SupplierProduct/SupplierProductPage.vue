@@ -34,7 +34,8 @@
                 <input
                 placeholder="Enter New Selling Price"
                   v-model="formData.sellingPrice"
-                  type="text"
+                  type="number"
+                  min="0"
                   class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
                 />
               </div>

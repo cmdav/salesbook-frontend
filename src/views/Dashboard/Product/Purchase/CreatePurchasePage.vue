@@ -47,7 +47,8 @@
   <div class="tooltip-container">
     <input 
       type="number" 
-      v-model="purchase.cost_price" 
+      v-model="purchase.cost_price"
+      min="0"
       @blur="validateCostPrice(index)"  
       @mouseover="showTooltip" 
       data-tooltip="Enter the cost price per unit" 
@@ -63,7 +64,8 @@
   <label for="selling_price">Selling Price <span class="required">*</span></label>
   <div class="tooltip-container">
     <input 
-      type="number" 
+      type="number"
+      min="0"
       v-model="purchase.selling_price" 
       @blur="validateSellingPrice(index)" 
       @mouseover="showTooltip" 
@@ -80,6 +82,7 @@
   <label for="purchase_qty">Purchase Qty <span class="required">*</span></label>
   <input 
     type="number" 
+    min="1"
     v-model="purchase.capacity_qty" 
     @blur="validatePurchaseQty(index)" 
     required 

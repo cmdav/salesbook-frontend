@@ -222,17 +222,12 @@ const fetchPurchaseUnits = async (page = 1) => {
   }
 }
 
-// onMounted(() => {
-//   const savedPage = localStorage.getItem('currentPage');
-//   const page = savedPage ? parseInt(savedPage) : 1;
-//   fetchPurchaseUnits(page);
-// });
-
 onMounted(() => {
   const page = route.query.page ? parseInt(route.query.page) : 1;
+  currentPage.value = page;
   fetchPurchaseUnits(page);
 
-  console.log('Mounted page:', route.query.page);
+  // console.log('Mounted page:', route.query.page);
 
 });
 
@@ -240,15 +235,21 @@ watch(
       () => route.query.page,
       (newPage) => {
         const page = newPage ? parseInt(newPage) : 1;
+        currentPage.value = page;
         fetchPurchaseUnits(page);
-        console.log('Watched page change:', page);
+        // console.log('Watched page change:', page);
       }
     );
 
 function changePage(page) {
   if (page > 0 && page <= totalPages.value) {
+    currentPage.value = page;
     fetchPurchaseUnits(page);
   }
+}
+
+const refreshCurrentPage = () => {
+  fetchPurchaseUnits(currentPage.value);
 }
 
 const openCreateModal = () => {
@@ -268,12 +269,21 @@ const openCreateSellingCapacityModal = (sellingUnitId) => {
 
 const closeModal = () => {
   isModalOpen.value = false;
-  fetchPurchaseUnits(currentPage.value)
+  refreshCurrentPage();
+  // fetchPurchaseUnits(currentPage.value)
 }
 
 const closeSellingUnitModal = () => {
   isSellingUnitModalOpen.value = false;
-  fetchPurchaseUnits(currentPage.value);
+  refreshCurrentPage();
+  // fetchPurchaseUnits(currentPage.value);
+  
+}
+
+const closeSellingUnitCapacityModal = () => {
+  isSellingUnitCapacityModalOpen.value = false;
+  refreshCurrentPage();
+  // fetchPurchaseUnits(currentPage.value)
   
 }
 
@@ -286,7 +296,8 @@ function openDeleteModal(item) {
 function closeDeleteModal() {
   showDeleteModal.value = false;
   itemToDelete.value = null;
-  fetchPurchaseUnits(currentPage.value)
+  refreshCurrentPage();
+  // fetchPurchaseUnits(currentPage.value)
 }
 
 const confirmDelete = () => {
@@ -301,17 +312,15 @@ const deleteUnit = async (id) => {
   try {
     const response = await apiService.delete(`purchase-units/${id}`)
     // console.log(response)
-    fetchPurchaseUnits(currentPage.value)
+    // fetchPurchaseUnits(currentPage.value)
     catchAxiosSuccess(response)
+    refreshCurrentPage();
   } catch (error) {
     catchAxiosError(error)
   }
 }
 
-const closeSellingUnitCapacityModal = () => {
-  isSellingUnitCapacityModalOpen.value = false;
-  fetchPurchaseUnits(currentPage.value)
-}
+
 
 onMounted(() => fetchPurchaseUnits(currentPage.value))
 // onMounted(() => download())
@@ -379,7 +388,8 @@ function closeUploadModal() {
 }
 
 function forceRefresh() {
-  fetchPurchaseUnits(currentPage.value)
+  // fetchPurchaseUnits(currentPage.value)
+  refreshCurrentPage();
 }
 </script>
 

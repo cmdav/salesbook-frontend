@@ -23,6 +23,7 @@
             <label  class="block text-sm font-medium text-gray-700 pb-1">Selling Unit</label>
             <input
               type="number"
+              min="1"
               v-model="sellingCapacity"
               placeholder="Enter Selling Unit"
               required
