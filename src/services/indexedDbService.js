@@ -11,6 +11,7 @@ export async function initializeSalesDB() {
         db.createObjectStore('payment-methods', { keyPath: 'id' });
         db.createObjectStore('customers', {  autoIncrement: true});
         db.createObjectStore('purchases', {  autoIncrement: true});
+        db.createObjectStore('suppliers', { keyPath: 'email' }); 
       }
     }
   });
@@ -117,4 +118,29 @@ export async function getPurchases() {
   const tx = db.transaction('purchases', 'readonly');
   const store = tx.objectStore('purchases');
   return store.getAll();
+}
+
+export async function addSupplier(supplier) {
+  const db = await initializeSalesDB();
+  const tx = db.transaction('suppliers', 'readwrite');
+  const store = tx.objectStore('suppliers');
+  await store.put(supplier);
+  await tx.done;
+}
+
+// Function to get all suppliers from IndexedDB
+export async function getAllSuppliers() {
+  const db = await initializeSalesDB();
+  const tx = db.transaction('suppliers', 'readonly');
+  const store = tx.objectStore('suppliers');
+  return store.getAll(); // Fetch all suppliers from the suppliers store
+}
+
+// Function to remove a supplier from IndexedDB by email (optional for cleanup)
+export async function removeSupplier(email) {
+  const db = await initializeSalesDB();
+  const tx = db.transaction('suppliers', 'readwrite');
+  const store = tx.objectStore('suppliers');
+  await store.delete(email);
+  await tx.done;
 }

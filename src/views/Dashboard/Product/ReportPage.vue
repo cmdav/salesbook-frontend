@@ -340,6 +340,7 @@ const downloadPDF = async () => {
       if (orgDetailsResponse.success) {
         orgDetailsCache.value = orgDetailsResponse.data;
       } else {
+        console.log('detail log')
         throw new Error("Failed to fetch organization details");
       }
     }
