@@ -26,12 +26,12 @@
           <div class="chart hidden bg-white rounded-[8px] min-h-[100vh] p-4"></div>
           <div class="bg-white py-6 mt-12 rounded-lg">
             <div class="flex lg:flex-row flex-col gap-3 px-4 justify-between mb-4">
-              <div class="flex lg:flex-row flex-col justify-between w-full gap-2">
-                <div class="w-[40%]">
+              <div class="flex w-full gap-2">
+                <!-- <div class="w-[40%]">
                   <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" />
-                  <!-- <AuthInput :error="false" type="text" placeholder="search" /> -->
-                </div>
-                <div class="flex flex-row gap-[12px]">
+                   <AuthInput :error="false" type="text" placeholder="search" />
+                </div> -->
+                <div class=" flex-end">
                   <!-- <button
                     @click="HandleToggleUploadModal"
                     class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
@@ -57,7 +57,7 @@
                       <th class="text-left p-4 pr-0 px-6 border-x capitalize">Last Name</th>
                       <th class="text-left p-4 pr-0 px-6 border-x capitalize">Email</th>
                       <th class="text-left p-4 pr-0 px-6 border-x capitalize">Phone Number</th>
-                      <th class="text-left p-4 pr-0 px-6 border-x capitalize">Branch</th>
+                      <!-- <th class="text-left p-4 pr-0 px-6 border-x capitalize">Branch</th> -->
                       <!-- <th class="text-left p-4 pr-0 px-6 capitalize">expiring Date</th> -->
                     </tr>
                   </thead>
@@ -85,9 +85,9 @@
                       <td class="text-left p-4 pr-0 pl-6 border-x capitalize">
                         {{ i.phone_number }}
                       </td>
-                      <td class="text-left p-4 pr-0 pl-6 border-x capitalize">
+                      <!-- <td class="text-left p-4 pr-0 pl-6 border-x capitalize">
                         {{ i.branch_name }}
-                      </td>
+                      </td> -->
                       <!-- <td class="text-left p-4 pr-0 pl-6 capitalize">Basic</td> -->
                     </tr>
                   </tbody>
@@ -532,9 +532,9 @@ const loadSuppliers = async () => {
       await store.handleUserProfile();
       totalPages.value = response.last_page;
       itemsPerPage.value = response.per_page
-
-      console.log(itemsPerPage.value)
       formData.orgId = userProfileDetails.value?.organization_id;
+
+   
     } else {
       let values = await getAllSuppliers();
       console.log(values)

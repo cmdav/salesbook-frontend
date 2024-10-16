@@ -57,20 +57,7 @@
                     </svg>
                   </button>
 
-                  <!-- <button class="add-selling-unit-button" @click="openSellingDeleteModal(sellingUnit.id)">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="1em"
-                  height="1em"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    fill="white"
-                    fill-rule="evenodd"
-                    d="m6.774 6.4l.812 13.648a.8.8 0 0 0 .798.752h7.232a.8.8 0 0 0 .798-.752L17.226 6.4zm11.655 0l-.817 13.719A2 2 0 0 1 15.616 22H8.384a2 2 0 0 1-1.996-1.881L5.571 6.4H3.5v-.7a.5.5 0 0 1 .5-.5h16a.5.5 0 0 1 .5.5v.7zM14 3a.5.5 0 0 1 .5.5v.7h-5v-.7A.5.5 0 0 1 10 3zM9.5 9h1.2l.5 9H10zm3.8 0h1.2l-.5 9h-1.2z"
-                  />
-                </svg>
-              </button> -->
+                  
                 </div>
                 <ul class="capacity">
                   <li v-for="capacity in sellingUnit.selling_unit_capacities" :key="capacity.id" class="capacity_sell">
@@ -92,18 +79,7 @@
               </button>
                <button class="delete-pur update-selling-unit-button" @click="openDeleteModal(purchaseUnit.id)">
                 Delete Purchase Unit
-                <!-- <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="1em"
-                  height="1em"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    fill="white"
-                    fill-rule="evenodd"
-                    d="m6.774 6.4l.812 13.648a.8.8 0 0 0 .798.752h7.232a.8.8 0 0 0 .798-.752L17.226 6.4zm11.655 0l-.817 13.719A2 2 0 0 1 15.616 22H8.384a2 2 0 0 1-1.996-1.881L5.571 6.4H3.5v-.7a.5.5 0 0 1 .5-.5h16a.5.5 0 0 1 .5.5v.7zM14 3a.5.5 0 0 1 .5.5v.7h-5v-.7A.5.5 0 0 1 10 3zM9.5 9h1.2l.5 9H10zm3.8 0h1.2l-.5 9h-1.2z"
-                  />
-                </svg> -->
+          
               </button>
             </div>
             
@@ -138,18 +114,7 @@
             </div>
           </div>
         </div>
-        <!-- <div v-if="showSellingDeleteModal" class="modal backdrop-blur z-[100] fixed animate__zoomIn animate__rubberBand animate__fadeOut min-h-screen h-full">
-          <div class="modal__body relative w-full md:max-w-[600px] bg-white m-0 md:px-5 py-4 px-4">
-            <header class="flex flex-row items-center justify-between border-b-[#000000] pb-[5px] mb-[35px] border-b-[1px]">
-            <h3 class="text-[22px] font-EBGaramond500 text-[#244034]">Confirm Deletion</h3>
-            </header>
-            <p class="text-center py-4">Are you sure you want to delete this selling unit?</p>
-            <div class="flex justify-center">
-              <button @click="confirmDelete" class="btn-brand !bg-green-400 mr-6"> Delete</button>
-              <button @click="closeSellingDeleteModal" class="btn-brand !bg-red-600">Cancel</button>
-            </div>
-          </div>
-        </div> -->
+    
 
         <UploadModal
           v-if="showUploadModal"
@@ -197,6 +162,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import apiService from '@/services/apiService'
+// import (useRoute, useRouter ) from 'vue-router'
 import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
 import DashboardLayout from '@/components/Layouts/dashboardLayout.vue'
 import CreateEditModal from '@/components/UI/Modal/purchaseUnitModal.vue'
@@ -204,6 +170,7 @@ import UploadModal from '@/components/UI/Modal/UploadModal.vue'
 import Pagination from '@/components/UI/Pagination/PaginatePage.vue'
 import CreateSellingUnitModal from '@/components/UI/Modal/sellingUnitModal.vue'
 import SellingUnitCapacityModal from '@/components/UI/Modal/sellingUnitCapacityModal.vue'
+import { useRouter, useRoute } from 'vue-router'
 
 const purchaseUnits = ref([]);
 const isModalOpen = ref(false);
@@ -214,6 +181,9 @@ const selectedSellingUnitId = ref(null);
 const selectedPurchaseUnit = ref(null); 
 const selectedSellingUnit = ref(null);
 const selectedSellingCapacity = ref(null);
+
+const route = useRoute();
+const router = useRouter()
 
 const showDeleteModal = ref(false);
 const itemToDelete = ref(null);
@@ -241,16 +211,45 @@ const fetchPurchaseUnits = async (page = 1) => {
     }
     currentPage.value = response.current_page
     totalPages.value = response.last_page
+
+    // localStorage.setItem('currentPage', currentPage.value);
+     router.push({ query: { ...route.query, page: currentPage.value } });
+
+     console.log('Fetching units for page:', page);
   } catch (error) {
     console.error('Error fetching purchase units:', error)
     catchAxiosError(error)
   }
 }
 
+onMounted(() => {
+  const page = route.query.page ? parseInt(route.query.page) : 1;
+  currentPage.value = page;
+  fetchPurchaseUnits(page);
+
+  // console.log('Mounted page:', route.query.page);
+
+});
+
+watch(
+      () => route.query.page,
+      (newPage) => {
+        const page = newPage ? parseInt(newPage) : 1;
+        currentPage.value = page;
+        fetchPurchaseUnits(page);
+        // console.log('Watched page change:', page);
+      }
+    );
+
 function changePage(page) {
   if (page > 0 && page <= totalPages.value) {
+    currentPage.value = page;
     fetchPurchaseUnits(page);
   }
+}
+
+const refreshCurrentPage = () => {
+  fetchPurchaseUnits(currentPage.value);
 }
 
 const openCreateModal = () => {
@@ -270,10 +269,22 @@ const openCreateSellingCapacityModal = (sellingUnitId) => {
 
 const closeModal = () => {
   isModalOpen.value = false;
+  refreshCurrentPage();
+  // fetchPurchaseUnits(currentPage.value)
 }
 
 const closeSellingUnitModal = () => {
   isSellingUnitModalOpen.value = false;
+  refreshCurrentPage();
+  // fetchPurchaseUnits(currentPage.value);
+  
+}
+
+const closeSellingUnitCapacityModal = () => {
+  isSellingUnitCapacityModalOpen.value = false;
+  refreshCurrentPage();
+  // fetchPurchaseUnits(currentPage.value)
+  
 }
 
 function openDeleteModal(item) {
@@ -285,6 +296,8 @@ function openDeleteModal(item) {
 function closeDeleteModal() {
   showDeleteModal.value = false;
   itemToDelete.value = null;
+  refreshCurrentPage();
+  // fetchPurchaseUnits(currentPage.value)
 }
 
 const confirmDelete = () => {
@@ -299,16 +312,15 @@ const deleteUnit = async (id) => {
   try {
     const response = await apiService.delete(`purchase-units/${id}`)
     // console.log(response)
-    fetchPurchaseUnits(currentPage.value)
+    // fetchPurchaseUnits(currentPage.value)
     catchAxiosSuccess(response)
+    refreshCurrentPage();
   } catch (error) {
     catchAxiosError(error)
   }
 }
 
-const closeSellingUnitCapacityModal = () => {
-  isSellingUnitCapacityModalOpen.value = false
-}
+
 
 onMounted(() => fetchPurchaseUnits(currentPage.value))
 // onMounted(() => download())
@@ -376,7 +388,8 @@ function closeUploadModal() {
 }
 
 function forceRefresh() {
-  fetchPurchaseUnits(currentPage.value)
+  // fetchPurchaseUnits(currentPage.value)
+  refreshCurrentPage();
 }
 </script>
 
@@ -408,7 +421,7 @@ function forceRefresh() {
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Changed to two columns */
+  grid-template-columns: repeat(3, 1fr); 
   gap: 1.5em;
   width: 100%;
   justify-content: flex-start;

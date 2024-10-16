@@ -318,6 +318,13 @@ td {
   text-align: left;
   border: 2px solid #c35214;
   white-space: nowrap;
+  
+}
+th{
+  color: white;
+}
+td{
+  color: #c35214;
 }
 
 tbody tr:hover {

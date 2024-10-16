@@ -44,7 +44,12 @@
           <tr v-for="(item, index) in data" :key="item.id">
             <td>{{(parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1}}</td>
             <td>{{ item.product_type_name }}</td>
-            <td>{{ item.product_type_description }}</td>
+            <td>
+              <div class="prod_des">
+                {{item.product_type_description}}
+              </div>
+            </td>
+            <!-- <td>{{ item.product_type_description }}</td> -->
             <!-- <td>{{ item.batch_no }}</td> -->
             <!-- <td>{{ item.cost_price }}</td> -->
             <td>{{ item.price_sold_at }}</td>
@@ -351,6 +356,12 @@ const addPermissions = computed(() => {
 
 .upload-btn {
   background-color: #C35214;
+}
+
+.prod_des{
+    max-width: 30em; 
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 .add-btn {

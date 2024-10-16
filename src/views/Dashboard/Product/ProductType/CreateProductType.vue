@@ -192,7 +192,7 @@
 
         <div class="input-group w-full">
           <label class="block text-sm font-medium text-gray-700">
-            How many selling unit equal a purchase unit
+            How many selling units equal a purchase unit
             <span class="tooltip-container">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
