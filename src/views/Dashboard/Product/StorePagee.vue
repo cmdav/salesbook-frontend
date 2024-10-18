@@ -15,7 +15,7 @@
         <thead>
           <tr>
             <th>S.NO</th>
-            <th>PRODUCT TYPE</th>
+            <th>PRODUCT NAME</th>
             <th>PRODUCT DESCRIPTION</th>
             <th>BATCH NO</th>
             <th>QUANTITY AVAILABLE</th>
@@ -26,7 +26,7 @@
         <tbody>
           <tr v-for="(item, index) in filteredData" :key="item.id">
             <td>{{ index + 1 }}</td>
-            <td>{{ item.product_type }}</td>
+            <td>{{ item.product_name }}</td>
             <!-- <td>{{ item.product_description }}</td> -->
             <td>
               <div class="prod_des">
