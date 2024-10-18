@@ -284,6 +284,9 @@ import { useStore } from "@/stores/user";
 const { userProfileDetails } = storeToRefs(store);
 import CloudUploadIcon from "@/components/icons/cloudUploadIcon.vue";
 import { useRouter } from "vue-router";
+import { isOnline } from '@/isOnline'; // Online check utility
+import { addSupplier, getAllSuppliers } from '@/services/indexedDbService'; 
+
 const router = useRouter();
 
 const redirectToSingleSupplierPage = (id) => {
@@ -501,27 +504,48 @@ const handleSupplierInvite = async () => {
     type: "invitation",
   };
   try {
-    let res = await resendEmail(payload);
-    supplierStore.allSupplier();
-    HandleToggleModal();
-    loading.value = false;
-    clearInputs();
-    return res;
+    const online = await isOnline(); // Check network status
+    if (online) {
+      let res = await resendEmail(payload);
+      alert('Invitation sent')
+      supplierStore.allSupplier();
+      HandleToggleModal();
+      loading.value = false;
+      clearInputs();
+      return res;
+    }else{
+      //const db = await initializeSalesDB();
+      await addSupplier( payload);
+      console.log('Supplier data saved to IndexedDB as you are offline.');
+    }
   } catch (error) {
     console.log(error);
   } finally {
     loading.value = false;
   }
 };
-onMounted(async () => {
-  let response= await supplierStore.allSupplier();
-  console.log(response)
-  await store.handleUserProfile();
-  totalPages.value = response.last_page;
-  itemsPerPage.value = response.per_page
+const loadSuppliers = async () => {
+  try {
+    const online = await isOnline();  // Check if the app is online
+    if (online) {
+      let response= await supplierStore.allSupplier();
+      await store.handleUserProfile();
+      totalPages.value = response.last_page;
+      itemsPerPage.value = response.per_page
+      formData.orgId = userProfileDetails.value?.organization_id;
 
-  console.log(itemsPerPage.value)
-  formData.orgId = userProfileDetails.value?.organization_id;
+   
+    } else {
+      let values = await getAllSuppliers();
+      console.log(values)
+    }
+  } catch (error) {
+    console.error('Error loading customers:', error);
+  }
+};
+onMounted(async () => {
+  await loadSuppliers(); 
+ 
   // console.log(userProfileDetails.value?.organization_id)
   
 });

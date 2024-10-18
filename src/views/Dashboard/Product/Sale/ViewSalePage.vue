@@ -21,7 +21,7 @@
         <thead>
           <tr>
             <th>S.NO</th>
-            <th>PRODUCT</th>
+            <th>PRODUCT NAME</th>
             <th>PRODUCT DESCRIPTION</th>
             <!-- <th>BATCH NO</th> -->
             <!-- <th>COST PRICE</th> -->
@@ -83,7 +83,7 @@
     <thead>
       <tr>
         <th>S.NO</th>
-        <th>PRODUCT TYPE</th>
+        <th>PRODUCT NAME</th>
         <th>PRICE SOLD AT(NGN)</th>
         <th>QUANTITY SOLD</th>
         <th>QUANTITY AVAILABLE</th>

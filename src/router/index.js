@@ -14,8 +14,8 @@ import VerifySupplier from '@/views/Auth/VerifySupplier.vue'
 import OrganisationPage from '@/views/Dashboard/Organisation/OrganisationPage.vue'
 import SupplierSinglePage from '@/views/Dashboard/Suppliers/SupplierSinglePage.vue'
 import CustomersSinglePage from '@/views/Dashboard/Customers/CustomersSinglePage.vue'
-import ProductsPage from '@/views/Dashboard/Product/ProductPage.vue'
-import ProductsPages from '@/views/Dashboard/Product/ProductPages.vue'
+// import ProductsPage from '@/views/Dashboard/Product/ProductPage.vue'
+// import ProductsPages from '@/views/Dashboard/Product/ProductPages.vue'
 import ProductCategoryPage from '@/views/Dashboard/Product/ProductCategoryPage.vue'
 import ProductSubCategoryPage from '@/views/Dashboard/Product/ProductSubCategoryPage.vue'
 import CurrencyPage from '@/views/Dashboard/Product/CurrencyPage.vue'
@@ -185,19 +185,19 @@ const router = createRouter({
       component: CustomersPage,
       beforeEnter: [middleware.redirectLogin]
     },
-    {
-      path: '/product',
-      name: 'product',
-      component: ProductsPage,
-      beforeEnter: [middleware.redirectLogin]
-    },
-    // added routes
-    {
-      path: '/products',
-      name: 'products',
-      component: ProductsPages,
-      beforeEnter: [middleware.redirectLogin]
-    },
+    // {
+    //   path: '/product',
+    //   name: 'product',
+    //   component: ProductsPage,
+    //   beforeEnter: [middleware.redirectLogin]
+    // },
+    // // added routes
+    // {
+    //   path: '/products',
+    //   name: 'products',
+    //   component: ProductsPages,
+    //   beforeEnter: [middleware.redirectLogin]
+    // },
     {
       path: '/measurement',
       name: 'measurement',

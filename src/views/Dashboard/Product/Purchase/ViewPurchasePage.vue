@@ -12,7 +12,7 @@
         <thead>
           <tr>
             <th>S.NO</th>
-            <th>PRODUCT</th>
+            <th>PRODUCT NAME</th>
             <th>PRODUCT IMAGE</th>
             <th>PRODUCT DESCRIPTION</th>
             <th>BATCH NO</th>
