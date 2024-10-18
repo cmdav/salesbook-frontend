@@ -44,17 +44,17 @@
           <tr v-for="(item, index) in data" :key="item.id">
             <td>{{ (parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1 }}</td>
             <!-- <td>{{ item.product_name }}</td> -->
-            <td>{{ item.product_type_name }}</td>
+            <td>{{ item.product_name }}</td>
             <!-- <td>{{ item.product_type_image }}</td> -->
             <td>
               <img
                 class="w-10 h-10 bg-slate-500/[30%] rounded-lg mx-auto object-cover"
-                :src="item.product_type_image"
+                :src="item.product_image"
               />
             </td>
             <td>
               <div class="prod_des">
-                {{item.product_type_description}}
+                {{item.product_description}}
               </div>
             </td>
             <!-- <td>
