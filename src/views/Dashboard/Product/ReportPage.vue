@@ -88,8 +88,12 @@
           </button>
         </div>
 
-        <!-- Table to show report data -->
-        <div v-if="reportData.length > 0" class="overflow-x-auto mt-6">
+        <div v-if="loading" class="text-center my-4">
+  <p>Loading...</p>
+</div>
+
+<!-- Table to show report data -->
+<div v-if="!loading && reportData.length > 0" class="overflow-x-auto mt-6">
           <h3 class="text-xl font-bold mb-4">{{ currentReportTitle }}</h3>
           <table class="min-w-full table-auto">
             <thead>
@@ -126,9 +130,9 @@
           </table>
         </div>
 
-        <div v-else class="text-center my-4">
-          <p>No records found.</p>
-        </div>
+        <div v-else-if="!loading && reportData.length === 0" class="text-center my-4">
+  <p>{{ reportMessage }}</p>
+</div>
       </div>
     </div>
   </DashboardLayout>
@@ -137,8 +141,8 @@
 <script setup>
 import { ref, computed } from "vue";
 import apiService from "@/services/apiService";
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import { getToken } from "@/services/Auth";
+
 
 // To control the date picker and report data
 const showDatePicker = ref(false);
@@ -146,6 +150,7 @@ const reportData = ref([]);
 const columns = ref([]); // Dynamic columns based on report type
 const startDate = ref("");
 const endDate = ref("");
+const reportMessage = ref("");
 const currentReportType = ref(""); // Track the current report type
 const loading = ref(false); // Loading state for PDF download
 
@@ -168,6 +173,7 @@ const currentReportTitle = computed(() => reportTitles[currentReportType.value] 
 // Computed property to format column names
 const formattedColumns = computed(() => {
   return columns.value.map((column) => {
+    console.log(column)
     return column.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
   });
 });
@@ -192,7 +198,6 @@ const getActiveClass = (reportType) => {
 
 const fetchReportData = async (reportType) => {
   loading.value = true;  // Start loading when fetching begins
-
   let url = "";
 
   // Set the API endpoint based on report type
@@ -213,6 +218,7 @@ const fetchReportData = async (reportType) => {
       url = `/expired-product-by-dates?start_date=${startDate.value}&end_date=${endDate.value}`;
       break;
     default:
+      loading.value = false;
       return;
   }
 
@@ -222,52 +228,69 @@ const fetchReportData = async (reportType) => {
     if (response.success) {
       const data = response.data.data;
 
-      // Reset grand totals
-      grandTotalQuantity.value = 0;
-      grandTotalPrice.value = 0;
-      grandTotalQuantityAvailable.value = 0;
+      // Check if there's any data
+      if (data.length === 0) {
+        reportData.value = []; // Clear the report data
+        reportMessage.value = response.data.message || "No records found."; // Display the response message if available
+      } else {
+        // Reset grand totals
+        grandTotalQuantity.value = 0;
+        grandTotalPrice.value = 0;
+        grandTotalQuantityAvailable.value = 0;
 
-      // Calculate totals for monthly-sales and total-sales
-      if (["monthly-sales", "total-sales"].includes(reportType)) {
-        let totalPrice = 0;
+        // Calculate totals for monthly-sales and total-sales
+        if (["monthly-sales", "total-sales"].includes(reportType)) {
+          let totalPrice = 0;
 
-        data.forEach(item => {
-          // Correct multiplication for total price
-          const quantity = parseInt(item.quantity, 10);
-          const priceSoldAt = parseFloat(item.price_sold_at);
-          const itemTotalPrice = priceSoldAt * quantity;
+          data.forEach(item => {
+            // Correct multiplication for total price
+            const quantity = parseInt(item.quantity, 10);
+            const priceSoldAt = parseFloat(item.price_sold_at);
+            const itemTotalPrice = priceSoldAt * quantity;
 
-          totalPrice += itemTotalPrice;  // Accumulate the total price
-          item.total_price = itemTotalPrice.toFixed(2);  // Store the calculated total price in the data
-        });
+            totalPrice += itemTotalPrice;  // Accumulate the total price
+            item.total_price = itemTotalPrice.toFixed(2);  // Store the calculated total price in the data
+          });
 
-        grandTotalPrice.value = totalPrice;
+          grandTotalPrice.value = totalPrice;
+        }
+
+        if (["item-list", "expired-product"].includes(reportType)) {
+          let totalAvailableQuantity = 0;
+
+          data.forEach(item => {
+            totalAvailableQuantity += parseInt(item.quantity_available, 10);
+          });
+
+          grandTotalQuantityAvailable.value = totalAvailableQuantity;
+        }
+
+        // Assign data to reportData ref
+        reportData.value = data;
       }
-
-      if (["item-list", "expired-product"].includes(reportType)) {
-        let totalAvailableQuantity = 0;
-
-        data.forEach(item => {
-          totalAvailableQuantity += parseInt(item.quantity_available, 10);
-        });
-
-        grandTotalQuantityAvailable.value = totalAvailableQuantity;
-      }
-
-      // Assign data to reportData ref
-      reportData.value = data;
+    } else {
+      reportMessage.value = response.data.message || "No records found.";
     }
   } catch (error) {
-    console.error("Error fetching report data:", error);
+    console.error("Error fetching report data:", error.response.data.message);
+    reportMessage.value = error.response?.data?.message ?? "An error occurred while fetching the data.";
+
   } finally {
     loading.value = false;  // Stop loading once the data has been fetched
   }
 };
 
+
 // Function to show the report when a card is clicked
 const showReport = async (reportType) => {
+  // Clear existing data
   reportData.value = [];
   currentReportType.value = reportType; // Set the current report type
+  loading.value = true; // Show loading indicator when a report is clicked
+
+  // Clear start and end dates
+  startDate.value = "";
+  endDate.value = "";
 
   if (["item-list", "total-sales", "expired-product"].includes(reportType)) {
     showDatePicker.value = true; // Show date picker for these reports
@@ -278,174 +301,101 @@ const showReport = async (reportType) => {
   // Set columns based on report type
   switch (reportType) {
     case "monthly-sales":
-      columns.value = ["product_type_id", "price_sold_at", "quantity", "total_price"];
+      columns.value = ["product_name", "price_sold_at", "quantity", "total_price"];
       break;
     case "item-list":
-      columns.value = ["product_type", "product_description", "batch_no", "branch_name", "status", "quantity_available"];
+      columns.value = ["product_name", "product_description", "batch_no", "branch_name", "status", "quantity_available"];
       break;
     case "total-sales":
-      columns.value = ["product_type_id", "price_sold_at", "quantity", "total_price"];
+      columns.value = ["product_name", "price_sold_at", "quantity", "total_price"];
       break;
     case "price-list":
-      columns.value = ["product_type_name", "product_description", "cost_price", "selling_price"];
+      columns.value = ["product_name", "product_description", "cost_price", "selling_price"];
       break;
     case "expired-product":
-      columns.value = ["product_sub_category", "product_type_name", "batch_no", "expiry_date", "purchase_unit_name", "selling_unit_name", "quantity_available"];
+      columns.value = ["product_name","product_sub_category",  "batch_no", "expiry_date", "purchase_unit_name", "selling_unit_name", "quantity_available"];
       break;
   }
 
   // Fetch data directly for reports without a date picker
   if (!showDatePicker.value) {
-    loading.value = true;  // Show loading indicator for monthly and price-list reports
-    await fetchReportData(reportType);  // Fetch report data immediately
-    loading.value = false;  // Hide loading indicator after fetching
+    await fetchReportData(reportType); // Fetch report data immediately
   }
+  loading.value = false; // Hide loading indicator after fetching
 };
-
-
 const downloadPDF = async () => {
   loading.value = true; // Start loading
 
   let url = "";
 
-  // Set API URL with all=true
+  // Set API URL with all=true based on the report type
   switch (currentReportType.value) {
     case "monthly-sales":
-      url = `/monthly-sale-reports?all=true`;
+      //console.log(import.meta.env.VITE_BACKEND_BASEURL);
+      url = `${import.meta.env.VITE_BACKEND_BASEURL}monthly-sale-reports?all=true`;
       break;
     case "item-list":
-      url = `/item-lists?start_date=${startDate.value}&end_date=${endDate.value}&all=true`;
+      url = `${import.meta.env.VITE_BACKEND_BASEURL}item-lists?start_date=${startDate.value}&end_date=${endDate.value}&all=true`;
       break;
     case "total-sales":
-      url = `/total-sale-reports?start_date=${startDate.value}&end_date=${endDate.value}&all=true`;
+      url = `${import.meta.env.VITE_BACKEND_BASEURL}total-sale-reports?start_date=${startDate.value}&end_date=${endDate.value}&all=true`;
       break;
     case "price-list":
-      url = `/product-price-lists?all=true`;
+      url = `${import.meta.env.VITE_BACKEND_BASEURL}product-price-lists?all=true`;
       break;
     case "expired-product":
-      url = `/expired-product-by-dates?start_date=${startDate.value}&end_date=${endDate.value}&all=true`;
+      url = `${import.meta.env.VITE_BACKEND_BASEURL}expired-product-by-dates?start_date=${startDate.value}&end_date=${endDate.value}&all=true`;
       break;
     default:
+      loading.value = false;
       return;
   }
-  const orgDetailsCache = ref(null);
 
   try {
-    // Fetch report data
-    const reportResponse = await apiService.get(url);
+  
+    // Hardcoded token (replace with your actual token)
+    //const token = '35|MMeIDQNZLz9qnZIm0CdvzrVl6DRMAVUtHHs0J893f05bbb3a';
+    const token = getToken();
 
-    // Fetch organization details (from cache or API)
-    if (!orgDetailsCache.value) {
-      const orgDetailsResponse = await apiService.get('/user-org-and-branch-details');
-      if (orgDetailsResponse.success) {
-        orgDetailsCache.value = orgDetailsResponse.data;
-      } else {
-        console.log('detail log')
-        throw new Error("Failed to fetch organization details");
+    // Fetch the PDF file
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/pdf',
       }
+    });
+
+    // Check if the response is okay
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
 
-    if (reportResponse.success && reportResponse.data.length > 0 && orgDetailsCache.value) {
-      const doc = new jsPDF();
+    // Convert the response to a blob
+    const blob = await response.blob();
+    console.log(blob); // Debugging: Log the blob
 
-      // Extract organization details
-      const {
-        organization_name,
-        organization_logo,
-        company_address,
-        company_phone_number,
-        company_email,
-        branch_name,
-        branch_address,
-        branch_email,
-        branch_phone_number,
-        country_name,
-        state_name
-      } = orgDetailsCache.value;
+    // Create a download link
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${currentReportTitle.value}.pdf`; // Set the download file name
+    document.body.appendChild(link);
+    link.click(); // Programmatically click the link to trigger the download
 
-      doc.setFontSize(12);
-const pageWidth = doc.internal.pageSize.getWidth();
-const headerYPosition = 10;
-
-doc.text(organization_name || "", pageWidth / 2, headerYPosition, { align: "center" });
-doc.text(company_address || "", pageWidth / 2, headerYPosition + 6, { align: "center" });
-doc.text(`${company_phone_number || ""} | ${company_email || ""}`, pageWidth / 2, headerYPosition + 12, { align: "center" });
-doc.text(`${branch_name || ""} Branch`, pageWidth / 2, headerYPosition + 18, { align: "center" });
-
-// Combine branch address, state, and country on one line
-doc.text(`Address: ${branch_address || ""}, ${state_name || ""}, ${country_name || ""}`, pageWidth / 2, headerYPosition + 24, { align: "center" });
-
-// Combine branch phone number and email on the last line, separated by a pipe
-doc.text(`${branch_phone_number || ""} | ${branch_email || ""}`, pageWidth / 2, headerYPosition + 30, { align: "center" });
-
-
-      // Company Logo
-      if (organization_logo) {
-        const img = new Image();
-        img.src = organization_logo;
-        doc.addImage(img, 'PNG', 10, 10, 40, 20); // Adjust dimensions
-      }
-
-      // Set columns and data for the table
-      const tableHeaders = [
-        "S.No",
-        ...columns.value.map((column) => column.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase()))
-      ];
-
-      const tableData = reportResponse.data.map((item, index) => {
-        const rowData = [index + 1];
-        columns.value.forEach((column) => {
-          rowData.push(item[column] || "N/A"); // Provide default value if missing
-        });
-        return rowData;
-      });
-
-      // Add Grand Total Row based on report type
-      let totalRow = [];
-      switch (currentReportType.value) {
-        case "monthly-sales":
-        case "total-sales":
-          totalRow = ["Grand Total", "", "", "", grandTotalPrice.value.toFixed(2)];
-          break;
-        case "item-list":
-          totalRow = ["Grand Total", "", "", "", "", grandTotalQuantityAvailable.value];
-          break;
-        case "expired-product":
-          totalRow = ["Grand Total", "", "", "", "", "", grandTotalQuantityAvailable.value];
-          break;
-      }
-
-      // Append grand total row if applicable
-      if (totalRow.length > 0) {
-        tableData.push(totalRow);
-      }
-
-      // Add the report title and table
-      doc.setFontSize(18);
-      doc.text(currentReportTitle.value, 14, headerYPosition + 40); // Adjust position below header
-
-      doc.autoTable({
-        head: [tableHeaders],
-        body: tableData,
-        startY: headerYPosition + 50, // Adjust startY for spacing
-        styles: {
-          fontSize: 10,
-          fontStyle: 'bold',
-        },
-        theme: 'grid',
-      });
-
-      // Save the PDF with dynamic title
-      doc.save(`${currentReportTitle.value}.pdf`);
-    } else {
-      console.error("No data found for the report or organization details");
-    }
+    // Clean up the URL object and remove the link from the document
+    URL.revokeObjectURL(link.href);
+    document.body.removeChild(link);
   } catch (error) {
     console.error("Error downloading PDF:", error);
   } finally {
     loading.value = false; // Stop loading
   }
 };
+
+
+
+
+
 
 
 </script>
