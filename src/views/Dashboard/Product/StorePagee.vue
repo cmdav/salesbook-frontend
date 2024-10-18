@@ -240,7 +240,6 @@ table {
 }
 
 .prod_des{
-    max-width: 30em; 
   white-space: pre-wrap;
   word-wrap: break-word;
 }
@@ -253,6 +252,7 @@ td{
 }
 th,
 td {
+  max-width: 35em;
   padding: 8px;
   text-align: left;
   border: 2px solid #c35214;

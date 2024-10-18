@@ -127,6 +127,7 @@ function handleBranchChange(selectedBranchId) {
 async function fetchBranch(branchId = 1) {
   try {
     const response = await apiService.get(`purchases?branch_id=${branchId}`);
+    console.log(response.data)
       if (response.data && response.data.length) {
       data.value = response.data;
       errorMessage.value = '';
