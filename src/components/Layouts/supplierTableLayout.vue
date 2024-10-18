@@ -264,10 +264,13 @@ table {
 
 th,
 td {
+  @apply border-b-[1px] border-b-brand;
+  max-width: 35em;
   padding: 8px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
   text-align: left;
   border-bottom: 1px solid #fff;
-  @apply border-b-[1px] border-b-brand;
 }
 
 tbody,

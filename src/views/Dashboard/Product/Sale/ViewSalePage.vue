@@ -21,8 +21,8 @@
         <thead>
           <tr>
             <th>S.NO</th>
-            <th>PRODUCT TYPE</th>
-            <th>PRODUCT TYPE DESCRIPTION</th>
+            <th>PRODUCT</th>
+            <th>PRODUCT DESCRIPTION</th>
             <!-- <th>BATCH NO</th> -->
             <!-- <th>COST PRICE</th> -->
             <th>PRICE SOLD AT(NGN)</th>

@@ -12,9 +12,9 @@
         <thead>
           <tr>
             <th>S.NO</th>
-            <th>PRODUCT TYPE</th>
-            <th>PRODUCT TYPE IMAGE</th>
-            <th>PRODUCT TYPE DESCRIPTION</th>
+            <th>PRODUCT</th>
+            <th>PRODUCT IMAGE</th>
+            <th>PRODUCT DESCRIPTION</th>
             <th>BATCH NO</th>
             <!-- <th>QUANTITY</th> -->
             <th>PURCHASE UNIT</th>
@@ -127,6 +127,7 @@ function handleBranchChange(selectedBranchId) {
 async function fetchBranch(branchId = 1) {
   try {
     const response = await apiService.get(`purchases?branch_id=${branchId}`);
+    console.log(response.data)
       if (response.data && response.data.length) {
       data.value = response.data;
       errorMessage.value = '';

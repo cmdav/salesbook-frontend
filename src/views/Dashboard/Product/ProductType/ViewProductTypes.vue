@@ -195,7 +195,7 @@ function handleBranchChange(selectedBranchId) {
 
 async function fetchBranch(branchId = 1) {
   try {
-    console.log('called')
+    // console.log('called');
     const response = await apiService.get(`/product-types?branch_id=${branchId}`);
     console.log('response called:', response)
       if (response.data && response.data.length) {
