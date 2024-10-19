@@ -84,7 +84,7 @@ function decryptToken(encryptedToken, key) {
   }
 }
 
-// Function to sync sales from IndexedDB to the server
+// Function to sync sales from IndexedDB to the servers
 async function syncSalesToServer() {
   try {
     if (!encryptionKey) {
