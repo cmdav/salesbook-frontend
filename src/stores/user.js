@@ -5,6 +5,7 @@ import { getUserProfile, uploadCompanyLogo } from '@/services/Profile'
 import { openDB } from 'idb'; // IndexedDB helper
 
 
+
 // Open the IndexedDB database
 async function openUserDB() {
   return await openDB('user-db', 1, {
@@ -18,7 +19,7 @@ async function openUserDB() {
 
 // Store encrypted user data in IndexedDB
 async function storeUserInIndexedDB(userData) {
-  const db = await openUserDB();
+  const db = await openUserDB();;
   const tx = db.transaction('user', 'readwrite');
   const store = tx.objectStore('user');
   await store.put({ id: 1, encryptedUser: userData });
@@ -29,7 +30,7 @@ async function storeUserInIndexedDB(userData) {
 
 // Delete user data from IndexedDB
 async function deleteUserFromIndexedDB() {
-  const db = await openUserDB();
+  const db = await openUserDB();;
   const tx = db.transaction('user', 'readwrite');
   const store = tx.objectStore('user');
   await store.delete(1);
