@@ -8,7 +8,6 @@
 
       <!-- Form for adding a new sale -->
       <form @submit.prevent="handleSubmit">
-
         <div class="input-group w-[70%]">
           <label class="block text-sm font-medium text-gray-700">Product Name</label>
           <input
@@ -33,12 +32,18 @@
         </div>
 
         <div class="input-group w-[70%]">
-          <label class="block text-sm font-medium text-gray-700">Product Description</label>
-          <input
+          <label class="block text-sm font-medium text-gray-700"
+            >Product Description
+            <span class="text-gray-500 text-sm">
+              ({{ formState.productTypeDescription.length }}/300 characters)
+            </span>
+          </label>
+          <textarea
             v-model="formState.productTypeDescription"
             required
             type="text"
             placeholder="Enter Product Description"
+            maxlength="300"
             class="input"
             @keypress="preventSubmitOnEnter"
           />
@@ -254,8 +259,6 @@
       :sellingUnitId="selectedSellingUnit"
     />
   </DashboardLayout>
-
-  
 </template>
 
 <script setup>
@@ -290,8 +293,8 @@ const formState = reactive({
   vat: '1',
   selling_unit: '',
   selling_unit_cty: '',
-  purchaseUnit: '', 
-  sellingUnit: '',
+  purchaseUnit: '',
+  sellingUnit: ''
   // other form states...
 })
 
@@ -304,23 +307,22 @@ const categories = ref([])
 const subCategories = ref([])
 
 const handleBarcodeEntry = (event) => {
-  const newBarcode = event.target.value.trim();
+  const newBarcode = event.target.value.trim()
 
   if (newBarcode !== lastScannedBarcode.value || !newBarcode) {
-    formState.barcode = newBarcode;
-    lastScannedBarcode.value = newBarcode;
-    isBarcodeReadonly.value = true;
+    formState.barcode = newBarcode
+    lastScannedBarcode.value = newBarcode
+    isBarcodeReadonly.value = true
   }
 
-  barcodeInput.value.value = '';
-};
+  barcodeInput.value.value = ''
+}
 
 const clearBarcode = () => {
-  formState.barcode = '';
-  isBarcodeReadonly.value = false;
-  lastScannedBarcode.value = ''; // Clear the last scanned barcode to allow re-entry of the same barcode
-};
-
+  formState.barcode = ''
+  isBarcodeReadonly.value = false
+  lastScannedBarcode.value = '' // Clear the last scanned barcode to allow re-entry of the same barcode
+}
 
 const addPurchaseUnit = () => {
   showModal.value = true
@@ -332,9 +334,9 @@ const addSellingUnit = (purchaseUnitId) => {
 }
 
 const addSellingCapacity = (selectedSellingUnit) => {
-   if (!selectedSellingUnit) {
-    alert('Please select a selling unit first');
-    return;
+  if (!selectedSellingUnit) {
+    alert('Please select a selling unit first')
+    return
   }
   displayCapModal.value = true
 }
@@ -358,7 +360,6 @@ const handlePurchaseUnit = (newType) => {
 }
 
 const handleSellingUnit = (newType) => {
-  
   sellingUnit.value.push(newType)
   console.log(sellingUnit.value)
   selectedSellingUnit.value = newType.id
@@ -375,7 +376,7 @@ const fetchCategory = async () => {
     const response = await apiService.get('/product-categories')
     categories.value = response
     // console.log('Hello Bro');
-    console.log(response);
+    console.log(response)
   } catch (error) {
     catchAxiosError(error)
     console.error('Error fetching products:', error)
@@ -384,10 +385,12 @@ const fetchCategory = async () => {
 
 const fetchSubCategory = async (categoryId) => {
   try {
-    const response = await apiService.get(`/all-product-sub-categories-by-category-id/${categoryId}`)
-    subCategories.value = response;
+    const response = await apiService.get(
+      `/all-product-sub-categories-by-category-id/${categoryId}`
+    )
+    subCategories.value = response
     // console.log('Hello Bro');
-    console.log(response);
+    console.log(response)
   } catch (error) {
     catchAxiosError(error)
     console.error('Error fetching products:', error)
@@ -410,7 +413,7 @@ const fetchPurchasingUnit = async () => {
 }
 
 const fetchSellingUnit = async (purchaseUnitId) => {
-  const selectedUnit = purchaseUnit.value.find(unit => unit.id === purchaseUnitId)
+  const selectedUnit = purchaseUnit.value.find((unit) => unit.id === purchaseUnitId)
   console.log(selectedUnit)
   if (selectedUnit) {
     sellingUnit.value = selectedUnit.selling_units
@@ -420,7 +423,7 @@ const fetchSellingUnit = async (purchaseUnitId) => {
 }
 
 const fetchSellingCapacities = async (sellingUnitId) => {
-  const selectedUnit = sellingUnit.value.find(unit => unit.id === sellingUnitId)
+  const selectedUnit = sellingUnit.value.find((unit) => unit.id === sellingUnitId)
   console.log(selectedUnit)
   if (selectedUnit) {
     sellingCapacity.value = selectedUnit.selling_unit_capacities
@@ -448,16 +451,16 @@ onMounted(async () => {
 })
 
 const handleSubmit = async () => {
-  isSubmitting.value = true;
+  isSubmitting.value = true
 
   const formData = new FormData()
 
-  console.log('Selected Selling Unit:', formState.sellingUnit);
-  console.log('Selected Selling Cap:', selectedSellingCapacity.value);
+  console.log('Selected Selling Unit:', formState.sellingUnit)
+  console.log('Selected Selling Cap:', selectedSellingCapacity.value)
   // formData.append('product_id', formState.product)
   formData.append('product_type_name', formState.productTypeName)
   if (formState.productTypeImage) {
-    formData.append('product_type_image', formState.productTypeImage);
+    formData.append('product_type_image', formState.productTypeImage)
   }
   formData.append('product_type_description', formState.productTypeDescription)
   formData.append('barcode', formState.barcode)
@@ -469,18 +472,18 @@ const handleSubmit = async () => {
   formData.append('purchase_unit_id', formState.purchaseUnit)
 
   try {
-    const res = await apiService.post('/product-types', formData);
-    router.push('/product-type');
+    const res = await apiService.post('/product-types', formData)
+    router.push('/product-type')
 
-    catchAxiosSuccess(res);
-    return res;
+    catchAxiosSuccess(res)
+    return res
   } catch (error) {
-    catchAxiosError(error);
-    console.error('Error submitting form:', error);
+    catchAxiosError(error)
+    console.error('Error submitting form:', error)
   } finally {
-    isSubmitting.value = false;
+    isSubmitting.value = false
   }
-};
+}
 </script>
 
 <style scoped>
@@ -566,14 +569,14 @@ button {
 .btn-brand:hover:not(:disabled) {
   background-color: #5a6268;
 }
-.option{
+.option {
   display: flex;
 }
-.option div{
+.option div {
   margin: 0.3em 0.5em 1em;
 }
 
-.option div input{
+.option div input {
   margin-right: 0.2em;
 }
 
