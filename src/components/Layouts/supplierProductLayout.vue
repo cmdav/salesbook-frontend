@@ -236,9 +236,12 @@
   tbody,
   tr,
   td {
+    @apply bg-white text-brand border-b-[1px] border-b-brand;
+    max-width: 35em;
+  white-space: pre-wrap;
+  word-wrap: break-word;
     padding: 8px;
     text-align: left;
-    @apply bg-white text-brand border-b-[1px] border-b-brand;
   }
   
   tr {

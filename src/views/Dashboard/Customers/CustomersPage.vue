@@ -27,7 +27,7 @@
           </div>
           <div class="flex justify-between mt-6 ">
             <div>
-              <BranchDropDown v-if="roles" :branches="branches" 
+              <BranchDropDown v-if="roles" :branches="branches"
                @change="(selectedBranchId) => handleBranchChange(userType, selectedBranchId)" />
             </div>
             <div class="flex flex-row gap-2 items-center">
@@ -60,7 +60,7 @@
                 <table class="table-auto w-full">
                   <thead class="bg-[#F9FBFF] border-y text-[#A8AABC] text-[14px]">
                     <tr>
-                      <th class="py-4 pl-4 flex border-x">S/N</th>
+                      <th class="py-4 pl-4 border-x">S/N</th>
                       <th v-if="userType === 'individual'" class="text-left p-4 pr-0 px-6 border-x capitalize">Full Name</th>
                       <th v-if="userType === 'company'" class="text-left p-4 pr-0 px-6 border-x capitalize">Company Name</th>
                       <th v-if="userType === 'company'" class="text-left p-4 pr-0 px-6 border-x capitalize">Contact Person</th>
@@ -71,24 +71,20 @@
                   </thead>
                   <tbody>
                     <tr v-for="(i, index) in data" :key="i.id" class="border-b text-[14px]">
-                      <td class="py-4 pl-4 border-x">  
+                      <td class="py-4 pl-4 border-x">
                         {{(parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1}}
                       </td>
                       <td v-if="userType === 'individual'" class="text-left p-4 pr-0 pl-6 border-x capitalize">
                         <button class="">
                           {{ i.first_name }} {{ i.last_name }}
                         </button>
-                        <!-- <button @click="redirectToSingleCustomerPage(i.id)" class="">
-                          {{ i.first_name }} {{ i.last_name }}
-                        </button> -->
+
                       </td>
                       <td v-if="userType === 'company'" class="text-left p-4 pr-0 pl-6 border-x capitalize">
                         <button class="">
                           {{ i.company_name }}
                         </button>
-                        <!-- <button @click="redirectToSingleCustomerPage(i.id)" class="">
-                          {{ i.company_name }}
-                        </button> -->
+
                       </td>
                       <td v-if="userType === 'company'" class="text-left p-4 pr-0 pl-6 border-x">{{ i.contact_person }}</td>
                       <td class="text-left p-4 pr-0 pl-6 border-x">{{ i.email }}</td>
@@ -96,9 +92,10 @@
                       <td class="text-left p-4 pr-0 pl-6 capitalize border-x">{{ i.address }}</td>
                     </tr>
                   </tbody>
-      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
 
                 </table>
+      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+
               </div>
               <div v-if="!isSearching" class="mx-auto w-fit my-5">
                 <Pagination :currentPage="currentPage" :totalPages="totalPages" @changePage="changePage" />
@@ -110,7 +107,6 @@
     </div>
   </DashboardLayout>
 </template>
-
 
 <script setup>
 import { ref, reactive, watch, onMounted, computed } from 'vue';
@@ -143,16 +139,33 @@ const errorMessage = ref('');
 const selectedBranch = ref(null);
 
 
+// onMounted(async () => {
+//   try {
+//     const response = await apiService.get('/list-business-branches');
+//     console.log(response)
+//     branches.value = response || [];
+//     console.log(branches.value)
+//   } catch (error) {
+//     console.error('Failed to fetch branches:', error);
+//   }
+// });
+
 onMounted(async () => {
   try {
-    const response = await apiService.get('/list-business-branches'); 
-    console.log(response)
+    // Fetch branches
+    const response = await apiService.get('/list-business-branches');
     branches.value = response || [];
-    console.log(branches.value)
+    
+    // Fetch initial data and totals
+    await Promise.all([
+      fetchData(),
+      fetchTotals()
+    ]);
   } catch (error) {
-    console.error('Failed to fetch branches:', error);
+    console.error('Failed to initialize dashboard:', error);
   }
 });
+
 
 function handleBranchChange(type, selectedBranchId) {
   selectedBranch.value = selectedBranchId;
@@ -163,6 +176,56 @@ function handleBranchChange(type, selectedBranchId) {
   }
 }
 
+async function fetchTotals() {
+  try {
+    const [individualsResponse, companiesResponse] = await Promise.all([
+      apiService.get('customers?type=individual'),
+      apiService.get('customers?type=company')
+    ]);
+
+    totalIndividuals.value = individualsResponse.total;
+    totalCompanies.value = companiesResponse.total;
+  } catch (error) {
+    console.error('Failed to fetch totals:', error);
+  }
+}
+
+async function fetchData(page = 1, type = 'individual', search = '') {
+  try {
+    const url = `customers?type=${type}&page=${page}&search=${search}`;
+    const response = await apiService.get(url);
+    console.log(response);
+    if (type === 'individual') {
+      data.value = response.data.map((i) => ({
+        id: i.id,
+        first_name: i.first_name,
+        last_name: i.last_name,
+        email: i.email,
+        phone_number: i.phone_number,
+        address: i.address
+      }));
+      // totalIndividuals.value = response.total;
+    } else {
+      data.value = response.data.map((i) => ({
+        id: i.id,
+        company_name: i.company_name,
+        contact_person: i.contact_person,
+        email: i.email,
+        phone_number: i.phone_number,
+        address: i.address
+      }));
+      // totalCompanies.value = response.total;
+    }
+    currentPage.value = response.current_page;
+    totalPages.value = response.last_page;
+    itemsPerPage.value = response.per_page;
+
+    await fetchTotals()
+
+  } catch (error) {
+    console.error('Failed to fetch data:', error);
+  }
+}
 
 async function fetchBranch( type = 'individual', branchId = selectedBranch.value) {
   try {
@@ -178,7 +241,7 @@ async function fetchBranch( type = 'individual', branchId = selectedBranch.value
         phone_number: i.phone_number,
         address: i.address
       }));
-      totalIndividuals.value = response.total;
+      // totalIndividuals.value = response.total;
       errorMessage.value = '';
     } else {
       data.value = [];
@@ -194,18 +257,19 @@ async function fetchBranch( type = 'individual', branchId = selectedBranch.value
         phone_number: i.phone_number,
         address: i.address
       }));
-      totalCompanies.value = response.total;
+      // totalCompanies.value = response.total;
       errorMessage.value = '';
     } else {
       data.value = [];
-      errorMessage.value = 'No items found for the selected branch.';
+      errorMessage.value = 'No company customer found for the selected branch.';
     }
     }
    currentPage.value = response.current_page;
     totalPages.value = response.last_page;
     itemsPerPage.value = response.per_page;
-    console.log(itemsPerPage.value);
-    
+
+    await fetchTotals();
+
     return data.value;
   } catch (error) {
     console.error('Failed to fetch sales data:', error);
@@ -218,9 +282,7 @@ let sortInput = reactive({
 
 const data = ref([]);
 
-// const redirectToSingleCustomerPage = (id) => {
-//   router.push({ name: 'view-customers', params: { id } });
-// };
+
 
 function handleToggleTableButton() {
   toggleCompanyTable.value = false;
@@ -259,44 +321,11 @@ watch(() => sortInput.search, async (newSearch) => {
   }
 });
 
-async function fetchData(page = 1, type = 'individual', search = '') {
-  try {
-    const url = `customers?type=${type}&page=${page}&search=${search}${selectedBranch.value ? `&branch_id=${selectedBranch.value}` : ''}`;
-    const response = await apiService.get(url);
-    console.log(response);
-    if (type === 'individual') {
-      data.value = response.data.map((i) => ({
-        id: i.id,
-        first_name: i.first_name,
-        last_name: i.last_name,
-        email: i.email,
-        phone_number: i.phone_number,
-        address: i.address
-      }));
-      totalIndividuals.value = response.total;
-    } else {
-      data.value = response.data.map((i) => ({
-        id: i.id,
-        company_name: i.company_name,
-        contact_person: i.contact_person,
-        email: i.email,
-        phone_number: i.phone_number,
-        address: i.address
-      }));
-      totalCompanies.value = response.total;
-    }
-    currentPage.value = response.current_page;
-    totalPages.value = response.last_page;
-    itemsPerPage.value = response.per_page;
-    console.log(itemsPerPage.value);
-  } catch (error) {
-    console.error('Failed to fetch data:', error);
-  }
-}
+// onMounted(() => {
+//   fetchData();
+// });
 
-onMounted(() => {
-  fetchData();
-});
+
 </script>
 
 
