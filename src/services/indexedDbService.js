@@ -1,21 +1,46 @@
 // services/indexedDBService.js
+// services/indexedDBService.js
 import { openDB } from 'idb';
 
 // Function to initialize Sales DB
+// services/indexedDBService.js
+
 export async function initializeSalesDB() {
-  return openDB('sales-db', 1, { // Fixed version number during development
-    upgrade(db, oldVersion) {
+  return openDB('sales-db', 2, {
+    upgrade(db, oldVersion, newVersion, transaction) {
+      console.log(` ${transaction} Upgrading from version ${oldVersion} to ${newVersion}`);
+
       if (oldVersion < 1) {
-        db.createObjectStore('products', { keyPath: 'id' });
-        db.createObjectStore('sales', { autoIncrement: true });
-        db.createObjectStore('payment-methods', { keyPath: 'id' });
-        db.createObjectStore('customers', {  autoIncrement: true});
-        db.createObjectStore('purchases', {  autoIncrement: true});
-        db.createObjectStore('suppliers', { keyPath: 'email' }); 
+        if (!db.objectStoreNames.contains('products')) {
+          db.createObjectStore('products', { keyPath: 'id' });
+          console.log('Created products store');
+        }
+        if (!db.objectStoreNames.contains('sales')) {
+          db.createObjectStore('sales', { autoIncrement: true });
+          console.log('Created sales store');
+        }
+        if (!db.objectStoreNames.contains('payment-methods')) {
+          db.createObjectStore('payment-methods', { keyPath: 'id' });
+          console.log('Created payment-methods store');
+        }
+        if (!db.objectStoreNames.contains('customers')) {
+          db.createObjectStore('customers', { autoIncrement: true });
+          console.log('Created customers store');
+        }
+        if (!db.objectStoreNames.contains('purchases')) {
+          db.createObjectStore('purchases', { autoIncrement: true });
+          console.log('Created purchases store');
+        }
+        if (!db.objectStoreNames.contains('suppliers')) {
+          db.createObjectStore('suppliers', { keyPath: 'email' });
+          console.log('Created suppliers store');
+        }
       }
     }
   });
 }
+
+
 //Initialize User Db
 export async function initializeUserDB() {
   return openDB('user-db', 1, {
