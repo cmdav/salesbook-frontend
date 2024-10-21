@@ -320,8 +320,6 @@ const deleteUnit = async (id) => {
   }
 }
 
-
-
 onMounted(() => fetchPurchaseUnits(currentPage.value))
 // onMounted(() => download())
 watch(search, async (newSearch) => {
