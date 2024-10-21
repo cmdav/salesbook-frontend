@@ -195,7 +195,7 @@ import { useCustomerstore } from '@/stores/customers'; // Pinia store for custom
 import CustomerFormModal from '@/components/UI/Modal/CustomerFormModal.vue'; // Modal component for adding a new customer
 import ReceiptModal from '@/components/UI/Modal/ReceiptModal.vue'; // Modal component for showing the receipt
 import { storeToRefs } from 'pinia';
-import { generateReceiptPDF } from './sentToPrinter'; // Function to generate PDF for the receipt
+import { sendToPrinter } from './sentToPrinter'; // Function to generate PDF for the receipt
 import { catchAxiosSuccess } from '@/services/Response'; // Services to handle success and error messages for API responses
 import { isOnline } from '@/isOnline'; 
 import { getAllCustomers, getProductById, addSale, getAllProducts, initializeSalesDB, getAllPaymentMethods, addPaymentMethods} from '@/services/indexedDbService'
@@ -575,7 +575,7 @@ const addSales = async () => {
 const handleReceiptChoice = (choice) => {
   showReceiptModal.value = false;
   if (choice === 'yes') {
-    generateReceiptPDF(res.value.data); // Generate the receipt PDF if 'yes'
+    sendToPrinter(res.value.data); // Generate the receipt PDF if 'yes'
   }
   catchAxiosSuccess(res.value); // Handle the successful API response
   router.push('/sale'); // Redirect to the sales page
