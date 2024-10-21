@@ -33,7 +33,7 @@
            <p v-if="expiredProducts.length === 0" class="text-center mx-auto font-[1.5em] text-red-500">No product expiring within the next 7 days</p>
               <tr v-for="(item, index) in expiredProducts" :key="item.id">
                 <td>{{ index + 1 }}</td>
-                <td>{{ item.product_type_name }}</td>
+                <td>{{ item.product_name }}</td>
                 <td>{{ item.quantity_available }}</td>
                 <td>{{ item.batch_no }}</td>
                 <td>{{ item.product_sub_category }}</td>
