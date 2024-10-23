@@ -47,6 +47,26 @@
           />
         </div>
       </div>
+      <div class="flex lg:flex-row flex-col w-full gap-[20px]">
+        <div class="mb-3 flex flex-col w-full">
+          
+          <label for="country">Country*</label>
+          <select id="country" v-model="selectedCountry" @change="fetchStates" class="select-input">
+            <option value="" disabled>Select Country</option>
+            <option v-for="country in countries" :key="country.id" :value="country.id">{{ country.name }}</option>
+          </select>
+          <span v-if="errors.country" class="text-red-500">{{ errorsMsg.country }}</span>
+        </div>
+        <div class="mb-3 flex flex-col w-full">
+          <label for="state">State*</label>
+          <select id="state" v-model="formData.state" class="select-input">
+            <option value="" disabled>Select State</option>
+            <option v-for="state in states" :key="state.id" :value="state.id">{{ state.name }}</option>
+          </select>
+          <span v-if="errors.state" class="text-red-500">{{ errorsMsg.state }}</span>
+        </div>
+      
+      </div>
 
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
 
@@ -107,8 +127,9 @@
     </div>
 
     <div class="flex flex-col lg:flex-row w-full gap-[30px] mt-4">
-      <button :disabled="loading" @click="handleSignup()"
-        :class="!isFormFullyValid ? '!bg-primary-100/[30%] cursor-not-allowed' : 'bg-brand'"
+      <button @click="handleSignup()"
+      :disabled="!isFormFullyValid || loading"
+        :class="(!isFormFullyValid || loading) ? '!bg-primary-100/[30%] cursor-not-allowed' : 'bg-brand'"
         class="btn-brand !rounded-[5px] flex gap-2 items-center justify-center !text-white text-[14px] !py-[16px] font-semibold w-full">
         <span v-if="!loading" class="font-semibold !text-[15px]">Submit</span>
         <Loader v-else />
@@ -126,7 +147,8 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, reactive } from "vue";
+import { ref, computed, watch, reactive, onMounted} from "vue";
+import apiService from '@/services/apiService'
 import AuthInput from "@/components/UI/Input/AuthInput.vue";
 import PasswordInput from "@/components/UI/Input/PasswordInput.vue";
 import Loader from "@/components/UI/Loader.vue";
@@ -151,6 +173,7 @@ const formData = reactive({
   company_name: "",
   address: "",
   email: "",
+  state: "",
   password: "",
   confirmPassword: "",
 });
@@ -164,6 +187,8 @@ const errors = reactive({
   phone_no:false,
   address: false,
   email: false,
+  state: false,
+  country: false,
   password: false,
   confirmPassword: false,
 });
@@ -178,6 +203,8 @@ const errorsMsg = {
   phone_num: "Phone Number is required",
   address: "Address is required",
   email: "Email is required",
+  state: "State is required",
+  country: "Country is required",
   password: "Password is required",
   confirmPassword: "Password does not match",
 };
@@ -199,26 +226,21 @@ const isValidEmail = computed(() => {
 const passwordsMatch = computed(() => {
   return formData.password === formData.confirmPassword;
 });
-
 const isValidPassword = computed(() => {
   return passwordRegex.test(formData.password);
 });
 const isMinLengthMet = computed(() => {
   return formData.password.length >= 8;
 });
-
 const isAtLeastOneNumber = computed(() => {
   return /\d/.test(formData.password);
 });
-
 const isAtLeastOneSpecialChar = computed(() => {
   return /[!@#$%^&*()_+[\]{};':"\\|,.<>/?]+/.test(formData.password);
 });
-
 const isAtLeastOneLowercase = computed(() => {
   return /[a-z]/.test(formData.password);
 });
-
 const isAtLeastOneUppercase = computed(() => {
   return /[A-Z]/.test(formData.password);
 });
@@ -228,9 +250,11 @@ const isFormFullyValid = computed(() => {
     isValidName(formData.firstName) &&
     isValidName(formData.lastName) &&
     isValidName(formData.company_name) &&
-    isValidEmail.value &&
+    isValidEmail.value &
     isValidPassword.value &&
     passwordsMatch.value 
+    
+    
   );
 });
 
@@ -280,18 +304,6 @@ const validateForm = () => {
     isValid = false;
   }
 
-  // if (!isValidName(formData.lastName)) {
-  //   errors.lastName = true;
-  //   errorsMsg.lastName = "Invalid characters in Last Name";
-  //   isValid = false;
-  // } 
-
-  // if (!isValidName(formData.company_name)) {
-  //   errors.company_name = true;
-  //   errorsMsg.company_name = "Invalid characters in Company Name";
-  //   isValid = false;
-  // }
-
   if(!phoneNo.value){
     errors.phone_no = true;
     errorsMsg.phone_num = "Phone Number is required";
@@ -307,6 +319,19 @@ const validateForm = () => {
     errorsMsg.email = "Invalid email";
     isValid = false;
   }
+
+  if (!selectedCountry.value) {
+    errors.country = true;
+    errorsMsg.country = "Country is required";
+    isValid = false;
+  }
+
+  if (!formData.state) {
+    errors.state = true;
+    errorsMsg.state = "State is required";
+    isValid = false;
+  }
+
   if (!isValidPassword.value) {
     errors.password = true;
     errorsMsg.password = "Password is required";
@@ -361,6 +386,32 @@ watch(formData, () => {
 watch(dob, () => {
   clearInputErrors();
 });
+
+const countries = ref([]);
+const states = ref([]);
+const selectedCountry = ref("");
+
+onMounted(async () => {
+  try{
+    const res = await apiService.get('/countries');
+    console.log(res)
+    countries.value = res
+  } catch (err){
+    console.error("Error fetching countries", err)
+  }
+});
+
+const fetchStates = async () => {
+  if (!selectedCountry.value) return;
+  try{
+    const res = await apiService.get(`/states?country_id=${selectedCountry.value}`)
+    console.log(res)
+    states.value = res
+  } catch (err) {
+    console.error("Error fetching State", err)
+  }
+}
+
 const handleSignup = async () => {
   loading.value = true;
   if (!validateForm()) {
@@ -376,6 +427,8 @@ const handleSignup = async () => {
     company_address: formData.address,
     dob: dob.value,
     email: formData.email,
+    state_id: formData.state,
+    country_id: selectedCountry.value,
     password: formData.password,
     password_confirmation: formData.confirmPassword,
     // type_id: 2,
@@ -383,6 +436,7 @@ const handleSignup = async () => {
     organization_type: "sole_properietor",
   };
   try {
+    console.log(payload)
     let res = await register(payload);
     // if (res.data.status === true) {
     router.push({ name: "verify", params: { email: formData.email } });
@@ -401,3 +455,14 @@ const handleSignup = async () => {
   }
 };
 </script>
+<style scoped>
+.select-input {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  transition: background-color 0.3s ease;
+}
+</style>

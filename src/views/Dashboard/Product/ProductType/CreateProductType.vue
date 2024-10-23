@@ -1,12 +1,10 @@
 <template>
   <DashboardLayout pageTitle="Create Product">
     <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
-      <!-- Navigation buttons at the top -->
       <div class="top-buttons">
         <router-link to="/product-type" class="button back-btn">Back</router-link>
       </div>
 
-      <!-- Form for adding a new sale -->
       <form @submit.prevent="handleSubmit">
         <div class="input-group w-[70%]">
           <label class="block text-sm font-medium text-gray-700">Product Name</label>
