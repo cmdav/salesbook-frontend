@@ -214,8 +214,8 @@ async function fetchData(page = 1) {
   });
 });
 
-      console.log("end of processing the loop")
-      console.log(offlineData.value);
+      //console.log("end of processing the loop")
+     // console.log(offlineData.value);
       
       if (offlineData.value.length === 0) {
         errorMessage.value = 'No offline sales data found';
