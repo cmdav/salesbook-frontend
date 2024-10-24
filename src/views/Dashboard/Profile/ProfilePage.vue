@@ -24,36 +24,48 @@
           >
             {{
               userProfileDetails?.first_name || userProfileDetails?.last_name
-                ? userProfileDetails?.first_name + ` ` + userProfileDetails?.last_name
-                : userProfileDetails?.company_name
+                ? (userProfileDetails?.first_name || '') + ` ` + (userProfileDetails?.last_name || '')
+                : userProfileDetails?.company_name || ''
             }}
 
+            
+          </p>
+          <p
+            >
             <span
               ><span
                 class="bg-brand rounded-full py-[2.05px] capitalize text-[12.519px] text-[#E6F1F3] font-medium px-[19px]"
-                >{{ userProfileDetails?.role }}</span
+                >{{ userProfileDetails?.role || '' }}</span
               ></span
-            >
-          </p>
-          <p
-            ><span
+            ><br/>
+            <span
               class="bg-brand rounded-full py-[2.05px] capitalize text-[15px] text-[#E6F1F3] font-medium px-[19px]"
-              >{{ userProfileDetails?.organization_type }}</span
+              >{{ userProfileDetails?.organization_type || '' }}</span
             ><br/><span
               class="  py-[2.05px] capitalize text-[16px] text-[#00000066] font-semibold px-[19px]"
-              >{{ userProfileDetails?.organization_code }}</span
+              >{{ userProfileDetails?.organization_code || '' }}</span
             >
             </p
           >
-          <p
+          <!-- <p
             class="text-[#00000066] !my-1.5 text-[16px] flex gap-[8px] items-center leading-[31.739px]"
           >
-            {{ userProfileDetails?.email }}
+            {{ userProfileDetails?.company_name }}
+          </p> -->
+          <p
+            class="text-[#00000066] !my-1.5 text-[16px] items-center leading-[31.739px]"
+          >
+            {{ userProfileDetails?.branch || '' }}
           </p>
           <p
-            class="text-[#00000066] !my-1.5 text-[14.598px] font-semibold mx-auto flex gap-[8px] items-center capitalize leading-[31.739px]"
+            class="text-[#00000066] !my-1.5 text-[16px] items-center leading-[31.739px]"
           >
-            {{ userProfileDetails?.phone_number }}
+            {{ userProfileDetails?.email || '' }}
+          </p>
+          <p
+            class="text-[#00000066] !my-1.5 text-[14.598px] font-semibold mx-auto items-center capitalize leading-[31.739px]"
+          >
+            {{ userProfileDetails?.phone_number || '' }}
           </p>
         
           

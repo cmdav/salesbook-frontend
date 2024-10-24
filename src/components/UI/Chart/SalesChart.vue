@@ -117,22 +117,43 @@ export default {
       },
     };
   },
-  mounted() {
-  if (this.chartData && Array.isArray(this.chartData)) {
-    const graphData = this.chartData;
-    const dataValues = graphData?.map((item) => parseInt(item.daily_sales));
-    const dateValues = graphData?.map((item) => {
-      const date = new Date(item.day.split(" ")[0]);
-      const options = { day: "2-digit", month: "short" };
-      return new Intl.DateTimeFormat("en-US", options).format(date);
-    });
 
-    this.series[0].data = dataValues;
-    this.chartOptions.xaxis.categories = dateValues;
-  } else {
-    console.error("chartData is not defined or not an array.");
-  }
-},
+   watch: {
+    chartData: {
+      immediate: true,
+      handler(newData) {
+        if (Array.isArray(newData)) {
+          const dataValues = newData.map((item) => parseInt(item.daily_sales));
+          const dateValues = newData.map((item) => {
+            const date = new Date(item.day.split(" ")[0]);
+            const options = { day: "2-digit", month: "short" };
+            return new Intl.DateTimeFormat("en-US", options).format(date);
+          });
+
+          this.series[0].data = dataValues;
+          this.chartOptions.xaxis.categories = dateValues;
+        } else {
+          console.error("chartData is not defined or not an array.");
+        }
+      },
+    },
+  },
+//   mounted() {
+//   if (this.chartData && Array.isArray(this.chartData)) {
+//     const graphData = this.chartData;
+//     const dataValues = graphData?.map((item) => parseInt(item.daily_sales));
+//     const dateValues = graphData?.map((item) => {
+//       const date = new Date(item.day.split(" ")[0]);
+//       const options = { day: "2-digit", month: "short" };
+//       return new Intl.DateTimeFormat("en-US", options).format(date);
+//     });
+
+//     this.series[0].data = dataValues;
+//     this.chartOptions.xaxis.categories = dateValues;
+//   } else {
+//     console.error("chartData is not defined or not an array.");
+//   }
+// },
 
 };
 </script>

@@ -2,7 +2,8 @@
   <DashboardLayout pageTitle="Purchase Page">
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
-      <div v-if="addPermissions">
+      <div v-if="addPermissions" class="action">
+        <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" />
         <button class="button add-btn"><router-link to="/create-purchase" class="button add-btn">Add</router-link></button>
       </div>
     </div>
@@ -11,14 +12,21 @@
         <thead>
           <tr>
             <th>S.NO</th>
-            <th>PRODUCT TYPE</th>
-            <th>PRODUCT TYPE DESCRIPTION</th>
+            <th>PRODUCT NAME</th>
+            <th>PRODUCT IMAGE</th>
+            <th>PRODUCT DESCRIPTION</th>
             <th>BATCH NO</th>
-            <th>QUANTITY</th>
+            <!-- <th>QUANTITY</th> -->
+            <th>PURCHASE UNIT</th>
+            <th>SELLING UNIT</th>
+            <th>SELLING UNIT CAPACITY</th>
+            <!-- <th>CONTAINER QTY</th> -->
+            <th>PURCHASE QTY</th>
             <th>EXPIRY DATE</th>
             <th>COST PRICE(NGN)</th>
             <th>SELLING PRICE(NGN)</th>
             <th>SUPPLIER</th>
+            <th>BRANCH</th>
             <th>CREATED BY</th>
             <th>UPDATED BY</th>
             <th v-if="delPermissions">DELETE</th>
@@ -28,19 +36,36 @@
           <tr v-for="(item, index) in data" :key="item.id">
             <td>{{(parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1}}</td>
             <td>{{ item.product_type_name }}</td>
-            <td>{{ item.product_type_description }}</td>
+            <td><img class="w-10 h-10 bg-slate-500/[30%] rounded-lg mx-auto object-cover" :src="item.product_type_image"/></td>
+             <!-- <td>
+              <span :title="item.product_type_description">
+              {{ truncateText(item.product_type_description, 70) }}
+              </span>
+            </td> -->
+            <td>
+              <div class="prod_des">
+                {{item.product_type_description}}
+              </div>
+            </td>
             <td>{{ item.batch_no }}</td>
-            <td>{{ item.quantity }}</td>
+            <!-- <td>{{ item.quantity }}</td> -->
+            <td>{{ item.purchase_unit_name }}</td>
+            <td>{{ item.selling_unit_name }}</td>
+            <td>{{ item.selling_unit_capacity }}</td>
+            <td>{{ item.capacity_qty }}</td>
             <td>{{ item.expiry_date }}</td>
             <td>{{ item.cost_price }}</td>
             <td>{{ item.selling_price }}</td>
             <td>{{ item.supplier}}</td>
+            <td>{{ item.branch_name}}</td>
             <td>{{ item.created_by }}</td>
             <td>{{ item.updated_by }}</td>
-            <td v-if="permissions"><button @click="openDeleteModal(item)">Delete</button></td>
+            <td v-if="delPermissions"><button @click="openDeleteModal(item)">Delete</button></td>
           </tr>
         </tbody>
       </table>
+      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+
     </div>
 
     <DeleteModal v-if="showDeleteModal" @close="closeDeleteModal" @updated="forceRefresh" :items="itemToDelete" :url="'purchases'" :modalTitle="modalTitle" />
@@ -57,6 +82,7 @@ import apiService from '@/services/apiService';
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue';
 import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
 import { useStore } from "@/stores/user";
+import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue';
 
 const search = ref('');
 const isSearching = ref(false);
@@ -70,6 +96,52 @@ const modalTitle = "Delete Purchase";
 const currentPage = ref(1);
 const totalPages = ref(0);
 const itemsPerPage = ref(0);
+const branches = ref([]);
+const errorMessage = ref('');
+
+onMounted(async () => {
+  try {
+    const response = await apiService.get('/list-business-branches'); 
+    console.log(response)
+    branches.value = response || [];
+    console.log(branches.value)
+  } catch (error) {
+    console.error('Failed to fetch branches:', error);
+  }
+});
+
+function handleBranchChange(selectedBranchId) {
+  if (selectedBranchId) {
+    fetchBranch(selectedBranchId);
+  } else {
+    fetchData();
+  }
+}
+
+//function truncateText(text, length) {
+//  if (!text) return ''
+//  return text.length > length ? text.substring(0, length) + '...' : text
+//};
+
+
+async function fetchBranch(branchId = 1) {
+  try {
+    const response = await apiService.get(`purchases?branch_id=${branchId}`);
+    console.log(response.data)
+      if (response.data && response.data.length) {
+      data.value = response.data;
+      errorMessage.value = '';
+    } else {
+      data.value = [];
+      errorMessage.value = 'No items found for the selected branch.';
+    }
+    
+    return data.value;
+  } catch (error) {
+    console.error('Failed to fetch sales data:', error);
+    errorMessage.value = 'An error occurred while fetching data.';
+  }
+}
 
 watch(search, async (newSearch) => {
   if (newSearch) {
@@ -95,7 +167,13 @@ watch(search, async (newSearch) => {
 async function fetchData(page = 1) {
   try {
     const response = await apiService.get(`purchases?page=${page}`);
+    console.log(response)
     data.value = response.data || [];
+      if (data.value.length === 0) {
+      errorMessage.value = 'No items found';
+    } else {
+      errorMessage.value = '';
+    }
     pagination.value = {
       next_page_url: response.next_page_url,
       prev_page_url: response.prev_page_url,
@@ -139,11 +217,12 @@ onMounted(() => fetchData(currentPage.value));
 
 
 const store = useStore();
+const roles = computed(() => store.getUser.user.permission.role_name === "Admin");
+
 const delPermissions = computed(() => {
   const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'purchases');
-  console.log(perm.value)
-  console.log(perm.value?.del)
-  return perm.value?.del == 1; 
+  console.log(perm.del)
+  return perm.del == 1; 
 });
 const addPermissions = computed(() => {
   const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'purchases');
@@ -154,9 +233,16 @@ const addPermissions = computed(() => {
 
 <style scoped>
 .actions {
+  width: 100%;
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
+}
+.action {
+  width: 25%;
+  display: flex;
+  justify-content: space-between;
+  /* margin-bottom: 20px; */
 }
 
 .search-input {
@@ -193,6 +279,12 @@ table {
   table-layout: auto;
 }
 
+.prod_des{
+    max-width: 30em; 
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
 th{
   padding: 8px;
   text-align: left;
@@ -218,5 +310,12 @@ tbody tr:hover {
 
 thead {
   background-color: #C35214;
+}
+
+.error-message {
+  color: rgb(171, 26, 26);
+  font-size: 16px;
+  text-align: center;
+  margin: 20px 0;
 }
 </style>

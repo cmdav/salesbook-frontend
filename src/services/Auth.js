@@ -24,7 +24,8 @@ export const register = async (payload) => {
     try {
         let res = await axios.post('users', payload)
         let ciphertext = encrypt(JSON.stringify(payload),import.meta.env.VITE_ENCRYPT_KEY)
-        localStorage.setItem('_register_data', ciphertext);        
+        // localStorage.setItem('_register_data', ciphertext);        
+        sessionStorage.setItem('_register_data', ciphertext);        
         catchAxiosSuccess(res)   
         return res;
     } catch (error) {
@@ -76,7 +77,7 @@ export const changePassword = async (token, email, password, password_confirmati
 
 export const getToken = () => {
 
-    let encryptedData  = localStorage.getItem("_user_data");
+    let encryptedData  = sessionStorage.getItem("_user_data");
 
     if(encryptedData){
         let user  = decrypt(encryptedData,import.meta.env.VITE_ENCRYPT_KEY)
@@ -84,9 +85,10 @@ export const getToken = () => {
     }
     return null;
 }
+
 export const getUser = () => {
 
-    let encryptedData  = localStorage.getItem("_user_data");
+    let encryptedData  = sessionStorage.getItem("_user_data");
     
     if(encryptedData){
         let user  = decrypt(encryptedData,import.meta.env.VITE_ENCRYPT_KEY)

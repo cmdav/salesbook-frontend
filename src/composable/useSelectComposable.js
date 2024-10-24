@@ -105,6 +105,8 @@ export function useSelectComposable(
     try {
       const response = await apiService.get(endpoint)
       //console.log(response);
+      const data = response.data ? response.data : response;
+
       const fieldObject = defaultFormField.find(
         (f) => f.label === useLabelNameToselectFormFieldToPopulate
       )
@@ -116,7 +118,7 @@ export function useSelectComposable(
         //   console.log(formKey)
         fieldObject.options = [
           { value: '', label: 'Select an option', disabled: true },
-          ...response.map((item) => ({ value: item[optionValue], label: item[formKey] }))
+          ...data.map((item) => ({ value: item[optionValue], label: item[formKey] }))
         ]
 
         const selectedItem = fieldObject.options.find((option) => option.value == activeSelect)

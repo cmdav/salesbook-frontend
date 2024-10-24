@@ -5,7 +5,7 @@
         class="flex flex-row items-center justify-between border-b-[#000000] pb-[35px] mb-[35px] border-b-[1px]"
       >
         <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">
-          Upload {{ props.type }}
+          Upload {{ modalTitle }}
         </h4>
         <button @click="$emit('close')" class="text-[30px]">X</button>
       </header>
@@ -40,9 +40,7 @@
                   id="upload_file"
                 />
               </div>
-              <button class="bg-brand text-center p-2 rounded-lg w-full">
-                Download Sample
-              </button>
+              
             </div>
           </div>
 
@@ -58,6 +56,11 @@
             </div>
           </div>
         </form>
+        <button class="bg-brand text-center p-2 mt-4 rounded-lg w-full" @click="downloadSample">
+         
+            Download Sample
+                
+              </button>
       </div>
     </div>
   </CenteredModalLarge>
@@ -66,7 +69,8 @@
 <script setup>
 import { ref, toRefs } from "vue";
 // import { useSharedComponent } from "@/composable/useSharedComponent";
-
+import apiService from '@/services/apiService'
+import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
 // const { useUploadComposable } = useSharedComponent();
 import { useUploadComposable } from "@/composable/useUploadComposable";
 const emit = defineEmits(["close", "updated"]);
@@ -75,8 +79,10 @@ const fileInput = ref(null);
 const fileName = ref("");
 let uploadedFile = ref(null);
 const props = defineProps({
+  modalTitle: String,
   type: String,
   url: String,
+  downloadUrl: String,
 });
 const handleFileChange = () => {
   const file = fileInput.value.files[0];
@@ -88,7 +94,7 @@ const handleFileChange = () => {
     fileName.value = "";
   }
 };
-const { type, url } = toRefs(props);
+const { type, url, downloadUrl, modalTitle } = toRefs(props);
 const { uploadForm, loading, forceUpdate, showUploadModal } = useUploadComposable(
   url,
   uploadedFile,
@@ -114,6 +120,30 @@ const handleUpload = async () => {
   // emit("close");
 };
 
+const downloadSample = async () => {
+  try{
+    const endpoint = `/download-csv/${downloadUrl.value}`;
+    const response = await apiService.get(endpoint, {
+      responseType: 'blob'
+    });
+    console.log(response)
+    const url = window.URL.createObjectURL(new Blob([response]));
+    const link = document.createElement('a');
+    link.href = url;
+
+    link.setAttribute('download', `${downloadUrl.value}-sample.csv`);
+
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+    catchAxiosSuccess("Download Successful")
+  } catch(error){
+    console.error("Failed to download csv file", error)
+    catchAxiosError(error)
+  }
+}
 // const handleUploadFile = () => {
 //   try {
 //   } catch {}

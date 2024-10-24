@@ -19,7 +19,7 @@ const getTokenFromURL = () => {
 };
 // Create a function to retrieve the email from local storage
 const getEmailFromLocalStorage = () => {
-  return localStorage.getItem("email") || "";
+  return sessionStorage.getItem("email") || "";
 };
 const formState = reactive({
   token: getTokenFromURL(), // Get the token value from the URL

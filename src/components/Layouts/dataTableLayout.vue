@@ -15,11 +15,6 @@
           {{ props?.toggleButtonLabel }}
         </button>
       </div>
-        <!-- <div>
-        <button @click="$emit('toggleModal')" class="btn-brand !px-4">
-          {{ props?.toggleButtonLabel }}
-        </button>
-      </div> -->
     </div>
 
     <!-- Section for the  table -->
@@ -150,8 +145,6 @@ import apiService from '@/services/apiService';
 import { debounce } from 'lodash-es';
 import { useStore } from "@/stores/user";
 
-
-
 const searchQuery = ref('');
 
 const props = defineProps({
@@ -178,7 +171,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-
+  data: {
+    type: Array,
+    default: () => []
+  }
 });
 
 const {
@@ -196,6 +192,10 @@ const {
 } = useReadComposable(props);
 
 const searchResults = ref([]);
+
+watch(() => props.data, (newData) => {
+  products.value = newData;
+});
 
 // Search function with debounce to limit API calls
 const search = debounce( async () => {

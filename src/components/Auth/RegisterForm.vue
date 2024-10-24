@@ -1,9 +1,9 @@
 <template>
   <div
-    class="mx-auto lg:w-[53%] w-full flex bg-white rounded-[4px] lg:p-10 p-4 lg:px-12 gap-[20px] lg:justify-between flex-col"
+    class="mx-auto lg:w-[50%] w-full bg-white rounded-[4px] lg:p-5 p-4 gap-[20px] lg:justify-between"
   >
     <div class="w-full">
-      <h4 class="text-center font-semibold text-[20px] lg:text-[24px] mb-20 my-10">
+      <h4 class="text-center font-semibold text-[20px] lg:text-[24px]">
         Create an Account
       </h4>
       <tab-selector>

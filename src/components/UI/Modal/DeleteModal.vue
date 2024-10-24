@@ -4,7 +4,7 @@
     <div class="modal__body relative w-full md:max-w-[600px] bg-white m-0 md:px-5 py-4 px-4">
       <header class="flex flex-row items-center justify-between border-b-[#000000] pb-[5px] mb-[35px] border-b-[1px]">
         <h4 class="text-[22px] font-EBGaramond500 text-[#244034]">
-          {{ title || "Delete Detail" }}
+          {{ modalTitle || "Delete Detail" }}
         </h4>
         <button class="close-button" @click="$emit('close')">&#10005;</button>
       </header>

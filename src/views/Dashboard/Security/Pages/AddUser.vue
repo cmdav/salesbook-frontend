@@ -1,86 +1,150 @@
 <template>
-  <!-- <DashboardLayout pageTitle="Roles Page"> -->
-  <div class="">
-    <!-- Button to Open Modal -->
-    <!-- <button @click="showModal = true" class="btn btn-primary">Add Store</button> -->
-
-    <DataTableLayout 
+  <div>
+    <DataTableLayout
       :key="forceUpdate"
-       @toggleModal="showModal = !showModal" 
-       :endpoint="url" :pageName="'settings'"
-      searchEndpoint="search-users" 
-      :additionalColumns=additionalColumns>
-      <!-- <button class="btn-brand" @click="closeUploadModal">Upload</button> -->
+      @toggleModal="showModal = !showModal"
+      :endpoint="endpoint"
+      :pageName="'settings'"
+      toggleButtonLabel="Add User"
+      :excludedKeys="['id', 'organization_code', 'branch_id', 'role_id']"
+      searchEndpoint="search-users"
+      :data="data"
+      :additionalColumns="additionalColumns"
+    >
+      <div v-if="roles">
+        <BranchDropDown :branches="branches" @change="handleBranchChange" />
+      </div>
     </DataTableLayout>
 
-    <DeleteModal v-if="showDeleteModal" @close="closeDeleteModal" @updated="forceRefresh" :items="itemsId"
-      :url="'/users'" :modalTitle="modalTitle" />
+    <EditModal
+      v-if="showEditModal"
+      @close="closeEditModal"
+      :items="items"
+      modalTitle="Edit User"
+      :formField="userFormFields"
+      @updated="forceRefresh"
+      :url="'sale-users'"
+    />
 
-    <!-- <SettingsLayoutcopy @changePage="changePage" :products="allUser">
-      <button class="btn-
-      brand !px-2 !text-[14px]" @click="toggleAddPermissionModal">
-        Add  User
-      </button>
-    </SettingsLayoutcopy> -->
-    <!-- <PermissionFormModalcopy v-if="showModal" @close="toggleAddPermissionModal" /> -->
-    <FormModal 
-        v-if="showModal"
-         @close="closeModal"
-        :key="forceUpdate" 
-        :formTitle="'Add User'"
-         :fields="userFormFields"
-      @fetchDataForSubCategory="fetchDataForSubCategory" :isLoadingMsg="isOptionLoadingMsg" :url="'sale-users'">
-    </FormModal>
+    <DeleteModal
+      v-if="showDeleteModal"
+      @close="closeDeleteModal"
+      @updated="forceRefresh"
+      :items="itemsId"
+      :url="'/users'"
+      :modalTitle="modalTitle"
+    />
 
+    <FormModal
+      v-if="showModal"
+      @close="closeModal"
+      :key="forceUpdate"
+      :formTitle="'Add User'"
+      :fields="userFormFields"
+      :isLoadingMag="isOptionLoadingMsg"
+      :url="'sale-users'"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { userFormFields } from "@/formfields/formFields";
-import { useSharedComponent } from "@/composable/useSharedComponent";
-
-const { useSelectComposable, DataTableLayout, usePostComposable, useStore, DeleteModal, useDeleteComposable, FormModal, computed } = useSharedComponent("sale-users");
-
-const modalTitle = "user_name ";
-const url = ref("users?type=sales_personnel");
-
-const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg, }
-  = useSelectComposable(userFormFields, 'users', "role_id", "", "");
-
-
-const { showModal, forceUpdate, closeModal } = usePostComposable("/settings", userFormFields);
-const store = useStore();
-const roles = computed(() => {
-
-  return store.getUser.user.permission.role_name === "Admin";
-})
-
-const additionalColumns = computed(() => {
-  const cols = [];
-  if (roles.value) {
-    cols.push({ name: 'Delete', action: handleDelete });
-  }
-  return cols;
-})
+import { ref, onMounted, computed } from 'vue'
+import { userFormFields } from '@/formfields/formFields'
+import { useSharedComponent } from '@/composable/useSharedComponent'
+import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue'
+import apiService from '@/services/apiService'
 
 const {
-  handleDelete,
-  showDeleteModal,
-  itemsId,
-  closeDeleteModal
-} = useDeleteComposable();
+  useSelectComposable,
+  DataTableLayout,
+  usePostComposable,
+  useEditComposable,
+  useStore,
+  EditModal,
+  DeleteModal,
+  useDeleteComposable,
+  FormModal
+} = useSharedComponent('sale-users')
 
-// const toggleAddPermissionModal = async () => {
-//   showModal.value = !showModal.value;
-// };
+const modalTitle = 'user_name'
+const endpoint = ref('users?type=sales_personnel')
+const emit = defineEmits(['update', 'close'])
 
-const forceRefresh = () => {
-  forceUpdate.value++;
-};
+const { fetchDataForSelect, isOptionLoadingMsg} = useSelectComposable(
+  userFormFields,
+  'sales-users',
+  'role_name',
+  '',
+  'branch_name'
+)
+const { showModal, forceUpdate, closeModal } = usePostComposable('/settings', userFormFields)
+const store = useStore()
+const roles = computed(() => store.getUser.user.permission.role_name === 'Admin')
+const { handleEdit, showEditModal, closeEditModal, items } = useEditComposable(emit)
+
+const additionalColumns = computed(() => {
+  const cols = []
+  if (roles.value) {
+    cols.push({ name: 'Edit', action: handleEditWrapper }, { name: 'Delete', action: handleDelete })
+  }
+  return cols
+})
+
+const { handleDelete, showDeleteModal, itemsId, closeDeleteModal } = useDeleteComposable()
+
+const branches = ref([])
+const data = ref([])
+const errorMessage = ref('')
+const selectedBranchId = ref(null)
 
 onMounted(async () => {
+  await fetchDataForSelect('Role', '/all-job-roles', 'id', 'role_name')
+  await fetchDataForSelect('Branch', '/list-business-branches', 'id', 'name')
+  await fetchBranches()
+  await fetchData()
+})
 
-  await fetchDataForSelect("Role", "/all-job-roles", "id", "role_name");
-});
+async function fetchBranches() {
+  try {
+    const response = await apiService.get('/list-business-branches')
+    branches.value = response || []
+  } catch (error) {
+    console.error('Failed to fetch branches:', error)
+  }
+}
+
+function handleBranchChange(branchId) {
+  selectedBranchId.value = branchId
+  fetchData()
+}
+
+async function fetchData() {
+  let url = endpoint.value
+  if (selectedBranchId.value) {
+    url += `&branch_id=${selectedBranchId.value}`
+  }
+
+  try {
+    const response = await apiService.get(url)
+    if (response.data && response.data.length > 0) {
+      data.value = response.data
+      errorMessage.value = ''
+    } else {
+      data.value = []
+      errorMessage.value = 'No users found for the selected branch.'
+    }
+  } catch (error) {
+    console.error('Failed to fetch data:', error)
+    data.value = []
+    errorMessage.value = 'Failed to fetch data. Please try again later.'
+  }
+}
+
+const forceRefresh = () => {
+  forceUpdate.value++
+}
+
+function handleEditWrapper(item) {
+  handleEdit(item)
+}
 </script>

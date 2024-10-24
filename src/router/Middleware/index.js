@@ -1,38 +1,38 @@
 import { decrypt } from '@/services/Encrypt'
 import { logout } from '@/services/Auth'
 
-const getUserFromLocalStorage = () => {
-  const encryptedData = localStorage.getItem('_user_data')
+const getUserFromSessionStorage = () => {
+  const encryptedData = sessionStorage.getItem('_user_data')
   return encryptedData ? decrypt(encryptedData, import.meta.env.VITE_ENCRYPT_KEY) : null
 }
 
 const redirectLogin = () => {
-  const user = getUserFromLocalStorage()
+  const user = getUserFromSessionStorage()
   return user && user.token ? undefined : { name: 'login' }
 }
 
 const redirectDashboard = () => {
-  const user = getUserFromLocalStorage()
-  return user && user.token ? { name: 'dashboard' } : undefined
+  const user = getUserFromSessionStorage()
+  return user && user.token ? { name: 'welcome' } : undefined
 }
 
 const redirectSupplierDashboard = () => {
-  const user = getUserFromLocalStorage()
+  const user = getUserFromSessionStorage()
   return user && user.token ? { name: 'supplier-dashboard' } : undefined
 }
 
 const deleteSession = async () => {
-  if (localStorage.getItem('_user_data')) {
+  if (sessionStorage.getItem('_user_data')) {
     logout()
-    localStorage.removeItem('_user_data')
+    sessionStorage.removeItem('_user_data')
     return { name: 'login' }
   }
 }
 const deleteSupplierSession = async () => {
-  if (localStorage.getItem('_user_data')) {
+  if (sessionStorage.getItem('_user_data')) {
     logout()
-    localStorage.removeItem('_user_data')
-    return { name: 'supplier-login' }
+    sessionStorage.removeItem('_user_data')
+    return { name: 'supplier-login' };
   }
 }
 export default {

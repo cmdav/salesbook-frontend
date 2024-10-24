@@ -102,17 +102,6 @@ const handleAddRole = async () => {
 
 };
 
-// const changePage = async (link) => {
-//   try {
-//     await securityStore.handleGetPermissions(
-//       `9bb79eae-a64f-4eaa-b8d5-8990eb02205d`,
-//       link
-//     );
-//   } catch (error) {
-//     //
-//   }
-// };
-
 onMounted(async () => {
   try {
     await securityStore.handleGetAllRole();

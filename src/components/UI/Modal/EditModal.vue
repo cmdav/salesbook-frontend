@@ -8,12 +8,10 @@
         </h4>
         <button class="close-button" @click="$emit('close')">&#10005;</button>
       </header>
-      <!--Pass the formField and  value(value is gotten onclick from the datatable) as props from the parent to this modal-->
       <form @submit.prevent="editForm">
         <ReusableForm :fields="formField" @handleEditCategoryChange="handleEditCategoryChange"
           @fieldChanged="handleFieldChanged" :imagePath="imagePath" :hasMinDate="hasMinDate" />
         <input type="submit" v-if="!loading" class="btn-brand" value="Submit" />
-
         <Loader v-else />
       </form>
     </div>
@@ -64,22 +62,12 @@ watch(
         }
 
         if (field.type == 'select' && Array.isArray(field.options)) {
-          //   console.log(field.options)
-          //   console.log(field.databaseField)
-          //   console.log(newItems)
-          //  console.log(newItems[field.databaseField])
-
-          //  field.options.forEach(option => {
-          //       console.log(`Value: ${option.value}, Label: ${option.label}`);
-          //   });
-
-          //set the selected item remove spaces and case sensitivity
+          const fieldValue = newItems[field.databaseField] || ''
           const selectedItem = field.options.find(
             (option) =>
-              option.label.replace(/\s+/g, '').toLowerCase() === newItems[field.databaseField].replace(/\s+/g, '').toLowerCase()
-            // option.label.replace(/\s+/g, '').toLowerCase() === !newItems[field.databaseField] ? newItems[field.databaseField].replace(/\s+/g, '').toLowerCase() : ""
+              option.label.replace(/\s+/g, '').toLowerCase() === fieldValue.replace(/\s+/g, '').toLowerCase()
           )
-          console.log('New Item', newItems[field.databaseField])
+          console.log('New Item', fieldValue)
 
           if (selectedItem) {
             field.value = selectedItem.value
@@ -112,8 +100,7 @@ const handleFieldChanged = (value, fieldDatabase) => {
 }
 
 onMounted(async () => {
-  //console.log('emitting data from modal')
-  //console.log(items.value["category_ids"])
+  
   emit(
     'fetchDataForSubCategory',
     items.value['category_ids'],
@@ -123,6 +110,7 @@ onMounted(async () => {
   )
 })
 </script>
+
 
 <style lang="scss" scoped>
 .modal {

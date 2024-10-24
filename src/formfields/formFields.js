@@ -26,6 +26,15 @@ export const userFormFields = ref([
     databaseField: 'email'
   },
   {
+    label: 'Branch',
+    type: 'select',
+    value: '',
+    required: true,
+    placeholder: 'Select Branch',
+    options: [],
+    databaseField: 'branch_id'
+  },
+  {
     label: 'Role',
     type: 'select',
     value: '',
@@ -50,6 +59,51 @@ export const userFormFields = ref([
     placeholder: 'Confirm password',
     databaseField: 'password_confirmation'
   }
+]);
+export const userEditFormFields = ref([
+  {
+    label: 'First Name',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter first name',
+    databaseField: 'first_name'
+  },
+  {
+    label: 'Last Name',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter last name',
+    databaseField: 'last_name'
+  },
+  {
+    label: 'Email',
+    type: 'email',
+    value: '',
+    required: true,
+    placeholder: 'Enter email',
+    databaseField: 'email'
+  },
+  {
+    label: 'Branch',
+    type: 'select',
+    value: '',
+    required: true,
+    placeholder: 'Select Branch',
+    options: [],
+    databaseField: 'branch_id'
+  },
+  {
+    label: 'Role',
+    type: 'select',
+    value: '',
+    required: true,
+    placeholder: 'Select Role',
+    options: [],
+    databaseField: 'role_id'
+  }
+  
 ])
 
 export const subscriptionFormFields = ref([
@@ -194,18 +248,6 @@ export const formFields = ref([
       { value: '0', label: 'No' }
     ]
   },
-  // // { label: 'Purchasing price', type: 'text', value: '', required: false, placeholder: 'Enter purchasing price', databaseField: "purchasing_price" },
-  // // { label: 'Selling Price', type: 'text', value: '', required: false, placeholder: 'Enter selling price', databaseField: "selling_price" },
-  // { label: 'Actual Price', type: 'text', value: '', required: false, placeholder: 'Enter actual price', databaseField: "actual_price" },
-  {
-    label: 'Measurement',
-    type: 'select',
-    value: '',
-    required: true,
-    placeholder: 'Select Measurement',
-    options: [],
-    databaseField: 'measurement_id'
-  },
   {
     label: 'Category',
     type: 'select',
@@ -230,37 +272,94 @@ export const formFields = ref([
 export const productTypeFormFields = ref([
   {
     label: 'Product Name',
-    type: 'select',
-    value: '',
-    required: false,
-    placeholder: 'Enter product type',
-    options: [],
-    databaseField: 'product_id'
-  },
-  {
-    label: 'Product Type',
     type: 'text',
     value: '',
     required: true,
-    placeholder: 'Enter product type',
+    placeholder: 'Choose Product Name',
+    options: [],
     databaseField: 'product_type_name'
   },
   {
-    label: 'Product Type Image',
+    label: 'Product Image',
     type: 'image',
     value: '',
     required: false,
-    placeholder: 'Enter image URL',
+    placeholder: 'Choose Image Url',
     databaseField: 'product_type_image'
   },
   {
-    label: 'Product Type Description',
-    type: 'textarea',
+    label: 'Product Description',
+    type: 'text',
     value: '',
-    required: true,
-    placeholder: 'Enter product type description',
+    required: false,
+    placeholder: 'Enter Product Description',
     databaseField: 'product_type_description'
   },
+  {
+    label: 'Barcode',
+    type: 'text',
+    value: '',
+    required: false,
+    placeholder: 'Enter Barcode',
+    databaseField: 'barcode'
+  },
+  {
+    label: 'Vat',
+    type: 'select',
+    value: '',
+    required: true,
+    placeholder: 'Select VAT',
+     options: [
+      { value: '1', label: 'Yes' },
+      { value: '0', label: 'No' }
+    ],
+    databaseField: 'vat'
+  },
+  {
+    label: 'Product Category',
+    type: 'select',
+    value: '',
+    required: true,
+    option: [],
+    placeholder: 'Select Product Category',
+    databaseField: 'category_id'
+  },
+  {
+    label: 'Product Sub Category',
+    type: 'select',
+    value: '',
+    required: true,
+    option: [],
+    placeholder: 'Select Product Sub Category',
+    databaseField: 'sub_category_id'
+  },
+   {
+    label: 'Purchase Unit',
+    type: 'select',
+    value: '',
+    required: true,
+    placeholder: 'Select Purchase Unit ',
+    options: [],
+    databaseField: 'purchase_unit_id'
+  },
+  {
+    label: 'Selling Unit',
+    type: 'select',
+    value: '',
+    required: true,
+    placeholder: 'Select Selling Unit ',
+    options: [],
+    databaseField: 'selling_unit_id'
+  },
+  {
+    label: 'How many selling unit equal a purchasing unit',
+    type: 'select',
+    value: '',
+    required: true,
+    placeholder: 'Select Selling Capacity ',
+    options: [],
+    databaseField: 'selling_unit_capacity_id'
+  }
 ])
 
 export const purchaseFormFields = ref([
@@ -607,5 +706,127 @@ export const roleFormFields = ref([
     required: true,
     placeholder: 'Enter role',
     databaseField: 'role_name'
+  }
+])
+
+export const paymentFormFields = ref([
+  {
+    label: 'Payment Type',
+    type: 'select',
+    value: '',
+    required: true,
+    option: [],
+    // placeholder: 'Ekc',
+    databaseField: 'payment_method_id'
+  },
+  {
+    label: 'Account Name',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter Account Name',
+    databaseField: 'account_name'
+  },
+  {
+    label: 'Account Number',
+    type: 'num',
+    value: '',
+    required: true,
+    placeholder: 'Enter Account Number',
+    databaseField: 'account_number'
+  },
+  {
+    label: 'Payment Identifier',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter Payment Identifier',
+    databaseField: 'payment_identifier'
+  }
+])
+export const payMethodFormFields = ref([
+  {
+    label: 'Payment Type',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter Payment Method',
+    databaseField: 'payment_name'
+  }
+])
+
+export const branchFormFields = ref([
+  {
+    label: 'Branch Name',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter first name',
+    databaseField: 'name'
+  },
+  {
+    label: 'Country',
+    type: 'select',
+    option: [],
+    value: '',
+    required: true,
+    placeholder: 'Enter country',
+    databaseField: 'country_id'
+  },
+  {
+    label: 'State',
+    type: 'select',
+    option: [],
+    required: true,
+    placeholder: 'Enter State',
+    databaseField: 'state_id'
+  },
+  {
+    label: 'City',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter City',
+    databaseField: 'city'
+  },
+  {
+    label: 'Address',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter Address',
+    databaseField: 'address'
+  },
+  {
+    label: 'Postal Code',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter Postal Code',
+    databaseField: 'postal_code'
+  },
+  {
+    label: 'Contact Person',
+    type: 'text',
+    value: '',
+    required: true,
+    placeholder: 'Enter contact person name',
+    databaseField: 'contact_person'
+  },
+  {
+    label: 'Email',
+    type: 'email',
+    value: '',
+    required: true,
+    placeholder: 'Enter email',
+    databaseField: 'email'
+  },
+  {
+    label: 'Phone Number',
+    type: 'num',
+    value: '',
+    required: true,
+    placeholder: 'Enter Phone Number',
+    databaseField: 'phone_number'
   }
 ])

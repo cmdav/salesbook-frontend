@@ -6,7 +6,7 @@
         @toggleModal="showModal = !showModal"
         :key="forceUpdate"
         endpoint="measurements"
-        searchEndpoint="search-measurement"
+        searchEndpoint="search-purchase-units"
         :pageName="'measurements'"
         :additionalColumns=additionalColumns
       >

@@ -13,7 +13,7 @@ export const catchAxiosError = (error) => {
       })
     }
 
-    // Display individual error messages
+    // Display individual e````rror messages
     if (responseData.errors) {
       let errorMessages = ''; // Initialize an empty string to hold all error messages
       for (const key in responseData.errors) {
@@ -41,7 +41,8 @@ export const catchAxiosError = (error) => {
 
 
 export const catchAxiosSuccess = (res) => {
-   
+  //  console.log(res)
+  //  console.log(res.status)
   if (res?.data?.message) {
     toast.success(res.data.message, {
       timeout: 4000

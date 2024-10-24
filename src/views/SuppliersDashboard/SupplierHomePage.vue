@@ -1,5 +1,6 @@
 <template>
-    <SupplierDashboardLayout pageTitle="Suppliers Page">
+    <SupplierDashboardLayout pageTitle="Supplier's Page">
+      
       <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
 
         <!-- Button to Open Modal -->
@@ -19,18 +20,19 @@
       :loading="loading"
       @close="handleModal"
       @submitForm="handleAddPrice"
-      title="Add Price"
+      title="Add New Price"
     >
       <div class="my-8 flex flex-col gap-2">
         <div class="overflow-y-auto flex flex-col gap-2 max-h-[340px]">
           <div class="flex flex-col gap-2">
             <div class="flex flex-col gap-2">
               <div class="w-full">
-                <label class="block text-sm font-medium text-gray-700"> Add Price </label>
+                <!-- <label class="block text-sm font-medium text-gray-700"> Add New Price </label> -->
                 <input
                 placeholder="Enter new Price"
                   v-model="formData.costPrice"
-                  type="text"
+                  type="number"
+                  min="0"
                   class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
                 />
               </div>
@@ -61,6 +63,7 @@ const { supplierProducts } = storeToRefs(supplierStore)
     defineEmits,
     useStore
   } = useSharedComponent('supplier-home-page');
+
 
   const emit = defineEmits("forceRefresh");
   const {

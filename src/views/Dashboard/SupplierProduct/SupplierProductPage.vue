@@ -4,11 +4,16 @@
 
   <SupplierTableLayout
   :key="forceUpdate"
-  endpoint="price-notifications"
+  :endpoint="endpoint"
   hideToggleButtonLabel: false
+  :data="data"
+  :errorMessage="errorMessage"
   :excludedKeys="['id','product_type_id','supplier_id','product_category_name']"
   :additionalColumns="[{ name: 'Accept', action: (product) => handleAcceptModal(product), disabled: acceptDisabled  }, { name: 'Decline', action: declineProduct, disabled: declineDisabled }]"
   >
+   <div>
+    <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" />
+  </div>
 </SupplierTableLayout>
 </div>
 
@@ -18,18 +23,19 @@
       :loading="loading"
       @close="handleAcceptModal"
       @submitForm="acceptProduct"
-      title="Add Price"
+      title="Add New Selling Price"
     >
       <div class="my-8 flex flex-col gap-2">
         <div class="overflow-y-auto flex flex-col gap-2 max-h-[340px]">
           <div class="flex flex-col gap-2">
             <div class="flex flex-col gap-2">
               <div class="w-full">
-                <label class="block text-sm font-medium text-gray-700">Add Selling Price </label>
+                <!-- <label class="block text-sm font-medium text-gray-700">Add Selling Price </label> -->
                 <input
-                placeholder="Enter Selling Price"
+                placeholder="Enter New Selling Price"
                   v-model="formData.sellingPrice"
-                  type="text"
+                  type="number"
+                  min="0"
                   class="w-full font-light font-Satoshi400 border-neutral-900 text-[14px] outline-none !p-[14px] border-[1px] opacity-[0.8029] rounded-[4px] text-sm"
                 />
               </div>
@@ -44,11 +50,20 @@
 
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
 import { onMounted, ref, reactive, computed } from "vue";
-  import { useSupplierStore } from "@/stores/suppliers";
+import { useSupplierStore } from "@/stores/suppliers";
 import SaleFormModal from "@/components/UI/Modal/SalesFormModal.vue";
-  const supplierStore = useSupplierStore();
-  //handles all component import
-  import { useSharedComponent } from "@/composable/useSharedComponent";
+const supplierStore = useSupplierStore();
+//handles all component import
+import { useSharedComponent } from "@/composable/useSharedComponent";
+import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue';
+import apiService from '@/services/apiService';
+import { useStore } from "@/stores/user";
+
+const store = useStore();
+const roles = computed(() => store.getUser.user.permission.role_name === "Admin");
+
+const endpoint = ref("price-notifications")
+
   const {
     SupplierTableLayout,
     usePostComposable,
@@ -61,6 +76,11 @@ import SaleFormModal from "@/components/UI/Modal/SalesFormModal.vue";
     } = usePostComposable("/supplier-dashboard");
 
   const showModal = ref(false);
+
+const branches = ref([]);
+const selectedBranchId = ref(null);
+const data = ref([]);
+const errorMessage = ref('');
 
   const formData = ref({
     sellingPrice: "",
@@ -120,9 +140,45 @@ const handlePriceStatus = async (id, payload) => {
   }
 };
 
+async function fetchBranches() {
+  try {
+    const response = await apiService.get('/list-business-branches');
+    branches.value = response || [];
+  } catch (error) {
+    console.error('Failed to fetch branches:', error);
+  }
+}
+
+function handleBranchChange(branchId) {
+  selectedBranchId.value =  Number(branchId);;
+  fetchData();
+}
+
+async function fetchData() {
+  let url = endpoint.value;
+  if (selectedBranchId.value) {
+    url += `?branch_id=${selectedBranchId.value}`;
+  }
+
+  try {
+    const response = await apiService.get(url);
+    if (response.data && response.data.length > 0) {
+      data.value = response.data;
+      errorMessage.value = '';
+    } else {
+      data.value = [];
+      errorMessage.value = 'No Product found for the selected branch.';
+    }
+  } catch (error) {
+    console.error('Failed to fetch data:', error);
+    data.value = [];
+    errorMessage.value = 'Failed to fetch data. Please try again later.';
+  }
+}
 
   onMounted(async () => {
     await supplierStore.handleGetSupplierPrice();
+    await fetchBranches();
   });
 
 </script>

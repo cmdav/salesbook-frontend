@@ -1,5 +1,6 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div class="flex flex-col gap-[17px]">
+  <div class="">
     <div class="flex flex-col gap-[17px]">
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
         <div class="mb-3 flex flex-col w-full">
@@ -10,6 +11,7 @@
             type="text"
             placeholder="Enter company name"
             v-model="CompanyformData.company_name"
+            required
           />
         </div>
         <div class="mb-3 flex flex-col w-full">
@@ -20,6 +22,7 @@
             placeholder="Enter contact person name"
             :errorsMsg="CompanyErrorsMsg.contact_person"
             v-model="CompanyformData.contact_person"
+            required
           />
         </div>
       </div>
@@ -27,13 +30,23 @@
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
         <div class="mb-3 flex flex-col w-full">
           <AuthInput
+            label="Company contact number*"
+            :error="CompanyErrors.phone_number"
+            :errorsMsg="CompanyErrorsMsg.phone_number"
+            type="number"
+            placeholder="Enter Company contact number"
+            v-model="CompanyformData.phone_number"
+            required
+          />
+          <!-- <AuthInput
             label="Company Address*"
             :error="CompanyErrors.company_address"
             :errorsMsg="CompanyErrorsMsg.company_address"
             type="text"
             placeholder="Enter company address "
             v-model="CompanyformData.company_address"
-          />
+            required
+          /> -->
         </div>
         <div class="mb-3 flex flex-col w-full">
           <AuthInput
@@ -43,19 +56,22 @@
             type="email"
             placeholder="Enter company email address"
             v-model="CompanyformData.email"
+            required
           />
         </div>
       </div>
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
         <div class="mb-3 flex flex-col w-full">
           <AuthInput
-            label="Company contact number"
-            :error="CompanyErrors.phone_number"
-            :errorsMsg="CompanyErrorsMsg.phone_number"
-            type="tel"
-            placeholder="Enter Company contact number"
-            v-model="CompanyformData.phone_number"
+            label="Company Address*"
+            :error="CompanyErrors.company_address"
+            :errorsMsg="CompanyErrorsMsg.company_address"
+            type="text"
+            placeholder="Enter company address "
+            v-model="CompanyformData.company_address"
+            required
           />
+          
         </div>
         <!-- <div class="mb-3 flex flex-col w-full">
           <AuthInput
@@ -70,12 +86,32 @@
       </div>
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
         <div class="mb-3 flex flex-col w-full">
+          
+          <label for="country">Country*</label>
+          <select id="country" v-model="selectedCountry" @change="fetchStates" class="select-input">
+            <option value="" disabled>Select Country</option>
+            <option v-for="country in countries" :key="country.id" :value="country.id">{{ country.name }}</option>
+          </select>
+          <span v-if="CompanyErrors.country" class="text-red-500">{{ CompanyErrorsMsg.country }}</span>
+        </div>
+        <div class="mb-3 flex flex-col w-full">
+          <label for="state">State*</label>
+          <select id="state" v-model="CompanyformData.state" class="select-input">
+            <option value="" disabled>Select State</option>
+            <option v-for="state in states" :key="state.id" :value="state.id">{{ state.name }}</option>
+          </select>
+          <span v-if="CompanyErrors.state" class="text-red-500">{{ CompanyErrorsMsg.state }}</span>
+        </div>
+      </div>
+      <div class="flex lg:flex-row flex-col w-full gap-[20px]">
+        <div class="mb-3 flex flex-col w-full">
           <PasswordInput
             label="Password*"
             :error="CompanyErrors.password"
             :errorsMsg="CompanyErrorsMsg.password"
             v-model="CompanyformData.password"
             placeholder="**********"
+            required
           />
         </div>
         <div class="mb-3 flex flex-col w-full">
@@ -85,6 +121,7 @@
             :errorsMsg="CompanyErrorsMsg.confirmPassword"
             placeholder="Confirm Password*"
             v-model="CompanyformData.confirmPassword"
+            required
           />
         </div>
       </div>
@@ -154,11 +191,11 @@
       </p>
     </div>
 
-    <div class="flex flex-col lg:flex-row w-full gap-[30px] mt-4">
+    <div class=" mt-4">
       <button
-        :disabled="loading"
+        :disabled="!isFormValid || loading"
         @click="handleCompanySignup()"
-        :class="!isFormValid ? '!bg-primary-100/[30%] cursor-not-allowed' : 'bg-brand'"
+        :class="(!isFormValid || loading) ? '!bg-primary-100/[30%] cursor-not-allowed' : 'bg-brand'"
         class="btn-brand !rounded-[5px] flex gap-2 items-center justify-center !text-white text-[14px] !py-[16px] font-semibold w-full"
       >
         <span v-if="!loading" class="font-semibold !text-[15px]">Submit</span>
@@ -181,8 +218,9 @@
   </div>
 </template>
 <script setup>
-import { ref, computed, watch, reactive } from "vue";
+import { ref, computed, watch, reactive, onMounted } from "vue";
 import AuthInput from "@/components/UI/Input/AuthInput.vue";
+import apiService from '@/services/apiService'
 import PasswordInput from "@/components/UI/Input/PasswordInput.vue";
 import Loader from "@/components/UI/Loader.vue";
 import { useRouter } from "vue-router";
@@ -191,6 +229,8 @@ import { register } from "@/services/Auth";
 const router = useRouter();
 // const store = useStore();
 
+
+
 const CompanyformData = reactive({
   company_name: "",
   contact_person: "",
@@ -198,6 +238,8 @@ const CompanyformData = reactive({
   phone_number: "",
   // code: "",
   email: "",
+  state: "",
+  
   password: "",
   confirmPassword: "",
 });
@@ -208,6 +250,8 @@ const CompanyErrors = reactive({
   contact_person: false,
   company_address: false,
   phone_number: false,
+  state: false,
+  country: false,
   // code: false,
   email: false,
   password: false,
@@ -219,14 +263,43 @@ const CompanyErrorsMsg = {
   contact_person: "contact person is required",
   company_address: "company address is required",
   phone_number: "contact number is required",
+  state: "State is required",
+  country: "Country is required",
   // code: "Organisation code is required",
   email: "Email is required",
   password: "Password is required",
   confirmPassword: "Password does not match",
 };
 
+const countries = ref([]);
+const states = ref([]);
+const selectedCountry = ref("");
+
+onMounted(async () => {
+  try{
+    const res = await apiService.get('/countries');
+    console.log(res)
+    countries.value = res
+  } catch (err){
+    console.error("Error fetching countries", err)
+  }
+});
+
+const fetchStates = async () => {
+  if (!selectedCountry.value) return;
+  try{
+    const res = await apiService.get(`/states?country_id=${selectedCountry.value}`)
+    console.log(res)
+    states.value = res
+  } catch (err) {
+    console.error("Error fetching State", err)
+  }
+}
+
 const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/;
+const nameRegex = /^[A-Za-z\s-_()]+$/; 
+
 const isValidEmail = computed(() => {
   return emailRegex.test(CompanyformData.email);
 });
@@ -258,9 +331,9 @@ const isAtLeastOneUppercase = computed(() => {
 });
 const validateForm = () => {
   // Reset errorsMsg
-  Object.keys(CompanyErrors).forEach((key) => {
-    CompanyErrors[key] = false;
-  });
+  // Object.keys(CompanyErrors).forEach((key) => {
+  //   CompanyErrors[key] = false;
+  // });
 
   // Perform validation before submission
   let isValid = true;
@@ -284,6 +357,40 @@ const validateForm = () => {
   } else if (!isValidEmail.value) {
     CompanyErrors.email = true;
     CompanyErrorsMsg.email = "Invalid email";
+    isValid = false;
+  }
+
+  if (!nameRegex.test(CompanyformData.company_name)) {
+    CompanyErrors.company_name = true;
+    CompanyErrorsMsg.company_name = "Invalid company name";
+    isValid = false;
+  }
+  if(!CompanyformData.company_address){
+    CompanyErrors.company_address = true;
+    CompanyErrorsMsg.company_address = "Company Address is required"
+    isValid = false;
+  }
+  if(!CompanyformData.contact_person){
+    CompanyErrors.contact_person = true;
+    CompanyErrorsMsg.contact_person = "Contact Person is required"
+    isValid = false;
+  }
+
+   if (!nameRegex.test(CompanyformData.contact_person)) {
+    CompanyErrors.contact_person = true;
+    CompanyErrorsMsg.contact_person = "Invalid contact person name";
+    isValid = false;
+  }
+
+  if (!selectedCountry.value) {
+    CompanyErrors.country = true;
+    CompanyErrorsMsg.country = "Country is required";
+    isValid = false;
+  }
+
+  if (!CompanyformData.state) {
+    CompanyErrors.state = true;
+    CompanyErrorsMsg.state = "State is required";
     isValid = false;
   }
 
@@ -312,6 +419,7 @@ const clearInputErrors = () => {
     CompanyErrorsMsg[key] = "";
   });
 };
+
 const isFormValid = computed(() => {
   return (
     CompanyformData.company_name.trim() !== "" &&
@@ -321,9 +429,11 @@ const isFormValid = computed(() => {
     // CompanyformData.code.trim() !== "" &&
     CompanyformData.email.trim() !== "" &&
     CompanyformData.password.trim() !== "" &&
-    CompanyformData.confirmPassword.trim() !== ""
+    CompanyformData.confirmPassword.trim() !== "" &&
+    CompanyformData.state
   );
 });
+
 
 const clearInputs = () => {
   (CompanyformData.company_name = ""),
@@ -352,6 +462,8 @@ const handleCompanySignup = async () => {
     phone_number: CompanyformData.phone_number,
     // organization_code: CompanyformData.code,
     email: CompanyformData.email,
+    state_id: CompanyformData.state,
+    country_id: selectedCountry.value,
     password: CompanyformData.password,
     password_confirmation: CompanyformData.confirmPassword,
     // type_id: 2,
@@ -359,6 +471,7 @@ const handleCompanySignup = async () => {
     organization_type: "company",
   };
   try {
+    console.log(payload)
     let res = await register(payload);
     // if (res.data.status === true) {
     router.push({ name: "verify", params: { email: CompanyformData.email } });
@@ -378,4 +491,14 @@ const handleCompanySignup = async () => {
 };
 </script>
 
-<script></script>
+<style scoped>
+.select-input {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  transition: background-color 0.3s ease;
+}
+</style>

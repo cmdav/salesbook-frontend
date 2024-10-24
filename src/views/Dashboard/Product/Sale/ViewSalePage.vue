@@ -1,22 +1,30 @@
 <template>
   <DashboardLayout pageTitle="Sales Page">
+   
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
-      <div v-if="addPermissions">
+      <div v-if="addPermissions" class="action">
+        
+          <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" />
+        
       <button class="button add-btn">
         <router-link to="/create-sale" class="button add-btn">Add</router-link>
       </button>
       </div>
     </div>
-    <div class="table-container">
+    <div :class="['network-status', { 'online': isOnlineFlag, 'offline': !isOnlineFlag }]">
+            <span>{{ isOnlineFlag ? 'Online' : 'Offline' }}</span>
+          </div>
+    <!-- {{ isOnlineFlag }} -->
+    <div v-if="isOnlineFlag" class="table-container">
       <table>
         <thead>
           <tr>
             <th>S.NO</th>
-            <th>PRODUCT TYPE</th>
-            <th>PRODUCT TYPE DESCRIPTION</th>
-            <th>BATCH NO</th>
-            <th>COST PRICE</th>
+            <th>PRODUCT NAME</th>
+            <th>PRODUCT DESCRIPTION</th>
+            <!-- <th>BATCH NO</th> -->
+            <!-- <th>COST PRICE</th> -->
             <th>PRICE SOLD AT(NGN)</th>
             <th>QUANTITY</th>
             <th>TOTAL PRICE(NGN)</th>
@@ -25,6 +33,7 @@
             <th>TRANSACTION ID</th>
             <th>CUSTOMER DETAIL</th>
             <th>CUSTOMER PHONE NUMBER</th>
+            <th>BRANCH</th>
             <th>CREATED BY</th>
             <th>UPDATED BY</th>
             <th>RECEIPT</th>
@@ -35,9 +44,14 @@
           <tr v-for="(item, index) in data" :key="item.id">
             <td>{{(parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1}}</td>
             <td>{{ item.product_type_name }}</td>
-            <td>{{ item.product_type_description }}</td>
-            <td>{{ item.batch_no }}</td>
-            <td>{{ item.cost_price }}</td>
+            <td>
+              <div class="prod_des">
+                {{item.product_type_description}}
+              </div>
+            </td>
+            <!-- <td>{{ item.product_type_description }}</td> -->
+            <!-- <td>{{ item.batch_no }}</td> -->
+            <!-- <td>{{ item.cost_price }}</td> -->
             <td>{{ item.price_sold_at }}</td>
             <td>{{ item.quantity }}</td>
             <td>{{ item.total_price }}</td>
@@ -46,196 +60,62 @@
             <td>{{ item.transaction_id }}</td>
             <td>{{ item.customer_detail }}</td>
             <td>{{ item.customer_phone_number }}</td>
+            <td>{{ item.branch_name }}</td>
             <td>{{ item.created_by }}</td>
             <td>{{ item.updated_by }}</td>
             <td><button @click="generateReceipt(item.transaction_id)">Receipt</button></td>
-            <td v-if="permissions"><button @click="openDeleteModal(item)">Delete</button></td>
+            <td v-if="delPermissions"><button @click="openDeleteModal(item)">Delete</button></td>
           </tr>
         </tbody>
       </table>
+      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
     </div>
 
     <DeleteModal v-if="showDeleteModal" @close="closeDeleteModal" @updated="forceRefresh" :items="itemToDelete" :url="'purchases'" :modalTitle="modalTitle" />
-    <div v-if="!isSearching" class="mx-auto w-fit my-5">
+<div v-if="!isSearching && isOnlineFlag" class="mx-auto w-fit my-5">
   <Pagination :currentPage="currentPage" :totalPages="totalPages" @changePage="changePage" />
 </div>
+
+<!-- Offline Table Section -->
+<div v-if="!isOnlineFlag && offlineData.length > 0" class="offline-table-container">
+  <h3 class="text-lg font-semibold mb-4">Offline Sales Data</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>S.NO</th>
+        <th>PRODUCT NAME</th>
+        <th>PRICE SOLD AT(NGN)</th>
+        <th>QUANTITY SOLD</th>
+        <th>QUANTITY AVAILABLE</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(item, index) in offlineData" :key="item.id">
+        <td>{{ index + 1 }}</td>
+        <td>{{ item.product_type_name }}</td>
+        <td>{{ item.products[0]['price_sold_at']}}</td>
+        <td>{{ item.products[0]['quantity']}}</td>
+        <td>{{ item.quantity_available }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+</div>
+
   </DashboardLayout>
 </template>
-
-<!-- <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
-import apiService from '@/services/apiService';
-import DeleteModal from '@/components/UI/Modal/DeleteModals.vue';
-import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
-import { useStore } from "@/stores/user";
-import { storeToRefs } from 'pinia';
-const store = useStore();
-const { userProfileDetails } = storeToRefs(store);
-console.log(userProfileDetails?.value.company_name)
-console.log(userProfileDetails?.value.company_address)
-console.log(userProfileDetails?.value.email)
-console.log(userProfileDetails?.value.phone_number)
-
-const search = ref('');
-const isSearching = ref(false);
-
-const data = ref([]); // Initialize as an empty array
-const pagination = ref({});
-const showDeleteModal = ref(false);
-const itemToDelete = ref(null);
-const modalTitle = "Delete Sale";
-
-const currentPage = ref(1);
-const totalPages = ref(0);
-const itemsPerPage = ref(0);
-
-watch(search, async (newSearch) => {
-  if (newSearch) {
-    isSearching.value = true;
-    try {
-      const response = await apiService.get(`search-sales/${newSearch}`);
-      console.log(response);
-      data.value = response;
-      return data.value;
-    } catch (error) {
-      console.error('Failed to fetch data:', error);
-    }
-  } else {
-    isSearching.value = false;
-    fetchData();
-  }
-});
-
-async function fetchData(page = 1) {
-  try {
-    const response = await apiService.get(`sales?page=${page}`);
-    console.log(response.data)
-    data.value = response.data || []; // Ensure it’s always an array
-    pagination.value = {
-      next_page_url: response.next_page_url,
-      prev_page_url: response.prev_page_url,
-    };
-    currentPage.value = response.current_page;
-    totalPages.value = response.last_page;
-    itemsPerPage.value = response.per_page;
-  } catch (error) {
-    console.error("Failed to fetch data:", error);
-  }
-}
-
-function changePage(page) {
-  if (page > 0 && page <= totalPages.value) {
-    fetchData(page);
-  }
-}
-
-function openDeleteModal(item) {
-  itemToDelete.value = item;
-  showDeleteModal.value = true;
-}
-
-function closeDeleteModal() {
-  showDeleteModal.value = false;
-  itemToDelete.value = null;
-}
-
-function forceRefresh() {
-  fetchData(currentPage.value);
-}
-
-const generateReceipt = async (transactionId) => {
-  try {
-    const response = await apiService.get(`download-sales-receipts/${transactionId}`);
-    console.log(response.data)
-    if (response.data) {
-      generateReceiptPDF(response.data);
-    } else {
-      console.error('Failed to fetch receipt data');
-    }
-  } catch (error) {
-    console.error('Failed to generate receipt:', error);
-  }
-};
-
-const generateReceiptPDF = (receiptData, userProfileDetails) => {
-  const doc = new jsPDF();
-
-  const headerStyle = { fontSize: 24, fontStyle: 'bold' };
-  const sectionHeaderStyle = { fontSize: 16, fontStyle: 'bold' };
-  const itemStyle = { fontSize: 12 };
-
-  doc.setFont(headerStyle.fontStyle, 'normal');
-  doc.setFontSize(headerStyle.fontSize);
-  doc.text(`${userProfileDetails?.value.company_name}`, 105, 20, null, null, 'center');
-  doc.text(`${userProfileDetails?.value.company_address}`, 105, 25, null, null, 'center');
-  doc.text(`Email: ${userProfileDetails?.value.email}`, 105, 30, null, null, 'center');
-  doc.text(`Phone No: ${userProfileDetails?.value.phone_number}`, 105, 35, null, null, 'center');
-  doc.text('RECEIPT', 105, 42, null, null, 'center'); // Adjusted y-position
-
-  doc.setFont(sectionHeaderStyle.fontStyle, 'normal');
-  doc.setFontSize(sectionHeaderStyle.fontSize);
-  doc.text(`Transaction ID: ${receiptData.transaction_details.transaction_id}`, 20, 50);
-  doc.text(`Date: ${receiptData.transaction_details.created_at}`, 20, 60);
-
-  const tableColumn = ["Product Name", "Quantity", "VAT", "Price (NGN)", "Payment Method", "Total Price (NGN)"];
-  const tableRows = [];
-
-  receiptData.items.forEach((item) => {
-    const itemData = [
-      item.product_type_name,
-      item.quantity,
-      item.vat === 1 ? 'Yes' : 'No',
-      ` ${item.amount}`,
-      item.payment_method,
-      ` ${item.total_price}`
-    ];
-    tableRows.push(itemData);
-  });
-
-  doc.autoTable({
-    head: [tableColumn],
-    body: tableRows,
-    startY: 80,
-    styles: { fontSize: itemStyle.fontSize },
-    theme: 'plain',
-    tableLineColor: [0, 0, 0], // Set table line color to black
-    tableLineWidth: 0.1, // Set the line width
-  });
-
-  let finalY = doc.autoTable.previous.finalY + 10;
-  doc.setFontSize(sectionHeaderStyle.fontSize);
-  doc.text(`Total Amount: NGN ${receiptData.transaction_details.transaction_amount}`, 200, finalY, null, null, 'right');
-
-  const pdfDataUri = doc.output('datauristring');
-  const viewerWindow = window.open();
-  viewerWindow.document.write(`<iframe width='100%' height='100%' src='${pdfDataUri}'></iframe>`);
-};
-
-onMounted(() => fetchData(currentPage.value));
-
-
-const delPermissions = computed(() => {
-  const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'sales');
-  return perm.value?.del == 1; 
-});
-const addPermissions = computed(() => {
-  const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'sales');
-  return perm.write == 1; 
-});
-</script> -->
-
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import { ref, computed, onMounted, onUnmounted,watch} from 'vue';
 import apiService from '@/services/apiService';
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue';
 import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
 import { useStore } from "@/stores/user";
 import { storeToRefs } from 'pinia';
-import { invalidateTypeCache } from 'vue/compiler-sfc';
+import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue';
+import { generateReceiptPDF } from './receipts';
+import { isOnline, listenForNetworkStatusChanges } from '@/isOnline'; 
+import { getAllProducts, getAllSales } from '@/services/indexedDbService'
+import { syncSalesToServer,  syncCustomersToServer } from '/customSync'
 
 const store = useStore();
 const { userProfileDetails } = storeToRefs(store);
@@ -243,7 +123,7 @@ const { userProfileDetails } = storeToRefs(store);
 const search = ref('');
 const isSearching = ref(false);
 
-const data = ref([]); // Initialize as an empty array
+const data = ref([]); 
 const pagination = ref({});
 const showDeleteModal = ref(false);
 const itemToDelete = ref(null);
@@ -252,36 +132,111 @@ const modalTitle = "Delete Sale";
 const currentPage = ref(1);
 const totalPages = ref(0);
 const itemsPerPage = ref(0);
+const branches = ref([]);
+const errorMessage = ref('');
+const offlineData = ref([]);
+const isOnlineFlag = ref(true); // Reactive property to track online status
+//alert(isOnline.value)
+async function checkOnlineStatus() {
+  try {
+    isOnlineFlag.value = await isOnline(); // Call the imported isOnline function
+   
+  } catch (error) {
+    console.error('Error checking online status:', error); // Handle any potential errors
+  }
+}
+// Listen for online/offline changes
+onMounted( async() => {
+
+  await checkOnlineStatus();
+  // Fetch initial data
+  fetchData(currentPage.value);
+
+  const stopListening = listenForNetworkStatusChanges((isOnline) => {
+    isOnlineFlag.value = isOnline; // Update online status in the UI
+    if (isOnline) {
+      console.log('Network is back online. Syncing sales...');
+      syncSalesToServer(); 
+      syncCustomersToServer(); 
+    }
+  });
+
+  onUnmounted(() => {
+    stopListening(); // Stops the interval and event listeners
+  });
+});
 
 watch(search, async (newSearch) => {
   if (newSearch) {
     isSearching.value = true;
     try {
+
+     
       const response = await apiService.get(`search-sales/${newSearch}`);
+      console.log(response)
       data.value = response;
       return data.value;
     } catch (error) {
       console.error('Failed to fetch data:', error);
     }
-  } else {
+  }else{
+    console.log('seraching')
+
     isSearching.value = false;
     fetchData();
   }
 });
 
+
 async function fetchData(page = 1) {
-  try {
-    const response = await apiService.get(`sales?page=${page}`);
-    data.value = response.data || []; // Ensure it’s always an array
-    pagination.value = {
-      next_page_url: response.next_page_url,
-      prev_page_url: response.prev_page_url,
-    };
-    currentPage.value = response.current_page;
-    totalPages.value = response.last_page;
-    itemsPerPage.value = response.per_page;
-  } catch (error) {
-    console.error("Failed to fetch data:", error);
+  if (!isOnlineFlag.value) {
+    console.log('Offline mode detected');
+    // If offline, load sales data from IndexedDB
+    try {
+      const storeSales = await getAllSales();
+      const storeProducts = await getAllProducts();
+
+      offlineData.value = storeSales.map(sale => {
+        const product = storeProducts.find(p => p.id === sale.products[0].product_type_id); // Find matching product by ID
+        return {
+          ...sale,
+          product_type_name: product ? product.product_type_name : 'Unknown', // Add product name
+          quantity_available: product ? product.quantity_available : 'N/A',  // Add available quantity from product
+        };
+      });
+
+      console.log(offlineData.value);
+      
+      if (offlineData.value.length === 0) {
+        errorMessage.value = 'No offline sales data found';
+      } else {
+        errorMessage.value = '';
+      }
+    } catch (error) {
+      console.error("Failed to fetch offline sales data:", error);
+      errorMessage.value = 'An error occurred while fetching offline data.';
+    }
+  } else {
+    // If online, fetch data from the server
+    try {
+      const response = await apiService.get(`sales?page=${page}`);
+      data.value = response.data || [];
+      if (data.value.length === 0) {
+        errorMessage.value = 'No items found';
+      } else {
+        errorMessage.value = '';
+      }
+      pagination.value = {
+        next_page_url: response.next_page_url,
+        prev_page_url: response.prev_page_url,
+      };
+      currentPage.value = response.current_page;
+      totalPages.value = response.last_page;
+      itemsPerPage.value = response.per_page;
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+      errorMessage.value = 'An error occurred while fetching online data.';
+    }
   }
 }
 
@@ -308,7 +263,7 @@ function forceRefresh() {
 const generateReceipt = async (transactionId) => {
   try {
     const response = await apiService.get(`download-sales-receipts/${transactionId}`);
-    console.log(response.data)
+    console.log(response.data);
     if (response.data) {
       generateReceiptPDF(response.data, userProfileDetails.value);
     } else {
@@ -319,85 +274,44 @@ const generateReceipt = async (transactionId) => {
   }
 };
 
-const formatNumber = (amount) => {
-  return new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
-};
+const roles = computed(() => store.getUser.user.permission.role_name === "Admin");
 
+onMounted(async () => {
+  try {
+    const response = await apiService.get('/list-business-branches'); 
+    console.log(response)
+    branches.value = response || [];
+    console.log(branches.value)
+  } catch (error) {
+    console.error('Failed to fetch branches:', error);
+  }
+});
 
-const generateReceiptPDF = (receiptData, userProfileDetails) => {
-  const doc = new jsPDF();
+function handleBranchChange(selectedBranchId) {
+  if (selectedBranchId) {
+    fetchBranch(selectedBranchId);
+  } else {
+    fetchData();
+  }
+}
 
-  const headerStyle = { fontSize: 18, fontStyle: 'bold' };
-  const invoiceStyle = { fontSize: 15, fontStyle: 'bold' };
-  const sectionHeaderStyle = { fontSize: 12, fontStyle: 'bold' };
-  const companyDetailsStyle = { fontSize: 12, fontStyle: 'normal' };
-  const itemStyle = { fontSize: 12 };
-
-  doc.setFont(headerStyle.fontStyle, 'normal');
-  doc.setFontSize(headerStyle.fontSize);
-  doc.text(`${userProfileDetails?.company_name}`, 105, 20, null, null, 'center');
-
-
-  doc.setFont(companyDetailsStyle.fontStyle, 'normal');
-  doc.setFontSize(companyDetailsStyle.fontSize);
-  doc.text(`Address ${userProfileDetails?.company_address}`, 105, 28, null, null, 'center');
-  doc.text(`Email: ${userProfileDetails?.email}`, 105, 36, null, null, 'center');
-  doc.text(`Phone No: ${userProfileDetails?.phone_number}`, 105, 44, null, null, 'center');
-
-  doc.setFont(invoiceStyle.fontStyle, 'normal');
-  doc.setFontSize(invoiceStyle.fontSize);
-  doc.text('RECEIPT', 105, 55, null, null, 'center'); 
-
-  doc.setFont(sectionHeaderStyle.fontStyle, 'normal');
-  doc.setFontSize(sectionHeaderStyle.fontSize);
-  doc.text(`Customer Name: ${receiptData.transaction_details.customer_detail}`, 20, 70);
-  doc.text(`Customer PhoneNum: ${receiptData.transaction_details.customer_phone_number}`, 20, 78);
-  doc.text(`Transaction ID: ${receiptData.transaction_details.transaction_id}`, 20, 86);
-  doc.text(`Payment Method: ${receiptData.transaction_details.payment_method}`, 20, 94);
-  doc.text(`Date: ${receiptData.transaction_details.created_at}`, 20, 102);
-
-  const tableColumn = ["Product Name", "Price(NGN)", "Quantity", "VAT(NGN)", "Total Price(NGN)"];
-  const tableRows = [];
-
-  receiptData.items.forEach((item) => {
-    const itemData = [
-      item.product_type_name,
-      item.price_sold_at,
-      item.quantity,
-      item.vat,
-      `${item.total_price}`
-    ];
-    tableRows.push(itemData);
-  });
-
-  doc.autoTable({
-    head: [tableColumn],
-    body: tableRows,
-    startY: 115,
-    styles: { fontSize: itemStyle.fontSize },
-    theme: 'plain',
-    tableLineColor: [0, 0, 0], 
-    tableLineWidth: 0.1, 
-  });
-
-  let finalY = doc.autoTable.previous.finalY + 10;
-  doc.setFont(invoiceStyle.fontStyle)
-  doc.setFontSize(invoiceStyle.fontSize);
-  doc.text(`Total Amount (NGN): ${formatNumber(receiptData.transaction_details.transaction_amount)}`, doc.internal.pageSize.width - 20, finalY, null, null, 'right');
-
-   
-  doc.setFontSize(itemStyle.fontSize);
-  doc.text('Thanks for your patronage!', 105, finalY + 15, null, null, 'center');
-
-  const pdfDataUri = doc.output('datauristring');
-  const viewerWindow = window.open();
-  viewerWindow.document.write(`<iframe width='100%' height='100%' src='${pdfDataUri}'></iframe>`);
-};
-
-onMounted(() => fetchData(currentPage.value));
+async function fetchBranch(branchId = 1) {
+  try {
+    const response = await apiService.get(`sales?branch_id=${branchId}`);
+      if (response.data && response.data.length) {
+      data.value = response.data;
+      errorMessage.value = '';
+    } else {
+      data.value = [];
+      errorMessage.value = 'No items found for the selected branch.';
+    }
+    
+    return data.value;
+  } catch (error) {
+    console.error('Failed to fetch sales data:', error);
+    errorMessage.value = 'An error occurred while fetching data.';
+  }
+}
 
 const delPermissions = computed(() => {
   const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'sales');
@@ -407,13 +321,22 @@ const addPermissions = computed(() => {
   const perm = store.getUser.user.permission.permissions.find(p => p.page_name === 'sales');
   return perm.write == 1; 
 });
+
 </script>
+
 
 <style scoped>
 .actions {
+  width: 100%;
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
+}
+.action {
+  width: 25%;
+  display: flex;
+  justify-content: space-between;
+  /* margin-bottom: 20px; */
 }
 
 .search-input {
@@ -435,7 +358,14 @@ const addPermissions = computed(() => {
   background-color: #C35214;
 }
 
+.prod_des{
+    max-width: 30em; 
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
 .add-btn {
+  
   background-color: #C35214;
 }
 
@@ -499,5 +429,26 @@ thead {
   background-color: #C35214;
   border-radius: 4px;
   color: white;
+}
+
+.error-message {
+  color: rgb(171, 26, 26);
+  font-size: 16px;
+  text-align: center;
+  margin: 20px 0;
+}
+.network-status {
+  padding: 10px;
+  color: white;
+  border-radius: 5px;
+  width:10%;
+}
+
+.online {
+  background-color: #4caf50; /* Green for online */
+}
+
+.offline {
+  background-color: #f44336; /* Red for offline */
 }
 </style>

@@ -22,72 +22,22 @@
               </div>
             </div>
 
-            <!-- <div
-              class="flex flex-row justify-between rounded-[8px] p-4"
-              style="background-color: rgb(0, 175, 239)"
-            >
-              <div>
-                <div
-                  class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
-                >
-                  <span>Rejected Supply</span>
-                </div>
-                <div
-                  class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
-                >
-                  0
-                </div>
-              </div>
-            </div>
-            <div
-              class="flex flex-row justify-between rounded-[8px] p-4"
-              style="background-color: rgb(44, 43, 108)"
-            >
-              <div>
-                <div
-                  class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
-                >
-                  <span>Pending Supply</span>
-                </div>
-                <div
-                  class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
-                >
-                  0
-                </div>
-              </div>
-            </div>
-            <div
-              class="flex flex-row justify-between rounded-[8px] p-4"
-              style="background-color: rgb(123, 97, 255)"
-            >
-              <div>
-                <div
-                  class="title font-Satoshi700 text-white py-4 text-[16px] leading-[21.6px]"
-                >
-                  <span>Canceled Supply</span>
-                </div>
-                <div
-                  class="amount font-Satoshi700 text-white text-[32px] leading-[43.2px]"
-                >
-                  0
-                </div>
-              </div>
-            </div> -->
           </div>
           <div class="chart hidden bg-white rounded-[8px] min-h-[100vh] p-4"></div>
           <div class="bg-white py-6 mt-12 rounded-lg">
             <div class="flex lg:flex-row flex-col gap-3 px-4 justify-between mb-4">
-              <div class="flex lg:flex-row flex-col justify-between w-full gap-2">
-                <div class="w-[40%]">
-                  <!-- <AuthInput :error="false" type="text" placeholder="search" /> -->
-                </div>
-                <div class="flex flex-row gap-[12px]">
-                  <button
+              <div class="flex w-full gap-2">
+                <!-- <div class="w-[40%]">
+                  <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" />
+                   <AuthInput :error="false" type="text" placeholder="search" />
+                </div> -->
+                <div class=" flex-end">
+                  <!-- <button
                     @click="HandleToggleUploadModal"
                     class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
                   >
                     Upload Suppliers
-                  </button>
+                  </button> -->
                   <button
                     @click="HandleToggleModal"
                     class="p-4 bg-brand py-[12px] text-white rounded-[4px]"
@@ -107,7 +57,7 @@
                       <th class="text-left p-4 pr-0 px-6 border-x capitalize">Last Name</th>
                       <th class="text-left p-4 pr-0 px-6 border-x capitalize">Email</th>
                       <th class="text-left p-4 pr-0 px-6 border-x capitalize">Phone Number</th>
-                      <!-- <th class="text-left p-4 pr-0 px-6 border-x capitalize">account</th> -->
+                      <!-- <th class="text-left p-4 pr-0 px-6 border-x capitalize">Branch</th> -->
                       <!-- <th class="text-left p-4 pr-0 px-6 capitalize">expiring Date</th> -->
                     </tr>
                   </thead>
@@ -136,7 +86,7 @@
                         {{ i.phone_number }}
                       </td>
                       <!-- <td class="text-left p-4 pr-0 pl-6 border-x capitalize">
-                        {{ i.account_number }}
+                        {{ i.branch_name }}
                       </td> -->
                       <!-- <td class="text-left p-4 pr-0 pl-6 capitalize">Basic</td> -->
                     </tr>
@@ -184,6 +134,7 @@
                     <AuthInput
                       label="First Name"
                       :error="errors.firstName"
+                      :errorsMsg="errorsMsg.firstName"
                       type="text"
                       placeholder="Enter first name"
                       v-model="formData.firstName"
@@ -193,6 +144,7 @@
                     <AuthInput
                       label="Last Name"
                       :error="errors.lastName"
+                      :errorsMsg="errorsMsg.lastName"
                       type="text"
                       placeholder="Enter last name"
                       v-model="formData.lastName"
@@ -205,6 +157,7 @@
                     <AuthInput
                       label="Email Address"
                       :error="errors.email"
+                      :errorsMsg="errorsMsg.email"
                       type="email"
                       placeholder="Enter email address"
                       v-model="formData.email"
@@ -230,7 +183,8 @@
                 <div class="w-full flex justify-center">
                   <button
                     type="submit"
-                    class="btn-brand !border-none !w-[30%] mx-auto !py-3 lg:!px-10 !px-5 !text-[#FFFFFF] text-center"
+                    :class="!isFormValid ? '!bg-primary-100/[30%] cursor-not-allowed' : 'bg-brand'"
+            class="btn-brand !rounded-[5px] flex gap-2 items-center justify-center !text-white text-[14px] !py-[16px] font-semibold w-full"
                   >
                     <span v-if="!loading" class="text-[12.067px]">Invite</span>
                     <Loader v-else />
@@ -289,17 +243,7 @@
                   </button>
                 </div>
 
-                <!-- <div class="flex lg:flex-row flex-col w-full gap-[20px]">
-                  <div class="flex flex-col w-full">
-                    <AuthInput
-                      label="Email Address"
-                      :error="errors.email"
-                      type="email"
-                      placeholder="Enter email address"
-                      v-model="formData.email"
-                    />
-                  </div>
-                </div> -->
+               
               </div>
 
               <div class="flex flex-col lg:flex-row w-full gap-[30px]">
@@ -323,7 +267,9 @@
 <script setup>
 import { ref, reactive, watch, onMounted, computed } from "vue";
 import { useSupplierStore } from "@/stores/suppliers";
+import apiService from '@/services/apiService';
 import DashboardLayout from "@/components/Layouts/dashboardLayout.vue";
+import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue';
 import CenteredModalLarge from "@/components/UI/CenteredModalLarge.vue";
 import AuthInput from "@/components/UI/Input/AuthInput.vue";
 import DisabledInput from "@/components/UI/Input/DisabledInput.vue";
@@ -338,34 +284,70 @@ import { useStore } from "@/stores/user";
 const { userProfileDetails } = storeToRefs(store);
 import CloudUploadIcon from "@/components/icons/cloudUploadIcon.vue";
 import { useRouter } from "vue-router";
+import { isOnline } from '@/isOnline'; // Online check utility
+import { addSupplier, getAllSuppliers } from '@/services/indexedDbService'; 
+
 const router = useRouter();
 
 const redirectToSingleSupplierPage = (id) => {
   router.push({ name: "view-supplier", params: { id } });
 };
 
+
+const roles = computed(() => store.getUser.user.permission.role_name === "Admin");
+
+
 let showModal = ref(false);
 let showUploadModal = ref(false);
+
+const nameRegex = /^[A-Za-z\s-_()]+$/; 
+const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+const isValidName = (name) => nameRegex.test(name);
+const isValidEmail = computed(() => {
+  return emailRegex.test(formData.email);
+});
+
+
 const formData = reactive({
   firstName: "",
   lastName: "",
   email: "",
   orgId: ""
 });
+
+const clearInputErrors = () => {
+  Object.keys(errors).forEach((key) => {
+    errors[key] = false;
+  });
+
+  Object.keys(errorsMsg).forEach((key) => {
+    errorsMsg[key] = "";
+  });
+};
+
+const isFormValid = computed(() => {
+  return (
+    isValidName(formData.firstName) &&
+    isValidName(formData.lastName) &&
+    isValidEmail.value 
+    
+  );
+});
+
+watch(formData, () => {
+  clearInputErrors();
+});
 let loading = ref(false);
 let sortInput = reactive({
   name: "",
 });
 
-//const currentPage = ref(1);
 const totalPages = ref(1);
  const itemsPerPage = ref(0);
-// const totalIndividuals = ref(0);
-// const totalCompanies = ref(0);
+
 
 const changePage = async (page) =>{
- 
-
   if (page > 0 && page <= totalPages.value) {
    
     let k = await supplierStore.allSupplier(page);
@@ -388,11 +370,61 @@ const filteredSupplier = computed(() => {
   return filtered; // Return the filtered array
 });
 
+// const branchId = ref(null);
+const branches = ref([])
+
+// const fetchBusinessBranches = async () => {
+//   try {
+//     const response = await apiService.get("list-bussiness-branches");
+//     branches.value = response.data; // Assuming response contains an array of branches
+//   } catch (error) {
+//     console.error("Error fetching business branches:", error);
+//   }
+// };
+
+
+onMounted(async () => {
+  try {
+    const response = await apiService.get('/list-business-branches'); 
+    // console.log(response)
+    branches.value = response || [];
+    // console.log(branches.value)
+  } catch (error) {
+    console.error('Failed to fetch branches:', error);
+  }
+});
+
+const fetchFilteredSuppliers = async (branchId = 1) => {
+  try {
+    const response = await apiService.get(`users?type=supplier&branch_id=${branchId}`);
+    console.log(response)
+    Supplier.value.data = response.data; 
+  } catch (error) {
+    console.error("Error fetching filtered suppliers:", error);
+    // Handle error or show error message
+  }
+};
+
+const handleBranchChange = (selectedBranchId) => {
+  if (selectedBranchId === "All Branches") {
+    // fetchBusinessBranches();// Reload all branches
+    fetchFilteredSuppliers(null); // Reset to all suppliers
+  } else {
+    fetchFilteredSuppliers(selectedBranchId); // Fetch suppliers for selected branch
+  }
+};
+
 const errors = reactive({
   firstName: false,
   lastName: false,
   email: false,
 });
+
+const errorsMsg = {
+  firstName: "First name is required",
+  lastName: "Last name is required",
+  email: "Email is required",
+};
 const validateForm = () => {
   // Reset errorsMsg
   Object.keys(errors).forEach((key) => {
@@ -409,27 +441,45 @@ const validateForm = () => {
     }
   });
 
+   if (!formData.firstName) {
+    errors.firstName = true;
+    errorsMsg.firstName = "First Name is required";
+    isValid = false;
+  } else if(!isValidName(formData.firstName)){
+    errors.firstName=true;
+    errorsMsg.firstName = "Invalid characters in First Name"
+    isValid = false;
+  }
+
+   if (!formData.lastName) {
+    errors.lastName = true;
+    errorsMsg.lastName = "Last Name is required";
+    isValid = false;
+  } else if(!isValidName(formData.lastName)){
+    errors.lastName = true;
+    errorsMsg.lastName = "Invalid characters in Last Name"
+    isValid = false;
+  }
+   
+  if (!formData.email) {
+    errors.email = true;
+    errorsMsg.email = "Email is required";
+    isValid = false;
+  } else if (!isValidEmail.value) {
+    errors.email = true;
+    errorsMsg.email = "Invalid email";
+    isValid = false;
+  }
+
   return isValid;
 };
 // Function to clear input errors
-const clearInputErrors = () => {
-  Object.keys(errors).forEach((key) => {
-    errors[key] = false;
-  });
-};
-// const isFormValid = computed(() => {
-//   return (
-//     formData.firstName.trim() !== "" &&
-//     formData.lastName.trim() !== "" &&
-//     formData.email.trim() !== ""
-//   );
-// });
+
+
 const clearInputs = () => {
   (formData.firstName = ""), (formData.lastName = ""), (formData.email = "");
 };
-watch(formData, () => {
-  clearInputErrors();
-});
+
 function HandleToggleModal() {
   showModal.value = !showModal.value;
   clearInputs();
@@ -454,26 +504,49 @@ const handleSupplierInvite = async () => {
     type: "invitation",
   };
   try {
-    let res = await resendEmail(payload);
-    supplierStore.allSupplier();
-    HandleToggleModal();
-    loading.value = false;
-    clearInputs();
-    return res;
+    const online = await isOnline(); // Check network status
+    if (online) {
+      let res = await resendEmail(payload);
+      alert('Invitation sent')
+      supplierStore.allSupplier();
+      HandleToggleModal();
+      loading.value = false;
+      clearInputs();
+      return res;
+    }else{
+      //const db = await initializeSalesDB();
+      await addSupplier( payload);
+      console.log('Supplier data saved to IndexedDB as you are offline.');
+    }
   } catch (error) {
     console.log(error);
   } finally {
     loading.value = false;
   }
 };
-onMounted(async () => {
-  let response= await supplierStore.allSupplier();
-  await store.handleUserProfile();
-  totalPages.value = response.last_page;
-  itemsPerPage.value = response.per_page
+const loadSuppliers = async () => {
+  try {
+    const online = await isOnline();  // Check if the app is online
+    if (online) {
+      let response= await supplierStore.allSupplier();
+      await store.handleUserProfile();
+      totalPages.value = response.last_page;
+      itemsPerPage.value = response.per_page
+      formData.orgId = userProfileDetails.value?.organization_id;
 
-  console.log(itemsPerPage.value)
-  formData.orgId = userProfileDetails.value?.organization_id;
+   
+    } else {
+      let values = await getAllSuppliers();
+      console.log(values)
+    }
+  } catch (error) {
+    console.error('Error loading customers:', error);
+  }
+};
+onMounted(async () => {
+  await loadSuppliers(); 
+ 
   // console.log(userProfileDetails.value?.organization_id)
+  
 });
 </script>

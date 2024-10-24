@@ -14,11 +14,12 @@ import VerifySupplier from '@/views/Auth/VerifySupplier.vue'
 import OrganisationPage from '@/views/Dashboard/Organisation/OrganisationPage.vue'
 import SupplierSinglePage from '@/views/Dashboard/Suppliers/SupplierSinglePage.vue'
 import CustomersSinglePage from '@/views/Dashboard/Customers/CustomersSinglePage.vue'
-import ProductsPage from '@/views/Dashboard/Product/ProductPage.vue'
-import ProductsPages from '@/views/Dashboard/Product/ProductPages.vue'
+// import ProductsPage from '@/views/Dashboard/Product/ProductPage.vue'
+// import ProductsPages from '@/views/Dashboard/Product/ProductPages.vue'
 import ProductCategoryPage from '@/views/Dashboard/Product/ProductCategoryPage.vue'
 import ProductSubCategoryPage from '@/views/Dashboard/Product/ProductSubCategoryPage.vue'
 import CurrencyPage from '@/views/Dashboard/Product/CurrencyPage.vue'
+import ReportPage from '@/views/Dashboard/Product/ReportPage.vue'
 // import StorePage from '@/views/Dashboard/Product/StorePage.vue'
 import StorePage from '@/views/Dashboard/Product/StorePagee.vue'
 import SalePage from '@/views/Dashboard/Product/Sale/ViewSalePage.vue'
@@ -33,24 +34,30 @@ import NotFound from '@/views/Auth/NotFound.vue'
 import ViewCustomerSubscriptionPage from '@/views/Dashboard/CustomerSubscription/ViewCustomerSubscriptionPage.vue'
 
 //import SalePage from '@/views/Dashboard/Product/SalePage.vue'
-
-//import ProductTypePage from '@/views/Dashboard/Product/ProductTypePage.vue'
+// import ViewProductType from '@/views/Dashboard/Product/ProductType/ViewProductTypes.vue'
+import WelcomeScreen from '@/views/welcomePage.vue'
+// import ProductTypePage from '@/views/Dashboard/Product/ProductTypePage.vue'
 import PricePage from '@/views/Dashboard/Product/PricePage.vue'
 import PurchasePage from '@/views/Dashboard/Product/Purchase/ViewPurchasePage.vue'
 import CreatePurchasePage from '@/views/Dashboard/Product/Purchase/CreatePurchasePage.vue'
 //import PurchasePage from '@/views/Dashboard/Product/PurchasePage.vue'
-import MeasurementPage from '@/views/Dashboard/Product/MeasurementPage.vue'
+import MeasurementPage from '@/views/Dashboard/Product/MeasurementsPage.vue'
 import SupplierProductsPage from '@/views/Dashboard/SupplierProduct/SupplierProductPage.vue'
 import RolesPage from '@/views/Dashboard/Security/Pages/RolesPagecopy.vue'
 import DefultPage from '@/views/Dashboard/Security/DefultPage.vue'
 import ResetPassword from '@/views/Auth/ResetPassword.vue'
 import ProfilePage from '@/views/Dashboard/Profile/ProfilePage.vue'
+import SupplierProfilePage from '@/views/Dashboard/Profile/SupplierProfilePage.vue'
+import ViewProductTypes from '@/views/Dashboard/Product/ProductType/ViewProductTypes.vue'
+import CreateProductType from '@/views/Dashboard/Product/ProductType/CreateProductType.vue'
+
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      redirect: '/dashboard'
+      redirect: { path: '/login'},
     },
     {
       path: '/login',
@@ -71,6 +78,12 @@ const router = createRouter({
       beforeEnter: [middleware.redirectDashboard]
     },
     {
+      path: '/report',
+      name: 'report',
+      component: ReportPage
+      //beforeEnter: [middleware.redirectDashboard]
+    },
+    {
       path: '/new-supplier/:token',
       name: 'register-supplier',
       component: RegisterSupplierPage,
@@ -84,6 +97,7 @@ const router = createRouter({
       beforeEnter: [middleware.redirectSupplierDashboard]
       // beforeEnter: [middleware.redirectDashboard]
     },
+
     {
       path: '/email-verification/:token',
       name: 'email-verification',
@@ -106,6 +120,12 @@ const router = createRouter({
       component: VerifyPage
     },
     {
+      path: '/welcome',
+      name: 'welcome',
+      component: WelcomeScreen,
+      beforeEnter: [middleware.redirectLogin]
+    },
+    {
       path: '/dashboard',
       name: 'dashboard',
       component: DashBoardVue,
@@ -120,6 +140,12 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: ProfilePage,
+      beforeEnter: [middleware.redirectLogin]
+    },
+    {
+      path: '/supplier-profile',
+      name: 'supplier-profile',
+      component: SupplierProfilePage,
       beforeEnter: [middleware.redirectLogin]
     },
     {
@@ -159,19 +185,19 @@ const router = createRouter({
       component: CustomersPage,
       beforeEnter: [middleware.redirectLogin]
     },
-    {
-      path: '/product',
-      name: 'product',
-      component: ProductsPage,
-      beforeEnter: [middleware.redirectLogin]
-    },
-    // added routes
-    {
-      path: '/products',
-      name: 'products',
-      component: ProductsPages,
-      beforeEnter: [middleware.redirectLogin]
-    },
+    // {
+    //   path: '/product',
+    //   name: 'product',
+    //   component: ProductsPage,
+    //   beforeEnter: [middleware.redirectLogin]
+    // },
+    // // added routes
+    // {
+    //   path: '/products',
+    //   name: 'products',
+    //   component: ProductsPages,
+    //   beforeEnter: [middleware.redirectLogin]
+    // },
     {
       path: '/measurement',
       name: 'measurement',
@@ -208,12 +234,18 @@ const router = createRouter({
       name: 'create-sale',
       component: CreateSalePage
     },
-    // {
-    //   path: '/product-type/:id',
-    //   name: 'product-type',
-    //   component: ProductTypePage,
-    //  // beforeEnter: [middleware.redirectLogin]
-    // },
+    {
+      path: '/product-type',
+      name: 'product-type',
+      component: ViewProductTypes,
+      beforeEnter: [middleware.redirectLogin]
+    },
+    {
+      path: '/create-product-type',
+      name: 'create-product-type',
+      component: CreateProductType,
+      beforeEnter: [middleware.redirectLogin]
+    },
 
     {
       path: '/price/:id',
@@ -280,12 +312,12 @@ const router = createRouter({
       beforeEnter: [middleware.redirectLogin]
     },
     {
-      path: '/logout',
+      path:'/logout',
       name: 'logout',
       beforeEnter: [middleware.deleteSession]
     },
     {
-      path: '/logout-supplier',
+      path:'/signout',
       name: 'signout',
       beforeEnter: [middleware.deleteSupplierSession]
     },

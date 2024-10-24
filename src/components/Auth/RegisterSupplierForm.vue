@@ -12,22 +12,24 @@
           <div class="flex lg:flex-row flex-col w-full gap-[20px]">
             <div class="mb-3 flex flex-col w-full">
               <AuthInput
-                label="First Name"
+                label="First Name*"
                 :error="errors.firstName"
                 :errorsMsg="errorsMsg.firstName"
                 type="text"
                 placeholder="Enter first name"
                 v-model="formData.firstName"
+                required
               />
             </div>
             <div class="mb-3 flex flex-col w-full">
               <AuthInput
-                label="Last Name"
+                label="Last Name*"
                 :error="errors.lastName"
                 :errorsMsg="errorsMsg.lastName"
                 type="text"
                 placeholder="Enter last name"
                 v-model="formData.lastName"
+                required
               />
             </div>
           </div>
@@ -40,16 +42,18 @@
                 type="text"
                 placeholder="Enter Middel Name"
                 v-model="middelName"
+                required
               />
             </div>
             <div class="mb-3 flex flex-col w-full">
               <AuthInput
-                label="Email Address"
+                label="Email Address*"
                 :error="errors.email"
                 :errorsMsg="errorsMsg.email"
                 type="email"
                 placeholder="Enter email address"
                 v-model="formData.email"
+                required
               />
             </div>
           </div>
@@ -67,12 +71,13 @@
             </div>
             <div class="mb-3 flex flex-col w-full">
               <AuthInput
-                label="Phone number"
+                label="Phone number*"
                 :error="errors.phoneNo"
                 :errorsMsg="errorsMsg.phoneNo"
-                type="tel"
+                type="number"
                 placeholder="Enter Phone number"
                 v-model="formData.phoneNo"
+                required
               />
             </div>
           </div>
@@ -90,7 +95,7 @@
           <div class="flex lg:flex-row flex-col w-full gap-[20px]">
             <div class="mb-3 flex flex-col w-full">
               <PasswordInput
-                label="Password"
+                label="Password*"
                 :error="errors.password"
                 :errorsMsg="errorsMsg.password"
                 v-model="formData.password"
@@ -174,9 +179,9 @@
         </div>
 
         <div class="mt-4">
-          <button
+          <button :disabled="loading"
             @click="handleSupplierSignup()"
-            :class="!isFormValid ? '!bg-primary-100 cursor-not-allowed' : 'bg-brand'"
+            :class="!isFormValid ? '!bg-primary-100/[30%] cursor-not-allowed' : 'bg-brand'"
             class="btn-brand !rounded-[5px] flex gap-2 items-center justify-center !text-white text-[14px] !py-[16px] font-semibold w-full"
           >
             <span v-if="!loading" class="font-semibold !text-[15px]">Submit</span>
@@ -207,16 +212,16 @@ import PasswordInput from "@/components/UI/Input/PasswordInput.vue";
 import Loader from "@/components/UI/Loader.vue";
 
 import { useRouter, useRoute } from "vue-router";
-import { useStore } from "@/stores/user";
+// import { useStore } from "@/stores/user";
 import { register, verifyEmail } from "@/services/Auth";
 
 const route = useRoute();
 const router = useRouter();
-const store = useStore();
+// const store = useStore();
 const signupToken = ref(route.params.token);
 const VerificationRespData = ref({});
 const middelName = ref("");
-const phoneNo = ref("");
+// const phoneNo = ref("");
 const dob = ref("");
 
 const formData = reactive({
@@ -237,7 +242,7 @@ const errors = reactive({
   password: false,
   confirmPassword: false,
 });
-const confirmPassword = ref("");
+// const confirmPassword = ref("");
 const dobError = ref(false);
 const dobErrorMsg = ref("date of birth is lower than 18");
 
@@ -259,8 +264,12 @@ function getMinDate() {
   // Return the minimum date in the format required by the input[type=date] field
   return minDate.toISOString().split("T")[0];
 }
+
+const nameRegex = /^[A-Za-z\s-_()]+$/; 
 const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/;
+
+const isValidName = (name) => nameRegex.test(name);
 const isValidEmail = computed(() => {
   return emailRegex.test(formData.email);
 });
@@ -305,9 +314,37 @@ const validateForm = () => {
       isValid = false;
     }
   });
-  if (!isValidEmail.value) {
+
+  if (!formData.firstName) {
+    errors.firstName = true;
+    errorsMsg.firstName = "First Name is required";
+    isValid = false;
+  } else if(!isValidName(formData.firstName)){
+    errors.firstName=true;
+    errorsMsg.firstName = "Invalid characters in First Name"
+    isValid = false;
+  }
+
+  
+
+   if (!formData.lastName) {
+    errors.lastName = true;
+    errorsMsg.lastName = "Last Name is required";
+    isValid = false;
+  } else if(!isValidName(formData.lastName)){
+    errors.lastName = true;
+    errorsMsg.lastName = "Invalid characters in Last Name"
+    isValid = false;
+  }
+
+   
+  if (!formData.email) {
     errors.email = true;
-    errorsMsg.email;
+    errorsMsg.email = "Email is required";
+    isValid = false;
+  } else if (!isValidEmail.value) {
+    errors.email = true;
+    errorsMsg.email = "Invalid email";
     isValid = false;
   }
 
@@ -319,7 +356,7 @@ const validateForm = () => {
 
   if (formData.password !== formData.confirmPassword) {
     errors.confirmPassword = true;
-    errorsMsg.confirmPassword;
+    errorsMsg.confirmPassword = "Password does not match";
     isValid = false;
   }
   // Check if Date of Birth is not less than 5 years from today
@@ -345,11 +382,11 @@ const clearInputErrors = () => {
 };
 const isFormValid = computed(() => {
   return (
-    formData.firstName.trim() !== "" &&
-    formData.lastName.trim() !== "" &&
-    formData.email.trim() !== "" &&
-    formData.password.trim() !== "" &&
-    formData.confirmPassword.trim() !== ""
+    isValidName(formData.firstName) &&
+    isValidName(formData.lastName) &&
+    isValidEmail.value &&
+    isValidPassword.value &&
+    passwordsMatch.value
   );
 });
 const clearInputs = () => {
