@@ -169,3 +169,17 @@ export async function removeSupplier(email) {
   await store.delete(email);
   await tx.done;
 }
+// Function to update product quantity in IndexedDB
+export async function updateProductQuantity(productId, quantitySold) {
+  const db = await initializeSalesDB();
+  const tx = db.transaction('products', 'readwrite');
+  const store = tx.objectStore('products');
+  
+  const product = await store.get(productId);
+  if (product) {
+    product.quantity_available = product.quantity_available - quantitySold;
+    await store.put(product);
+  }
+
+  await tx.done;
+}

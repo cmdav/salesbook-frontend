@@ -115,7 +115,7 @@ import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue';
 import { generateReceiptPDF } from './receipts';
 import { isOnline, listenForNetworkStatusChanges } from '@/isOnline'; 
 import { getAllProducts, getAllSales } from '@/services/indexedDbService'
-import { syncSalesToServer,  syncCustomersToServer } from '/customSync'
+import { syncSalesToServer,  syncCustomersToServer,syncProductsFromServer } from '/customSync'
 
 const store = useStore();
 const { userProfileDetails } = storeToRefs(store);
@@ -158,6 +158,7 @@ onMounted( async() => {
       console.log('Network is back online. Syncing sales...');
       syncSalesToServer(); 
       syncCustomersToServer(); 
+      syncProductsFromServer();
     }
   });
 
@@ -196,15 +197,24 @@ async function fetchData(page = 1) {
       const storeSales = await getAllSales();
       const storeProducts = await getAllProducts();
 
-      offlineData.value = storeSales.map(sale => {
-        const product = storeProducts.find(p => p.id === sale.products[0].product_type_id); // Find matching product by ID
-        return {
-          ...sale,
-          product_type_name: product ? product.product_type_name : 'Unknown', // Add product name
-          quantity_available: product ? product.quantity_available : 'N/A',  // Add available quantity from product
-        };
-      });
+      
+      console.log(storeProducts)
+      console.log(storeSales)
+      console.log("processing the loop")
+      offlineData.value = storeSales.flatMap(sale => {
+  return sale.products.map(product => {
+    const matchingProduct = storeProducts.find(p => p.id === product.product_type_id); // Find matching product by ID
+    return {
+      ...sale,
+      product_type_name: matchingProduct ? matchingProduct.product_type_name : 'Unknown', // Add product name
+      quantity_available: matchingProduct ? matchingProduct.quantity_available : 'N/A',  // Add available quantity from product
+      price_sold_at: product.price_sold_at,
+      quantity_sold: product.quantity,
+    };
+  });
+});
 
+      console.log("end of processing the loop")
       console.log(offlineData.value);
       
       if (offlineData.value.length === 0) {
@@ -213,7 +223,7 @@ async function fetchData(page = 1) {
         errorMessage.value = '';
       }
     } catch (error) {
-      console.error("Failed to fetch offline sales data:", error);
+      console.error("offline error:", error);
       errorMessage.value = 'An error occurred while fetching offline data.';
     }
   } else {
