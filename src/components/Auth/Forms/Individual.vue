@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div class="flex flex-col gap-[17px]">
-    <div class="flex flex-col gap-[17px]">
+  <div class="">
+    <div class="">
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
         <div class="mb-3 flex flex-col w-full">
           <AuthInput label="First Name*" :error="errors.firstName" :errorsMsg="errorsMsg.firstName" type="text"
@@ -125,8 +125,7 @@
         <router-link to="/login" class="font-medium text-brand text-[14px]">Login</router-link>
       </p>
     </div>
-
-    <div class="flex flex-col lg:flex-row w-full gap-[30px] mt-4">
+    <div class=" mt-4">
       <button @click="handleSignup()"
       :disabled="!isFormFullyValid || loading"
         :class="(!isFormFullyValid || loading) ? '!bg-primary-100/[30%] cursor-not-allowed' : 'bg-brand'"
@@ -135,7 +134,6 @@
         <Loader v-else />
       </button>
     </div>
-
     <div class="flex items-center justify-center mb-10 text-center gap-[4px]">
       <span class="font-normal text-[14px]">By continuing you agree to the
         <router-link class="text-[#007BFF] font-medium" to="/">terms of service</router-link>

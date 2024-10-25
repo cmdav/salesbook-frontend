@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div class="flex flex-col gap-[17px]">
+  <div class="">
     <div class="flex flex-col gap-[17px]">
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
         <div class="mb-3 flex flex-col w-full">
@@ -191,7 +191,7 @@
       </p>
     </div>
 
-    <div class="flex flex-col lg:flex-row w-full gap-[30px] mt-4">
+    <div class=" mt-4">
       <button
         :disabled="!isFormValid || loading"
         @click="handleCompanySignup()"
