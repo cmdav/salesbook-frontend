@@ -3,11 +3,11 @@
   <div class="">
     <div class="">
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
-        <div class="mb-3 flex flex-col w-full">
+        <div class="mb-2 flex flex-col w-full">
           <AuthInput label="First Name*" :error="errors.firstName" :errorsMsg="errorsMsg.firstName" type="text"
             placeholder="Enter first name" v-model="formData.firstName" required />
         </div>
-        <div class="mb-3 flex flex-col w-full">
+        <div class="mb-2 flex flex-col w-full">
           <AuthInput label="Last Name*" :error="errors.lastName" type="text" placeholder="Enter last name"
             :errorsMsg="errorsMsg.lastName" v-model="formData.lastName" required />
         </div>
@@ -24,17 +24,17 @@
         </div>
       </div>
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
-        <div class="mb-3 flex flex-col w-full">
+        <div class="mb-2 flex flex-col w-full">
           <AuthInput label="Date of Birth (Optional)"  type="date" placeholder="Enter DOB"
             v-model="dob" :max="minDate" :errorsMsg="dobErrorMsg" />
         </div>
-        <div class="mb-3 flex flex-col w-full">
+        <div class="mb-2 flex flex-col w-full">
           <AuthInput label="Phone number*" :error="errors.phone_no" :errorsMsg="errorsMsg.phone_num" type="number" placeholder="Enter Phone number"
             v-model="phoneNo" required/>
         </div>
       </div>
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
-        <div class="mb-3 flex flex-col w-full">
+        <div class="mb-2 flex flex-col w-full">
           <AuthInput
             label="Address*"
             :error="errors.address"
@@ -48,19 +48,19 @@
         </div>
       </div>
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
-        <div class="mb-3 flex flex-col w-full">
+        <div class="mb-2 flex flex-col w-full">
           
-          <label for="country">Country*</label>
+          <label class="text-[13px]" for="country">Country*</label>
           <select id="country" v-model="selectedCountry" @change="fetchStates" class="select-input">
-            <option value="" disabled>Select Country</option>
+            <option value="" class="text-[13px]" disabled>Select Country</option>
             <option v-for="country in countries" :key="country.id" :value="country.id">{{ country.name }}</option>
           </select>
           <span v-if="errors.country" class="text-red-500">{{ errorsMsg.country }}</span>
         </div>
-        <div class="mb-3 flex flex-col w-full">
-          <label for="state">State*</label>
+        <div class="mb-2 flex flex-col w-full">
+          <label class="text-[13px]" for="state">State*</label>
           <select id="state" v-model="formData.state" class="select-input">
-            <option value="" disabled>Select State</option>
+            <option class="text-[13px]" value="" disabled>Select State</option>
             <option v-for="state in states" :key="state.id" :value="state.id">{{ state.name }}</option>
           </select>
           <span v-if="errors.state" class="text-red-500">{{ errorsMsg.state }}</span>
@@ -70,11 +70,11 @@
 
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
 
-        <div class="mb-3 flex flex-col w-full">
+        <div class="mb-2 flex flex-col w-full">
           <PasswordInput label="Password*" :error="errors.password" :errorsMsg="errorsMsg.password"
             v-model="formData.password" placeholder="**********" required />
         </div>
-        <div class="mb-3 flex flex-col w-full">
+        <div class="mb-2 flex flex-col w-full">
           <PasswordInput label="Confirm Password" :error="errors.confirmPassword || !passwordsMatch"
             :errorsMsg="errorsMsg.confirmPassword" placeholder="Confirm Password*" v-model="formData.confirmPassword" required />
         </div>
@@ -129,8 +129,8 @@
       <button @click="handleSignup()"
       :disabled="!isFormFullyValid || loading"
         :class="(!isFormFullyValid || loading) ? '!bg-primary-100/[30%] cursor-not-allowed' : 'bg-brand'"
-        class="btn-brand !rounded-[5px] flex gap-2 items-center justify-center !text-white text-[14px] !py-[16px] font-semibold w-full">
-        <span v-if="!loading" class="font-semibold !text-[15px]">Submit</span>
+        class="btn-brand !rounded-[5px] flex gap-2 items-center justify-center !text-white text-[14px] !py-[10px] font-semibold w-full">
+        <span v-if="!loading" class="font-semibold !text-[14px]">Submit</span>
         <Loader v-else />
       </button>
     </div>
@@ -455,9 +455,10 @@ const handleSignup = async () => {
 </script>
 <style scoped>
 .select-input {
+  font-size: 12px;
   display: block;
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
   background-color: #fff;

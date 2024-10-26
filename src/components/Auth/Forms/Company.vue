@@ -1,9 +1,9 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="">
-    <div class="flex flex-col gap-[17px]">
+    <div class="">
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
-        <div class="mb-3 flex flex-col w-full">
+        <div class="mb-2 flex flex-col w-full">
           <AuthInput
             label="Company Name*"
             :error="CompanyErrors.company_name"
@@ -14,7 +14,7 @@
             required
           />
         </div>
-        <div class="mb-3 flex flex-col w-full">
+        <div class="mb-2 flex flex-col w-full">
           <AuthInput
             label="Company Contact Person*"
             :error="CompanyErrors.contact_person"
@@ -28,7 +28,7 @@
       </div>
 
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
-        <div class="mb-3 flex flex-col w-full">
+        <div class="mb-2 flex flex-col w-full">
           <AuthInput
             label="Company contact number*"
             :error="CompanyErrors.phone_number"
@@ -48,7 +48,7 @@
             required
           /> -->
         </div>
-        <div class="mb-3 flex flex-col w-full">
+        <div class="mb-2 flex flex-col w-full">
           <AuthInput
             label="Company Email*"
             :error="CompanyErrors.email"
@@ -61,7 +61,7 @@
         </div>
       </div>
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
-        <div class="mb-3 flex flex-col w-full">
+        <div class="mb-2 flex flex-col w-full">
           <AuthInput
             label="Company Address*"
             :error="CompanyErrors.company_address"
@@ -85,19 +85,19 @@
         </div> -->
       </div>
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
-        <div class="mb-3 flex flex-col w-full">
+        <div class="mb-2 flex flex-col w-full">
           
-          <label for="country">Country*</label>
+          <label class="text-[13px]" for="country">Country*</label>
           <select id="country" v-model="selectedCountry" @change="fetchStates" class="select-input">
-            <option value="" disabled>Select Country</option>
+            <option class="text-[13px]" value="" disabled>Select Country</option>
             <option v-for="country in countries" :key="country.id" :value="country.id">{{ country.name }}</option>
           </select>
           <span v-if="CompanyErrors.country" class="text-red-500">{{ CompanyErrorsMsg.country }}</span>
         </div>
         <div class="mb-3 flex flex-col w-full">
-          <label for="state">State*</label>
+          <label class="text-[13px]" for="state">State*</label>
           <select id="state" v-model="CompanyformData.state" class="select-input">
-            <option value="" disabled>Select State</option>
+            <option class="text-[13px]" value="" disabled>Select State</option>
             <option v-for="state in states" :key="state.id" :value="state.id">{{ state.name }}</option>
           </select>
           <span v-if="CompanyErrors.state" class="text-red-500">{{ CompanyErrorsMsg.state }}</span>
