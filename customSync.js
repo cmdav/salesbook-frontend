@@ -2,6 +2,7 @@
 
 import CryptoJS from 'crypto-js';
 import { initializeSalesDB, initializeUserDB} from '@/services/indexedDbService'
+import apiService from '@/services/apiService'; 
 
 const encryptionKey = "RadsDashboard#$%245";
 
@@ -134,3 +135,41 @@ function decryptToken(encryptedToken, key) {
     return null;
   }
 }
+
+// Function to sync products from the server and update IndexedDB
+export async function syncProductsFromServer() {
+  try {
+   
+      const productResponse = await apiService.get('/all-product-type-name');
+      const db = await initializeSalesDB();
+      
+      const tx = db.transaction('products', 'readwrite');
+      const store = tx.objectStore('products');
+
+      // Loop through each product from the server response
+      for (const product of productResponse.data) {
+        // Check if the product already exists in IndexedDB
+        const existingProduct = await store.get(product.id);
+
+        if (existingProduct) {
+          // If the product exists, update the quantity and other details
+          existingProduct.quantity_available = product.quantity_available;
+          existingProduct.selling_price = product.selling_price;
+          existingProduct.selling_unit_name = product.selling_unit_name;
+          existingProduct.vat = product.vat;
+
+          await store.put(existingProduct);
+        } else {
+          // If the product does not exist, add it as a new product
+          await store.put(product);
+        }
+      }
+
+      await tx.done;
+      console.log('Products store updated with the latest data from server');
+    
+  } catch (error) {
+    console.error('Error syncing products from server:', error);
+  }
+}
+

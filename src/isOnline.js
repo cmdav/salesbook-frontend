@@ -3,7 +3,7 @@
 let idleTimeout;
 let isIdle = false; // Flag to track if the user is in idle mode
 //let second = 20000
-let second = 1000
+let second = 700
 
 export async function isOnline() {
   try {
@@ -25,7 +25,7 @@ export function listenForNetworkStatusChanges(callback) {
 
   const enterIdleMode = () => {
     if (!isIdle) { // Only log and check if entering idle mode
-      console.log("Entering idle mode: Checking network status after "+ second +" seconds of inactivity...");
+     // console.log("Entering idle mode: Checking network status after "+ second +" seconds of inactivity...");
       isIdle = true; // Set flag to idle
     }
     idleTimeout = setTimeout(updateNetworkStatus, second); // Set timer for x seconds of inactivity
@@ -34,7 +34,7 @@ export function listenForNetworkStatusChanges(callback) {
   const resetIdleTimer = () => {
     clearTimeout(idleTimeout); // Clear the previous timer
     if (isIdle) { // If user was idle, log that they're active again
-      console.log("User is active again, resetting idle timer.");
+     // console.log("User is active again, resetting idle timer.");
     }
     isIdle = false; // Reset the idle flag
     idleTimeout = setTimeout(enterIdleMode, second); // Start a new x second timer to enter idle mode

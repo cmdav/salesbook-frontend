@@ -7,6 +7,9 @@
       <div class="top-buttons">
         <router-link to="/sale" class="button back-btn">Back</router-link>
       </div>
+      <div :class="['network-status', { 'online': isOnlineFlag, 'offline': !isOnlineFlag }]">
+            <span>{{ isOnlineFlag ? 'Online' : 'Offline' }}</span>
+          </div>
 
       <form @submit.prevent="addSales">
         <!-- Radio buttons for sending receipt -->
@@ -188,7 +191,7 @@
   </DashboardLayout>
 </template>
 <script setup>
-import { ref, reactive, watch, onMounted, nextTick} from 'vue';
+import { ref, reactive, watch, onMounted,onUnmounted, nextTick} from 'vue';
 import { useRouter } from 'vue-router';
 import apiService from '@/services/apiService'; // Service to interact with the backend API
 import { useCustomerstore } from '@/stores/customers'; // Pinia store for customer data
@@ -197,8 +200,9 @@ import ReceiptModal from '@/components/UI/Modal/ReceiptModal.vue'; // Modal comp
 import { storeToRefs } from 'pinia';
 import { sendToPrinter } from './sentToPrinter'; // Function to generate PDF for the receipt
 import { catchAxiosSuccess } from '@/services/Response'; // Services to handle success and error messages for API responses
-import { isOnline } from '@/isOnline'; 
-import { getAllCustomers, getProductById, addSale, getAllProducts, initializeSalesDB, getAllPaymentMethods, addPaymentMethods} from '@/services/indexedDbService'
+import { getAllCustomers, getProductById, addSale, getAllProducts, 
+initializeSalesDB, getAllPaymentMethods, addPaymentMethods,updateProductQuantity} from '@/services/indexedDbService'
+import { isOnline, listenForNetworkStatusChanges } from '@/isOnline'; 
 
 const router = useRouter();
 const customersStore = useCustomerstore(); // Access the Pinia customer store
@@ -455,15 +459,17 @@ const loadCustomers = async () => {
   }
 };
 
+
 onMounted(async () => {
   try {
     // Open IndexedDB
     //await customersStore.handleAllCustomersName(); 
+    await checkOnlineStatus();
     await loadCustomers(); 
     const db = await initializeSalesDB();
 
     // Check if the app is online
-    await checkOnlineStatus();
+  
 
     if (isOnlineFlag.value) {
       // Fetch both payment methods and product data together if online
@@ -501,73 +507,84 @@ onMounted(async () => {
   } catch (error) {
     console.error('Error during initialization:', error);
   }
+  const stopListening = listenForNetworkStatusChanges((isOnline) => {
+    isOnlineFlag.value = isOnline; // Update online status in the UI
+  });
+
+  onUnmounted(() => {
+    stopListening(); // Stops the interval and event listeners
+  });
 });
 
 
-
 const addSales = async () => {
-  isSubmitting.value = true;
-
-  // Validate that all products have quantities greater than 0
-  const invalidProducts = formState.products.filter(product => product.product_type_id && product.quantity_sold <= 0);
-
-  if (invalidProducts.length > 0) {
-    alert(`Enter a quantity for all selected products`);
-    isSubmitting.value = false;
-    return;
-  }
-
-  const products = formState.products
-    .filter((product) => product.amount > 0)
-    .map((product) => ({
-      product_type_id: product.product_type_id,
-      price_sold_at: parseInt(product.selling_price, 10),
-      quantity: parseInt(product.quantity_sold, 10),
-      vat: product.vat === 'yes' ? 'yes' : 'no'
-    }));
-
-  const payload = {
-    customer_id: formState.customer_id ? formState.customer_id : null,
-    payment_method: formState.payment_method,
-    products
-  }
-
-  try {
-    const online = await isOnline();  // Re-check the network status dynamically
-    if (online) { 
-      // If online, send the sales data to the server
-      //alert("You are online");
-      res.value = await apiService.post('/sales', payload);
-      if (res.value.success) {
-        showReceiptModal.value = true;
-      }
-    } else {
-      // If offline, store sales data in IndexedDB
-      alert('App is offline. Storing sales data.');
-      payload.is_offline = 1;
-      // Open IndexedDB
-      await addSale(payload);
-      //router.push('/sale');
-
-      // Register a sync event with the service worker
-      if ('serviceWorker' in navigator && 'SyncManager' in window) {
-        navigator.serviceWorker.ready.then((registration) => {
-          return registration.sync.register('sync-sales').then(() => {
-            console.log('Sync event registered successfully');
-         
-          }).catch((err) => {
-            console.error('Failed to register sync event:', err);
-          });
-        });
-      }
+    isSubmitting.value = true;
+  
+    // Validate that all products have quantities greater than 0
+    const invalidProducts = formState.products.filter(product => product.product_type_id && product.quantity_sold <= 0);
+  
+    if (invalidProducts.length > 0) {
+      alert(`Enter a quantity for all selected products`);
+      isSubmitting.value = false;
+      return;
     }
-  } catch (error) {
-    console.error('Error while adding sales:', error);
-  } finally {
-    isSubmitting.value = false
-    resetForm()
+  
+    const products = formState.products
+      .filter((product) => product.amount > 0)
+      .map((product) => ({
+        product_type_id: product.product_type_id,
+        price_sold_at: parseInt(product.selling_price, 10),
+        quantity: parseInt(product.quantity_sold, 10),
+        vat: product.vat === 'yes' ? 'yes' : 'no'
+      }));
+  
+    const payload = {
+      customer_id: formState.customer_id ? formState.customer_id : null,
+      payment_method: formState.payment_method,
+      products
+    }
+  
+    try {
+      const online = await isOnline();  // Re-check the network status dynamically
+      if (online) { 
+        // If online, send the sales data to the server
+        res.value = await apiService.post('/sales', payload);
+        if (res.value.success) {
+          showReceiptModal.value = true;
+        }
+      } else {
+        // If offline, store sales data in IndexedDB
+        alert('App is offline. Storing sales data.');
+        payload.is_offline = 1;
+        await addSale(payload);
+  
+        // Update product quantities in IndexedDB based on the sale
+        for (const product of products) {
+          await updateProductQuantity(product.product_type_id, product.quantity);
+        }
+        console.log(data.value)
+  
+        // Register a sync event with the service worker
+        // if ('serviceWorker' in navigator && 'SyncManager' in window) {
+        //   navigator.serviceWorker.ready.then((registration) => {
+        //     return registration.sync.register('sync-sales').then(() => {
+        //       console.log('Sync event registered successfully');
+           
+        //     }).catch((err) => {
+        //       console.error('Failed to register sync event:', err);
+        //     });
+        //   });
+        // }
+        router.push('/sale');
+      }
+    } catch (error) {
+      console.error('Error while adding sales:', error);
+    } finally {
+      isSubmitting.value = false
+      resetForm()
+    }
   }
-}
+  
 
 
 
