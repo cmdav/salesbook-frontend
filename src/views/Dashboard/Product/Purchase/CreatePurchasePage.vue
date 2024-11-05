@@ -5,7 +5,9 @@
         <router-link to="/purchase" class="button back-btn">Back</router-link>
         <div class="total-and-add">
           <span class="total-cost-price">Total Cost Price: &#8358; {{ totalCostPrice }}</span>
-          <button type="button" @click="addPurchase" class="button add-purchase-button">Add Purchase</button>
+          <button type="button" @click="addPurchase" class="button add-purchase-button">
+            Add Purchase
+          </button>
         </div>
       </div>
       <div v-if="isLoading" class="loading-icon">Loading...</div>
@@ -16,7 +18,9 @@
         </div>
         <div v-for="(purchase, index) in purchases" :key="index" class="purchase-form">
           <div v-if="index !== 0" class="top-buttons">
-            <button type="button" @click="addPurchase" class="button add-purchase-button">Add Purchase</button>
+            <button type="button" @click="addPurchase" class="button add-purchase-button">
+              Add Purchase
+            </button>
           </div>
           <div class="form-row">
             <div>
@@ -28,72 +32,108 @@
               </select>
             </div>
             <div>
-              <label for="product_type_id">Product Type <span class="required">*</span></label>
-              <select v-model="purchase.product_type_id" @change="() => handleSupplierChange(index)">
-                <option v-for="productType in productTypes" :key="productType.id" :value="productType.id"
-                  :disabled="isDuplicatePurchase(purchase.supplier_id, productType.id)">
-                  {{ productType.product_type_name }}
-                </option>
-              </select>
+              <label for="product_type_id">Product Name <span class="required">*</span></label>
+              <div class="custom-select">
+                <input
+                  type="text"
+                  :value="searchQuery || getSelectedProductName(purchase.product_type_id)"
+                  @input="handleSearch($event, index)"
+                  @focus="showDropdown = true"
+                  placeholder="Search product type..."
+                  class="search-input"
+                />
+                <div v-show="showDropdown" class="options-container">
+                  <div
+                    v-for="productType in filteredProductTypes"
+                    :key="productType.id"
+                    class="option"
+                    :class="{ disabled: isDuplicatePurchase(purchase.supplier_id, productType.id) }"
+                    @click="selectProduct(productType, index)"
+                  >
+                    {{ productType.product_type_name }}
+                  </div>
+                </div>
+              </div>
             </div>
+           
             <div>
               <label for="purchase_unit_name">Purchase Unit <span class="required">*</span></label>
-              <input type="text" v-model="purchase.purchase_unit_name" class="short-input" readonly />
+              <input
+                type="text"
+                v-model="purchase.purchase_unit_name"
+                class="short-input"
+                readonly
+              />
             </div>
 
-         <!-- Cost Price -->
-<div>
-  <label for="cost_price">Cost Price <span class="required">*</span></label>
-  <div class="tooltip-container">
-    <input 
-      type="number" 
-      v-model="purchase.cost_price"
-      min="0"
-      @blur="validateCostPrice(index)"  
-      @mouseover="showTooltip" 
-      data-tooltip="Enter the cost price per unit" 
-      required 
-    />
-    <span class="tooltip">Enter the cost price per unit</span>
-  </div>
-  <label class="priceView">&#8358; {{ purchase.cost_price ? parseFloat(purchase.cost_price).toLocaleString() : '0.00' }}</label>
-</div>
+            <!-- Cost Price -->
+            <div>
+              <label for="cost_price">Cost Price <span class="required">*</span></label>
+              <div class="tooltip-container">
+                <input
+                  type="number"
+                  v-model="purchase.cost_price"
+                  min="0"
+                  @blur="validateCostPrice(index)"
+                  @mouseover="showTooltip"
+                  data-tooltip="Enter the cost price per unit"
+                  required
+                />
+                <span class="tooltip">Enter the cost price per unit</span>
+              </div>
+              <label class="priceView"
+                >&#8358;
+                {{
+                  purchase.cost_price ? parseFloat(purchase.cost_price).toLocaleString() : '0.00'
+                }}</label
+              >
+            </div>
 
-<!-- Selling Price -->
-<div>
-  <label for="selling_price">Selling Price <span class="required">*</span></label>
-  <div class="tooltip-container">
-    <input 
-      type="number"
-      min="0"
-      v-model="purchase.selling_price" 
-      @blur="validateSellingPrice(index)" 
-      @mouseover="showTooltip" 
-      data-tooltip="Enter the selling price per unit" 
-      required 
-    />
-    <span class="tooltip">Enter the selling price per unit</span>
-  </div>
-  <label class="priceView">&#8358; {{ purchase.selling_price ? parseFloat(purchase.selling_price).toLocaleString() : '0.00' }}</label>
-</div>
+            <!-- Selling Price -->
+            <div>
+              <label for="selling_price">Selling Price <span class="required">*</span></label>
+              <div class="tooltip-container">
+                <input
+                  type="number"
+                  min="0"
+                  v-model="purchase.selling_price"
+                  @blur="validateSellingPrice(index)"
+                  @mouseover="showTooltip"
+                  data-tooltip="Enter the selling price per unit"
+                  required
+                />
+                <span class="tooltip">Enter the selling price per unit</span>
+              </div>
+              <label class="priceView"
+                >&#8358;
+                {{
+                  purchase.selling_price
+                    ? parseFloat(purchase.selling_price).toLocaleString()
+                    : '0.00'
+                }}</label
+              >
+            </div>
 
-<!-- Purchase Qty -->
-<div>
-  <label for="purchase_qty">Purchase Qty <span class="required">*</span></label>
-  <input 
-    type="number" 
-    min="1"
-    v-model="purchase.capacity_qty" 
-    @blur="validatePurchaseQty(index)" 
-    required 
-  />
-</div>
-
-
+            <!-- Purchase Qty -->
+            <div>
+              <label for="purchase_qty">Purchase Qty <span class="required">*</span></label>
+              <input
+                type="number"
+                min="1"
+                v-model="purchase.capacity_qty"
+                @blur="validatePurchaseQty(index)"
+                required
+              />
+            </div>
 
             <div>
               <label for="expiry_date">Expiry Date</label>
-              <input type="date" v-model="purchase.expiry_date" :min="minExpiryDate" class="expiry-date" />
+              <input
+                type="date"
+                v-model="purchase.expiry_date"
+                :min="minExpiryDate"
+                class="expiry-date"
+              />
             </div>
             <div>
               <label for="amount">Amount</label>
@@ -101,31 +141,41 @@
             </div>
             <input type="hidden" v-model="purchase.price_id" />
             <div v-if="index !== 0" class="remove-button">
-              <button type="button" @click="removePurchase(index)" class="button remove-purchase-button">Remove</button>
+              <button
+                type="button"
+                @click="removePurchase(index)"
+                class="button remove-purchase-button"
+              >
+                Remove
+              </button>
             </div>
           </div>
           <hr class="separator" />
         </div>
-        <button type="submit" class="button submit-button" :disabled="isSubmitting">{{ isSubmitting ? 'Please wait...' : 'Submit' }}</button>
+        <button type="submit" class="button submit-button" :disabled="isSubmitting">
+          {{ isSubmitting ? 'Please wait...' : 'Submit' }}
+        </button>
       </form>
     </div>
   </DashboardLayout>
 </template>
 
 <script setup>
-import { ref, reactive, watch, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import apiService from '@/services/apiService';
-import { catchAxiosError } from '@/services/Response';
+import { ref, reactive, watch, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import apiService from '@/services/apiService'
+import { catchAxiosError } from '@/services/Response'
+// import Multiselect from 'vue-multiselect'
+// import 'vue-multiselect/dist/vue-multiselect.css'
 
-const router = useRouter();
+const router = useRouter()
 
-const suppliers = ref([]);
-const productTypes = ref([]);
-const batchNo = ref('');
-const isLoading = ref(false);
-const error = ref(null);
-const isSubmitting = ref(false);
+const suppliers = ref([])
+const productTypes = ref([])
+const batchNo = ref('')
+const isLoading = ref(false)
+const error = ref(null)
+const isSubmitting = ref(false)
 
 const purchases = reactive([
   {
@@ -141,108 +191,147 @@ const purchases = reactive([
     capacity_qty: '',
     original_selling_price: null
   }
-]);
+])
 
-const minExpiryDate = new Date().toISOString().split('T')[0];
+const minExpiryDate = new Date().toISOString().split('T')[0]
 
-const totalCostPrice = ref(0);
-const tooltipMessage = ref('');
-const tooltipVisible = ref(false);
+const totalCostPrice = ref(0)
+const tooltipMessage = ref('')
+const tooltipVisible = ref(false)
 
 const fetchData = async () => {
   try {
-    isLoading.value = true;
+    isLoading.value = true
     const [suppliersResponse, productTypesResponse, lastBatchNumberResponse] = await Promise.all([
       apiService.get('all-suppliers'),
       apiService.get('all-product-type'),
-      apiService.get('last-batch-number'),
-    ]);
+      apiService.get('last-batch-number')
+    ])
 
     if (suppliersResponse.data) {
-      suppliers.value = suppliersResponse.data;
-      purchases[0].supplier_id = suppliers.value[0].id;
+      suppliers.value = suppliersResponse.data
+      purchases[0].supplier_id = suppliers.value[0].id
     } else {
-      error.value = 'No suppliers found';
+      error.value = 'No suppliers found'
     }
 
     if (productTypesResponse.data) {
-      productTypes.value = productTypesResponse.data;
+      productTypes.value = productTypesResponse.data
     } else {
-      error.value = 'No product types found';
+      error.value = 'No product types found'
     }
 
     if (lastBatchNumberResponse.data) {
-      const lastBatchNo = lastBatchNumberResponse.data;
-      batchNo.value = String(lastBatchNo).padStart(5, '0');
-      purchases.forEach(purchase => purchase.batch_no = batchNo.value);
+      const lastBatchNo = lastBatchNumberResponse.data
+      batchNo.value = String(lastBatchNo).padStart(5, '0')
+      purchases.forEach((purchase) => (purchase.batch_no = batchNo.value))
     } else {
-      batchNo.value = '000';
-      purchases.forEach(purchase => purchase.batch_no = batchNo.value);
+      batchNo.value = '000'
+      purchases.forEach((purchase) => (purchase.batch_no = batchNo.value))
     }
   } catch (err) {
-    catchAxiosError(err);
+    catchAxiosError(err)
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 //validate cost, sell price and purchase capacity
 const validateMinValues = () => {
   purchases.forEach((purchase) => {
     if (purchase.cost_price < 1) {
-      purchase.cost_price = 1;
+      purchase.cost_price = 1
     }
     if (purchase.selling_price < 1) {
-      purchase.selling_price = 1;
+      purchase.selling_price = 1
     }
     if (purchase.capacity_qty < 1) {
-      purchase.capacity_qty = 1;
+      purchase.capacity_qty = 1
     }
-  });
+  })
+}
+
+const showDropdown = ref(false);
+const searchQuery = ref('');
+
+const getSelectedProductName = (productTypeId) => {
+  if (searchQuery.value) return searchQuery.value;
+  const product = productTypes.value.find(p => p.id === productTypeId);
+  return product ? product.product_type_name : '';
 };
 
+const filteredProductTypes = computed(() => {
+  if (!searchQuery.value) return productTypes.value;
+  return productTypes.value.filter(product => 
+    product.product_type_name.toLowerCase().includes(searchQuery.value.toLowerCase())
+  );
+});
 
+const handleSearch = (event) => {
+  searchQuery.value = event.target.value;
+  showDropdown.value = true;
+};
 
+const selectProduct = (productType, index) => {
+  if (!isDuplicatePurchase(purchases[index].supplier_id, productType.id)) {
+    purchases[index].product_type_id = productType.id;
+    handleSupplierChange(index);
+    showDropdown.value = false;
+    searchQuery.value = '';
+  }
+};
 
-
-
+onMounted(() => {
+  document.addEventListener('click', (e) => {
+    const select = document.querySelector('.custom-select');
+    if (select && !select.contains(e.target)) {
+      showDropdown.value = false;
+    }
+  });
+});
 
 const handleSupplierChange = async (index) => {
-  const purchase = purchases[index];
+  const purchase = purchases[index]
   if (!purchase.product_type_id || !purchase.supplier_id) {
-    catchAxiosError({ message: 'Please select both supplier and product type.' });
-    return;
+    catchAxiosError({ message: 'Please select both supplier and product type.' })
+    return
   }
 
   // Retrieve the purchase unit name from the productTypes array
-  const productType = productTypes.value.find(pt => pt.id === purchase.product_type_id);
+  const productType = productTypes.value.find((pt) => pt.id === purchase.product_type_id)
   if (productType) {
-    purchase.purchase_unit_name = productType.purchase_unit_name;
+    purchase.purchase_unit_name = productType.purchase_unit_name
   } else {
-    purchase.purchase_unit_name = '';
+    purchase.purchase_unit_name = ''
   }
 
   try {
-    const priceData = await apiService.get(`latest-supplier-price/${purchase.product_type_id}/${purchase.supplier_id}`);
+    const priceData = await apiService.get(
+      `latest-supplier-price/${purchase.product_type_id}/${purchase.supplier_id}`
+    )
     if (priceData.data) {
-      purchase.price_id = priceData.data.id;
-      purchase.cost_price = priceData.data.cost_price || '';
-      purchase.selling_price = priceData.data.selling_price || '';
-      purchase.original_selling_price = priceData.data.selling_price || null;
+      purchase.price_id = priceData.data.id
+      purchase.cost_price = priceData.data.cost_price || ''
+      purchase.selling_price = priceData.data.selling_price || ''
+      purchase.original_selling_price = priceData.data.selling_price || null
     } else {
-      purchase.price_id = '';
-      purchase.cost_price = '';
-      purchase.selling_price = '';
-      purchase.original_selling_price = null;
+      purchase.price_id = ''
+      purchase.cost_price = ''
+      purchase.selling_price = ''
+      purchase.original_selling_price = null
     }
   } catch (err) {
-    catchAxiosError(err);
+    catchAxiosError(err)
   }
-};
-
+}
 
 const addPurchase = () => {
-  const lastPurchase = purchases[purchases.length - 1];
-  if (lastPurchase.supplier_id && lastPurchase.product_type_id && lastPurchase.cost_price && lastPurchase.selling_price) {
+  const lastPurchase = purchases[purchases.length - 1]
+  if (
+    lastPurchase.supplier_id &&
+    lastPurchase.product_type_id &&
+    lastPurchase.cost_price &&
+    lastPurchase.selling_price
+  ) {
     purchases.push({
       supplier_id: suppliers.value.length > 0 ? suppliers.value[0].id : '',
       product_type_id: '',
@@ -255,120 +344,171 @@ const addPurchase = () => {
       expiry_date: '',
       purchase_unit_name: '',
       original_selling_price: null
-    });
+    })
   } else {
-    catchAxiosError({ message: 'Please fill out all required fields before adding a new purchase.' });
+    catchAxiosError({
+      message: 'Please fill out all required fields before adding a new purchase.'
+    })
   }
-};
+}
 
 const removePurchase = (index) => {
-  purchases.splice(index, 1);
-  calculateTotalCost();
-};
+  purchases.splice(index, 1)
+  calculateTotalCost()
+}
 
 const isDuplicatePurchase = (supplier_id, product_type_id) => {
-  return purchases.some(purchase => purchase.supplier_id === supplier_id && purchase.product_type_id === product_type_id);
-};
+  return purchases.some(
+    (purchase) =>
+      purchase.supplier_id === supplier_id && purchase.product_type_id === product_type_id
+  )
+}
 
 watch(
   purchases,
   (newPurchases) => {
     newPurchases.forEach((purchase) => {
       if (purchase.selling_price !== purchase.original_selling_price) {
-        purchase.price_id = '';
+        purchase.price_id = ''
       }
-    });
-    calculateTotalCost();
+    })
+    calculateTotalCost()
   },
   { deep: true }
-);
+)
 
 // Validate and prevent cost price from being less than 1, allowing modification.
 const validateCostPrice = (index) => {
-  const purchase = purchases[index];
+  const purchase = purchases[index]
   if (purchase.cost_price < 1) {
-    alert('Cost price cannot be less than 1.');
-    purchase.cost_price = 1;
+    alert('Cost price cannot be less than 1.')
+    purchase.cost_price = 1
   }
-};
+}
 
 // Validate and prevent selling price from being less than 1 or less than the cost price.
 const validateSellingPrice = (index) => {
-  const purchase = purchases[index];
+  const purchase = purchases[index]
   if (purchase.selling_price < purchase.cost_price) {
-    alert('Selling price cannot be less than cost price.');
-    purchase.selling_price = purchase.cost_price; // Set selling price equal to cost price
+    alert('Selling price cannot be less than cost price.')
+    purchase.selling_price = purchase.cost_price // Set selling price equal to cost price
   } else if (purchase.selling_price < 1) {
-    alert('Selling price cannot be less than 1.');
-    purchase.selling_price = 1;
+    alert('Selling price cannot be less than 1.')
+    purchase.selling_price = 1
   }
-};
+}
 
 // Validate and prevent purchase quantity from being less than 1, allowing modification.
 const validatePurchaseQty = (index) => {
-  const purchase = purchases[index];
+  const purchase = purchases[index]
   if (purchase.capacity_qty < 1) {
-    alert('Purchase quantity cannot be less than 1.');
-    purchase.capacity_qty = 1;
+    alert('Purchase quantity cannot be less than 1.')
+    purchase.capacity_qty = 1
   }
-};
-
-
+}
 
 const calculateTotalCost = () => {
   totalCostPrice.value = purchases.reduce((acc, purchase) => {
-    return acc + RowTotalCost(purchase);
-  }, 0);
-};
+    return acc + RowTotalCost(purchase)
+  }, 0)
+}
 
 const RowTotalCost = (purchase) => {
-  return parseFloat(purchase.cost_price || 0) * parseFloat(purchase.capacity_qty || 1);
-};
+  return parseFloat(purchase.cost_price || 0) * parseFloat(purchase.capacity_qty || 1)
+}
 
 const handleSubmit = async () => {
-  validateMinValues();
-  const lastPurchase = purchases[purchases.length - 1];
-  if (!lastPurchase.supplier_id || !lastPurchase.product_type_id || !lastPurchase.cost_price || !lastPurchase.selling_price) {
-    purchases.pop();
+  validateMinValues()
+  const lastPurchase = purchases[purchases.length - 1]
+  if (
+    !lastPurchase.supplier_id ||
+    !lastPurchase.product_type_id ||
+    !lastPurchase.cost_price ||
+    !lastPurchase.selling_price
+  ) {
+    purchases.pop()
   }
 
   try {
-    isSubmitting.value = true;
-    const formattedPurchases = purchases.map(purchase => {
+    isSubmitting.value = true
+    const formattedPurchases = purchases.map((purchase) => {
       if (purchase.price_id && purchase.selling_price === purchase.original_selling_price) {
         return {
           ...purchase,
           cost_price: undefined,
           selling_price: undefined
-        };
+        }
       } else {
         return {
           ...purchase,
           price_id: undefined
-        };
+        }
       }
-    });
+    })
 
-    await apiService.post('purchases', { purchases: formattedPurchases });
-    router.push('/purchase');
+    await apiService.post('purchases', { purchases: formattedPurchases })
+    router.push('/purchase')
   } catch (err) {
-    catchAxiosError(err);
+    catchAxiosError(err)
   } finally {
-    isSubmitting.value = false;
+    isSubmitting.value = false
   }
-};
+}
 
 const showTooltip = (event) => {
-  tooltipMessage.value = event.target.dataset.tooltip;
-  tooltipVisible.value = true;
-};
+  tooltipMessage.value = event.target.dataset.tooltip
+  tooltipVisible.value = true
+}
 
 onMounted(() => {
-  fetchData();
-});
+  fetchData()
+})
 </script>
 
 <style scoped>
+
+.custom-select {
+  position: relative;
+  width: 250px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 0;
+}
+
+.options-container {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ccc;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  z-index: 1000;
+}
+
+.option {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.option:hover:not(.disabled) {
+  background-color: #f5f5f5;
+}
+
+.option.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #f0f0f0;
+}
+
 .container {
   padding: 20px;
 }
@@ -435,11 +575,11 @@ select {
   width: 150px;
 }
 
-input[type="number"] {
+input[type='number'] {
   width: 100px;
 }
 
-input[type="date"].expiry-date {
+input[type='date'].expiry-date {
   width: 120px;
 }
 
@@ -448,7 +588,7 @@ button {
 }
 
 .add-purchase-button {
-  background-color: #C35214;
+  background-color: #c35214;
   color: #fff;
   padding: 10px 20px;
   border: none;
@@ -468,7 +608,7 @@ button {
 }
 
 .submit-button {
-  background-color: #C35214;
+  background-color: #c35214;
   color: #fff;
   padding: 10px 20px;
   border: none;
