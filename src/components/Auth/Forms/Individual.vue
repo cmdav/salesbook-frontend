@@ -12,7 +12,6 @@
             :errorsMsg="errorsMsg.lastName" v-model="formData.lastName" required />
         </div>
       </div>
-
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
         <div class="mb-3 flex flex-col w-full">
           <AuthInput label="Company Name*" :error="errors.company_name" :errorsMsg="errorsMsg.company_name" type="text"
