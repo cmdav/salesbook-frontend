@@ -32,7 +32,7 @@
               </select>
             </div>
             <div>
-              <label for="product_type_id">Product Type <span class="required">*</span></label>
+              <label for="product_type_id">Product Name <span class="required">*</span></label>
               <div class="custom-select">
                 <input
                   type="text"
