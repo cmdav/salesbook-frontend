@@ -50,7 +50,7 @@ import ProfilePage from '@/views/Dashboard/Profile/ProfilePage.vue'
 import SupplierProfilePage from '@/views/Dashboard/Profile/SupplierProfilePage.vue'
 import ViewProductTypes from '@/views/Dashboard/Product/ProductType/ViewProductTypes.vue'
 import CreateProductType from '@/views/Dashboard/Product/ProductType/CreateProductType.vue'
-
+import LogPage from '@/views/Dashboard/Product/LogPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -258,6 +258,12 @@ const router = createRouter({
       path: '/store',
       name: 'store',
       component: StorePage,
+      beforeEnter: [middleware.redirectLogin]
+    },
+    {
+      path: '/logs',
+      name: 'logs',
+      component: LogPage,
       beforeEnter: [middleware.redirectLogin]
     },
     {

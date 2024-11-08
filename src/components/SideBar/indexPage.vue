@@ -103,7 +103,7 @@ const menuItems = computed(() => {
         { name: 'Measurement', route: '/measurement', icon: MeasurementIcon, backendKey: 'measurements' },
         { name: 'Product Category', route: '/product-category', icon: CategoryIcon, },
         { name: 'Product Sub Category', route: '/product-sub-category', icon: CategoryIcon, backendKey: 'product-sub-categories' },
-        { name: 'Products', route: '/product-type', icon: ProductsIcon, backendKey: 'products' }
+        { name: 'Products', route: '/product-type', icon: ProductsIcon, backendKey: 'products' },
       ]
     },
     { name: 'Purchase', route: '/purchase', icon: PurchaseIcon, backendKey: 'purchases' },
@@ -121,6 +121,7 @@ const menuItems = computed(() => {
       ]
     },
     { name: 'Reports', route: '/report', icon: reportsIcon, backendKey: 'reports' },
+    { name: 'Logs', route: '/logs', icon: reportsIcon, backendKey: 'logs' },
     { name: 'Settings', route: '/settings', icon: SettingsIcon, backendKey: 'settings' },
     { name: 'Log Out', route: '/logout', icon: logoutIcon, backendKey: 'logout' }
   ];
