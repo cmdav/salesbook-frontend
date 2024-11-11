@@ -1,7 +1,7 @@
 
 <template>
   <DashboardLayout pageTitle="Logs Page">
-    
+
 
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
@@ -40,14 +40,14 @@
     </div>
   </DashboardLayout>
 
- 
+
 </template>
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import apiService from '@/services/apiService'
 //import { getDb, setDb } from '@/utils/db'
 // import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue'
-import { useStore } from '@/stores/user'
+// import { useStore } from '@/stores/user'
 
 
 const search = ref('')
@@ -78,22 +78,22 @@ onMounted(async () => {
 //   }
 // }
 
-async function fetchBranch(branchId = 1) {
-  try {
-      const response = await apiService.get(`logs?branch_id=${branchId}`)
-   
-    if (response.data && response.data.length) {
-      data.value = response.data
-      errorMessage.value = ''
-    } else {
-      data.value = []
-      errorMessage.value = 'No items found for the selected branch.'
-    }
-  } catch (error) {
-    console.error('Failed to fetch sales data:', error)
-    errorMessage.value = 'An error occurred while fetching data.'
-  }
-}
+// async function fetchBranch(branchId = 1) {
+//   try {
+//       const response = await apiService.get(`logs?branch_id=${branchId}`)
+
+//     if (response.data && response.data.length) {
+//       data.value = response.data
+//       errorMessage.value = ''
+//     } else {
+//       data.value = []
+//       errorMessage.value = 'No items found for the selected branch.'
+//     }
+//   } catch (error) {
+//     console.error('Failed to fetch sales data:', error)
+//     errorMessage.value = 'An error occurred while fetching data.'
+//   }
+// }
 
 const filteredData = computed(() => {
   return data.value.filter((item) => {
@@ -106,7 +106,7 @@ async function fetchData(page = 1) {
   try {
       const response = await apiService.get(`logs?page=${page}`)
     console.log(response.data.data)
-    data.value = response.data.data || [] 
+    data.value = response.data.data || []
     pagination.value = {
       next_page_url: response.data.next_page_url,
       prev_page_url: response.data.prev_page_url
@@ -156,8 +156,8 @@ function changePage(page) {
   }
 }
 
-const store = useStore()
-const roles = computed(() => store.getUser.user.permission.role_name === 'Admin')
+// const store = useStore()
+// const roles = computed(() => store.getUser.user.permission.role_name === 'Admin')
 
 onMounted(() => fetchData(currentPage.value))
 </script>
