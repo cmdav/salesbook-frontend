@@ -285,19 +285,36 @@ const handlePurchaseUnitChange = async (index) => {
     }
   })
 
-  try {
-    const priceData = await apiService.get(
-      `latest-supplier-price/${purchase.product_type_id}/${purchase.supplier_id}/${purchase.purchase_unit_id}`
-    )
-    if (priceData.data) {
-      purchase.cost_price = priceData.data.cost_price || ''
-      Object.keys(purchase.selling_unit_data).forEach(unitId => {
-        purchase.selling_unit_data[unitId].selling_price = priceData.data.selling_price || ''
-      })
-    }
-  } catch (err) {
-    catchAxiosError(err)
+  // try {
+  //   const priceData = await apiService.get(
+  //     `latest-supplier-price/${purchase.product_type_id}/${purchase.supplier_id}/${purchase.purchase_unit_id}`
+  //   )
+  //   if (priceData.data) {
+  //     purchase.cost_price = priceData.data.cost_price || ''
+  //     Object.keys(purchase.selling_unit_data).forEach(unitId => {
+  //       purchase.selling_unit_data[unitId].selling_price = priceData.data.selling_price || ''
+  //     })
+  //   }
+  // } catch (err) {
+  //   catchAxiosError(err)
+  // }
+}
+
+const handleCostPriceChange = (index) => {
+  const purchase = purchases[index]
+  const costPrice = parseFloat(purchase.cost_price)
+  
+  if (costPrice < 1) {
+    purchase.cost_price = '1'
   }
+
+  // Update cost price in selling unit data
+  Object.values(purchase.selling_unit_data).forEach(unit => {
+    unit.cost_price = purchase.cost_price
+    if (parseFloat(unit.selling_price) < costPrice) {
+      unit.selling_price = purchase.cost_price
+    }
+  })
 }
 
 const isDuplicatePurchase = (supplierId, productTypeId, purchaseUnitId) => {
@@ -366,6 +383,8 @@ const removePurchase = (index) => {
 const handleSubmit = async () => {
   try {
     isSubmitting.value = true
+
+
     
     const formattedPurchases = purchases.map(purchase => ({
       supplier_id: purchase.supplier_id,
