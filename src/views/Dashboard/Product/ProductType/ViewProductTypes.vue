@@ -36,7 +36,7 @@
             <th>SUPPLIER PHONE NUMBER</th>
             <th>CREATED BY</th>
             <th>UPDATED BY</th>
-            <th>EDIT</th>
+            <!-- <th>EDIT</th> -->
             <th>DELETE</th>
           </tr>
         </thead>
@@ -66,16 +66,16 @@
             <td>{{ item.product_sub_category }}</td>
             <td>{{ item.quantity_available }}</td>
             <td>{{ item.vat }}</td>
-            <td>{{  item.purchase_unit_name }}</td>
-            <td>{{ item.selling_unit_name }}</td>
-            <td>{{ item.selling_unit_capacity }}</td>
+            <td>{{  item.purchase_unit_name.join(', ') }}</td>
+            <td>{{ item.selling_unit_name.join(', ') }}</td>
+            <td>{{ item.selling_unit_capacity.join(', ') }}</td>
             <td>{{ item.purchasing_price }}</td>
             <td>{{ item.selling_price }}</td>
             <td>{{ item.supplier_name }}</td>
             <td>{{ item.supplier_phone_number }}</td>
             <td>{{ item.created_by }}</td>
             <td>{{ item.updated_by }}</td>
-            <td><button @click="openEditModal(item)">Edit</button></td>
+            <!-- <td><button @click="openEditModal(item)">Edit</button></td> -->
             <td><button @click="openDeleteModal(item)">Delete</button></td>
           </tr>
         </tbody>
@@ -120,7 +120,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import apiService from '@/services/apiService'
 import DeleteModal from '@/components/UI/Modal/DeleteModals.vue'
 import UploadModal from '@/components/UI/Modal/UploadModal.vue'
@@ -376,35 +376,35 @@ function changePage(page) {
   }
 }
 
-const openEditModal = async (item) => {
+// const openEditModal = async (item) => {
 
-  itemToEdit.value = item;
+//   itemToEdit.value = item;
 
-  showEditModal.value = true;
+//   showEditModal.value = true;
 
-  await fetchPurchaseUnits();
+//   await fetchPurchaseUnits();
 
-  const purchaseUnitField = productTypeFormFields.value.find(f => f.databaseField === 'purchase_unit_id');
-  if (purchaseUnitField) {
-    purchaseUnitField.value = item.purchase_unit_id;
-  }
+//   const purchaseUnitField = productTypeFormFields.value.find(f => f.databaseField === 'purchase_unit_id');
+//   if (purchaseUnitField) {
+//     purchaseUnitField.value = item.purchase_unit_id;
+//   }
 
-  await fetchSellingUnits(item.purchase_unit_id);
+//   await fetchSellingUnits(item.purchase_unit_id);
 
 
-  const sellingUnitField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_id')
-  if (sellingUnitField) {
-    sellingUnitField.value = item.selling_unit_id
-  }
+//   const sellingUnitField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_id')
+//   if (sellingUnitField) {
+//     sellingUnitField.value = item.selling_unit_id
+//   }
 
-    await fetchSellingCapacities(item.selling_unit_id);
+//     await fetchSellingCapacities(item.selling_unit_id);
 
-  const capacityField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_capacity_id')
-  if (capacityField) {
-    capacityField.value = item.selling_unit_capacity_id
-  }
+//   const capacityField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_capacity_id')
+//   if (capacityField) {
+//     capacityField.value = item.selling_unit_capacity_id
+//   }
   
-};
+// };
 
 watch(() => {
   const purchaseUnitField = productTypeFormFields.value.find(f => f.databaseField === 'purchase_unit_id')
