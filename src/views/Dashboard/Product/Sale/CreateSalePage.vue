@@ -87,25 +87,22 @@
               <div class="custom-select">
                 <input
                   type="text"
-                  :value="
-                    searchQuery || getSelectedProductName(formState.products[index].product_type_id)
-                  "
-                  @input="handleSearch($event, index)"
-                  @focus="showDropdown = true"
+        :value="getSelectedProductName(formState.products[index].product_type_id, index)"
+        @input="(e) => handleSearch(e, index)"
+        @focus="showDropdowns[index] = true"
                   placeholder="Search product type..."
                   class="search-input"
                 />
-                <div v-show="showDropdown" class="options-container">
-                  <div
-                    v-for="productType in filteredProductTypes"
-                    :key="productType.id"
-                    class="option"
-                    :class="{ disabled: isProductSelected(productType.id, index) }"
-                    @click="selectProduct(productType, index)"
-                  >
-                    {{ productType.product_type_name }}
-                  </div>
-                </div>
+                <div v-show="showDropdowns[index]" class="options-container">
+        <div
+          v-for="productType in getFilteredProductTypes(index)"
+          :key="productType.id"
+          class="option"
+          @click="selectProduct(productType, index)"
+        >
+          {{ productType.product_type_name }}
+        </div>
+      </div>
               </div>
             </div>
 
@@ -218,7 +215,7 @@
   </DashboardLayout>
 </template>
 <script setup>
-import { ref, reactive, watch, onMounted, nextTick, computed } from 'vue'
+import { ref, reactive, watch, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import apiService from '@/services/apiService' // Service to interact with the backend API
 import { useCustomerstore } from '@/stores/customers' // Pinia store for customer data
@@ -288,8 +285,8 @@ const preventNegativeQuantity = (index) => {
 }
 
 // State variables for form inputs and product list
-const printReceipt = ref('no') // Tracks whether the user wants to print a receipt
-const showReceiptModal = ref(false) // Controls whether the receipt modal is shown
+const printReceipt = ref('no') 
+const showReceiptModal = ref(false) 
 
 const formState = reactive({
   customer_id: '',
@@ -308,34 +305,35 @@ const formState = reactive({
   ]
 })
 
-const showDropdown = ref(false)
-const searchQuery = ref('')
 
-const filteredProductTypes = computed(() => {
-  if (!searchQuery.value) return data.value
-  return data.value.filter((product) =>
-    product.product_type_name.toLowerCase().includes(searchQuery.value.toLowerCase())
+const searchQueries = ref({})
+const showDropdowns = ref({})
+
+const getFilteredProductTypes = (index) => {
+  if (!searchQueries.value[index]) return data.value
+  return data.value.filter(product =>
+    product.product_type_name.toLowerCase().includes(searchQueries.value[index].toLowerCase())
   )
-})
+}
 
-const getSelectedProductName = (productTypeId) => {
-  if (searchQuery.value) return searchQuery.value
-  const product = data.value.find((p) => p.id === productTypeId)
+const handleSearch = (event, index) => {
+  searchQueries.value[index] = event.target.value
+  showDropdowns.value[index] = true
+}
+
+
+const getSelectedProductName = (productTypeId, index) => {
+  if (searchQueries.value[index]) return searchQueries.value[index]
+  const product = data.value.find(p => p.id === productTypeId)
   return product ? product.product_type_name : ''
 }
 
-const handleSearch = (event) => {
-  searchQuery.value = event.target.value
-  showDropdown.value = true
-}
 
 const selectProduct = (productType, index) => {
-  if (!isProductSelected(productType.id, index)) {
-    formState.products[index].product_type_id = productType.id
-    handleProductTypeSelect(index)
-    showDropdown.value = false
-    searchQuery.value = ''
-  }
+  formState.products[index].product_type_id = productType.id
+  handleProductTypeSelect(index)
+  showDropdowns.value[index] = false
+  searchQueries.value[index] = ''
 }
 
 const getSellingUnits = (productTypeId) => {
@@ -343,11 +341,13 @@ const getSellingUnits = (productTypeId) => {
   return product ? product.selling_units : []
 }
 
-const isProductSelected = (productId, index) => {
-  return formState.products.some(
-    (product, i) => product.product_type_id === productId && i !== index
-  )
-}
+// const isProductSelected = (productId, sellingUnitId) => {
+//   return formState.products.some(
+//     product => 
+//       product.product_type_id === productId && 
+//       product.selling_unit_id === sellingUnitId
+//   )
+// }
 
 const populateProductDetails = (index, product) => {
   if (!product) {
@@ -430,9 +430,21 @@ const handleSellingUnitSelect = (index) => {
   )
 
   if (selectedUnit) {
+    const isDuplicate = formState.products.some((p, i) => 
+      i !== index && 
+      p.product_type_id === formState.products[index].product_type_id &&
+      p.selling_unit_id === selectedUnit.selling_unit_id
+    )
+
+    if (isDuplicate) {
+      alert('This selling unit is already selected for this product')
+      formState.products[index].selling_unit_id = ''
+      return
+    }
+
     formState.products[index].selling_price = selectedUnit.selling_price
     formState.products[index].purchase_unit_id = selectedUnit.purchase_unit_id
-    formState.products[index].quantity_sold = 0 // Reset quantity
+    formState.products[index].quantity_sold = 0
     formState.products[index].amount = calculateAmountWithVat(
       selectedUnit.selling_price,
       formState.products[index].quantity_sold,
