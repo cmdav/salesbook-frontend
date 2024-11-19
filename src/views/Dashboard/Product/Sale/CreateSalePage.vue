@@ -87,25 +87,22 @@
               <div class="custom-select">
                 <input
                   type="text"
-                  :value="
-                    searchQuery || getSelectedProductName(formState.products[index].product_type_id)
-                  "
-                  @input="handleSearch($event, index)"
-                  @focus="showDropdown = true"
+        :value="getSelectedProductName(formState.products[index].product_type_id, index)"
+        @input="(e) => handleSearch(e, index)"
+        @focus="showDropdowns[index] = true"
                   placeholder="Search product type..."
                   class="search-input"
                 />
-                <div v-show="showDropdown" class="options-container">
-                  <div
-                    v-for="productType in filteredProductTypes"
-                    :key="productType.id"
-                    class="option"
-                    :class="{ disabled: isProductSelected(productType.id, index) }"
-                    @click="selectProduct(productType, index)"
-                  >
-                    {{ productType.product_type_name }}
-                  </div>
-                </div>
+                <div v-show="showDropdowns[index]" class="options-container">
+        <div
+          v-for="productType in getFilteredProductTypes(index)"
+          :key="productType.id"
+          class="option"
+          @click="selectProduct(productType, index)"
+        >
+          {{ productType.product_type_name }}
+        </div>
+      </div>
               </div>
             </div>
 
@@ -127,6 +124,24 @@
               <select v-model="formState.products[index].vat" class="select-input">
                 <option value="no">No</option>
                 <option value="yes">Yes</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label class="block text-sm font-medium text-gray-700">Selling Unit</label>
+              <select
+                v-model="formState.products[index].selling_unit_id"
+                class="select-input"
+                @change="handleSellingUnitSelect(index)"
+              >
+                <option value="">Select Unit</option>
+                <option
+                  v-for="unit in getSellingUnits(formState.products[index].product_type_id)"
+                  :key="unit.selling_unit_id"
+                  :value="unit.selling_unit_id"
+                >
+                  {{ unit.selling_unit_name }} ({{ unit.capacity_quantity_available }} available)
+                </option>
               </select>
             </div>
 
@@ -159,17 +174,6 @@
                     : '0.00'
                 }}</label
               >
-            </div>
-
-            <!-- Selling Unit -->
-            <div class="input-group w-20">
-              <label class="block text-sm font-medium text-gray-700">Selling Unit</label>
-              <input
-                type="text"
-                v-model="formState.products[index].selling_unit_name"
-                class="input readonly-input"
-                readonly
-              />
             </div>
 
             <!-- Amount -->
@@ -211,7 +215,7 @@
   </DashboardLayout>
 </template>
 <script setup>
-import { ref, reactive, watch, onMounted, nextTick, computed } from 'vue'
+import { ref, reactive, watch, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import apiService from '@/services/apiService' // Service to interact with the backend API
 import { useCustomerstore } from '@/stores/customers' // Pinia store for customer data
@@ -281,59 +285,69 @@ const preventNegativeQuantity = (index) => {
 }
 
 // State variables for form inputs and product list
-const printReceipt = ref('no') // Tracks whether the user wants to print a receipt
-const showReceiptModal = ref(false) // Controls whether the receipt modal is shown
+const printReceipt = ref('no') 
+const showReceiptModal = ref(false) 
 
 const formState = reactive({
   customer_id: '',
   payment_method: '',
   products: [
     {
-      product_type_id: '',
+       product_type_id: '',
       barcode: '',
       selling_price: '',
-      selling_unit_name: '', // Selling unit for the product
+      selling_unit_id: '',
+      purchase_unit_id: '',
       quantity_sold: 0,
       amount: '',
-      vat: 'no' // VAT applied to the product
+      vat: 'no' 
     }
   ]
 })
 
-const showDropdown = ref(false);
-const searchQuery = ref('');
 
-const filteredProductTypes = computed(() => {
-  if (!searchQuery.value) return data.value;
+const searchQueries = ref({})
+const showDropdowns = ref({})
+
+const getFilteredProductTypes = (index) => {
+  if (!searchQueries.value[index]) return data.value
   return data.value.filter(product =>
-    product.product_type_name.toLowerCase().includes(searchQuery.value.toLowerCase())
-  );
-});
+    product.product_type_name.toLowerCase().includes(searchQueries.value[index].toLowerCase())
+  )
+}
 
-const getSelectedProductName = (productTypeId) => {
-  if (searchQuery.value) return searchQuery.value;
-  const product = data.value.find(p => p.id === productTypeId);
-  return product ? product.product_type_name : '';
-};
+const handleSearch = (event, index) => {
+  searchQueries.value[index] = event.target.value
+  showDropdowns.value[index] = true
+}
 
-const handleSearch = (event) => {
-  searchQuery.value = event.target.value;
-  showDropdown.value = true;
-};
+
+const getSelectedProductName = (productTypeId, index) => {
+  if (searchQueries.value[index]) return searchQueries.value[index]
+  const product = data.value.find(p => p.id === productTypeId)
+  return product ? product.product_type_name : ''
+}
+
 
 const selectProduct = (productType, index) => {
-  if (!isProductSelected(productType.id, index)) {
-    formState.products[index].product_type_id = productType.id;
-    handleProductTypeSelect(index);
-    showDropdown.value = false;
-    searchQuery.value = '';
-  }
-};
+  formState.products[index].product_type_id = productType.id
+  handleProductTypeSelect(index)
+  showDropdowns.value[index] = false
+  searchQueries.value[index] = ''
+}
 
-const isProductSelected = (productId, index) => {
-  return formState.products.some((product, i) => product.product_type_id === productId && i !== index);
-};
+const getSellingUnits = (productTypeId) => {
+  const product = data.value.find(p => p.id === productTypeId)
+  return product ? product.selling_units : []
+}
 
+// const isProductSelected = (productId, sellingUnitId) => {
+//   return formState.products.some(
+//     product => 
+//       product.product_type_id === productId && 
+//       product.selling_unit_id === sellingUnitId
+//   )
+// }
 
 const populateProductDetails = (index, product) => {
   if (!product) {
@@ -375,10 +389,13 @@ const handleProductTypeSelect = async (index) => {
       product = await getProductById(productId)
     }
 
-    if (product) {
-      populateProductDetails(index, product) // Populate the product details in the form
-    } else {
-      console.error('Product not found for the selected type')
+     if (product) {
+      // Reset selling unit related fields
+      formState.products[index].selling_unit_id = ''
+      formState.products[index].purchase_unit_id = ''
+      formState.products[index].selling_price = ''
+      formState.products[index].quantity_sold = 0
+      formState.products[index].vat = product.vat?.toLowerCase() || 'no'
     }
   } catch (error) {
     console.error('Error during product selection:', error)
@@ -406,12 +423,40 @@ watch(
   { deep: true }
 )
 
+const handleSellingUnitSelect = (index) => {
+  const product = data.value.find(p => p.id === formState.products[index].product_type_id)
+  const selectedUnit = product?.selling_units.find(
+    unit => unit.selling_unit_id === formState.products[index].selling_unit_id
+  )
+
+  if (selectedUnit) {
+    const isDuplicate = formState.products.some((p, i) => 
+      i !== index && 
+      p.product_type_id === formState.products[index].product_type_id &&
+      p.selling_unit_id === selectedUnit.selling_unit_id
+    )
+
+    if (isDuplicate) {
+      alert('This selling unit is already selected for this product')
+      formState.products[index].selling_unit_id = ''
+      return
+    }
+
+    formState.products[index].selling_price = selectedUnit.selling_price
+    formState.products[index].purchase_unit_id = selectedUnit.purchase_unit_id
+    formState.products[index].quantity_sold = 0
+    formState.products[index].amount = calculateAmountWithVat(
+      selectedUnit.selling_price,
+      formState.products[index].quantity_sold,
+      formState.products[index].vat
+    )
+  }
+}
 // Function to calculate the total price of all products
 const calculateTotalPrice = () => {
   const total = formState.products.reduce((acc, product) => acc + (product.amount || 0), 0) // Calculate total
   totalPrice.value = isNaN(total) ? '0.00' : total.toFixed(2) // Ensure total is never NaN
 }
-
 
 // Function to remove a product from the list
 const removeProduct = (index) => {
@@ -427,11 +472,11 @@ const removeProduct = (index) => {
 const handleBarcodeEnter = (index) => {
   const product = data.value.find((p) => p.barcode === formState.products[index].barcode) // Find product by barcode
 
-  if (isDuplicateBarcode(formState.products[index].barcode)) {
-    alert('This barcode has already been scanned.') // Show alert if barcode is duplicated
-    formState.products[index].barcode = '' // Clear the duplicate barcode
-    return
-  }
+  // if (isDuplicateBarcode(formState.products[index].barcode)) {
+  //   alert('This barcode has already been scanned.') // Show alert if barcode is duplicated
+  //   formState.products[index].barcode = '' // Clear the duplicate barcode
+  //   return
+  // }
 
   if (product) {
     populateProductDetails(index, product) // Populate product details if found
@@ -440,14 +485,33 @@ const handleBarcodeEnter = (index) => {
 }
 
 // Function to check if the quantity sold exceeds available stock
-const checkQuantitySold = (index) => {
-  const product = data.value.find((p) => p.id === formState.products[index].product_type_id) // Find product by ID
+// const checkQuantitySold = (index) => {
+//   const product = data.value.find((p) => p.id === formState.products[index].product_type_id) // Find product by ID
 
-  if (product && formState.products[index].quantity_sold > product.quantity_available) {
-    formState.products[index].quantity_sold = product.quantity_available // Reset to available quantity if exceeds
-    alert(
-      `Quantity sold exceeds available stock. Resetting to available quantity: ${product.quantity_available}.`
-    )
+//   if (product && formState.products[index].quantity_sold > product.quantity_available) {
+//     formState.products[index].quantity_sold = product.quantity_available // Reset to available quantity if exceeds
+//     alert(
+//       `Quantity sold exceeds available stock. Resetting to available quantity: ${product.quantity_available}.`
+//     )
+//   }
+
+//   formState.products[index].amount = calculateAmountWithVat(
+//     formState.products[index].selling_price,
+//     formState.products[index].quantity_sold,
+//     formState.products[index].vat
+//   )
+//   calculateTotalPrice() // Recalculate total price
+// }
+
+const checkQuantitySold = (index) => {
+  const product = data.value.find((p) => p.id === formState.products[index].product_type_id)
+  const selectedUnit = product?.selling_units.find(
+    unit => unit.selling_unit_id === formState.products[index].selling_unit_id
+  )
+
+  if (selectedUnit && formState.products[index].quantity_sold > selectedUnit.capacity_quantity_available) {
+    formState.products[index].quantity_sold = selectedUnit.capacity_quantity_available
+    alert(`Quantity sold exceeds available stock. Resetting to available quantity: ${selectedUnit.capacity_quantity_available}.`)
   }
 
   formState.products[index].amount = calculateAmountWithVat(
@@ -455,13 +519,13 @@ const checkQuantitySold = (index) => {
     formState.products[index].quantity_sold,
     formState.products[index].vat
   )
-  calculateTotalPrice() // Recalculate total price
+  calculateTotalPrice()
 }
 
 // Function to check if the barcode has already been scanned
-const isDuplicateBarcode = (barcode) => {
-  return formState.products.filter((product) => product.barcode === barcode).length > 1
-}
+// const isDuplicateBarcode = (barcode) => {
+//   return formState.products.filter((product) => product.barcode === barcode).length > 1
+// }
 
 // Function to add a new product row
 const addProducts = () => {
@@ -572,7 +636,9 @@ const addSales = async () => {
       product_type_id: product.product_type_id,
       price_sold_at: parseInt(product.selling_price, 10),
       quantity: parseInt(product.quantity_sold, 10),
-      vat: product.vat === 'yes' ? 'yes' : 'no'
+      vat: product.vat === 'yes' ? 'yes' : 'no',
+      selling_unit_id: product.selling_unit_id,
+      purchase_unit_id: product.purchase_unit_id
     }))
 
   const payload = {
@@ -652,7 +718,7 @@ const resetForm = () => {
 <style scoped>
 .custom-select {
   position: relative;
-  width: 250px;
+  width: 150px;
 }
 
 .search-input {

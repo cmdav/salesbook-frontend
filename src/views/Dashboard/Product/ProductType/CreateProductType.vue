@@ -111,126 +111,6 @@
             </option>
           </select>
         </div>
-
-        <!-- <div class="input-group w-full">
-          <label class="block text-sm font-medium text-gray-700"
-            >Select Purchase Unit
-            <span class="tooltip-container">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                x="0px"
-                y="0px"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"
-                ></path>
-              </svg>
-              <span class="tooltip-text">What unit did you purchase this item?</span>
-            </span>
-          </label>
-          <div class="flex">
-            <div class="w-[70%]">
-              <select
-                v-model="formState.purchaseUnit"
-                class="select-input"
-                @change="fetchPurchasingUnit"
-              >
-                <option selected>Select Purchasing Unit...</option>
-                <option v-for="unit in purchaseUnit" :key="unit.id" :value="unit.id">
-                  {{ unit.purchase_unit_name }}
-                </option>
-              </select>
-            </div>
-            <button type="button" class="button btn-brand ml-4" @click="addPurchaseUnit">
-              Add Purchasing Unit
-            </button>
-          </div>
-        </div>
-
-        <div class="input-group w-full">
-          <label class="block text-sm font-medium text-gray-700"
-            >Select Selling Unit
-            <span class="tooltip-container">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                x="0px"
-                y="0px"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 4 12 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"
-                ></path>
-              </svg>
-              <span class="tooltip-text">What unit will you sell this item?</span>
-            </span>
-          </label>
-          <div class="flex">
-            <div class="w-[70%]">
-              <select
-                v-model="selectedSellingUnit"
-                class="select-input"
-                @change="fetchSellingCapacities(selectedSellingUnit)"
-              >
-                <option selected>Select Selling Unit...</option>
-                <option v-for="unit in sellingUnit" :key="unit.id" :value="unit.id">
-                  {{ unit.selling_unit_name }}
-                </option>
-              </select>
-            </div>
-
-            <button
-              type="button"
-              class="button btn-brand ml-4"
-              @click="addSellingUnit(formState.purchaseUnit)"
-            >
-              Add Selling Unit
-            </button>
-          </div>
-        </div>
-
-        <div class="input-group w-full">
-          <label class="block text-sm font-medium text-gray-700">
-            How many selling units equal a purchase unit
-            <span class="tooltip-container">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                x="0px"
-                y="0px"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"
-                ></path>
-              </svg>
-              <span class="tooltip-text">E.g dozen = 12, one create = 30eggs...</span>
-            </span>
-          </label>
-          <div class="flex">
-            <div class="w-[70%]">
-              <select v-model="selectedSellingCapacity" class="select-input">
-                <option selected>Select Selling Unit ...</option>
-                <option v-for="capacity in sellingCapacity" :key="capacity.id" :value="capacity.id">
-                  {{ capacity.selling_unit_capacity }}
-                </option>
-              </select>
-            </div>
-            <button
-              type="button"
-              class="button btn-brand ml-4"
-              @click="addSellingCapacity(selectedSellingUnit)"
-            >
-              Add Unit Capacity
-            </button>
-          </div>
-        </div> -->
-
         <div v-for="(unit, index) in units" :key="index" class="measurement-unit-container">
           <h3 class="text-lg font-semibold mb-4">Measurement Unit Set {{ index + 1 }}</h3>
 
@@ -258,7 +138,7 @@
                 <select
                   v-model="unit.purchaseUnit"
                   class="select-input"
-                  @change="fetchSellingUnit(unit.purchaseUnit)"
+                  @change="fetchSellingUnit(unit.purchaseUnit, index)"
                 >
                   <option value="">Select Purchasing Unit...</option>
                   <option v-for="pUnit in purchaseUnit" :key="pUnit.id" :value="pUnit.id">
@@ -301,10 +181,10 @@
                 <select
                   v-model="unit.sellingUnit"
                   class="select-input"
-                  @change="fetchSellingCapacities(unit.sellingUnit)"
+                  @change="fetchSellingCapacities(unit.sellingUnit, index)"
                 >
                   <option value="">Select Selling Unit...</option>
-                  <option v-for="sUnit in sellingUnit" :key="sUnit.id" :value="sUnit.id">
+                  <option v-for="sUnit in unit.availableSellingUnits" :key="sUnit.id" :value="sUnit.id">
                     {{ sUnit.selling_unit_name }}
                   </option>
                 </select>
@@ -313,7 +193,7 @@
                 v-if="index === 0"
                 type="button"
                 class="button btn-brand ml-4"
-                @click="addSellingUnit(unit.purchaseUnit)"
+                @click="addSellingUnit(unit.purchaseUnit, index)"
               >
                 Add Selling Unit
               </button>
@@ -344,7 +224,7 @@
                 <select v-model="unit.sellingCapacity" class="select-input">
                   <option value="">Select Selling Unit Capacity...</option>
                   <option
-                    v-for="capacity in sellingCapacity"
+                    v-for="capacity in unit.availableCapacities"
                     :key="capacity.id"
                     :value="capacity.id"
                   >
@@ -356,7 +236,7 @@
                 v-if="index === 0"
                 type="button"
                 class="button btn-brand ml-4"
-                @click="addSellingCapacity(unit.sellingUnit)"
+                @click="addSellingCapacity(unit.sellingUnit, index)"
               >
                 Add Unit Capacity
               </button>
@@ -395,7 +275,7 @@
       v-if="displayModal"
       @close="closeModal"
       @selling-unit-added="handleSellingUnit"
-      :purchaseUnitId="formState.purchaseUnit"
+      :purchaseUnitId="selectedPurchaseUnit"
     />
     <SellingUnitCapacityModal
       v-if="displayCapModal"
@@ -426,6 +306,7 @@ const displayCapModal = ref(false)
 const barcodeInput = ref(null)
 const lastScannedBarcode = ref('')
 const isBarcodeReadonly = ref(false)
+const  currentUnitIndex= ref(null)
 
 const formState = reactive({
   product: '',
@@ -436,10 +317,7 @@ const formState = reactive({
   category: '',
   sub_category: '',
   vat: '1',
-  selling_unit: '',
-  selling_unit_cty: '',
-  purchaseUnit: '',
-  sellingUnit: ''
+  
   // other form states...
 })
 
@@ -447,7 +325,9 @@ const units = ref([
   {
     purchaseUnit: '',
     sellingUnit: '',
-    sellingCapacity: ''
+    sellingCapacity: '',
+    availableSellingUnits: [],
+    availableCapacities: []
   }
 ])
 
@@ -455,15 +335,17 @@ const addMeasurementSet = () => {
   units.value.push({
     purchaseUnit: '',
     sellingUnit: '',
-    sellingCapacity: ''
+    sellingCapacity: '',
+    vailableSellingUnits: [],
+    availableCapacities: []
   })
 }
 
 const purchaseUnit = ref([])
-const sellingUnit = ref([])
-const sellingCapacity = ref([])
+
+const selectedPurchaseUnit = ref(null)
 const selectedSellingUnit = ref(null)
-const selectedSellingCapacity = ref(null)
+
 const categories = ref([])
 const subCategories = ref([])
 
@@ -489,16 +371,23 @@ const addPurchaseUnit = () => {
   showModal.value = true
 }
 
-const addSellingUnit = (purchaseUnitId) => {
-  formState.purchaseUnit = purchaseUnitId
+const addSellingUnit = (purchaseUnitId, index) => {
+   if (!purchaseUnitId) {
+    alert('Please select a purchase unit first')
+    return
+  }
+  selectedPurchaseUnit.value = purchaseUnitId
+  currentUnitIndex.value = index
   displayModal.value = true
 }
 
-const addSellingCapacity = (selectedSellingUnit) => {
-  if (!selectedSellingUnit) {
+const addSellingCapacity = (sellingUnitId, index) => {
+  if (!sellingUnitId) {
     alert('Please select a selling unit first')
     return
   }
+  selectedSellingUnit.value = sellingUnitId;
+  currentUnitIndex.value = index
   displayCapModal.value = true
 }
 
@@ -506,6 +395,9 @@ const closeModal = () => {
   showModal.value = false
   displayModal.value = false
   displayCapModal.value = false
+  selectedPurchaseUnit.value = null
+  selectedSellingUnit.value = null
+  currentUnitIndex.value = null
 }
 
 const preventSubmitOnEnter = (event) => {
@@ -517,19 +409,40 @@ const preventSubmitOnEnter = (event) => {
 const handlePurchaseUnit = (newType) => {
   // console.log()
   purchaseUnit.value.push(newType)
-  formState.purchaseUnit = newType.id
+  // formState.purchaseUnit = newType.id
+  
 }
 
 const handleSellingUnit = (newType) => {
-  sellingUnit.value.push(newType)
-  console.log(sellingUnit.value)
-  selectedSellingUnit.value = newType.id
+   const currentUnit = units.value[currentUnitIndex.value]
+  if (currentUnit) {
+    currentUnit.availableSellingUnits = currentUnit.availableSellingUnits || []
+    currentUnit.availableSellingUnits.push(newType)
+    currentUnit.sellingUnit = newType.id
+  }
+  // sellingUnit.value.push(newType)
+  // console.log(sellingUnit.value)
+  // // selectedSellingUnit.value = newType.id
+  //  const currentUnit = units.value.find(unit => unit.purchaseUnit === selectedPurchaseUnit.value)
+  // if (currentUnit) {
+  //   currentUnit.sellingUnit = newType.id
+  // }
 }
 
 const handleSellingCapacity = (newCapacity) => {
-  console.log(sellingUnit.value)
-  sellingCapacity.value.push(newCapacity)
-  selectedSellingCapacity.value = newCapacity.id
+   const currentUnit = units.value[currentUnitIndex.value]
+  if (currentUnit) {
+    currentUnit.availableCapacities = currentUnit.availableCapacities || []
+    currentUnit.availableCapacities.push(newCapacity)
+    currentUnit.sellingCapacity = newCapacity.id
+  }
+  // console.log(sellingUnit.value)
+  // sellingCapacity.value.push(newCapacity)
+  // // selectedSellingCapacity.value = newCapacity.id
+  // const currentUnit = units.value.find(unit => unit.sellingUnit === selectedSellingUnit.value)
+  // if (currentUnit) {
+  //   currentUnit.sellingCapacity = newCapacity.id
+  // }
 }
 
 const fetchCategory = async () => {
@@ -573,23 +486,34 @@ const fetchPurchasingUnit = async () => {
   }
 }
 
-const fetchSellingUnit = async (purchaseUnitId) => {
+const fetchSellingUnit = async (purchaseUnitId, index) => {
   const selectedUnit = purchaseUnit.value.find((unit) => unit.id === purchaseUnitId)
   console.log(selectedUnit)
   if (selectedUnit) {
-    sellingUnit.value = selectedUnit.selling_units
-    selectedSellingUnit.value = null
-    selectedSellingCapacity.value = null
+    units.value[index].availableSellingUnits = selectedUnit.selling_units || []
+    units.value[index].sellingUnit = ''
+    units.value[index].sellingCapacity = ''
+    units.value[index].availableCapacities = []
   }
+  // if (selectedUnit) {
+  //   sellingUnit.value = selectedUnit.selling_units
+  //   selectedSellingUnit.value = null
+  //   selectedSellingCapacity.value = null
+  // }
 }
 
-const fetchSellingCapacities = async (sellingUnitId) => {
-  const selectedUnit = sellingUnit.value.find((unit) => unit.id === sellingUnitId)
-  console.log(selectedUnit)
+const fetchSellingCapacities = async (sellingUnitId, index) => {
+   const selectedUnit = units.value[index].availableSellingUnits.find((unit) => unit.id === sellingUnitId)
   if (selectedUnit) {
-    sellingCapacity.value = selectedUnit.selling_unit_capacities
-    selectedSellingCapacity.value = null
+    units.value[index].availableCapacities = selectedUnit.selling_unit_capacities || []
+    units.value[index].sellingCapacity = ''
   }
+  // const selectedUnit = sellingUnit.value.find((unit) => unit.id === sellingUnitId)
+  // console.log(selectedUnit)
+  // if (selectedUnit) {
+  //   sellingCapacity.value = selectedUnit.selling_unit_capacities
+  //   selectedSellingCapacity.value = null
+  // }
 }
 
 const handleImageChange = (event) => {

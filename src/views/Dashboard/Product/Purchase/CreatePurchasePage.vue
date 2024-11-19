@@ -39,15 +39,15 @@
               <div class="custom-select">
                 <input
                   type="text"
-                  :value="searchQuery || getSelectedProductName(purchase.product_type_id)"
-                  @input="handleSearch($event, index)"
-                  @focus="showDropdown = true"
+                  :value="getSelectedProductName(purchase.product_type_id, index)"
+                  @input="(e) => handleSearch(e, index)"
+                  @focus="showDropdowns[index] = true"
                   placeholder="Search product type..."
                   class="search-input"
                 />
-                <div v-show="showDropdown" class="options-container">
+                <div v-show="showDropdowns[index]" class="options-container">
                   <div
-                    v-for="productType in filteredProductTypes"
+                    v-for="productType in filteredProductTypes(index)"
                     :key="productType.id"
                     class="option"
                     @click="selectProduct(productType, index)"
@@ -185,7 +185,10 @@ const isLoading = ref(false)
 
 const isSubmitting = ref(false)
 const showDropdown = ref(false)
-const searchQuery = ref('')
+
+
+const searchQueries = ref({})
+const showDropdowns = ref({})
 
 const createEmptyPurchase = () => ({
   supplier_id: '',
@@ -234,22 +237,22 @@ const fetchData = async () => {
   }
 }
 
-const getSelectedProductName = (productTypeId) => {
-  if (searchQuery.value) return searchQuery.value
+const getSelectedProductName = (productTypeId, index) => {
+ if (searchQueries.value[index]) return searchQueries.value[index]
   const product = productTypes.value.find(p => p.id === productTypeId)
   return product ? product.product_type_name : ''
 }
 
-const filteredProductTypes = computed(() => {
-  if (!searchQuery.value) return productTypes.value
+const filteredProductTypes = (index) => {
+  if (!searchQueries.value[index]) return productTypes.value
   return productTypes.value.filter(product => 
-    product.product_type_name.toLowerCase().includes(searchQuery.value.toLowerCase())
+    product.product_type_name.toLowerCase().includes(searchQueries.value[index].toLowerCase())
   )
-})
+}
 
-const handleSearch = (event) => {
-  searchQuery.value = event.target.value
-  showDropdown.value = true
+const handleSearch = (event, index) => {
+  searchQueries.value[index] = event.target.value
+  showDropdowns.value[index] = true
 }
 
 const getPurchaseUnits = (productTypeId) => {
@@ -269,8 +272,8 @@ const selectProduct = (productType, index) => {
   purchases[index].product_type_id = productType.id
   purchases[index].purchase_unit_id = ''
   purchases[index].selling_unit_data = {}
-  showDropdown.value = false
-  searchQuery.value = ''
+  showDropdowns.value[index] = false
+  searchQueries.value[index] = ''
 }
 
 const handlePurchaseUnitChange = async (index) => {
@@ -286,7 +289,7 @@ const handlePurchaseUnitChange = async (index) => {
     }
   })
 
-  try {
+   try {
     const priceData = await apiService.get(
       `latest-supplier-price/${purchase.product_type_id}/${purchase.supplier_id}/${purchase.purchase_unit_id}`
     )
@@ -395,8 +398,10 @@ const handleSubmit = async () => {
     }))
 
     const res = await apiService.post('purchases', { purchases: formattedPurchases })
-    catchAxiosSuccess(res.message)
+   
     router.push('/purchase')
+    catchAxiosSuccess(res)
+     return res
   } catch (err) {
     catchAxiosError(err)
   } finally {

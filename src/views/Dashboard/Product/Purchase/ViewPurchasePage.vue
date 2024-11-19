@@ -16,11 +16,11 @@
             <th>PRODUCT IMAGE</th>
             <th>PRODUCT DESCRIPTION</th>
             <th>BATCH NO</th>
-            <!-- <th>QUANTITY</th> -->
+          
             <th>PURCHASE UNIT</th>
             <th>SELLING UNIT</th>
             <th>SELLING UNIT CAPACITY</th>
-            <!-- <th>CONTAINER QTY</th> -->
+            
             <th>PURCHASE QTY</th>
             <th>EXPIRY DATE</th>
             <th>COST PRICE(NGN)</th>
@@ -49,9 +49,9 @@
             </td>
             <td>{{ item.batch_no }}</td>
             <!-- <td>{{ item.quantity }}</td> -->
-            <td>{{ item.purchase_unit_name }}</td>
-            <td>{{ item.selling_unit_name }}</td>
-            <td>{{ item.selling_unit_capacity }}</td>
+            <td>{{ item.purchase_unit_name.join(', ') }}</td>
+            <td>{{ item.selling_unit_name.join(', ') }}</td>
+            <td>{{ item.selling_unit_capacity.join(', ') }}</td>
             <td>{{ item.capacity_qty }}</td>
             <td>{{ item.expiry_date }}</td>
             <td>{{ item.cost_price }}</td>
