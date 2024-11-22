@@ -120,6 +120,7 @@ const menuItems = computed(() => {
         { name: 'Supplier Product', route: '/supplier-product', icon: ProductIcon, backendKey: 'supplier-products' }
       ]
     },
+    { name: 'Estimated Store', route: '/estimated-store', icon: PurchaseIcon, backendKey: 'estimated-store' },
     { name: 'Reports', route: '/report', icon: reportsIcon, backendKey: 'reports' },
     { name: 'Logs', route: '/logs', icon: reportsIcon, backendKey: 'logs' },
     { name: 'Settings', route: '/settings', icon: SettingsIcon, backendKey: 'settings' },

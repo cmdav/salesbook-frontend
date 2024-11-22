@@ -758,7 +758,7 @@ const resetForm = () => {
   background-color: #f0f0f0;
 }
 
-/* Your existing CSS styles */
+
 .container {
   padding: 20px;
 }

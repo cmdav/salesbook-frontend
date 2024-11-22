@@ -24,7 +24,7 @@
           />
         </div>
 
-      
+       
 
         <button
           type="submit"
@@ -51,17 +51,19 @@ const props = defineProps({
 
 const emits = defineEmits(['close', 'group-added', 'group-updated'])
 
-const isEditing = ref(!!props.group)
-const groupName = ref(isEditing.value ? props.group.name : '')
-
+const isEditing = ref(false)
+const groupName = ref('')
 const isLoading = ref(false)
 
 watch(() => props.group, (newVal) => {
   if (newVal) {
+    isEditing.value = true
     groupName.value = newVal.name
-   
+  } else {
+    isEditing.value = false
+    groupName.value = ''
   }
-})
+}, { immediate: true })
 
 const submitForm = async () => {
   isLoading.value = true

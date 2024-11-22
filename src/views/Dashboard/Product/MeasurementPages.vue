@@ -1,7 +1,7 @@
 <template>
   <DashboardLayout pageTitle="Measurement Page">
     <div class="actions">
-      <input type="text" v-model="search" placeholder="Search..." class="search-input" />
+      <input type="text" v-model="search" placeholder="Search by ..." class="search-input" />
       <div>
         <button class="button upload-btn" @click="openUploadModal()">Upload</button>
         <button class="button add-btn" @click="openCreateGroupModal">Add Group</button>
@@ -44,7 +44,46 @@
                 </div>
 
                 <div v-if="purchaseUnit.selling_units.length > 0">
-                  <div
+                    <div v-for="sellingUnit in purchaseUnit.selling_units" :key="sellingUnit.id" class="selling-unit-card">
+    <div class="selling-unit-header">
+      <h5 class="text-lg font-medium">
+        Selling Unit: {{ sellingUnit.selling_unit_name }}
+      </h5>
+      <div class="selling-unit-actions">
+        <button
+          class="add-selling-capacity-button"
+          @click="openCreateSellingCapacityModal(sellingUnit.id)"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+            <path fill="white" d="M19 12.998h-6v6h-2v-6H5v-2h6v-6h2v6h6z" />
+          </svg>
+        </button>
+        <button class="delete-button" @click="openDeleteSellingUnitModal(sellingUnit.id)">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+            <path fill="white" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <ul class="capacity">
+      <li v-for="capacity in sellingUnit.selling_unit_capacities" :key="capacity.id" class="capacity_sell">
+        Quantity: {{ capacity.selling_unit_capacity }}
+        <div class="capacity-actions">
+          <span class="update-selling-unit-button capacity_btn" @click="openEditSellingCapacity(sellingUnit.id, capacity)">
+            Edit
+          </span>
+          <span class="delete-button capacity_btn" @click="openDeleteCapacityModal(capacity.id)">
+            Delete
+          </span>
+        </div>
+      </li>
+    </ul>
+    <button class="update-selling-unit-button" @click="openEditSellingUnitModal(purchaseUnit.id, sellingUnit)">
+      Edit Selling Unit
+    </button>
+  </div>
+                  <!-- <div
                     v-for="sellingUnit in purchaseUnit.selling_units"
                     :key="sellingUnit.id"
                     class="selling-unit-card"
@@ -74,14 +113,14 @@
                     <button class="update-selling-unit-button" @click="openEditSellingUnitModal(purchaseUnit.id, sellingUnit)">
                       Edit Selling Unit
                     </button>
-                  </div>
+                  </div> -->
                 </div>
                 <div v-else>
                   <p class="text-center">No Selling Units Available</p>
                 </div>
 
                 <div class="purchase-unit-actions">
-                  <button class="update-selling-unit-button" @click="openEditPurchaseUnitModal(purchaseUnit)">
+                  <button class="update-selling-unit-button" @click="openEditPurchaseUnitModal(group.id, purchaseUnit)">
                     Edit Purchase Unit
                   </button>
                   <button class="delete-pur update-selling-unit-button" @click="openDeleteModal(purchaseUnit.id)">
@@ -94,7 +133,7 @@
         </div>
 
         <div v-else>
-          <p class="text-center">No measurement groups found.</p>
+          <p class="text-center">{{ errorMessage }}</p>
         </div>
 
         <div v-if="!isSearching" class="mx-auto w-fit my-5">
@@ -152,6 +191,31 @@
         />
 
         <!-- Delete Confirmation Modals -->
+         <div v-if="showDeleteSellingUnitModal" class="modal backdrop-blur z-[100] fixed animate__zoomIn animate__rubberBand animate__fadeOut min-h-screen h-full">
+    <div class="modal__body relative w-full md:max-w-[600px] bg-white m-0 md:px-5 py-4 px-4">
+      <header class="flex flex-row items-center justify-between border-b-[#000000] pb-[5px] mb-[35px] border-b-[1px]">
+        <h3 class="text-[22px] font-EBGaramond500 text-[#244034]">Confirm Selling Unit Deletion</h3>
+      </header>
+      <p class="text-center py-4">Are you sure you want to delete this selling unit? This will also delete all associated capacities.</p>
+      <div class="flex justify-center">
+        <button @click="confirmDeleteSellingUnit" class="btn-brand !bg-green-400 mr-6">Delete</button>
+        <button @click="closeDeleteSellingUnitModal" class="btn-brand !bg-red-600">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="showDeleteCapacityModal" class="modal backdrop-blur z-[100] fixed animate__zoomIn animate__rubberBand animate__fadeOut min-h-screen h-full">
+    <div class="modal__body relative w-full md:max-w-[600px] bg-white m-0 md:px-5 py-4 px-4">
+      <header class="flex flex-row items-center justify-between border-b-[#000000] pb-[5px] mb-[35px] border-b-[1px]">
+        <h3 class="text-[22px] font-EBGaramond500 text-[#244034]">Confirm Capacity Deletion</h3>
+      </header>
+      <p class="text-center py-4">Are you sure you want to delete this selling capacity?</p>
+      <div class="flex justify-center">
+        <button @click="confirmDeleteCapacity" class="btn-brand !bg-green-400 mr-6">Delete</button>
+        <button @click="closeDeleteCapacityModal" class="btn-brand !bg-red-600">Cancel</button>
+      </div>
+    </div>
+  </div>
         <div v-if="showDeleteModal" class="modal backdrop-blur z-[100] fixed animate__zoomIn animate__rubberBand animate__fadeOut min-h-screen h-full">
           <div class="modal__body relative w-full md:max-w-[600px] bg-white m-0 md:px-5 py-4 px-4">
             <header class="flex flex-row items-center justify-between border-b-[#000000] pb-[5px] mb-[35px] border-b-[1px]">
@@ -224,12 +288,11 @@ const pagination = ref({})
 const currentPage = ref(1)
 const totalPages = ref(0)
 
-const emit = defineEmits(['edit-group', 'edit-purchase-unit', 'edit-selling-unit', 'edit-selling-capacity'])
+// const emit = defineEmits(['edit-group', 'edit-purchase-unit', 'edit-selling-unit', 'edit-selling-capacity'])
 
-const fetchMeasurementGroups = async () => {
+const fetchMeasurementGroups = async (page = 1) => {
   try {
-      const response = await apiService.get(`measurement-groups`)
-    console.log(response)
+    const response = await apiService.get(`measurement-groups?page=${page}`)
     measurementGroups.value = response.data
     pagination.value = {
       next_page_url: response.data.next_page_url,
@@ -252,7 +315,6 @@ const openCreateGroupModal = () => {
 const openEditGroupModal = (group) => {
   selectedGroup.value = group
   isGroupModalOpen.value = true
-  emit('edit-group', group)
 }
 
 const closeGroupModal = () => {
@@ -266,15 +328,33 @@ const openCreatePurchaseUnitModal = (groupId) => {
   isModalOpen.value = true
 }
 
+const openEditPurchaseUnitModal = (groupId, purchaseUnit) => {
+  selectedGroupId.value = groupId
+  selectedPurchaseUnit.value = purchaseUnit
+  isModalOpen.value = true
+}
+
 const openCreateSellingUnitModal = (purchaseUnitId) => {
   selectedPurchaseUnitId.value = purchaseUnitId
   selectedSellingUnit.value = null
   isSellingUnitModalOpen.value = true
 }
 
+const openEditSellingUnitModal = (purchaseUnitId, sellingUnit) => {
+  selectedPurchaseUnitId.value = purchaseUnitId
+  selectedSellingUnit.value = sellingUnit
+  isSellingUnitModalOpen.value = true
+}
+
 const openCreateSellingCapacityModal = (sellingUnitId) => {
   selectedSellingUnitId.value = sellingUnitId
   selectedSellingCapacity.value = null
+  isSellingUnitCapacityModalOpen.value = true
+}
+
+const openEditSellingCapacity = (sellingUnitId, capacity) => {
+  selectedSellingUnitId.value = sellingUnitId
+  selectedSellingCapacity.value = capacity
   isSellingUnitCapacityModalOpen.value = true
 }
 
@@ -339,6 +419,59 @@ const confirmDeleteGroup = async () => {
   }
 }
 
+
+const showDeleteSellingUnitModal = ref(false)
+const showDeleteCapacityModal = ref(false)
+const sellingUnitToDelete = ref(null)
+const capacityToDelete = ref(null)
+
+
+const openDeleteSellingUnitModal = (id) => {
+  sellingUnitToDelete.value = id
+  showDeleteSellingUnitModal.value = true
+}
+
+const closeDeleteSellingUnitModal = () => {
+  showDeleteSellingUnitModal.value = false
+  sellingUnitToDelete.value = null
+  refreshCurrentPage()
+}
+
+const confirmDeleteSellingUnit = async () => {
+  if (sellingUnitToDelete.value) {
+    try {
+      const response = await apiService.delete(`selling-units/${sellingUnitToDelete.value}`)
+      catchAxiosSuccess(response)
+      closeDeleteSellingUnitModal()
+    } catch (error) {
+      catchAxiosError(error)
+    }
+  }
+}
+
+const openDeleteCapacityModal = (id) => {
+  capacityToDelete.value = id
+  showDeleteCapacityModal.value = true
+}
+
+const closeDeleteCapacityModal = () => {
+  showDeleteCapacityModal.value = false
+  capacityToDelete.value = null
+  refreshCurrentPage()
+}
+
+const confirmDeleteCapacity = async () => {
+  if (capacityToDelete.value) {
+    try {
+      const response = await apiService.delete(`selling-unit-capacities/${capacityToDelete.value}`)
+      catchAxiosSuccess(response)
+      closeDeleteCapacityModal()
+    } catch (error) {
+      catchAxiosError(error)
+    }
+  }
+}
+
 const changePage = (page) => {
   if (page > 0 && page <= totalPages.value) {
     currentPage.value = page
@@ -361,22 +494,22 @@ const closeUploadModal = () => {
 const forceRefresh = () => {
   refreshCurrentPage()
 }
-
+1
 watch(search, async (newSearch) => {
   if (newSearch) {
     isSearching.value = true
     try {
-      const response = await apiService.get(`search-measurement-groups?search=${newSearch}`)
-      if (response.data.data.length > 0) {
+      const response = await apiService.get(`search-purchase-units?search=${newSearch}`)
+      console.log(response.data)
+      if (response.data.length > 0) {
         measurementGroups.value = response.data.data
       } else {
         measurementGroups.value = []
-        errorMessage.value = response.data.message || 'No measurement groups found for the search term.'
+        errorMessage.value = response.data.message || 'No Purchase Unit found for the search.'
       }
     } catch (error) {
       console.error('Failed to fetch data:', error.message)
-      measurementGroups.value = []
-      errorMessage.value = 'Error occurred while searching for measurement groups.'
+      errorMessage.value = 'Error occurred while searching for the purchase units.'
     } finally {
       isSearching.value = false
     }
@@ -515,7 +648,7 @@ watch(
   background-color: #c35214;
   color: white;
   border: none;
-  padding: 8px 16px;
+  padding: 5px 16px;
   border-radius: 4px;
   cursor: pointer;
 }
@@ -552,6 +685,7 @@ watch(
 
 .capacity_sell {
   padding: 12px 0;
+  display: flex; 
 }
 
 .capacity_btn {
@@ -573,6 +707,38 @@ watch(
   justify-content: center;
   overflow: hidden;
   background: rgba(0, 0, 0, 0.3);
+}
+
+.selling-unit-actions {
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+}
+
+.capacity-actions {
+  display: flex;
+
+}
+
+.delete-button {
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-button:hover {
+  background-color: #b91c1c;
+}
+
+.capacity-actions .delete-button {
+  padding: 4px 8px;
+  font-size: 0.875rem;
 }
 
 .modal__body {
