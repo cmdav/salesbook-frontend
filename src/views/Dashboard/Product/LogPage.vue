@@ -1,13 +1,24 @@
-
 <template>
   <DashboardLayout pageTitle="Logs Page">
-
-
     <div class="actions">
-      <input type="text" v-model="search" placeholder="Search..." class="search-input" />
-      <!-- <button class="button add-btn"><router-link to="/create-purchase" class="button add-btn">Add</router-link></button> -->
-
-      <!-- <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" /> -->
+      <div class="filters">
+        <input type="text" v-model="search" placeholder="Search..." class="search-input" />
+        <div class="date-filters">
+          <input 
+            type="date" 
+            v-model="startDate" 
+            class="date-input"
+            @change="handleDateChange"
+          />
+          <span class="date-separator">to</span>
+          <input 
+            type="date" 
+            v-model="endDate" 
+            class="date-input"
+            @change="handleDateChange"
+          />
+        </div>
+      </div>
     </div>
     <div class="table-container">
       <table>
@@ -39,26 +50,21 @@
       </button>
     </div>
   </DashboardLayout>
-
-
 </template>
+
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import apiService from '@/services/apiService'
-//import { getDb, setDb } from '@/utils/db'
-// import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue'
-import { useStore } from '@/stores/user'
-
 
 const search = ref('')
 const data = ref([])
 const pagination = ref({})
-
 const currentPage = ref(1)
 const totalPages = ref(0)
 const branches = ref([])
 const errorMessage = ref('')
-
+const startDate = ref('')
+const endDate = ref('')
 
 onMounted(async () => {
   try {
@@ -70,31 +76,6 @@ onMounted(async () => {
   }
 })
 
-// function handleBranchChange(selectedBranchId) {
-//   if (selectedBranchId) {
-//     fetchBranch(selectedBranchId)
-//   } else {
-//     fetchData(currentPage.value)
-//   }
-// }
-
-// async function fetchBranch(branchId = 1) {
-//   try {
-//       const response = await apiService.get(`logs?branch_id=${branchId}`)
-
-//     if (response.data && response.data.length) {
-//       data.value = response.data
-//       errorMessage.value = ''
-//     } else {
-//       data.value = []
-//       errorMessage.value = 'No items found for the selected branch.'
-//     }
-//   } catch (error) {
-//     console.error('Failed to fetch sales data:', error)
-//     errorMessage.value = 'An error occurred while fetching data.'
-//   }
-// }
-
 const filteredData = computed(() => {
   return data.value.filter((item) => {
     const description = item.activity || ''
@@ -104,7 +85,12 @@ const filteredData = computed(() => {
 
 async function fetchData(page = 1) {
   try {
-      const response = await apiService.get(`logs?page=${page}`)
+    let url = `logs?page=${page}`
+    if (startDate.value && endDate.value) {
+      url += `&start_time=${startDate.value}&end_time=${endDate.value}`
+    }
+    
+    const response = await apiService.get(url)
     console.log(response.data.data)
     data.value = response.data.data || []
     pagination.value = {
@@ -114,41 +100,17 @@ async function fetchData(page = 1) {
     currentPage.value = page
     totalPages.value = response.data.last_page
 
-    // Cache the data in IndexedDB
-   // await setDb('stores', { id: `page-${page}`, data: data.value })
     console.log(`Data from API cached for page ${page}`)
   } catch (error) {
     console.error('Failed to fetch data:', error)
-    // Retrieve data from IndexedDB if fetch fails
-    // const cachedData = await getDb('stores', `page-${page}`)
-    // if (cachedData) {
-    //   data.value = cachedData.data
-    //   console.log(`Data retrieved from IndexedDB for page ${page}`)
-    //   pagination.value = {
-    //     next_page_url:
-    //       currentPage.value < totalPages.value ? `stores?page=${currentPage.value + 1}` : null,
-    //     prev_page_url: currentPage.value > 1 ? `stores?page=${currentPage.value - 1}` : null
-    //   }
-    // } else {
-    //   console.log(`No cached data found for page ${page}`)
-    // }
   }
 }
 
-// const checkExpiredProduct = async () => {
-//   try {
-//     const response = await apiService.get('/list-expired-products')
-//     // purchaseUnit.value = response.data
-//     console.log(response)
-//     // if (formState.purchaseUnit) {
-//     //   await fetchSellingUnit(formState.purchaseUnit)
-//     // }
-//     catchAxiosSuccess(response.message)
-//   } catch (error) {
-//     console.error('Error fetching purchasing unit:', error)
-//     catchAxiosError(error)
-//   }
-// }
+function handleDateChange() {
+  if (startDate.value && endDate.value) {
+    fetchData(1)
+  }
+}
 
 function changePage(page) {
   if (page > 0 && page <= totalPages.value) {
@@ -156,13 +118,8 @@ function changePage(page) {
   }
 }
 
-// const store = useStore()
-// const roles = computed(() => store.getUser.user.permission.role_name === 'Admin')
-
 onMounted(() => fetchData(currentPage.value))
 </script>
-
-
 
 <style scoped>
 .actions {
@@ -171,11 +128,35 @@ onMounted(() => fetchData(currentPage.value))
   justify-content: space-between;
   margin-bottom: 20px;
 }
+
+.filters {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  width: 100%;
+}
+
+.date-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.date-input {
+  padding: 8px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  color: #333;
+}
+
+.date-separator {
+  color: #666;
+}
+
 .action {
   width: 25%;
   display: flex;
   justify-content: space-between;
-  /* margin-bottom: 20px; */
 }
 
 .search-input {

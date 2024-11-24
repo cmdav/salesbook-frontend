@@ -38,10 +38,13 @@ import ViewCustomerSubscriptionPage from '@/views/Dashboard/CustomerSubscription
 import WelcomeScreen from '@/views/welcomePage.vue'
 // import ProductTypePage from '@/views/Dashboard/Product/ProductTypePage.vue'
 import PricePage from '@/views/Dashboard/Product/PricePage.vue'
+// import EstimatePage from '@/views/Dashboard/Product/Estimate/ViewEstimate.vue'
+import CreateEstimate from '@/views/Dashboard/Product/Estimate/CreateEstimate.vue'
+import EstimatePage from '@/views/Dashboard/Product/Estimate/ViewEstimate.vue'
 import PurchasePage from '@/views/Dashboard/Product/Purchase/ViewPurchasePage.vue'
 import CreatePurchasePage from '@/views/Dashboard/Product/Purchase/CreatePurchasePage.vue'
 //import PurchasePage from '@/views/Dashboard/Product/PurchasePage.vue'
-import MeasurementPage from '@/views/Dashboard/Product/MeasurementsPage.vue'
+import MeasurementPage from '@/views/Dashboard/Product/MeasurementPages.vue'
 import SupplierProductsPage from '@/views/Dashboard/SupplierProduct/SupplierProductPage.vue'
 import RolesPage from '@/views/Dashboard/Security/Pages/RolesPagecopy.vue'
 import DefultPage from '@/views/Dashboard/Security/DefultPage.vue'
@@ -276,6 +279,17 @@ const router = createRouter({
       path: '/create-purchase',
       name: 'create-purchase',
       component: CreatePurchasePage
+    },
+    {
+      path: '/estimated-store',
+      name: 'estimated-store',
+      component: EstimatePage,
+      beforeEnter: [middleware.redirectLogin]
+    },
+    {
+      path: '/create-estimate',
+      name: 'create-estimate',
+      component: CreateEstimate
     },
     {
       path: '/supplier-product',
