@@ -409,7 +409,7 @@ const preventSubmitOnEnter = (event) => {
 const handlePurchaseUnit = (newType) => {
   // console.log()
   purchaseUnit.value.push(newType)
-  // formState.purchaseUnit = newType.id
+  
   
 }
 
@@ -420,13 +420,7 @@ const handleSellingUnit = (newType) => {
     currentUnit.availableSellingUnits.push(newType)
     currentUnit.sellingUnit = newType.id
   }
-  // sellingUnit.value.push(newType)
-  // console.log(sellingUnit.value)
-  // // selectedSellingUnit.value = newType.id
-  //  const currentUnit = units.value.find(unit => unit.purchaseUnit === selectedPurchaseUnit.value)
-  // if (currentUnit) {
-  //   currentUnit.sellingUnit = newType.id
-  // }
+ 
 }
 
 const handleSellingCapacity = (newCapacity) => {
@@ -436,13 +430,7 @@ const handleSellingCapacity = (newCapacity) => {
     currentUnit.availableCapacities.push(newCapacity)
     currentUnit.sellingCapacity = newCapacity.id
   }
-  // console.log(sellingUnit.value)
-  // sellingCapacity.value.push(newCapacity)
-  // // selectedSellingCapacity.value = newCapacity.id
-  // const currentUnit = units.value.find(unit => unit.sellingUnit === selectedSellingUnit.value)
-  // if (currentUnit) {
-  //   currentUnit.sellingCapacity = newCapacity.id
-  // }
+  
 }
 
 const fetchCategory = async () => {
@@ -495,11 +483,7 @@ const fetchSellingUnit = async (purchaseUnitId, index) => {
     units.value[index].sellingCapacity = ''
     units.value[index].availableCapacities = []
   }
-  // if (selectedUnit) {
-  //   sellingUnit.value = selectedUnit.selling_units
-  //   selectedSellingUnit.value = null
-  //   selectedSellingCapacity.value = null
-  // }
+  
 }
 
 const fetchSellingCapacities = async (sellingUnitId, index) => {
@@ -508,12 +492,7 @@ const fetchSellingCapacities = async (sellingUnitId, index) => {
     units.value[index].availableCapacities = selectedUnit.selling_unit_capacities || []
     units.value[index].sellingCapacity = ''
   }
-  // const selectedUnit = sellingUnit.value.find((unit) => unit.id === sellingUnitId)
-  // console.log(selectedUnit)
-  // if (selectedUnit) {
-  //   sellingCapacity.value = selectedUnit.selling_unit_capacities
-  //   selectedSellingCapacity.value = null
-  // }
+  
 }
 
 const handleImageChange = (event) => {
@@ -540,9 +519,7 @@ const handleSubmit = async () => {
 
   const formData = new FormData()
 
-  // console.log('Selected Selling Unit:', formState.sellingUnit)
-  // console.log('Selected Selling Cap:', selectedSellingCapacity.value)
-  // formData.append('product_id', formState.product)
+
   formData.append('product_type_name', formState.productTypeName)
   if (formState.productTypeImage) {
     formData.append('product_type_image', formState.productTypeImage)

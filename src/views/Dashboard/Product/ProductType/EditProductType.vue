@@ -1,67 +1,744 @@
 <template>
   <DashboardLayout pageTitle="Edit Product">
-
-    <div class="top-buttons">
+    <div class="container p-0 lg:p-6 lg:py-3 py-4 mb-5">
+      <div class="top-buttons">
         <router-link to="/product-type" class="button back-btn">Back</router-link>
       </div>
-    <!-- The form is similar to your create form, but fields are pre-filled based on the selected product -->
-    <form @submit.prevent="handleSubmit">
-      <!-- Similar structure as create form, but with pre-populated data -->
-      <input v-model="formState.productTypeName" required />
-      <input type="file" @change="handleImageChange" />
-      <img v-if="newImage" :src="newImage" />
-      <input v-model="formState.productTypeDescription" required />
-      <!-- Additional fields and logic as needed -->
-      <button type="submit">{{ isSubmitting ? 'Updating...' : 'Update Product' }}</button>
-    </form>
+
+      <form @submit.prevent="handleSubmit" v-if="formState">
+        <div class="input-group w-[70%]">
+          <label class="block text-sm font-medium text-gray-700">Product Name</label>
+          <input
+            v-model="formState.productTypeName"
+            required
+            type="text"
+            class="input"
+            placeholder="Enter Product Name"
+            @keypress="preventSubmitOnEnter"
+          />
+        </div>
+
+        <div class="input-group w-[70%]">
+          <label class="block text-sm font-medium text-gray-700">Product Image</label>
+          <input ref="fileInput" type="file" @change="handleImageChange" />
+          <img
+            v-if="currentImage || newImage"
+            :src="newImage || currentImage"
+            class="mb-4 h-20 w-30 rounded-md object-cover"
+            alt="Current Image"
+          />
+        </div>
+
+        <div class="input-group w-[70%]">
+          <label class="block text-sm font-medium text-gray-700"
+            >Product Description
+            <span class="text-gray-500 text-sm">
+              ({{ formState.productTypeDescription.length }}/300 characters)
+            </span>
+          </label>
+          <textarea
+            v-model="formState.productTypeDescription"
+            required
+            type="text"
+            placeholder="Enter Product Description"
+            maxlength="300"
+            class="input"
+            @keypress="preventSubmitOnEnter"
+          />
+        </div>
+
+        <div class="input-group w-[70%]">
+          <label class="block text-sm font-medium text-gray-700">Barcode</label>
+          <input
+            ref="barcodeInput"
+            v-model="formState.barcode"
+            type="text"
+            class="input"
+            :readonly="isBarcodeReadonly"
+            @keydown.enter.prevent="handleBarcodeEntry"
+          />
+        </div>
+
+        <button
+          v-if="isBarcodeReadonly"
+          type="button"
+          class="button edit-button"
+          @click="clearBarcode"
+        >
+          Edit Barcode
+        </button>
+
+        <div>
+          <label>VAT</label>
+          <div class="option">
+            <div>
+              <input type="radio" id="vatYes" value="1" v-model="formState.vat" />
+              <label for="vatYes">Yes</label>
+            </div>
+            <div>
+              <input type="radio" id="vatNo" value="0" v-model="formState.vat" />
+              <label for="vatNo">No</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="input-group w-[70%]">
+          <label class="block text-sm font-medium text-gray-700">Product Category</label>
+          <select
+            v-model="formState.category"
+            @change="fetchSubCategory(formState.category)"
+            class="select-input"
+          >
+            <option value="">Select Category...</option>
+            <option v-for="category in categories" :key="category.id" :value="category.id">
+              {{ category.category_name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="input-group w-[70%]">
+          <label class="block text-sm font-medium text-gray-700">Product Subcategory</label>
+          <select v-model="formState.sub_category" class="select-input">
+            <option value="">Select Subcategory...</option>
+            <option
+              v-for="subCategory in subCategories"
+              :key="subCategory.id"
+              :value="subCategory.id"
+            >
+              {{ subCategory.sub_category_name }}
+            </option>
+          </select>
+        </div>
+
+        <div v-for="(unit, index) in units" :key="index" class="measurement-unit-container">
+          <h3 class="text-lg font-semibold mb-4">Measurement Unit Set {{ index + 1 }}</h3>
+
+          <div class="input-group w-full">
+            <label class="block text-sm font-medium text-gray-700">
+              Select Purchase Unit
+              <span class="tooltip-container">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                </svg>
+                <span class="tooltip-text">What unit did you purchase this item?</span>
+              </span>
+            </label>
+            <div class="flex">
+              <div class="w-[70%]">
+                <select
+                  v-model="unit.purchaseUnit"
+                  class="select-input"
+                  @change="fetchSellingUnit(unit.purchaseUnit, index)"
+                  required
+                >
+                  <option value="">Select Purchasing Unit...</option>
+                  <option v-for="pUnit in purchaseUnit" :key="pUnit.id" :value="pUnit.id">
+                    {{ pUnit.purchase_unit_name }}
+                  </option>
+                </select>
+              </div>
+              <button
+                v-if="index === 0"
+                type="button"
+                class="button btn-brand ml-4"
+                @click="addPurchaseUnit"
+              >
+                Add Purchasing Unit
+              </button>
+            </div>
+          </div>
+
+          <div class="input-group w-full">
+            <label class="block text-sm font-medium text-gray-700">
+              Select Selling Unit
+              <span class="tooltip-container">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                </svg>
+                <span class="tooltip-text">What unit will you sell this item?</span>
+              </span>
+            </label>
+            <div class="flex">
+              <div class="w-[70%]">
+                <select
+                  v-model="unit.sellingUnit"
+                  class="select-input"
+                  @change="fetchSellingCapacities(unit.sellingUnit, index)"
+                  required
+                >
+                  <option value="">Select Selling Unit...</option>
+                  <option v-for="sUnit in unit.availableSellingUnits" :key="sUnit.id" :value="sUnit.id">
+                    {{ sUnit.selling_unit_name }}
+                  </option>
+                </select>
+              </div>
+              <button
+                v-if="index === 0"
+                type="button"
+                class="button btn-brand ml-4"
+                @click="addSellingUnit(unit.purchaseUnit, index)"
+              >
+                Add Selling Unit
+              </button>
+            </div>
+          </div>
+
+          <div class="input-group w-full">
+            <label class="block text-sm font-medium text-gray-700">
+              How many selling units equal a purchase unit
+              <span class="tooltip-container">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                </svg>
+                <span class="tooltip-text">E.g dozen = 12, one create = 30eggs...</span>
+              </span>
+            </label>
+            <div class="flex">
+              <div class="w-[70%]">
+                <select v-model="unit.sellingCapacity" class="select-input" required>
+                  <option value="">Select Selling Unit Capacity...</option>
+                  <option
+                    v-for="capacity in unit.availableCapacities"
+                    :key="capacity.id"
+                    :value="capacity.id"
+                  >
+                    {{ capacity.selling_unit_capacity }}
+                  </option>
+                </select>
+              </div>
+              <button
+                v-if="index === 0"
+                type="button"
+                class="button btn-brand ml-4"
+                @click="addSellingCapacity(unit.sellingUnit, index)"
+              >
+                Add Unit Capacity
+              </button>
+            </div>
+          </div>
+
+          <button
+            v-if="index === units.length - 1"
+            type="button"
+            class="button btn-brand mt-4"
+            @click="addMeasurementSet"
+          >
+            Add Another Measurement Set
+          </button>
+
+          <div v-if="index !== 0" class="flex justify-end mt-4">
+            <button type="button" class="button btn-danger" @click="units.splice(index, 1)">
+              Remove Set
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="button submit-button" :disabled="isSubmitting">
+          {{ isSubmitting ? 'Updating...' : 'Update' }}
+        </button>
+      </form>
+    </div>
+
+    <PurchaseUnitModal
+      v-if="showModal"
+      @close="closeModal"
+      @purchase-unit-added="handlePurchaseUnit"
+    />
+    <SellingUnitModal
+      v-if="displayModal"
+      @close="closeModal"
+      @selling-unit-added="handleSellingUnit"
+      :purchaseUnitId="selectedPurchaseUnit"
+    />
+    <SellingUnitCapacityModal
+      v-if="displayCapModal"
+      @close="closeModal"
+      @selling-capacity-added="handleSellingCapacity"
+      :sellingUnitId="selectedSellingUnit"
+    />
   </DashboardLayout>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import apiService from '@/services/apiService'
 import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
-import { useRouter } from 'vue-router'
+import PurchaseUnitModal from '@/components/UI/Modal/purchaseUnitModal.vue'
+import SellingUnitModal from '@/components/UI/Modal/sellingUnitModal.vue'
+import SellingUnitCapacityModal from '@/components/UI/Modal/sellingUnitCapacityModal.vue'
 
+const route = useRoute()
 const router = useRouter()
-const isSubmitting = ref(false)
+const fileInput = ref(null)
+const currentImage = ref(null)
 const newImage = ref(null)
+const isSubmitting = ref(false)
+const productId = route.params.id
+
+const showModal = ref(false)
+const displayModal = ref(false)
+const displayCapModal = ref(false)
+const barcodeInput = ref(null)
+const lastScannedBarcode = ref('')
+const isBarcodeReadonly = ref(false)
+const currentUnitIndex = ref(null)
+
 const formState = reactive({
-  productId: '',  // This will be set when opening the modal for edit
   productTypeName: '',
+  productTypeImage: null,
   productTypeDescription: '',
-  // Other form fields as necessary
+  barcode: '',
+  category: '',
+  sub_category: '',
+  vat: '1'
 })
 
-const fetchProductDetails = async (id) => {
+const units = ref([
+  {
+    purchaseUnit: '',
+    sellingUnit: '',
+    sellingCapacity: '',
+    availableSellingUnits: [],
+    availableCapacities: []
+  }
+])
+
+const purchaseUnit = ref([])
+const selectedPurchaseUnit = ref(null)
+const selectedSellingUnit = ref(null)
+const categories = ref([])
+const subCategories = ref([])
+
+const handleBarcodeEntry = (event) => {
+  const newBarcode = event.target.value.trim()
+  if (newBarcode !== lastScannedBarcode.value || !newBarcode) {
+    formState.barcode = newBarcode
+    lastScannedBarcode.value = newBarcode
+    isBarcodeReadonly.value = true
+  }
+  barcodeInput.value.value = ''
+}
+
+const clearBarcode = () => {
+  formState.barcode = ''
+  isBarcodeReadonly.value = false
+  lastScannedBarcode.value = ''
+}
+
+const addPurchaseUnit = () => {
+  showModal.value = true
+}
+
+const addSellingUnit = (purchaseUnitId, index) => {
+  if (!purchaseUnitId) {
+    alert('Please select a purchase unit first')
+    return
+  }
+  selectedPurchaseUnit.value = purchaseUnitId
+  currentUnitIndex.value = index
+  displayModal.value = true
+}
+
+const addSellingCapacity = (sellingUnitId, index) => {
+  if (!sellingUnitId) {
+    alert('Please select a selling unit first')
+    return
+  }
+  selectedSellingUnit.value = sellingUnitId
+  currentUnitIndex.value = index
+  displayCapModal.value = true
+}
+
+const closeModal = () => {
+  showModal.value = false
+  displayModal.value = false
+  displayCapModal.value = false
+  selectedPurchaseUnit.value = null
+  selectedSellingUnit.value = null
+  currentUnitIndex.value = null
+}
+
+const preventSubmitOnEnter = (event) => {
+  if (event.key === 'Enter') {
+    event.preventDefault()
+  }
+}
+
+const handlePurchaseUnit = (newType) => {
+  purchaseUnit.value.push(newType)
+}
+
+const handleSellingUnit = (newType) => {
+  const currentUnit = units.value[currentUnitIndex.value]
+  if (currentUnit) {
+    currentUnit.availableSellingUnits = currentUnit.availableSellingUnits || []
+    currentUnit.availableSellingUnits.push(newType)
+    currentUnit.sellingUnit = newType.id
+  }
+}
+
+const handleSellingCapacity = (newCapacity) => {
+  const currentUnit = units.value[currentUnitIndex.value]
+  if (currentUnit) {
+    currentUnit.availableCapacities = currentUnit.availableCapacities || []
+    currentUnit.availableCapacities.push(newCapacity)
+    currentUnit.sellingCapacity = newCapacity.id
+  }
+}
+
+const fetchProductData = async () => {
   try {
-    const response = await apiService.get(`/product/${id}`)
-    const product = response.data
-    formState.productTypeName = product.name
-    formState.productTypeDescription = product.description
-    newImage.value = product.image_url
-    // Populate other fields as necessary
+    const response = await apiService.get(`/product-types/${productId}`)
+    
+    // Populate form state
+    formState.productTypeName = response.product_type_name
+    formState.productTypeDescription = response.product_type_description
+    formState.barcode = response.barcode
+    formState.category = response.category_id
+    formState.sub_category = response.sub_category_id
+    formState.vat = response.vat === 'Yes' ? '1' : '0'
+    currentImage.value = response.product_type_image
+
+    // Clear existing units and populate with response data
+    units.value = []
+    const purchaseUnitIds = Object.keys(response)
+      .filter(key => key.startsWith('purchase_unit_id'))
+      .map(key => ({
+        index: parseInt(key.match(/\[(\d+)\]/)[1]),
+        id: response[key],
+        name: response[`purchase_unit_name[${key.match(/\[(\d+)\]/)[1]}]`],
+        sellingUnitId: response[`selling_unit_id[${key.match(/\[(\d+)\]/)[1]}]`],
+        sellingUnitName: response[`selling_unit_name[${key.match(/\[(\d+)\]/)[1]}]`],
+        sellingCapacityId: response[`selling_unit_capacity_id[${key.match(/\[(\d+)\]/)[1]}]`]
+      }))
+
+    for (const unit of purchaseUnitIds) {
+      units.value.push({
+        purchaseUnit: unit.id,
+        sellingUnit: unit.sellingUnitId,
+        sellingCapacity: unit.sellingCapacityId,
+        availableSellingUnits: [],
+        availableCapacities: []
+      })
+      
+      // Fetch related data for each unit
+      await fetchSellingUnit(unit.id, units.value.length - 1)
+      await fetchSellingCapacities(unit.sellingUnitId, units.value.length - 1)
+    }
+
+    if (formState.category) {
+      await fetchSubCategory(formState.category)
+    }
+
   } catch (error) {
+    catchAxiosError(error)
+    console.error('Error fetching product data:', error)
+  }
+}
+
+const fetchCategory = async () => {
+  try {
+    const response = await apiService.get('/product-categories')
+    categories.value = response
+  } catch (error) {
+    catchAxiosError(error)
+    console.error('Error fetching categories:', error)
+  }
+}
+
+const fetchSubCategory = async (categoryId) => {
+  try {
+    const response = await apiService.get(
+      `/all-product-sub-categories-by-category-id/${categoryId}`
+    )
+    subCategories.value = response
+  } catch (error) {
+    catchAxiosError(error)
+    console.error('Error fetching subcategories:', error)
+  }
+}
+
+const fetchPurchasingUnit = async () => {
+  try {
+    const response = await apiService.get('/list-purchase-units')
+    purchaseUnit.value = response.data
+  } catch (error) {
+    console.error('Error fetching purchasing unit:', error)
     catchAxiosError(error)
   }
 }
 
-onMounted(() => {
-  if (props.productId) {
-    fetchProductDetails(props.productId)
+const fetchSellingUnit = async (purchaseUnitId, index) => {
+  const selectedUnit = purchaseUnit.value.find((unit) => unit.id === purchaseUnitId)
+  if (selectedUnit) {
+    units.value[index].availableSellingUnits = selectedUnit.selling_units || []
+    if (!units.value[index].sellingUnit) {
+      units.value[index].sellingCapacity = ''
+      units.value[index].availableCapacities = []
+    }
   }
+}
+
+const fetchSellingCapacities = async (sellingUnitId, index) => {
+  const selectedUnit = units.value[index].availableSellingUnits.find((unit) => unit.id === sellingUnitId)
+  if (selectedUnit) {
+    units.value[index].availableCapacities = selectedUnit.selling_unit_capacities || []
+    if (!units.value[index].sellingCapacity) {
+      units.value[index].sellingCapacity = ''
+    }
+  }
+}
+
+const handleImageChange = (event) => {
+  const file = event.target.files[0]
+  if (file) {
+    formState.productTypeImage = file
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      newImage.value = e.target.result
+    }
+    reader.readAsDataURL(file)
+  }
+}
+
+const addMeasurementSet = () => {
+  units.value.push({
+    purchaseUnit: '',
+    sellingUnit: '',
+    sellingCapacity: '',
+    availableSellingUnits: [],
+    availableCapacities: []
+  })
+}
+
+onMounted(async () => {
+  await fetchCategory()
+  await fetchPurchasingUnit()
+  await fetchProductData()
 })
 
 const handleSubmit = async () => {
   isSubmitting.value = true
+
+  const formData = new FormData()
+
+  formData.append('_method', 'PUT')
+  formData.append('product_type_name', formState.productTypeName)
+  if (formState.productTypeImage) {
+    formData.append('product_type_image', formState.productTypeImage)
+  }
+  formData.append('product_type_description', formState.productTypeDescription)
+  formData.append('barcode', formState.barcode)
+  formData.append('category_id', formState.category || '')
+  formData.append('vat', formState.vat)
+  formData.append('sub_category_id', formState.sub_category || '')
+  units.value.forEach((unit, index) => {
+    formData.append(`purchase_unit_id[${index}]`, unit.purchaseUnit)
+    formData.append(`selling_unit_id[${index}]`, unit.sellingUnit)
+    formData.append(`selling_unit_capacity_id[${index}]`, unit.sellingCapacity)
+  })
   try {
-    await apiService.put(`/product/${formState.productId}`, formState)
-    catchAxiosSuccess('Product updated successfully')
-    router.push('/products')
+    
+    const res = await apiService.post(`/product-types/${productId}`, formData)
+    router.push('/product-type')
+    catchAxiosSuccess(res)
+    return res
   } catch (error) {
     catchAxiosError(error)
+    console.error('Error updating product:', error)
   } finally {
     isSubmitting.value = false
   }
 }
 </script>
+
+<style scoped>
+.container {
+  padding: 20px;
+}
+
+.measurement-unit-container {
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 0.5rem;
+  background-color: #f9fafb;
+}
+
+.top-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.radio-label {
+  margin-left: 10px;
+}
+
+.input-group {
+  flex: 1;
+  margin-right: 20px;
+  margin-bottom: 1.2em;
+}
+
+.select-input,
+.input {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+.input[readonly] {
+  background-color: #e0e0e0;
+}
+
+.readonly-input {
+  background-color: #f5f5f5;
+}
+
+button {
+  margin-right: 10px;
+}
+
+.submit-button {
+  background-color: #28a745;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.submit-button:disabled {
+  background-color: #218838;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.btn-brand {
+  background-color: #c35114;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-brand:disabled {
+  background-color: #007bff;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.btn-brand:hover:not(:disabled) {
+  background-color: #5a6268;
+}
+
+.option {
+  display: flex;
+}
+
+.option div {
+  margin: 0.3em 0.5em 1em;
+}
+
+.option div input {
+  margin-right: 0.2em;
+}
+
+.back-btn {
+  background-color: #c35214;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.back-btn:hover {
+  background-color: #5a6268;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 1em;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tooltip-container .tooltip-text {
+  visibility: hidden;
+  width: 200px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px;
+  border-radius: 4px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -80px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+.edit-button {
+  background-color: #ffc107;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+.edit-button:hover {
+  background-color: #e0a800;
+}
+</style>

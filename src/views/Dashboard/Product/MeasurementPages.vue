@@ -501,21 +501,21 @@ watch(search, async (newSearch) => {
     try {
       const response = await apiService.get(`search-purchase-units?search=${newSearch}`)
       console.log(response.data)
-      if (response.data.length > 0) {
-        measurementGroups.value = response.data.data
+      if (response.data) {
+        measurementGroups.value = response.data
       } else {
         measurementGroups.value = []
-        errorMessage.value = response.data.message || 'No Purchase Unit found for the search.'
+        errorMessage.value = 'No Purchase Unit found for the search.'
       }
     } catch (error) {
+        measurementGroups.value = []
       console.error('Failed to fetch data:', error.message)
-      errorMessage.value = 'Error occurred while searching for the purchase units.'
+      errorMessage.value = 'No Purchase Unit found for the search.'
     } finally {
       isSearching.value = false
     }
   } else {
     isSearching.value = false
-    errorMessage.value = ''
     fetchMeasurementGroups(currentPage.value)
   }
 })

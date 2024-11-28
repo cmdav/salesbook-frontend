@@ -36,7 +36,7 @@
             <th>SUPPLIER PHONE NUMBER</th>
             <th>CREATED BY</th>
             <th>UPDATED BY</th>
-            <!-- <th>EDIT</th> -->
+            <th>EDIT</th>
             <th>DELETE</th>
           </tr>
         </thead>
@@ -75,7 +75,7 @@
             <td>{{ item.supplier_phone_number }}</td>
             <td>{{ item.created_by }}</td>
             <td>{{ item.updated_by }}</td>
-            <!-- <td><button @click="openEditModal(item)">Edit</button></td> -->
+            <td><router-link :to="'/edit-product/' + item.id">Edit</router-link></td>
             <td><button @click="openDeleteModal(item)">Delete</button></td>
           </tr>
         </tbody>
@@ -184,34 +184,7 @@ onMounted(async () => {
   }
 });
 
-// function handleBranchChange(selectedBranchId) {
-//   if (selectedBranchId) {
-//     fetchBranch(selectedBranchId);
-//   } else {
-//     fetchData();
-//   }
-// };
 
-
-// async function fetchBranch(branchId = 1) {
-//   try {
-//     // console.log('called');
-//     const response = await apiService.get(`/product-types?branch_id=${branchId}`);
-//     console.log('response called:', response)
-//       if (response.data && response.data.length) {
-//       data.value = response.data;
-//       errorMessage.value = '';
-//     } else {
-//       data.value = [];
-//       errorMessage.value = 'No items found for the selected branch.';
-//     }
-    
-//     return data.value;
-//   } catch (error) {
-//     console.error('Failed to fetch sales data:', error);
-//     errorMessage.value = 'An error occurred while fetching data.';
-//   }
-// }
 
 const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg } = useSelectComposable(
   productTypeFormFields,
@@ -223,7 +196,7 @@ const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg } = useS
 
 onMounted(async () => {
   await fetchDataForSelect('Product Category', '/product-categories', 'id', 'category_name');
-  // await fetchDataForSelect('Purchase Unit', '/list-purchase-units', 'id', 'purchase_unit_name')
+  
 })
 
 async function fetchPurchaseUnits() {

@@ -30,7 +30,6 @@ import CreateSubscriptionPage from '@/views/Dashboard/Subscriptions/SubscribersP
 import EditSubscriptionPage from '@/views/Dashboard/Subscriptions/SubscribersPage/EditSubscriptionPage.vue'
 import NotFound from '@/views/Auth/NotFound.vue'
 
-
 import ViewCustomerSubscriptionPage from '@/views/Dashboard/CustomerSubscription/ViewCustomerSubscriptionPage.vue'
 
 //import SalePage from '@/views/Dashboard/Product/SalePage.vue'
@@ -60,7 +59,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: { path: '/login'},
+      redirect: { path: '/login' }
     },
     {
       path: '/login',
@@ -251,6 +250,12 @@ const router = createRouter({
     },
 
     {
+      path: '/edit-product/:id',
+      name: 'EditProduct',
+      component: () => import('@/views/Dashboard/Product/ProductType/EditProductType.vue'),
+      beforeEnter: [middleware.redirectLogin]
+    },
+    {
       path: '/price/:id',
       name: 'price',
       component: PricePage,
@@ -332,12 +337,12 @@ const router = createRouter({
       beforeEnter: [middleware.redirectLogin]
     },
     {
-      path:'/logout',
+      path: '/logout',
       name: 'logout',
       beforeEnter: [middleware.deleteSession]
     },
     {
-      path:'/signout',
+      path: '/signout',
       name: 'signout',
       beforeEnter: [middleware.deleteSupplierSession]
     },
@@ -353,6 +358,5 @@ const router = createRouter({
     return { top: 0 }
   }
 })
-
 
 export default router
