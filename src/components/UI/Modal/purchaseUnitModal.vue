@@ -14,12 +14,24 @@
 
       <form @submit.prevent="submitForm" class="max-w-4xl mx-auto p-2">
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 pb-1">Purchase Unit</label>
+          <label class="block text-sm font-medium text-gray-700 pb-1">Purchase Unit*</label>
           <input
             type="text"
             v-model="purchaseUnitName"
             placeholder="Enter Purchase Unit"
             required
+            class="mt-1 block w-[90%] px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 pb-1">Units per Purchase Unit*</label>
+          <input
+            type="number"
+            v-model="unit"
+            placeholder="Enter number of units"
+            required
+            min="1"
             class="mt-1 block w-[90%] px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
         </div>
@@ -55,11 +67,13 @@ const emits = defineEmits(['close', 'purchase-unit-updated', 'purchase-unit-adde
 
 const isEditing = ref(!!props.purchaseUnit)
 const purchaseUnitName = ref('')
+const unit = ref(1)
 const isLoading = ref(false)
 
 watch(() => props.purchaseUnit, (newVal) => {
   if (newVal) {
     purchaseUnitName.value = newVal.purchase_unit_name
+    unit.value = newVal.unit
     isEditing.value = true
   }
 }, { immediate: true })
@@ -71,14 +85,16 @@ const submitForm = async () => {
     if (isEditing.value) {
       const response = await apiService.update(`/purchase-units/${props.purchaseUnit.id}`, {
         purchase_unit_name: purchaseUnitName.value,
-        measurement_group_id: props.groupId
+        measurement_group_id: props.groupId,
+        unit: parseInt(unit.value)
       })
       emits('purchase-unit-updated', response.data)
       catchAxiosSuccess(response)
     } else {
       const response = await apiService.post('/purchase-units', {
         purchase_unit_name: purchaseUnitName.value,
-        measurement_group_id: props.groupId
+        measurement_group_id: props.groupId,
+        unit: parseInt(unit.value)
       })
       emits('purchase-unit-added', response.data)
       catchAxiosSuccess(response)

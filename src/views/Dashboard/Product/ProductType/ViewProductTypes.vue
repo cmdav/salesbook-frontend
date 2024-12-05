@@ -27,9 +27,9 @@
             <th>PRODUCT SUB CATEGORY</th>
             <th>QUANTITY</th>
             <th>VAT</th>
-            <th>PURCHASE UNIT </th>
-            <th>SELLING UNIT</th>
-            <th>SELLING UNIT CAPACITY</th>
+            <th>PURCHASE UNIT</th>
+            <th>UNITS PER PURCHASE</th>
+            <!-- <th>SELLING UNIT CAPACITY</th> -->
             <th>PURCHASING PRICE</th>
             <th>SELLING PRICE</th>
             <th>SUPPLIER NAME</th>
@@ -54,7 +54,7 @@
             </td>
             <td>
               <div class="prod_des">
-                {{item.product_description}}
+                {{ item.product_description }}
               </div>
             </td>
             <!-- <td>
@@ -66,9 +66,17 @@
             <td>{{ item.product_sub_category }}</td>
             <td>{{ item.quantity_available }}</td>
             <td>{{ item.vat }}</td>
-            <td>{{  item.purchase_unit_name.join(', ') }}</td>
-            <td>{{ item.selling_unit_name.join(', ') }}</td>
-            <td>{{ item.selling_unit_capacity.join(', ') }}</td>
+            <td>
+              <div class="prod_des">
+                {{ item.purchase_unit_name.join(', ') }}
+              </div>
+            </td>
+            <td>
+              <div class="prod_des">
+                {{ item.unit.join(', ') }}
+              </div>
+            </td>
+            <!-- <td>{{ item.selling_unit_capacity.join(', ') }}</td> -->
             <td>{{ item.purchasing_price }}</td>
             <td>{{ item.selling_price }}</td>
             <td>{{ item.supplier_name }}</td>
@@ -148,7 +156,7 @@ const editModal = 'Edit Product'
 const currentPage = ref(1)
 const totalPages = ref(0)
 const itemsPerPage = ref(0)
-const branches = ref([]);
+const branches = ref([])
 const errorMessage = ref('')
 
 // const store = useStore();
@@ -161,125 +169,128 @@ const purchaseUnits = ref([])
 // const sellingCapacities = ref([])
 
 //function truncateText(text, length) {
-  //if (!text) return ''
-  //return text.length > length ? text.substring(0, length) + '...' : text
+//if (!text) return ''
+//return text.length > length ? text.substring(0, length) + '...' : text
 //};
 
 onMounted(async () => {
   await fetchData()
-   await fetchPurchaseUnits();
+  await fetchPurchaseUnits()
 })
 // const roles = computed(() => store.getUser.user.permission.role_name === "Admin");
 
-const url = '/all-product-sub-categories-by-category-id';
+const url = '/all-product-sub-categories-by-category-id'
 
 onMounted(async () => {
   try {
-    const response = await apiService.get('/list-business-branches'); 
+    const response = await apiService.get('/list-business-branches')
     console.log(response)
-    branches.value = response || [];
+    branches.value = response || []
     console.log(branches.value)
   } catch (error) {
-    console.error('Failed to fetch branches:', error);
+    console.error('Failed to fetch branches:', error)
   }
-});
-
-
+})
 
 const { fetchDataForSelect, fetchDataForSubCategory, isOptionLoadingMsg } = useSelectComposable(
   productTypeFormFields,
   url,
   'category_id',
   'sub_category_id',
-  'sub_category_name',
+  'sub_category_name'
 )
 
 onMounted(async () => {
-  await fetchDataForSelect('Product Category', '/product-categories', 'id', 'category_name');
-  
+  await fetchDataForSelect('Product Category', '/product-categories', 'id', 'category_name')
 })
 
 async function fetchPurchaseUnits() {
   try {
     const response = await apiService.get('/list-purchase-units')
     console.log('for modal:', response.data)
-    purchaseUnits.value = response.data || [];
+    purchaseUnits.value = response.data || []
     console.log('See you:', purchaseUnits.value)
 
-    const purchaseUnitField = productTypeFormFields.value.find(f => f.databaseField === 'purchase_unit_id');
+    const purchaseUnitField = productTypeFormFields.value.find(
+      (f) => f.databaseField === 'purchase_unit_id'
+    )
     console.log(purchaseUnitField)
     if (purchaseUnitField) {
-      purchaseUnitField.options = purchaseUnits.value.map(unit => ({
+      purchaseUnitField.options = purchaseUnits.value.map((unit) => ({
         value: unit.id,
         label: unit.purchase_unit_name
-      }));
+      }))
     }
   } catch (error) {
     console.error('Error fetching purchase units:', error)
   }
 }
 
-
-
 const fetchSellingUnits = async (purchaseUnitId) => {
-  if (!purchaseUnitId) return;  // Guard clause to ensure valid purchase unit ID
+  if (!purchaseUnitId) return // Guard clause to ensure valid purchase unit ID
 
-  const selectedPurchaseUnit = purchaseUnits.value.find(unit => unit.id === purchaseUnitId);
+  const selectedPurchaseUnit = purchaseUnits.value.find((unit) => unit.id === purchaseUnitId)
 
   if (selectedPurchaseUnit && selectedPurchaseUnit.selling_units) {
-    const sellingUnitField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_id');
+    const sellingUnitField = productTypeFormFields.value.find(
+      (f) => f.databaseField === 'selling_unit_id'
+    )
     if (sellingUnitField) {
-      sellingUnitField.options = selectedPurchaseUnit.selling_units.map(sellingUnit => ({
+      sellingUnitField.options = selectedPurchaseUnit.selling_units.map((sellingUnit) => ({
         value: sellingUnit.id,
         label: sellingUnit.selling_unit_name
-      }));
+      }))
 
       console.log('sellingunit:', sellingUnitField.options)
       sellingUnitField.value = null
-      const capacityField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_capacity_id')
+      const capacityField = productTypeFormFields.value.find(
+        (f) => f.databaseField === 'selling_unit_capacity_id'
+      )
       if (capacityField) {
         capacityField.options = []
         capacityField.value = null
-      };
+      }
     }
   }
-};
+}
 
 const fetchSellingCapacities = async (sellingUnitId) => {
-  if (!sellingUnitId) return;
+  if (!sellingUnitId) return
 
-  let selectedSellingUnit = null;
+  let selectedSellingUnit = null
 
   for (const purchaseUnit of purchaseUnits.value) {
     if (purchaseUnit.selling_units) {
-      selectedSellingUnit = purchaseUnit.selling_units.find(unit => unit.id === sellingUnitId);
+      selectedSellingUnit = purchaseUnit.selling_units.find((unit) => unit.id === sellingUnitId)
       if (selectedSellingUnit) {
-        console.log('Found selling unit:', selectedSellingUnit);
-        break;
+        console.log('Found selling unit:', selectedSellingUnit)
+        break
       }
     }
   }
 
   if (!selectedSellingUnit) {
-    console.error('Selected selling unit not found');
-    return;
+    console.error('Selected selling unit not found')
+    return
   }
   // purchaseUnits.value.forEach(purchaseUnit => {
   //   if (purchaseUnit.selling_units) {
   //     selectedSellingUnit = purchaseUnit.selling_units.find(unit => unit.id === sellingUnitId);
   //     console.log('sellingUnit:', selectedSellingUnit)
   //   }
-    
+
   // console.log('FindUnit:', purchaseUnit.selling_units)
   // });
 
-  if ( selectedSellingUnit.selling_unit_capacities) {
-    const capacityField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_capacity_id');
+  if (selectedSellingUnit.selling_unit_capacities) {
+    const capacityField = productTypeFormFields.value.find(
+      (f) => f.databaseField === 'selling_unit_capacity_id'
+    )
     if (capacityField) {
-      capacityField.options = selectedSellingUnit.selling_unit_capacities.map(capacity => ({
+      capacityField.options = selectedSellingUnit.selling_unit_capacities.map((capacity) => ({
         value: capacity.id,
         label: capacity.selling_unit_capacity
-      }));
+      }))
       console.log('capacity:', capacityField.options)
       // capacityField.value = itemToEdit.value ? itemToEdit.value.selling_unit_capacity_id : null;
     } else {
@@ -288,11 +299,10 @@ const fetchSellingCapacities = async (sellingUnitId) => {
   } else {
     console.log('No selling unit capacity in the selling unit')
   }
-};
+}
 
 async function fetchData(page = 1) {
   try {
-    
     const response = await apiService.get(`/product-types?page=${page}`)
     console.log(response)
     data.value = response.data || []
@@ -364,7 +374,6 @@ function changePage(page) {
 
 //   await fetchSellingUnits(item.purchase_unit_id);
 
-
 //   const sellingUnitField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_id')
 //   if (sellingUnitField) {
 //     sellingUnitField.value = item.selling_unit_id
@@ -376,26 +385,36 @@ function changePage(page) {
 //   if (capacityField) {
 //     capacityField.value = item.selling_unit_capacity_id
 //   }
-  
+
 // };
 
-watch(() => {
-  const purchaseUnitField = productTypeFormFields.value.find(f => f.databaseField === 'purchase_unit_id')
-  return purchaseUnitField?.value
-}, (newPurchaseUnitId) => {
-  if (newPurchaseUnitId) {
-    fetchSellingUnits(newPurchaseUnitId)
+watch(
+  () => {
+    const purchaseUnitField = productTypeFormFields.value.find(
+      (f) => f.databaseField === 'purchase_unit_id'
+    )
+    return purchaseUnitField?.value
+  },
+  (newPurchaseUnitId) => {
+    if (newPurchaseUnitId) {
+      fetchSellingUnits(newPurchaseUnitId)
+    }
   }
-})
+)
 
-watch(() => {
-  const sellingUnitField = productTypeFormFields.value.find(f => f.databaseField === 'selling_unit_id')
-  return sellingUnitField?.value
-}, (newSellingUnitId) => {
-  if (newSellingUnitId) {
-    fetchSellingCapacities(newSellingUnitId)
+watch(
+  () => {
+    const sellingUnitField = productTypeFormFields.value.find(
+      (f) => f.databaseField === 'selling_unit_id'
+    )
+    return sellingUnitField?.value
+  },
+  (newSellingUnitId) => {
+    if (newSellingUnitId) {
+      fetchSellingCapacities(newSellingUnitId)
+    }
   }
-})
+)
 
 function closeEditModal() {
   showEditModal.value = false
@@ -475,8 +494,8 @@ table {
   table-layout: auto;
 }
 
-.prod_des{
-    max-width: 30em;
+.prod_des {
+  max-width: 30em;
   white-space: pre-wrap;
   word-wrap: break-word;
 }
@@ -493,13 +512,11 @@ td {
   padding: 8px;
   text-align: left;
   border: 1px solid #c35214;
-  
+
   white-space: nowrap;
   color: #c35214;
   font-size: 0.9em;
-
 }
-
 
 tbody tr:hover {
   background-color: #f1f5f9;

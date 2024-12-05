@@ -51,7 +51,7 @@ const props = defineProps({
     required: true
   },
   sellingUnit: {
-    type: Object,
+    type: String,
     default: null
   }
 })
@@ -77,9 +77,10 @@ const submitForm = async () => {
   try {
 
      if (isEditing.value) {
-  console.log('purchaseUnit:', props.purchaseUnitId)
+  // console.log('purchaseUnit:', props.purchaseUnitId)
+  console.log('selling:', props.sellingUnit)
 
-      const response = await apiService.update(`/selling-units/${props.sellingUnit.id}`, {
+      const response = await apiService.update(`/selling-units/${props.sellingUnit}`, {
         purchase_unit_id: props.purchaseUnitId,
         selling_unit_name: sellingUnit.value
       })

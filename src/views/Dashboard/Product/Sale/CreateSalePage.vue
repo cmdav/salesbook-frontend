@@ -133,7 +133,7 @@
             </div>
 
             <!-- Cost Price Input -->
-            <div class="input-group w-32">
+            <!-- <div class="input-group w-32">
               <label class="block text-sm font-medium text-gray-700">Cost Price</label>
               <input
                 type="text"
@@ -144,9 +144,9 @@
               <div class="estimation-indicator" v-if="getSelectedUnit(index)">
                 {{ getSelectedUnit(index).is_cost_price_est ? 'Estimated' : 'Actual' }}
               </div>
-            </div>
+            </div> -->
 
-            <!-- Quantity Available Input -->
+            <!-- Quantity Available Input
             <div class="input-group w-32">
               <label class="block text-sm font-medium text-gray-700">Qty Available</label>
               <input
@@ -158,7 +158,7 @@
               <div class="estimation-indicator" v-if="getSelectedUnit(index)">
                 {{ getSelectedUnit(index).is_capacity_quantity_est ? 'Estimated' : 'Actual' }}
               </div>
-            </div>
+            </div> -->
 
             <!-- Quantity Sold -->
             <div class="input-group w-20">
@@ -382,6 +382,7 @@ const populateProductDetails = (index, product) => {
     console.error(`Product not found at index ${index}`)
     return
   }
+  console.log(product)
   formState.products[index].product_type_id = product.id
   formState.products[index].barcode = product.barcode || '' // Handle missing barcode
   formState.products[index].selling_price = product.selling_price || 0
@@ -416,7 +417,7 @@ const handleProductTypeSelect = async (index) => {
       //alert('offline mode')
       product = await getProductById(productId)
     }
-
+console.log(product)
     if (product) {
       // Reset selling unit related fields
       formState.products[index].selling_unit_id = ''
@@ -424,6 +425,7 @@ const handleProductTypeSelect = async (index) => {
       formState.products[index].selling_price = ''
       formState.products[index].quantity_sold = 0
       formState.products[index].vat = product.vat?.toLowerCase() || 'no'
+      formState.products[index].barcode = product.barcode || ''
     }
   } catch (error) {
     console.error('Error during product selection:', error)

@@ -80,7 +80,7 @@ import MeasurementIcon from '@/components/icons/MeasurementIcon.vue'
 import FireIcon from '@/components/icons/FireIcon.vue'
 import SalesIcon from '@/components/icons/SalesIcon.vue'
 import PurchaseIcon from '@/components/icons/PurchaseIcon.vue'
-// import SubscriptionIcon from '@/components/icons/subscriptionIcon.vue'
+import SubscriptionIcon from '@/components/icons/subscriptionIcon.vue'
 // import SideBarIcon from '@/components/icons/SideBarIcon.vue'
 
 const route = useRoute()
@@ -122,6 +122,9 @@ const menuItems = computed(() => {
     },
     { name: 'Estimated Store', route: '/estimated-store', icon: PurchaseIcon, backendKey: 'estimated-store' },
     { name: 'Reports', route: '/report', icon: reportsIcon, backendKey: 'reports' },
+    { name: 'Logs', route: '/logs', icon: reportsIcon, backendKey: 'logs' },
+    { name: 'Subscription', route: '/subscriptions', icon: SubscriptionIcon, backendKey: 'subscriptions' },
+    { name: 'View Subscription', route: '/c-subscriptions', icon: SubscriptionIcon, backendKey: 'c-subscriptions' },
     { name: 'Logs', route: '/logs', icon: reportsIcon, backendKey: 'logs' },
     { name: 'Settings', route: '/settings', icon: SettingsIcon, backendKey: 'settings' },
     { name: 'Log Out', route: '/logout', icon: logoutIcon, backendKey: 'logout' }

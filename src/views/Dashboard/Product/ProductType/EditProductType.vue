@@ -153,92 +153,13 @@
             </div>
           </div>
 
-          <div class="input-group w-full">
-            <label class="block text-sm font-medium text-gray-700">
-              Select Selling Unit
-              <span class="tooltip-container">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-                </svg>
-                <span class="tooltip-text">What unit will you sell this item?</span>
-              </span>
-            </label>
-            <div class="flex">
-              <div class="w-[70%]">
-                <select
-                  v-model="unit.sellingUnit"
-                  class="select-input"
-                  @change="fetchSellingCapacities(unit.sellingUnit, index)"
-                  required
-                >
-                  <option value="">Select Selling Unit...</option>
-                  <option v-for="sUnit in unit.availableSellingUnits" :key="sUnit.id" :value="sUnit.id">
-                    {{ sUnit.selling_unit_name }}
-                  </option>
-                </select>
-              </div>
-              <button
-                v-if="index === 0"
-                type="button"
-                class="button btn-brand ml-4"
-                @click="addSellingUnit(unit.purchaseUnit, index)"
-              >
-                Add Selling Unit
-              </button>
-            </div>
-          </div>
-
-          <div class="input-group w-full">
-            <label class="block text-sm font-medium text-gray-700">
-              How many selling units equal a purchase unit
-              <span class="tooltip-container">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-                </svg>
-                <span class="tooltip-text">E.g dozen = 12, one create = 30eggs...</span>
-              </span>
-            </label>
-            <div class="flex">
-              <div class="w-[70%]">
-                <select v-model="unit.sellingCapacity" class="select-input" required>
-                  <option value="">Select Selling Unit Capacity...</option>
-                  <option
-                    v-for="capacity in unit.availableCapacities"
-                    :key="capacity.id"
-                    :value="capacity.id"
-                  >
-                    {{ capacity.selling_unit_capacity }}
-                  </option>
-                </select>
-              </div>
-              <button
-                v-if="index === 0"
-                type="button"
-                class="button btn-brand ml-4"
-                @click="addSellingCapacity(unit.sellingUnit, index)"
-              >
-                Add Unit Capacity
-              </button>
-            </div>
-          </div>
-
           <button
             v-if="index === units.length - 1"
             type="button"
             class="button btn-brand mt-4"
             @click="addMeasurementSet"
           >
-            Add Another Measurement Set
+            Add Another Purchase UNit
           </button>
 
           <div v-if="index !== 0" class="flex justify-end mt-4">
@@ -259,7 +180,7 @@
       @close="closeModal"
       @purchase-unit-added="handlePurchaseUnit"
     />
-    <SellingUnitModal
+    <!-- <SellingUnitModal
       v-if="displayModal"
       @close="closeModal"
       @selling-unit-added="handleSellingUnit"
@@ -270,7 +191,7 @@
       @close="closeModal"
       @selling-capacity-added="handleSellingCapacity"
       :sellingUnitId="selectedSellingUnit"
-    />
+    /> -->
   </DashboardLayout>
 </template>
 
@@ -384,23 +305,23 @@ const handlePurchaseUnit = (newType) => {
   purchaseUnit.value.push(newType)
 }
 
-const handleSellingUnit = (newType) => {
-  const currentUnit = units.value[currentUnitIndex.value]
-  if (currentUnit) {
-    currentUnit.availableSellingUnits = currentUnit.availableSellingUnits || []
-    currentUnit.availableSellingUnits.push(newType)
-    currentUnit.sellingUnit = newType.id
-  }
-}
+// const handleSellingUnit = (newType) => {
+//   const currentUnit = units.value[currentUnitIndex.value]
+//   if (currentUnit) {
+//     currentUnit.availableSellingUnits = currentUnit.availableSellingUnits || []
+//     currentUnit.availableSellingUnits.push(newType)
+//     currentUnit.sellingUnit = newType.id
+//   }
+// }
 
-const handleSellingCapacity = (newCapacity) => {
-  const currentUnit = units.value[currentUnitIndex.value]
-  if (currentUnit) {
-    currentUnit.availableCapacities = currentUnit.availableCapacities || []
-    currentUnit.availableCapacities.push(newCapacity)
-    currentUnit.sellingCapacity = newCapacity.id
-  }
-}
+// const handleSellingCapacity = (newCapacity) => {
+//   const currentUnit = units.value[currentUnitIndex.value]
+//   if (currentUnit) {
+//     currentUnit.availableCapacities = currentUnit.availableCapacities || []
+//     currentUnit.availableCapacities.push(newCapacity)
+//     currentUnit.sellingCapacity = newCapacity.id
+//   }
+// }
 
 const fetchProductData = async () => {
   try {
@@ -423,9 +344,7 @@ const fetchProductData = async () => {
         index: parseInt(key.match(/\[(\d+)\]/)[1]),
         id: response[key],
         name: response[`purchase_unit_name[${key.match(/\[(\d+)\]/)[1]}]`],
-        sellingUnitId: response[`selling_unit_id[${key.match(/\[(\d+)\]/)[1]}]`],
-        sellingUnitName: response[`selling_unit_name[${key.match(/\[(\d+)\]/)[1]}]`],
-        sellingCapacityId: response[`selling_unit_capacity_id[${key.match(/\[(\d+)\]/)[1]}]`]
+        
       }))
 
     for (const unit of purchaseUnitIds) {
@@ -550,8 +469,7 @@ const handleSubmit = async () => {
   formData.append('sub_category_id', formState.sub_category || '')
   units.value.forEach((unit, index) => {
     formData.append(`purchase_unit_id[${index}]`, unit.purchaseUnit)
-    formData.append(`selling_unit_id[${index}]`, unit.sellingUnit)
-    formData.append(`selling_unit_capacity_id[${index}]`, unit.sellingCapacity)
+   
   })
   try {
     
