@@ -124,10 +124,10 @@
                 <option value="">Select Unit</option>
                 <option
                   v-for="unit in getSellingUnits(formState.products[index].product_type_id)"
-                  :key="unit.selling_unit_id"
-                  :value="unit.selling_unit_id"
+                  :key="unit.purchase_unit_id"
+                  :value="unit.purchase_unit_id"
                 >
-                  {{ unit.selling_unit_name }}
+                  {{ unit.purchase_unit_name }}
                 </option>
               </select>
             </div>
@@ -342,8 +342,8 @@ const handleSearch = (event, index) => {
 
 const getSelectedUnit = (index) => {
   const product = data.value.find((p) => p.id === formState.products[index].product_type_id)
-  return product?.selling_units.find(
-    (unit) => unit.selling_unit_id === formState.products[index].selling_unit_id
+  return product?.purchase_units.find(
+    (unit) => unit.purchase_unit_id === formState.products[index].purchase_unit_id
   )
 }
 
@@ -366,7 +366,7 @@ const selectProduct = (productType, index) => {
 
 const getSellingUnits = (productTypeId) => {
   const product = data.value.find((p) => p.id === productTypeId)
-  return product ? product.selling_units : []
+  return product ? product.purchase_units : []
 }
 
 // const isProductSelected = (productId, sellingUnitId) => {
@@ -417,7 +417,7 @@ const handleProductTypeSelect = async (index) => {
       //alert('offline mode')
       product = await getProductById(productId)
     }
-console.log(product)
+    console.log(product);
     if (product) {
       // Reset selling unit related fields
       formState.products[index].selling_unit_id = ''
@@ -455,10 +455,11 @@ watch(
 
 const handleSellingUnitSelect = (index) => {
   const product = data.value.find((p) => p.id === formState.products[index].product_type_id)
-  const selectedUnit = product?.selling_units.find(
-    (unit) => unit.selling_unit_id === formState.products[index].selling_unit_id
+  const selectedUnit = product?.purchase_units.find(
+    (unit) => unit.purchase_unit_id === formState.products[index].selling_unit_id
   )
-
+  console.log("Product:", product)
+console.log("ello:", selectedUnit)
   if (selectedUnit) {
     const isDuplicate = formState.products.some(
       (p, i) =>
@@ -469,7 +470,7 @@ const handleSellingUnitSelect = (index) => {
 
     if (isDuplicate) {
       alert('This selling unit is already selected for this product')
-      formState.products[index].selling_unit_id = ''
+      formState.products[index].purchase_unit_id = ''
       return
     }
 
@@ -710,8 +711,8 @@ const addSales = async () => {
       price_sold_at: parseInt(product.selling_price, 10),
       quantity: parseInt(product.quantity_sold, 10),
       vat: product.vat === 'yes' ? 'yes' : 'no',
-      selling_unit_id: product.selling_unit_id,
-      purchase_unit_id: product.purchase_unit_id
+      // selling_unit_id: product.selling_unit_id,
+      purchase_unit_id: product.selling_unit_id
     }))
 
   const payload = {
