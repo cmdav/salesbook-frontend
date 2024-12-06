@@ -3,7 +3,7 @@
     <div class="modal__body relative w-full md:max-w-[600px] bg-white m-0 md:px-5 py-4 px-4">
       <header class="flex flex-row items-center justify-between border-b-[#000000] mb-[0.6em] border-b-[1px]">
         <h4 class="text-[32px] font-EBGaramond500 text-[#244034]">
-          {{ isEditing ? 'Edit Measurement Group' : 'Add Measurement Group' }}
+          {{ isEditing ? 'Edit Sub Purchase Unit' : 'Add Sub Purchase Unit' }}
         </h4>
         <button class="close-button" @click="$emit('close')">&#10005;</button>
       </header>
@@ -14,23 +14,33 @@
 
       <form @submit.prevent="submitForm" class="max-w-4xl mx-auto p-2">
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 pb-1">Group Name</label>
+          <label class="block text-sm font-medium text-gray-700 pb-1">Sub Purchase Unit Name</label>
           <input
             type="text"
-            v-model="groupName"
-            placeholder="Enter Group Name"
+            v-model="subPurchaseUnitName"
+            placeholder="Enter Sub Purchase Unit Name"
             required
             class="mt-1 block w-[90%] px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
         </div>
 
-       
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 pb-1">Units per Purchase Unit</label>
+          <input
+            type="number"
+            v-model="unit"
+            placeholder="Enter number of units"
+            required
+            min="1"
+            class="mt-1 block w-[90%] px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
 
         <button
           type="submit"
           class="px-4 py-2 bg-[#c35214] hover:bg-[#d67b0d] text-white font-bold rounded"
         >
-          {{ isEditing ? 'Update Group' : 'Add Group' }}
+          {{ isEditing ? 'Update Sub Purchase Unit' : 'Add Sub Purchase Unit' }}
         </button>
       </form>
     </div>
@@ -43,43 +53,53 @@ import apiService from "@/services/apiService"
 import { catchAxiosSuccess, catchAxiosError } from '@/services/Response'
 
 const props = defineProps({
-  group: {
+  subPurchaseUnit: {
     type: Object,
     default: null
+  },
+  groupId: {
+    type: [String, Number],
+    required: true
+  },
+  purchaseUnitId: {
+    type: [String, Number],
+    required: true
   }
 })
 
-const emits = defineEmits(['close', 'group-added', 'group-updated'])
+const emits = defineEmits(['close', 'sub-unit-updated', 'sub-unit-added'])
 
-const isEditing = ref(false)
-const groupName = ref('')
+const isEditing = ref(!!props.subPurchaseUnit)
+const subPurchaseUnitName = ref('')
+const unit = ref(1)
 const isLoading = ref(false)
 
-watch(() => props.group, (newVal) => {
+watch(() => props.subPurchaseUnit, (newVal) => {
   if (newVal) {
-    console.log(newVal)
-    groupName.value = newVal.group_name
+    subPurchaseUnitName.value = newVal.purchase_unit_name
+    unit.value = newVal.unit
     isEditing.value = true
-  } 
+  }
 }, { immediate: true })
 
 const submitForm = async () => {
   isLoading.value = true
 
   try {
+    const payload = {
+      purchase_unit_name: subPurchaseUnitName.value,
+      measurement_group_id: props.groupId,
+      parent_purchase_unit_id: props.purchaseUnitId,
+      unit: parseInt(unit.value)
+    }
+
     if (isEditing.value) {
-      const response = await apiService.update(`/measurement-groups/${props.group.id}`, {
-        group_name: groupName.value,
-        
-      })
-      emits('group-updated', response.data)
+      const response = await apiService.update(`/purchase-units/${props.subPurchaseUnit}`, payload)
+      emits('sub-unit-updated', response.data)
       catchAxiosSuccess(response)
     } else {
-      const response = await apiService.post('/measurement-groups', {
-        group_name: groupName.value,
-        
-      })
-      emits('group-added', response.data)
+      const response = await apiService.post('/purchase-units', payload)
+      emits('sub-unit-added', response.data)
       catchAxiosSuccess(response)
     }
     

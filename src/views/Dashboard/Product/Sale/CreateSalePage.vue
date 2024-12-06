@@ -70,39 +70,26 @@
             <!-- Product Type Select -->
             <div class="input-group">
               <label class="block text-sm font-medium text-gray-700">Product</label>
-              <!-- <select
-                v-model="formState.products[index].product_type_id"
-                class="select-input"
-                @change="handleProductTypeSelect(index)"
-              >
-                <option
-                  v-for="name in data"
-                  :key="name.id"
-                  :value="name.id"
-                  :disabled="isProductSelected(name.id)"
-                >
-                  {{ name.product_type_name }}
-                </option>
-              </select> -->
+
               <div class="custom-select">
                 <input
                   type="text"
-        :value="getSelectedProductName(formState.products[index].product_type_id, index)"
-        @input="(e) => handleSearch(e, index)"
-        @focus="showDropdowns[index] = true"
+                  :value="getSelectedProductName(formState.products[index].product_type_id, index)"
+                  @input="(e) => handleSearch(e, index)"
+                  @focus="showDropdowns[index] = true"
                   placeholder="Search product type..."
                   class="search-input"
                 />
                 <div v-show="showDropdowns[index]" class="options-container">
-        <div
-          v-for="productType in getFilteredProductTypes(index)"
-          :key="productType.id"
-          class="option"
-          @click="selectProduct(productType, index)"
-        >
-          {{ productType.product_type_name }}
-        </div>
-      </div>
+                  <div
+                    v-for="productType in getFilteredProductTypes(index)"
+                    :key="productType.id"
+                    class="option"
+                    @click="selectProduct(productType, index)"
+                  >
+                    {{ productType.product_type_name }}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -137,13 +124,41 @@
                 <option value="">Select Unit</option>
                 <option
                   v-for="unit in getSellingUnits(formState.products[index].product_type_id)"
-                  :key="unit.selling_unit_id"
-                  :value="unit.selling_unit_id"
+                  :key="unit.purchase_unit_id"
+                  :value="unit.purchase_unit_id"
                 >
-                  {{ unit.selling_unit_name }} ({{ unit.capacity_quantity_available }} available)
+                  {{ unit.purchase_unit_name }}
                 </option>
               </select>
             </div>
+
+            <!-- Cost Price Input -->
+            <!-- <div class="input-group w-32">
+              <label class="block text-sm font-medium text-gray-700">Cost Price</label>
+              <input
+                type="text"
+                v-model="formState.products[index].cost_price"
+                class="input readonly-input"
+                readonly
+              />
+              <div class="estimation-indicator" v-if="getSelectedUnit(index)">
+                {{ getSelectedUnit(index).is_cost_price_est ? 'Estimated' : 'Actual' }}
+              </div>
+            </div> -->
+
+            <!-- Quantity Available Input
+            <div class="input-group w-32">
+              <label class="block text-sm font-medium text-gray-700">Qty Available</label>
+              <input
+                type="text"
+                v-model="formState.products[index].quantity_available"
+                class="input readonly-input"
+                readonly
+              />
+              <div class="estimation-indicator" v-if="getSelectedUnit(index)">
+                {{ getSelectedUnit(index).is_capacity_quantity_est ? 'Estimated' : 'Actual' }}
+              </div>
+            </div> -->
 
             <!-- Quantity Sold -->
             <div class="input-group w-20">
@@ -161,10 +176,10 @@
             <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Selling Price</label>
               <input
-                type="text"
+                type="number"
                 v-model="formState.products[index].selling_price"
-                class="input readonly-input"
-                readonly
+                class="input"
+                @change="handleSellingPriceChange(index)"
               />
               <label class="priceView">
                 &#8358;
@@ -174,6 +189,9 @@
                     : '0.00'
                 }}</label
               >
+              <div class="estimation-indicator" v-if="getSelectedUnit(index)">
+                {{ getSelectedUnit(index).is_selling_price_est ? 'Estimated' : 'Actual' }}
+              </div>
             </div>
 
             <!-- Amount -->
@@ -285,33 +303,34 @@ const preventNegativeQuantity = (index) => {
 }
 
 // State variables for form inputs and product list
-const printReceipt = ref('no') 
-const showReceiptModal = ref(false) 
+const printReceipt = ref('no')
+const showReceiptModal = ref(false)
 
 const formState = reactive({
   customer_id: '',
   payment_method: '',
   products: [
     {
-       product_type_id: '',
+      product_type_id: '',
       barcode: '',
       selling_price: '',
       selling_unit_id: '',
       purchase_unit_id: '',
       quantity_sold: 0,
       amount: '',
-      vat: 'no' 
+      vat: 'no',
+      cost_price: '',
+      quantity_available: ''
     }
   ]
 })
-
 
 const searchQueries = ref({})
 const showDropdowns = ref({})
 
 const getFilteredProductTypes = (index) => {
   if (!searchQueries.value[index]) return data.value
-  return data.value.filter(product =>
+  return data.value.filter((product) =>
     product.product_type_name.toLowerCase().includes(searchQueries.value[index].toLowerCase())
   )
 }
@@ -321,13 +340,22 @@ const handleSearch = (event, index) => {
   showDropdowns.value[index] = true
 }
 
+const getSelectedUnit = (index) => {
+  const product = data.value.find((p) => p.id === formState.products[index].product_type_id)
+  return product?.purchase_units.find(
+    (unit) => unit.purchase_unit_id === formState.products[index].purchase_unit_id
+  )
+}
+
+// const getEstimationStatus = (isEstimated) => {
+//   return isEstimated ? 'Estimated' : 'Actual'
+// }
 
 const getSelectedProductName = (productTypeId, index) => {
   if (searchQueries.value[index]) return searchQueries.value[index]
-  const product = data.value.find(p => p.id === productTypeId)
+  const product = data.value.find((p) => p.id === productTypeId)
   return product ? product.product_type_name : ''
 }
-
 
 const selectProduct = (productType, index) => {
   formState.products[index].product_type_id = productType.id
@@ -337,14 +365,14 @@ const selectProduct = (productType, index) => {
 }
 
 const getSellingUnits = (productTypeId) => {
-  const product = data.value.find(p => p.id === productTypeId)
-  return product ? product.selling_units : []
+  const product = data.value.find((p) => p.id === productTypeId)
+  return product ? product.purchase_units : []
 }
 
 // const isProductSelected = (productId, sellingUnitId) => {
 //   return formState.products.some(
-//     product => 
-//       product.product_type_id === productId && 
+//     product =>
+//       product.product_type_id === productId &&
 //       product.selling_unit_id === sellingUnitId
 //   )
 // }
@@ -354,6 +382,7 @@ const populateProductDetails = (index, product) => {
     console.error(`Product not found at index ${index}`)
     return
   }
+  console.log(product)
   formState.products[index].product_type_id = product.id
   formState.products[index].barcode = product.barcode || '' // Handle missing barcode
   formState.products[index].selling_price = product.selling_price || 0
@@ -388,14 +417,15 @@ const handleProductTypeSelect = async (index) => {
       //alert('offline mode')
       product = await getProductById(productId)
     }
-
-     if (product) {
+    console.log(product);
+    if (product) {
       // Reset selling unit related fields
       formState.products[index].selling_unit_id = ''
       formState.products[index].purchase_unit_id = ''
       formState.products[index].selling_price = ''
       formState.products[index].quantity_sold = 0
       formState.products[index].vat = product.vat?.toLowerCase() || 'no'
+      formState.products[index].barcode = product.barcode || ''
     }
   } catch (error) {
     console.error('Error during product selection:', error)
@@ -424,25 +454,29 @@ watch(
 )
 
 const handleSellingUnitSelect = (index) => {
-  const product = data.value.find(p => p.id === formState.products[index].product_type_id)
-  const selectedUnit = product?.selling_units.find(
-    unit => unit.selling_unit_id === formState.products[index].selling_unit_id
+  const product = data.value.find((p) => p.id === formState.products[index].product_type_id)
+  const selectedUnit = product?.purchase_units.find(
+    (unit) => unit.purchase_unit_id === formState.products[index].selling_unit_id
   )
-
+  console.log("Product:", product)
+console.log("ello:", selectedUnit)
   if (selectedUnit) {
-    const isDuplicate = formState.products.some((p, i) => 
-      i !== index && 
-      p.product_type_id === formState.products[index].product_type_id &&
-      p.selling_unit_id === selectedUnit.selling_unit_id
+    const isDuplicate = formState.products.some(
+      (p, i) =>
+        i !== index &&
+        p.product_type_id === formState.products[index].product_type_id &&
+        p.selling_unit_id === selectedUnit.selling_unit_id
     )
 
     if (isDuplicate) {
       alert('This selling unit is already selected for this product')
-      formState.products[index].selling_unit_id = ''
+      formState.products[index].purchase_unit_id = ''
       return
     }
 
     formState.products[index].selling_price = selectedUnit.selling_price
+    formState.products[index].cost_price = selectedUnit.cost_price
+    formState.products[index].quantity_available = selectedUnit.capacity_quantity_available
     formState.products[index].purchase_unit_id = selectedUnit.purchase_unit_id
     formState.products[index].quantity_sold = 0
     formState.products[index].amount = calculateAmountWithVat(
@@ -506,12 +540,17 @@ const handleBarcodeEnter = (index) => {
 const checkQuantitySold = (index) => {
   const product = data.value.find((p) => p.id === formState.products[index].product_type_id)
   const selectedUnit = product?.selling_units.find(
-    unit => unit.selling_unit_id === formState.products[index].selling_unit_id
+    (unit) => unit.selling_unit_id === formState.products[index].selling_unit_id
   )
 
-  if (selectedUnit && formState.products[index].quantity_sold > selectedUnit.capacity_quantity_available) {
+  if (
+    selectedUnit &&
+    formState.products[index].quantity_sold > selectedUnit.capacity_quantity_available
+  ) {
     formState.products[index].quantity_sold = selectedUnit.capacity_quantity_available
-    alert(`Quantity sold exceeds available stock. Resetting to available quantity: ${selectedUnit.capacity_quantity_available}.`)
+    alert(
+      `Quantity sold exceeds available stock. Resetting to available quantity: ${selectedUnit.capacity_quantity_available}.`
+    )
   }
 
   formState.products[index].amount = calculateAmountWithVat(
@@ -616,6 +655,41 @@ onMounted(async () => {
   }
 })
 
+const handleSellingPriceChange = async (index) => {
+  const product = formState.products[index];
+  if (!product.product_type_id || !product.selling_unit_id) return;
+
+  try {
+    const online = await isOnline();
+    if (online) {
+      await apiService.update(`/estimated-stores/${product.product_type_id}?type=selling_price`, {
+        selling_unit_id: product.selling_unit_id,
+        product_type_id: product.product_type_id,
+        selling_price: parseFloat(product.selling_price)
+      });
+
+      // Update the estimation status in the local data
+      const productData = data.value.find(p => p.id === product.product_type_id);
+      if (productData) {
+        const unit = productData.selling_units.find(u => u.selling_unit_id === product.selling_unit_id);
+        if (unit) {
+          unit.is_selling_price_est = false;
+        }
+      }
+    }
+    // Recalculate amount after price change
+    formState.products[index].amount = calculateAmountWithVat(
+      product.selling_price,
+      product.quantity_sold,
+      product.vat
+    );
+    calculateTotalPrice();
+  } catch (error) {
+    console.error('Error updating selling price:', error);
+    // Optionally show an error message to the user
+  }
+};
+
 const addSales = async () => {
   isSubmitting.value = true
 
@@ -637,8 +711,8 @@ const addSales = async () => {
       price_sold_at: parseInt(product.selling_price, 10),
       quantity: parseInt(product.quantity_sold, 10),
       vat: product.vat === 'yes' ? 'yes' : 'no',
-      selling_unit_id: product.selling_unit_id,
-      purchase_unit_id: product.purchase_unit_id
+      // selling_unit_id: product.selling_unit_id,
+      purchase_unit_id: product.selling_unit_id
     }))
 
   const payload = {
@@ -757,7 +831,6 @@ const resetForm = () => {
   cursor: not-allowed;
   background-color: #f0f0f0;
 }
-
 
 .container {
   padding: 20px;
@@ -890,5 +963,45 @@ button {
 
 .offline {
   background-color: #f44336; /* Red for offline */
+}
+
+.status-indicators {
+  margin-top: 8px;
+  font-size: 0.875rem;
+  background-color: #f9fafb;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.status-item:last-child {
+  margin-bottom: 0;
+}
+
+.status-label {
+  color: #374151;
+  font-weight: 500;
+}
+
+.status-value {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.status-value.estimated {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-value.actual {
+  background-color: #d1fae5;
+  color: #065f46;
 }
 </style>

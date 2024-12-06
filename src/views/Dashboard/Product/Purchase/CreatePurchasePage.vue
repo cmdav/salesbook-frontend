@@ -93,6 +93,21 @@
               <label class="priceView">&#8358; {{ purchase.cost_price ? parseFloat(purchase.cost_price).toLocaleString() : '0.00' }}</label>
             </div>
 
+            <!-- Selling Price -->
+            <div v-if="purchase.purchase_unit_id">
+              <label for="selling_price">Selling Price <span class="required">*</span></label>
+              <div class="tooltip-container">
+                <input
+                  type="number"
+                  v-model="purchase.selling_price"
+                  min="0"
+                  @blur="validateSellingPrice(index)"
+                  required
+                />
+              </div>
+              <label class="priceView">&#8358; {{ purchase.selling_price ? parseFloat(purchase.selling_price).toLocaleString() : '0.00' }}</label>
+            </div>
+
             <!-- Purchase Qty -->
             <div v-if="purchase.purchase_unit_id">
               <label for="capacity_qty">Purchase Qty <span class="required">*</span></label>
@@ -120,33 +135,6 @@
             <div v-if="purchase.purchase_unit_id">
               <label for="amount">Amount</label>
               <span class="amountView">&#8358; {{ RowTotalCost(purchase).toLocaleString() }}</span>
-            </div>
-
-            <!-- Selling Units Section -->
-            <div v-if="purchase.purchase_unit_id" class="selling-units-section">
-              <h3>Selling Units</h3>
-              <div 
-                v-for="unit in getSellingUnits(purchase.product_type_id, purchase.purchase_unit_id)"
-                :key="unit.id"
-                class="selling-unit-row"
-              >
-                <label>{{ unit.selling_unit_name }}</label>
-                <div class="selling-unit-prices">
-                  <input
-                    type="number"
-                    v-model="purchase.selling_unit_data[unit.id].selling_price"
-                    placeholder="Selling Price"
-                    min="0"
-                    @blur="validateSellingUnitPrice(index, unit.id)"
-                    required
-                  />
-                  <label class="priceView">&#8358; {{ 
-                    purchase.selling_unit_data[unit.id]?.selling_price 
-                      ? parseFloat(purchase.selling_unit_data[unit.id].selling_price).toLocaleString() 
-                      : '0.00' 
-                  }}</label>
-                </div>
-              </div>
             </div>
 
             <!-- Remove Button -->
@@ -182,10 +170,8 @@ const suppliers = ref([])
 const productTypes = ref([])
 const batchNo = ref('')
 const isLoading = ref(false)
-
 const isSubmitting = ref(false)
 const showDropdown = ref(false)
-
 
 const searchQueries = ref({})
 const showDropdowns = ref({})
@@ -198,8 +184,9 @@ const createEmptyPurchase = () => ({
   product_identifier: '1',
   expiry_date: '',
   cost_price: '',
+  selling_price: '',
   capacity_qty: '',
-  selling_unit_data: {}
+  price_id: null
 })
 
 const purchases = reactive([createEmptyPurchase()])
@@ -215,7 +202,7 @@ const fetchData = async () => {
     isLoading.value = true
     const [suppliersResponse, productTypesResponse, lastBatchNumberResponse] = await Promise.all([
       apiService.get('all-suppliers'),
-      apiService.get('all-product-type'),
+      apiService.get('all-product-type?mode=actual'),
       apiService.get('last-batch-number')
     ])
 
@@ -238,7 +225,7 @@ const fetchData = async () => {
 }
 
 const getSelectedProductName = (productTypeId, index) => {
- if (searchQueries.value[index]) return searchQueries.value[index]
+  if (searchQueries.value[index]) return searchQueries.value[index]
   const product = productTypes.value.find(p => p.id === productTypeId)
   return product ? product.product_type_name : ''
 }
@@ -260,44 +247,32 @@ const getPurchaseUnits = (productTypeId) => {
   return product ? product.product_measurement : []
 }
 
-const getSellingUnits = (productTypeId, purchaseUnitId) => {
-  const product = productTypes.value.find(p => p.id === productTypeId)
-  const purchaseUnit = product?.product_measurement.find(
-    pm => pm.purchase_unit_id === purchaseUnitId
-  )
-  return purchaseUnit ? purchaseUnit.selling_units : []
-}
-
 const selectProduct = (productType, index) => {
   purchases[index].product_type_id = productType.id
   purchases[index].purchase_unit_id = ''
-  purchases[index].selling_unit_data = {}
+  purchases[index].cost_price = ''
+  purchases[index].selling_price = ''
+  purchases[index].price_id = null
   showDropdowns.value[index] = false
   searchQueries.value[index] = ''
 }
 
 const handlePurchaseUnitChange = async (index) => {
   const purchase = purchases[index]
-  purchase.selling_unit_data = {}
-  
-  const sellingUnits = getSellingUnits(purchase.product_type_id, purchase.purchase_unit_id)
-  sellingUnits.forEach(unit => {
-    purchase.selling_unit_data[unit.id] = {
-      selling_unit_id: unit.id,
-      selling_price: '',
-      cost_price: purchase.cost_price
-    }
-  })
+  purchase.cost_price = ''
+  purchase.selling_price = ''
+  purchase.price_id = null
 
-   try {
-    const priceData = await apiService.get(
-      `latest-supplier-price/${purchase.product_type_id}/${purchase.supplier_id}/${purchase.purchase_unit_id}`
+  try {
+    const response = await apiService.get(
+      `latest-supplier-price/${purchase.product_type_id}/${purchase.supplier_id}/${purchase.purchase_unit_id}?mode=actual`
     )
-    if (priceData.data) {
-      purchase.cost_price = priceData.data.cost_price || ''
-      Object.keys(purchase.selling_unit_data).forEach(unitId => {
-        purchase.selling_unit_data[unitId].selling_price = priceData.data.selling_price || ''
-      })
+    
+    if (response.data && response.data.length > 0) {
+      const latestPrice = response.data[0]
+      purchase.cost_price = latestPrice.cost_price
+      purchase.selling_price = latestPrice.selling_price
+      purchase.price_id = latestPrice.price_id
     }
   } catch (err) {
     catchAxiosError(err)
@@ -306,17 +281,9 @@ const handlePurchaseUnitChange = async (index) => {
 
 const handleCostPriceChange = (index) => {
   const purchase = purchases[index]
-  const costPrice = parseFloat(purchase.cost_price)
-  
-  if (costPrice < 1) {
+  if (parseFloat(purchase.cost_price) < 1) {
     purchase.cost_price = '1'
   }
-
-  // Update cost price in selling unit data
-  Object.values(purchase.selling_unit_data).forEach(unit => {
-    unit.cost_price = purchase.cost_price
-    
-  })
 }
 
 const isDuplicatePurchase = (supplierId, productTypeId, purchaseUnitId) => {
@@ -336,13 +303,11 @@ const validateCostPrice = (index) => {
   }
 }
 
-const validateSellingUnitPrice = (index, unitId) => {
+const validateSellingPrice = (index) => {
   const purchase = purchases[index]
-  const sellingUnit = purchase.selling_unit_data[unitId]
-  
-  if (sellingUnit.selling_price < 1) {
+  if (purchase.selling_price < 1) {
     alert('Selling price cannot be less than 1.')
-    sellingUnit.selling_price = 1
+    purchase.selling_price = 1
   }
 }
 
@@ -365,8 +330,8 @@ const addPurchase = () => {
     lastPurchase.product_type_id &&
     lastPurchase.purchase_unit_id &&
     lastPurchase.cost_price &&
-    lastPurchase.capacity_qty &&
-    Object.values(lastPurchase.selling_unit_data).every(unit => unit.selling_price)
+    lastPurchase.selling_price &&
+    lastPurchase.capacity_qty
   ) {
     purchases.push(createEmptyPurchase())
   } else {
@@ -384,24 +349,27 @@ const handleSubmit = async () => {
   try {
     isSubmitting.value = true
 
-
-    
     const formattedPurchases = purchases.map(purchase => ({
       supplier_id: purchase.supplier_id,
       product_type_id: purchase.product_type_id,
-      purchase_unit_id: purchase.purchase_unit_id,
       batch_no: batchNo.value,
-      capacity_qty: purchase.capacity_qty,
       product_identifier: purchase.product_identifier,
       expiry_date: purchase.expiry_date,
-      selling_unit_data: Object.values(purchase.selling_unit_data)
+      purchase_unit_data: [
+        {
+          purchase_unit_id: purchase.purchase_unit_id,
+          cost_price: parseFloat(purchase.cost_price),
+          selling_price: parseFloat(purchase.selling_price),
+          capacity_qty: parseInt(purchase.capacity_qty),
+          ...(purchase.price_id && { price_id: purchase.price_id })
+        }
+      ]
     }))
 
     const res = await apiService.post('purchases', { purchases: formattedPurchases })
-   
     router.push('/purchase')
     catchAxiosSuccess(res)
-     return res
+    return res
   } catch (err) {
     catchAxiosError(err)
   } finally {
@@ -422,7 +390,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
 .custom-select {
   position: relative;
   width: 250px;
@@ -616,6 +583,7 @@ button {
   padding: 0.3%;
   border-radius: 4px;
 }
+
 .amountView {
   font-size: 1.2em;
   border: 2px solid rgb(195 82 20 / 50%);
@@ -653,7 +621,6 @@ button {
   text-align: center;
   padding: 5px;
   border-radius: 4px;
-
   position: absolute;
   z-index: 1;
   bottom: 100%;
@@ -666,39 +633,5 @@ button {
 .tooltip-container:hover .tooltip {
   visibility: visible;
   opacity: 1;
-}
-
-.selling-units-section {
-  width: 100%;
-  margin-top: 20px;
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.selling-units-section h3 {
-  margin-bottom: 15px;
-  color: #333;
-}
-
-.selling-unit-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  gap: 15px;
-}
-
-.selling-unit-row label {
-  min-width: 150px;
-}
-
-.selling-unit-prices {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.selling-unit-prices input {
-  width: 120px;
 }
 </style>

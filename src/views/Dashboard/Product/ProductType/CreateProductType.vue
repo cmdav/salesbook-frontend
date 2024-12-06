@@ -30,8 +30,8 @@
         </div>
 
         <div class="input-group w-[70%]">
-          <label class="block text-sm font-medium text-gray-700"
-            >Product Description
+          <label class="block text-sm font-medium text-gray-700">
+            Product Description
             <span class="text-gray-500 text-sm">
               ({{ formState.productTypeDescription.length }}/300 characters)
             </span>
@@ -59,7 +59,6 @@
           />
         </div>
 
-        <!-- Conditionally render the edit button -->
         <button
           v-if="isBarcodeReadonly"
           type="button"
@@ -84,24 +83,23 @@
         </div>
 
         <div class="input-group w-[70%]">
-          <label class="block text-sm font-medium text-gray-700">Product Category</label>
+          <label class="block text-sm font-medium text-gray-700">Product Category (Optional)</label>
           <select
             v-model="formState.category"
             @change="fetchSubCategory(formState.category)"
             class="select-input"
-            
           >
-            <option selected>Select Category...</option>
+            <option value="">Select Category...</option>
             <option v-for="category in categories" :key="category.id" :value="category.id">
               {{ category.category_name }}
             </option>
           </select>
         </div>
 
-        <div class="input-group w-[70%]">
-          <label class="block text-sm font-medium text-gray-700">Product Subcategory</label>
+        <div v-if="formState.category" class="input-group w-[70%]">
+          <label class="block text-sm font-medium text-gray-700">Product Subcategory (Optional)</label>
           <select v-model="formState.sub_category" class="select-input">
-            <option selected>Select Subcategory...</option>
+            <option value="">Select Subcategory...</option>
             <option
               v-for="subCategory in subCategories"
               :key="subCategory.id"
@@ -111,8 +109,9 @@
             </option>
           </select>
         </div>
+
         <div v-for="(unit, index) in units" :key="index" class="measurement-unit-container">
-          <h3 class="text-lg font-semibold mb-4">Measurement Unit Set {{ index + 1 }}</h3>
+          <h3 class="text-lg font-semibold mb-4">Purchase Unit {{ index + 1 }}</h3>
 
           <div class="input-group w-full">
             <label class="block text-sm font-medium text-gray-700">
@@ -138,10 +137,10 @@
                 <select
                   v-model="unit.purchaseUnit"
                   class="select-input"
-                  @change="fetchSellingUnit(unit.purchaseUnit, index)"
+                  required
                 >
-                  <option value="">Select Purchasing Unit...</option>
-                  <option v-for="pUnit in purchaseUnit" :key="pUnit.id" :value="pUnit.id">
+                  <option value="">Select Purchase Unit...</option>
+                  <option v-for="pUnit in purchaseUnits" :key="pUnit.id" :value="pUnit.id">
                     {{ pUnit.purchase_unit_name }}
                   </option>
                 </select>
@@ -152,136 +151,36 @@
                 class="button btn-brand ml-4"
                 @click="addPurchaseUnit"
               >
-                Add Purchasing Unit
+                Add New Purchase Unit
               </button>
             </div>
           </div>
-
-          <div class="input-group w-full">
-            <label class="block text-sm font-medium text-gray-700">
-              Select Selling Unit
-              <span class="tooltip-container">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  x="0px"
-                  y="0px"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"
-                  ></path>
-                </svg>
-                <span class="tooltip-text">What unit will you sell this item?</span>
-              </span>
-            </label>
-            <div class="flex">
-              <div class="w-[70%]">
-                <select
-                  v-model="unit.sellingUnit"
-                  class="select-input"
-                  @change="fetchSellingCapacities(unit.sellingUnit, index)"
-                >
-                  <option value="">Select Selling Unit...</option>
-                  <option v-for="sUnit in unit.availableSellingUnits" :key="sUnit.id" :value="sUnit.id">
-                    {{ sUnit.selling_unit_name }}
-                  </option>
-                </select>
-              </div>
-              <button
-                v-if="index === 0"
-                type="button"
-                class="button btn-brand ml-4"
-                @click="addSellingUnit(unit.purchaseUnit, index)"
-              >
-                Add Selling Unit
-              </button>
-            </div>
-          </div>
-
-          <div class="input-group w-full">
-            <label class="block text-sm font-medium text-gray-700">
-              How many selling units equal a purchase unit
-              <span class="tooltip-container">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  x="0px"
-                  y="0px"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"
-                  ></path>
-                </svg>
-                <span class="tooltip-text">E.g dozen = 12, one create = 30eggs...</span>
-              </span>
-            </label>
-            <div class="flex">
-              <div class="w-[70%]">
-                <select v-model="unit.sellingCapacity" class="select-input">
-                  <option value="">Select Selling Unit Capacity...</option>
-                  <option
-                    v-for="capacity in unit.availableCapacities"
-                    :key="capacity.id"
-                    :value="capacity.id"
-                  >
-                    {{ capacity.selling_unit_capacity }}
-                  </option>
-                </select>
-              </div>
-              <button
-                v-if="index === 0"
-                type="button"
-                class="button btn-brand ml-4"
-                @click="addSellingCapacity(unit.sellingUnit, index)"
-              >
-                Add Unit Capacity
-              </button>
-            </div>
-          </div>
-
-          <button
-            v-if="index === units.length - 1"
-            type="button"
-            class="button btn-brand mt-4"
-            @click="addMeasurementSet"
-          >
-            Add Another Measurement Set
-          </button>
 
           <div v-if="index !== 0" class="flex justify-end mt-4">
             <button type="button" class="button btn-danger" @click="units.splice(index, 1)">
-              Remove Set
+              Remove Unit
             </button>
           </div>
         </div>
-        <!-- Submit button for the form -->
-        <button type="submit" class="button submit-button" :disabled="isSubmitting">
+
+        <button
+          type="button"
+          class="button btn-brand mt-4"
+          @click="addAnotherPurchaseUnit"
+        >
+          Add Another Purchase Unit
+        </button>
+
+        <button type="submit" class="button submit-button mt-6" :disabled="isSubmitting">
           {{ isSubmitting ? 'Submitting...' : 'Submit' }}
         </button>
       </form>
     </div>
 
-    <!-- Modal for Container Type and Container Capacity -->
     <PurchaseUnitModal
       v-if="showModal"
       @close="closeModal"
       @purchase-unit-added="handlePurchaseUnit"
-    />
-    <SellingUnitModal
-      v-if="displayModal"
-      @close="closeModal"
-      @selling-unit-added="handleSellingUnit"
-      :purchaseUnitId="selectedPurchaseUnit"
-    />
-    <SellingUnitCapacityModal
-      v-if="displayCapModal"
-      @close="closeModal"
-      @selling-capacity-added="handleSellingCapacity"
-      :sellingUnitId="selectedSellingUnit"
     />
   </DashboardLayout>
 </template>
@@ -291,113 +190,65 @@ import { ref, reactive, onMounted } from 'vue'
 import apiService from '@/services/apiService'
 import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
 import PurchaseUnitModal from '@/components/UI/Modal/purchaseUnitModal.vue'
-import SellingUnitModal from '@/components/UI/Modal/sellingUnitModal.vue'
-import SellingUnitCapacityModal from '@/components/UI/Modal/sellingUnitCapacityModal.vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const fileInput = ref(null)
 const newImage = ref(null)
 const isSubmitting = ref(false)
-
 const showModal = ref(false)
-const displayModal = ref(false)
-const displayCapModal = ref(false)
 const barcodeInput = ref(null)
 const lastScannedBarcode = ref('')
 const isBarcodeReadonly = ref(false)
-const  currentUnitIndex= ref(null)
 
 const formState = reactive({
-  product: '',
   productTypeName: '',
   productTypeImage: null,
   productTypeDescription: '',
   barcode: '',
   category: '',
   sub_category: '',
-  vat: '1',
-  
-  // other form states...
+  vat: '1'
 })
 
 const units = ref([
   {
-    purchaseUnit: '',
-    sellingUnit: '',
-    sellingCapacity: '',
-    availableSellingUnits: [],
-    availableCapacities: []
+    purchaseUnit: ''
   }
 ])
 
-const addMeasurementSet = () => {
-  units.value.push({
-    purchaseUnit: '',
-    sellingUnit: '',
-    sellingCapacity: '',
-    vailableSellingUnits: [],
-    availableCapacities: []
-  })
-}
-
-const purchaseUnit = ref([])
-
-const selectedPurchaseUnit = ref(null)
-const selectedSellingUnit = ref(null)
-
+const purchaseUnits = ref([])
 const categories = ref([])
 const subCategories = ref([])
 
 const handleBarcodeEntry = (event) => {
   const newBarcode = event.target.value.trim()
-
   if (newBarcode !== lastScannedBarcode.value || !newBarcode) {
     formState.barcode = newBarcode
     lastScannedBarcode.value = newBarcode
     isBarcodeReadonly.value = true
   }
-
   barcodeInput.value.value = ''
 }
 
 const clearBarcode = () => {
   formState.barcode = ''
   isBarcodeReadonly.value = false
-  lastScannedBarcode.value = '' // Clear the last scanned barcode to allow re-entry of the same barcode
+  lastScannedBarcode.value = ''
 }
 
 const addPurchaseUnit = () => {
   showModal.value = true
 }
 
-const addSellingUnit = (purchaseUnitId, index) => {
-   if (!purchaseUnitId) {
-    alert('Please select a purchase unit first')
-    return
-  }
-  selectedPurchaseUnit.value = purchaseUnitId
-  currentUnitIndex.value = index
-  displayModal.value = true
-}
-
-const addSellingCapacity = (sellingUnitId, index) => {
-  if (!sellingUnitId) {
-    alert('Please select a selling unit first')
-    return
-  }
-  selectedSellingUnit.value = sellingUnitId;
-  currentUnitIndex.value = index
-  displayCapModal.value = true
+const addAnotherPurchaseUnit = () => {
+  units.value.push({
+    purchaseUnit: ''
+  })
 }
 
 const closeModal = () => {
   showModal.value = false
-  displayModal.value = false
-  displayCapModal.value = false
-  selectedPurchaseUnit.value = null
-  selectedSellingUnit.value = null
-  currentUnitIndex.value = null
 }
 
 const preventSubmitOnEnter = (event) => {
@@ -406,114 +257,8 @@ const preventSubmitOnEnter = (event) => {
   }
 }
 
-const handlePurchaseUnit = (newType) => {
-  // console.log()
-  purchaseUnit.value.push(newType)
-  // formState.purchaseUnit = newType.id
-  
-}
-
-const handleSellingUnit = (newType) => {
-   const currentUnit = units.value[currentUnitIndex.value]
-  if (currentUnit) {
-    currentUnit.availableSellingUnits = currentUnit.availableSellingUnits || []
-    currentUnit.availableSellingUnits.push(newType)
-    currentUnit.sellingUnit = newType.id
-  }
-  // sellingUnit.value.push(newType)
-  // console.log(sellingUnit.value)
-  // // selectedSellingUnit.value = newType.id
-  //  const currentUnit = units.value.find(unit => unit.purchaseUnit === selectedPurchaseUnit.value)
-  // if (currentUnit) {
-  //   currentUnit.sellingUnit = newType.id
-  // }
-}
-
-const handleSellingCapacity = (newCapacity) => {
-   const currentUnit = units.value[currentUnitIndex.value]
-  if (currentUnit) {
-    currentUnit.availableCapacities = currentUnit.availableCapacities || []
-    currentUnit.availableCapacities.push(newCapacity)
-    currentUnit.sellingCapacity = newCapacity.id
-  }
-  // console.log(sellingUnit.value)
-  // sellingCapacity.value.push(newCapacity)
-  // // selectedSellingCapacity.value = newCapacity.id
-  // const currentUnit = units.value.find(unit => unit.sellingUnit === selectedSellingUnit.value)
-  // if (currentUnit) {
-  //   currentUnit.sellingCapacity = newCapacity.id
-  // }
-}
-
-const fetchCategory = async () => {
-  try {
-    const response = await apiService.get('/product-categories')
-    categories.value = response
-    // console.log('Hello Bro');
-    console.log(response)
-  } catch (error) {
-    catchAxiosError(error)
-    console.error('Error fetching products:', error)
-  }
-}
-
-const fetchSubCategory = async (categoryId) => {
-  try {
-    const response = await apiService.get(
-      `/all-product-sub-categories-by-category-id/${categoryId}`
-    )
-    subCategories.value = response
-    // console.log('Hello Bro');
-    console.log(response)
-  } catch (error) {
-    catchAxiosError(error)
-    console.error('Error fetching products:', error)
-  }
-}
-
-const fetchPurchasingUnit = async () => {
-  try {
-    const response = await apiService.get('/list-purchase-units')
-    purchaseUnit.value = response.data
-    console.log(response.data)
-    if (formState.purchaseUnit) {
-      await fetchSellingUnit(formState.purchaseUnit)
-    }
-    catchAxiosSuccess(response.data)
-  } catch (error) {
-    console.error('Error fetching purchasing unit:', error)
-    catchAxiosError(error)
-  }
-}
-
-const fetchSellingUnit = async (purchaseUnitId, index) => {
-  const selectedUnit = purchaseUnit.value.find((unit) => unit.id === purchaseUnitId)
-  console.log(selectedUnit)
-  if (selectedUnit) {
-    units.value[index].availableSellingUnits = selectedUnit.selling_units || []
-    units.value[index].sellingUnit = ''
-    units.value[index].sellingCapacity = ''
-    units.value[index].availableCapacities = []
-  }
-  // if (selectedUnit) {
-  //   sellingUnit.value = selectedUnit.selling_units
-  //   selectedSellingUnit.value = null
-  //   selectedSellingCapacity.value = null
-  // }
-}
-
-const fetchSellingCapacities = async (sellingUnitId, index) => {
-   const selectedUnit = units.value[index].availableSellingUnits.find((unit) => unit.id === sellingUnitId)
-  if (selectedUnit) {
-    units.value[index].availableCapacities = selectedUnit.selling_unit_capacities || []
-    units.value[index].sellingCapacity = ''
-  }
-  // const selectedUnit = sellingUnit.value.find((unit) => unit.id === sellingUnitId)
-  // console.log(selectedUnit)
-  // if (selectedUnit) {
-  //   sellingCapacity.value = selectedUnit.selling_unit_capacities
-  //   selectedSellingCapacity.value = null
-  // }
+const handlePurchaseUnit = (newUnit) => {
+  purchaseUnits.value.push(newUnit)
 }
 
 const handleImageChange = (event) => {
@@ -528,44 +273,74 @@ const handleImageChange = (event) => {
   }
 }
 
+const fetchCategory = async () => {
+  try {
+    const response = await apiService.get('/product-categories')
+    categories.value = response
+  } catch (error) {
+    catchAxiosError(error)
+    console.error('Error fetching categories:', error)
+  }
+}
+
+const fetchSubCategory = async (categoryId) => {
+  if (!categoryId) {
+    subCategories.value = []
+    return
+  }
+  try {
+    const response = await apiService.get(
+      `/all-product-sub-categories-by-category-id/${categoryId}`
+    )
+    subCategories.value = response
+  } catch (error) {
+    catchAxiosError(error)
+    console.error('Error fetching subcategories:', error)
+  }
+}
+
+const fetchPurchaseUnits = async () => {
+  try {
+    const response = await apiService.get('/list-purchase-units')
+    purchaseUnits.value = response.data
+  } catch (error) {
+    console.error('Error fetching purchase units:', error)
+    catchAxiosError(error)
+  }
+}
+
 onMounted(async () => {
-  // await fetchProducts()
   await fetchCategory()
-  await fetchSubCategory()
-  await fetchPurchasingUnit()
+  await fetchPurchaseUnits()
 })
 
 const handleSubmit = async () => {
   isSubmitting.value = true
 
   const formData = new FormData()
-
-  // console.log('Selected Selling Unit:', formState.sellingUnit)
-  // console.log('Selected Selling Cap:', selectedSellingCapacity.value)
-  // formData.append('product_id', formState.product)
   formData.append('product_type_name', formState.productTypeName)
   if (formState.productTypeImage) {
     formData.append('product_type_image', formState.productTypeImage)
   }
   formData.append('product_type_description', formState.productTypeDescription)
   formData.append('barcode', formState.barcode)
-  formData.append('category_id', formState.category)
   formData.append('vat', formState.vat)
-  formData.append('sub_category_id', formState.sub_category)
 
+  if (formState.category) {
+    formData.append('category_id', formState.category)
+  }
+  if (formState.sub_category) {
+    formData.append('sub_category_id', formState.sub_category)
+  }
 
   units.value.forEach((unit, index) => {
     formData.append(`purchase_unit_id[${index}]`, unit.purchaseUnit)
-    formData.append(`selling_unit_id[${index}]`, unit.sellingUnit)
-    formData.append(`selling_unit_capacity_id[${index}]`, unit.sellingCapacity)
   })
 
   try {
     const res = await apiService.post('/product-types', formData)
-    router.push('/product-type')
-
     catchAxiosSuccess(res)
-    return res
+    router.push('/product-type')
   } catch (error) {
     catchAxiosError(error)
     console.error('Error submitting form:', error)
@@ -666,9 +441,11 @@ button {
 .btn-brand:hover:not(:disabled) {
   background-color: #5a6268;
 }
+
 .option {
   display: flex;
 }
+
 .option div {
   margin: 0.3em 0.5em 1em;
 }
@@ -678,7 +455,7 @@ button {
 }
 
 .back-btn {
-  background-color: #c35214;
+  background-color: #c35114;
   color: #fff;
   padding: 10px 20px;
   border: none;
@@ -690,21 +467,6 @@ button {
   background-color: #5a6268;
 }
 
-.product-group {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-.priceView {
-  font-size: 0.8em;
-  border: 2px solid rgb(195 82 20 / 50%);
-  background-color: rgb(195 82 20 / 50%);
-  color: #fff;
-  padding: 0.3%;
-  border-radius: 4px;
-}
-
 .btn-danger {
   background-color: #dc3545;
   color: white;
@@ -712,7 +474,6 @@ button {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin-top: 1em;
 }
 
 .btn-danger:hover {
@@ -733,7 +494,6 @@ button {
   text-align: center;
   padding: 5px;
   border-radius: 4px;
-
   position: absolute;
   z-index: 1;
   bottom: 125%;

@@ -209,6 +209,7 @@ const createEmptyPurchase = () => ({
   expiry_date: '',
   cost_price: '',
   capacity_qty: '',
+  price_id: '',
 
   selling_unit_data: {}
 })
@@ -306,6 +307,7 @@ const handlePurchaseUnitChange = async (index) => {
     )
     if (priceData.data) {
       purchase.cost_price = priceData.data.cost_price || ''
+      purchase.price_id = priceData.data.price_id
       Object.keys(purchase.selling_unit_data).forEach(unitId => {
         purchase.selling_unit_data[unitId].selling_price = priceData.data.selling_price || ''
       })

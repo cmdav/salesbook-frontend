@@ -339,7 +339,7 @@ watch(search, async (newSearch) => {
     } catch (error) {
       console.error('Failed to fetch data:', error.message)
       purchaseUnits.value = []
-      errorMessage.value = 'Error occurred while searching for purchase units.'
+      errorMessage.value = 'No purchase units found for the search term.'
     } finally {
       isSearching.value = false
     }
