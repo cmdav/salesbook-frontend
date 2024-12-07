@@ -220,6 +220,7 @@ async function fetchData(page = 1) {
     // If online, fetch data from the server
     try {
       const response = await apiService.get(`sales?page=${page}`);
+      console.log(response)
       data.value = response.data || [];
       if (data.value.length === 0) {
         errorMessage.value = 'No items found';

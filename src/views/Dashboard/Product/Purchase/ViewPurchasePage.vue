@@ -44,25 +44,20 @@
                 :src="item.product_type_image"
               />
             </td>
-            <!-- <td>
-              <span :title="item.product_type_description">
-              {{ truncateText(item.product_type_description, 70) }}
-              </span>
-            </td> -->
+           
             <td>
               <div class="prod_des">
                 {{ item.product_type_description }}
               </div>
             </td>
             <td>{{ item.batch_no }}</td>
-            <!-- <td>{{ item.quantity }}</td> -->
+          
             <td>
               <div class="prod_des">
                 {{ item.purchase_unit_name.join(', ') }}
               </div>
             </td>
-            <!-- <td>{{ item.selling_unit_name.join(', ')}}</td>
-            <td>{{ item.selling_unit_capacity.join(', ') }}</td> -->
+         
             <td>{{ item.capacity_qty }}</td>
             <td>{{ item.expiry_date }}</td>
             <td>{{ item.cost_price }}</td>
@@ -163,7 +158,7 @@ watch(search, async (newSearch) => {
   if (newSearch) {
     isSearching.value = true
     try {
-      const response = await apiService.get(`search-purchases/${newSearch}`)
+      const response = await apiService.get(`search-purchases/${newSearch}?mode=actual`)
       console.log(response)
       data.value = response
       return data.value

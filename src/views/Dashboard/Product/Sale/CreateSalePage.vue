@@ -506,36 +506,13 @@ const removeProduct = (index) => {
 const handleBarcodeEnter = (index) => {
   const product = data.value.find((p) => p.barcode === formState.products[index].barcode) // Find product by barcode
 
-  // if (isDuplicateBarcode(formState.products[index].barcode)) {
-  //   alert('This barcode has already been scanned.') // Show alert if barcode is duplicated
-  //   formState.products[index].barcode = '' // Clear the duplicate barcode
-  //   return
-  // }
-
   if (product) {
     populateProductDetails(index, product) // Populate product details if found
     addProducts() // Add a new product row
   }
 }
 
-// Function to check if the quantity sold exceeds available stock
-// const checkQuantitySold = (index) => {
-//   const product = data.value.find((p) => p.id === formState.products[index].product_type_id) // Find product by ID
 
-//   if (product && formState.products[index].quantity_sold > product.quantity_available) {
-//     formState.products[index].quantity_sold = product.quantity_available // Reset to available quantity if exceeds
-//     alert(
-//       `Quantity sold exceeds available stock. Resetting to available quantity: ${product.quantity_available}.`
-//     )
-//   }
-
-//   formState.products[index].amount = calculateAmountWithVat(
-//     formState.products[index].selling_price,
-//     formState.products[index].quantity_sold,
-//     formState.products[index].vat
-//   )
-//   calculateTotalPrice() // Recalculate total price
-// }
 
 const checkQuantitySold = (index) => {
   const product = data.value.find((p) => p.id === formState.products[index].product_type_id)
@@ -560,11 +537,6 @@ const checkQuantitySold = (index) => {
   )
   calculateTotalPrice()
 }
-
-// Function to check if the barcode has already been scanned
-// const isDuplicateBarcode = (barcode) => {
-//   return formState.products.filter((product) => product.barcode === barcode).length > 1
-// }
 
 // Function to add a new product row
 const addProducts = () => {

@@ -125,7 +125,7 @@ const menuItems = computed(() => {
     { name: 'Logs', route: '/logs', icon: reportsIcon, backendKey: 'logs' },
     { name: 'Subscription', route: '/subscriptions', icon: SubscriptionIcon, backendKey: 'subscriptions' },
     { name: 'View Subscription', route: '/c-subscriptions', icon: SubscriptionIcon, backendKey: 'c-subscriptions' },
-    { name: 'Logs', route: '/logs', icon: reportsIcon, backendKey: 'logs' },
+    // { name: 'Logs', route: '/logs', icon: reportsIcon, backendKey: 'logs' },
     { name: 'Settings', route: '/settings', icon: SettingsIcon, backendKey: 'settings' },
     { name: 'Log Out', route: '/logout', icon: logoutIcon, backendKey: 'logout' }
   ];

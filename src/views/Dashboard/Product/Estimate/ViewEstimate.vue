@@ -16,11 +16,11 @@
             <th>PRODUCT IMAGE</th>
             <th>PRODUCT DESCRIPTION</th>
             <th>BATCH NO</th>
-          
+
             <th>PURCHASE UNIT</th>
-            <th>SELLING UNIT</th>
-            <th>SELLING UNIT CAPACITY</th>
-            
+            <!-- <th>SELLING UNIT</th>
+            <th>SELLING UNIT CAPACITY</th> -->
+
             <th>PURCHASE QTY</th>
             <th>EXPIRY DATE</th>
             <th>COST PRICE(NGN)</th>
@@ -34,30 +34,34 @@
         </thead>
         <tbody>
           <tr v-for="(item, index) in data" :key="item.id">
-            <td>{{(parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1}}</td>
+            <td>{{ (parseInt(currentPage, 10) - 1) * parseInt(itemsPerPage, 10) + index + 1 }}</td>
             <td>{{ item.product_type_name }}</td>
-            <td><img class="w-10 h-10 bg-slate-500/[30%] rounded-lg mx-auto object-cover" :src="item.product_type_image"/></td>
-             <!-- <td>
-              <span :title="item.product_type_description">
-              {{ truncateText(item.product_type_description, 70) }}
-              </span>
-            </td> -->
+            <td>
+              <img
+                class="w-10 h-10 bg-slate-500/[30%] rounded-lg mx-auto object-cover"
+                :src="item.product_type_image"
+              />
+            </td>
+           
             <td>
               <div class="prod_des">
-                {{item.product_type_description}}
+                {{ item.product_type_description }}
               </div>
             </td>
             <td>{{ item.batch_no }}</td>
-            <!-- <td>{{ item.quantity }}</td> -->
-            <td>{{ item.purchase_unit_name.join(', ') }}</td>
-            <td>{{ item.selling_unit_name.join(', ') }}</td>
-            <td>{{ item.selling_unit_capacity.join(', ') }}</td>
+          
+            <td>
+              <div class="prod_des">
+                {{ item.purchase_unit_name.join(', ') }}
+              </div>
+            </td>
+         
             <td>{{ item.capacity_qty }}</td>
             <td>{{ item.expiry_date }}</td>
             <td>{{ item.cost_price }}</td>
             <td>{{ item.selling_price }}</td>
-            <td>{{ item.supplier}}</td>
-            <td>{{ item.branch_name}}</td>
+            <td>{{ item.supplier }}</td>
+            <td>{{ item.branch_name }}</td>
             <td>{{ item.created_by }}</td>
             <td>{{ item.updated_by }}</td>
             <td v-if="delPermissions"><button @click="openDeleteModal(item)">Delete</button></td>
@@ -126,7 +130,7 @@ function handleBranchChange(selectedBranchId) {
 
 async function fetchBranch(branchId = 1) {
   try {
-    const response = await apiService.get(`purchases?branch_id=${branchId}`);
+    const response = await apiService.get(`estimated-store?branch_id=${branchId}`);
     console.log(response.data)
       if (response.data && response.data.length) {
       data.value = response.data;
@@ -147,9 +151,7 @@ watch(search, async (newSearch) => {
   if (newSearch) {
     isSearching.value = true;
     try {
-
-     
-      const response = await apiService.get(`search-purchases/${newSearch}`);
+      const response = await apiService.get(`search-purchases/${newSearch}?mode=estimate`);
       console.log(response)
       data.value = response;
       return data.value;

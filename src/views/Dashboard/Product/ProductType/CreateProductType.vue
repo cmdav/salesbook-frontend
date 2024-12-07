@@ -134,16 +134,15 @@
             </label>
             <div class="flex">
               <div class="w-[70%]">
-                <select
+                <v-select
                   v-model="unit.purchaseUnit"
-                  class="select-input"
+                  :options="purchaseUnits"
+                  :reduce="unit => unit.id"
+                  :get-option-label="unit => unit.purchase_unit_name"
+                  placeholder="Select Purchase Unit..."
+                  class="vue-select-container"
                   required
-                >
-                  <option value="">Select Purchase Unit...</option>
-                  <option v-for="pUnit in purchaseUnits" :key="pUnit.id" :value="pUnit.id">
-                    {{ pUnit.purchase_unit_name }}
-                  </option>
-                </select>
+                ></v-select>
               </div>
               <button
                 v-if="index === 0"
@@ -191,6 +190,8 @@ import apiService from '@/services/apiService'
 import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
 import PurchaseUnitModal from '@/components/UI/Modal/purchaseUnitModal.vue'
 import { useRouter } from 'vue-router'
+import vSelect from 'vue-select'
+import 'vue-select/dist/vue-select.css'
 
 const router = useRouter()
 const fileInput = ref(null)
@@ -521,5 +522,44 @@ button {
 
 .edit-button:hover {
   background-color: #e0a800;
+}
+
+/* Vue Select Custom Styles */
+.vue-select-container {
+  width: 100%;
+}
+
+:deep(.v-select) {
+  background-color: white;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+:deep(.vs__dropdown-toggle) {
+  padding: 4px 0;
+  border: none;
+}
+
+:deep(.vs__selected-options) {
+  padding: 0 8px;
+}
+
+:deep(.vs__search) {
+  padding: 0;
+}
+
+:deep(.vs__dropdown-menu) {
+  border: 1px solid #ccc;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+}
+
+:deep(.vs__dropdown-option) {
+  padding: 8px 12px;
+}
+
+:deep(.vs__dropdown-option--highlight) {
+  background: #c35114;
+  color: white;
 }
 </style>
