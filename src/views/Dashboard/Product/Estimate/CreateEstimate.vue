@@ -19,7 +19,7 @@
         <div v-for="(purchase, index) in purchases" :key="index" class="purchase-form">
           <div v-if="index !== 0" class="top-buttons">
             <button type="button" @click="addPurchase" class="button add-purchase-button">
-              Add Purchase
+              Add Product
             </button>
           </div>
           <div class="form-row">
@@ -102,6 +102,20 @@
               <label class="priceView">&#8358; {{ purchase.cost_price ? parseFloat(purchase.cost_price).toLocaleString() : '0.00' }}</label>
             </div>
 
+            <div v-if="purchase.purchase_unit_id">
+              <label for="selling_price">Selling Price <span class="required">*</span></label>
+              <div class="tooltip-container">
+                <input
+                  type="number"
+                  v-model="purchase.selling_price"
+                  min="0"
+                  @blur="validateSellingPrice(index)"
+                  required
+                />
+              </div>
+              <label class="priceView">&#8358; {{ purchase.selling_price ? parseFloat(purchase.selling_price).toLocaleString() : '0.00' }}</label>
+            </div>
+
             <!-- Purchase Qty -->
             <div v-if="purchase.purchase_unit_id">
               <label for="capacity_qty">Purchase Qty <span class="required">*</span></label>
@@ -129,33 +143,6 @@
             <div v-if="purchase.purchase_unit_id">
               <label for="amount">Amount</label>
               <span class="amountView">&#8358; {{ RowTotalCost(purchase).toLocaleString() }}</span>
-            </div>
-
-            <!-- Selling Units Section -->
-            <div v-if="purchase.purchase_unit_id" class="selling-units-section">
-              <h3>Selling Units</h3>
-              <div 
-                v-for="unit in getSellingUnits(purchase.product_type_id, purchase.purchase_unit_id)"
-                :key="unit.id"
-                class="selling-unit-row"
-              >
-                <label>{{ unit.selling_unit_name }}</label>
-                <div class="selling-unit-prices">
-                  <input
-                    type="number"
-                    v-model="purchase.selling_unit_data[unit.id].selling_price"
-                    placeholder="Selling Price"
-                    min="0"
-                    @blur="validateSellingUnitPrice(index, unit.id)"
-                    required
-                  />
-                  <label class="priceView">&#8358; {{ 
-                    purchase.selling_unit_data[unit.id]?.selling_price 
-                      ? parseFloat(purchase.selling_unit_data[unit.id].selling_price).toLocaleString() 
-                      : '0.00' 
-                  }}</label>
-                </div>
-              </div>
             </div>
 
             <!-- Remove Button -->
@@ -209,9 +196,9 @@ const createEmptyPurchase = () => ({
   expiry_date: '',
   cost_price: '',
   capacity_qty: '',
-  price_id: '',
+  price_id: null,
 
-  selling_unit_data: {}
+selling_unit_data: {}
 })
 
 const purchases = reactive([createEmptyPurchase()])
@@ -227,7 +214,7 @@ const fetchData = async () => {
     isLoading.value = true
     const [suppliersResponse, productTypesResponse, lastBatchNumberResponse] = await Promise.all([
       apiService.get('all-suppliers'),
-      apiService.get('all-product-type'),
+      apiService.get('all-product-type?mode=estimate'),
       apiService.get('last-batch-number')
     ])
 
@@ -396,19 +383,22 @@ const removePurchase = (index) => {
 const handleSubmit = async () => {
   try {
     isSubmitting.value = true
-
-
-    
     const formattedPurchases = purchases.map(purchase => ({
       supplier_id: purchase.supplier_id,
       product_type_id: purchase.product_type_id,
-      purchase_unit_id: purchase.purchase_unit_id,
       batch_no: batchNo.value,
-      capacity_qty: purchase.capacity_qty,
       is_actual: isActual.value,
       product_identifier: purchase.product_identifier,
       expiry_date: purchase.expiry_date,
-      selling_unit_data: Object.values(purchase.selling_unit_data)
+      purchase_unit_data: [
+        {
+          purchase_unit_id: purchase.purchase_unit_id,
+          cost_price: parseFloat(purchase.cost_price),
+          selling_price: parseFloat(purchase.selling_price),
+          capacity_qty: parseInt(purchase.capacity_qty),
+          ...(purchase.price_id && { price_id: purchase.price_id })
+        }
+      ]
     }))
 
     const res = await apiService.post('estimated-store', { purchases: formattedPurchases })

@@ -204,31 +204,31 @@
     </div>
 
     <div class="flex items-center justify-center mb-10 text-center gap-[4px]">
-      <span class="font-normal text-[14px]"
-        >By continuing you agree to the
-        <router-link class="text-[#007BFF] font-medium" to="/"
-          >terms of service</router-link
-        >
-        and
-        <router-link class="text-[#007BFF] font-medium" to="/"
-          >privacy policy</router-link
-        >
+      <span class="font-normal text-[14px]">
+        By continuing you agree to the
+        <button @click="showPolicy = true" class="text-[#007BFF] font-medium">
+          terms of service and privacy policy
+        </button>
       </span>
     </div>
+
+     <PolicyModal :show="showPolicy" @close="showPolicy = false" />
   </div>
 </template>
 <script setup>
+
 import { ref, computed, watch, reactive, onMounted } from "vue";
 import AuthInput from "@/components/UI/Input/AuthInput.vue";
 import apiService from '@/services/apiService'
 import PasswordInput from "@/components/UI/Input/PasswordInput.vue";
 import Loader from "@/components/UI/Loader.vue";
+import PolicyModal from '@/components/UI/Modal/PolicyModal.vue';
 import { useRouter } from "vue-router";
 // import { useStore } from "@/stores/user";
 import { register } from "@/services/Auth";
 const router = useRouter();
 // const store = useStore();
-
+const showPolicy = ref(false);
 
 
 const CompanyformData = reactive({
