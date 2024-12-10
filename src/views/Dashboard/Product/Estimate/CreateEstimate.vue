@@ -59,11 +59,11 @@
             </div>
 
             <div class="is-actual-container">
-            <label for="is_actual">Is Actual Purchase? <span class="required">*</span></label>
+            <label for="is_actual">Mode <span class="required">*</span></label>
             <select v-model="isActual" required>
               <option value="">Select Option</option>
-              <option :value="1">Yes</option>
-              <option :value="0">No</option>
+              <option :value="1">Actual</option>
+              <option :value="0">Estimate</option>
             </select>
           </div>
 
@@ -336,13 +336,17 @@ const validateCostPrice = (index) => {
   }
 }
 
-const validateSellingUnitPrice = (index, unitId) => {
+const validateSellingPrice = (index) => {
   const purchase = purchases[index]
-  const sellingUnit = purchase.selling_unit_data[unitId]
-  
-  if (sellingUnit.selling_price < 1) {
+  if (purchase.selling_price < 1) {
     alert('Selling price cannot be less than 1.')
-    sellingUnit.selling_price = 1
+    purchase.selling_price = 1
+    return
+  }
+
+  if (parseFloat(purchase.selling_price) <= parseFloat(purchase.cost_price)) {
+    alert('Selling price must be higher than the cost price.')
+    purchase.selling_price = (parseFloat(purchase.cost_price) + 1).toString()
   }
 }
 

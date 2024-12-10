@@ -308,6 +308,12 @@ const validateSellingPrice = (index) => {
   if (purchase.selling_price < 1) {
     alert('Selling price cannot be less than 1.')
     purchase.selling_price = 1
+    return
+  }
+
+  if (parseFloat(purchase.selling_price) <= parseFloat(purchase.cost_price)) {
+    alert('Selling price must be higher than the cost price.')
+    purchase.selling_price = (parseFloat(purchase.cost_price) + 1).toString()
   }
 }
 

@@ -10,6 +10,7 @@
         </div>
         <div class="unit-actions">
           <button
+          v-if="unit.sub_purchase_units.length === 0"
             class="action-button"
             @click="handleAddSubUnit"
             title="Add Sub-Unit"

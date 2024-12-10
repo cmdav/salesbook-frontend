@@ -106,7 +106,8 @@ const menuItems = computed(() => {
         { name: 'Products', route: '/product-type', icon: ProductsIcon, backendKey: 'products' },
       ]
     },
-    { name: 'Purchase', route: '/purchase', icon: PurchaseIcon, backendKey: 'purchases' },
+    { name: 'Actual Purchase', route: '/purchase', icon: PurchaseIcon, backendKey: 'purchases' },
+    { name: 'Estimated Purchase', route: '/estimated-store', icon: PurchaseIcon, backendKey: 'estimated-store' },
     { name: 'Sale', route: '/sale', icon: SalesIcon, backendKey: 'sales' },
     { name: 'Store', route: '/store', icon: ProductIcon, backendKey: 'stores' },
     { name: 'Customers', route: '/customers', icon: CustomerIcon, backendKey: 'customers' },
@@ -120,7 +121,6 @@ const menuItems = computed(() => {
         { name: 'Supplier Product', route: '/supplier-product', icon: ProductIcon, backendKey: 'supplier-products' }
       ]
     },
-    { name: 'Estimated Store', route: '/estimated-store', icon: PurchaseIcon, backendKey: 'estimated-store' },
     { name: 'Reports', route: '/report', icon: reportsIcon, backendKey: 'reports' },
     { name: 'Logs', route: '/logs', icon: reportsIcon, backendKey: 'logs' },
     { name: 'Subscription', route: '/subscriptions', icon: SubscriptionIcon, backendKey: 'subscriptions' },
