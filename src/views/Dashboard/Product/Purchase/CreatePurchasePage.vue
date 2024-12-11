@@ -205,7 +205,7 @@ const fetchData = async () => {
       apiService.get('all-product-type?mode=actual'),
       apiService.get('last-batch-number')
     ])
-
+console.log("here:", productTypesResponse)
     suppliers.value = suppliersResponse.data || []
     productTypes.value = productTypesResponse.data || []
     
