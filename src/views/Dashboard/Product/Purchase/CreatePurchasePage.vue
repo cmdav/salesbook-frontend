@@ -268,8 +268,10 @@ const handlePurchaseUnitChange = async (index) => {
       `latest-supplier-price/${purchase.product_type_id}/${purchase.supplier_id}/${purchase.purchase_unit_id}?mode=actual`
     )
     
-    if (response.data && response.data.length > 0) {
-      const latestPrice = response.data[0]
+    console.log('here:', response)
+    if (response) {
+      const latestPrice = response[0]
+      console.log(latestPrice)
       purchase.cost_price = latestPrice.cost_price
       purchase.selling_price = latestPrice.selling_price
       purchase.price_id = latestPrice.price_id

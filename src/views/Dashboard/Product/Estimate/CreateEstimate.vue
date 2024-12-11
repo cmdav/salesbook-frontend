@@ -277,27 +277,22 @@ const selectProduct = (productType, index) => {
 
 const handlePurchaseUnitChange = async (index) => {
   const purchase = purchases[index]
-  purchase.selling_unit_data = {}
-  
-  const sellingUnits = getSellingUnits(purchase.product_type_id, purchase.purchase_unit_id)
-  sellingUnits.forEach(unit => {
-    purchase.selling_unit_data[unit.id] = {
-      selling_unit_id: unit.id,
-      selling_price: '',
-      cost_price: purchase.cost_price
-    }
-  })
+  purchase.cost_price = ''
+  purchase.selling_price = ''
+  purchase.price_id = null
 
-   try {
-    const priceData = await apiService.get(
-      `latest-supplier-price/${purchase.product_type_id}/${purchase.supplier_id}/${purchase.purchase_unit_id}`
+  try {
+    const response = await apiService.get(
+      `latest-supplier-price/${purchase.product_type_id}/${purchase.supplier_id}/${purchase.purchase_unit_id}?mode=estimate`
     )
-    if (priceData.data) {
-      purchase.cost_price = priceData.data.cost_price || ''
-      purchase.price_id = priceData.data.price_id
-      Object.keys(purchase.selling_unit_data).forEach(unitId => {
-        purchase.selling_unit_data[unitId].selling_price = priceData.data.selling_price || ''
-      })
+    
+    console.log('here:', response)
+    if (response) {
+      const latestPrice = response[0]
+      console.log(latestPrice)
+      purchase.cost_price = latestPrice.cost_price
+      purchase.selling_price = latestPrice.selling_price
+      purchase.price_id = latestPrice.price_id
     }
   } catch (err) {
     catchAxiosError(err)
