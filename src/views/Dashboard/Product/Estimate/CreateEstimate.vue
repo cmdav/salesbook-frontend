@@ -293,6 +293,7 @@ const handlePurchaseUnitChange = async (index) => {
       purchase.cost_price = latestPrice.cost_price
       purchase.selling_price = latestPrice.selling_price
       purchase.price_id = latestPrice.price_id
+      purchase.capacity_qty = latestPrice.quantity
     }
   } catch (err) {
     catchAxiosError(err)
