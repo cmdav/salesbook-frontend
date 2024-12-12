@@ -19,7 +19,7 @@
                   Add Purchase Unit
                 </button> -->
                 <button
-                v-if="group.purchase_units === 0"
+                v-if="group.purchase_units.length === 0"
                   class="action-button"
                   @click="openCreatePurchaseUnitModal(group.id)"
                   title="Add Purchase Unit"

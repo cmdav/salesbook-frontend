@@ -224,6 +224,32 @@ console.log("here:", productTypesResponse)
   }
 }
 
+const calculateCostPrice = (index) => {
+  const purchase = purchases[index];
+  const product = productTypes.value.find(p => p.id === purchase.product_type_id);
+  if (!product) return;
+
+  const selectedUnit = product.product_measurement.find(unit => unit.purchase_unit_id === purchase.purchase_unit_id);
+  if (!selectedUnit) return;
+
+  const selectedUnitData = product.no_of_smallestUnit_in_each_unit[selectedUnit.purchase_unit_name];
+  if (!selectedUnitData) return;
+
+  const baseUnitCostPrice = purchase.cost_price / selectedUnitData.value;
+  console.log(baseUnitCostPrice)
+  // Update cost price only for the current purchase unit
+  const unit = product.product_measurement.find(u => u.purchase_unit_id === purchase.purchase_unit_id);
+  if (unit) {
+    const unitData = product.no_of_smallestUnit_in_each_unit[unit.purchase_unit_name];
+    if (unitData) {
+      purchase.cost_price = baseUnitCostPrice * unitData.value;
+    }
+  }
+
+  console.log(unit)
+};
+
+
 const getSelectedProductName = (productTypeId, index) => {
   if (searchQueries.value[index]) return searchQueries.value[index]
   const product = productTypes.value.find(p => p.id === productTypeId)
@@ -283,6 +309,7 @@ const handlePurchaseUnitChange = async (index) => {
 }
 
 const handleCostPriceChange = (index) => {
+  calculateCostPrice(index);
   const purchase = purchases[index]
   if (parseFloat(purchase.cost_price) < 1) {
     purchase.cost_price = '1'
