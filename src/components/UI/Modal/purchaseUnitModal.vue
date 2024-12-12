@@ -24,17 +24,7 @@
           />
         </div>
 
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 pb-1">Units per Purchase Unit*</label>
-          <input
-            type="number"
-            v-model="unit"
-            placeholder="Enter number of units"
-            required
-            min="1"
-            class="mt-1 block w-[90%] px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          />
-        </div>
+      
 
         <button
           type="submit"
@@ -86,7 +76,7 @@ const submitForm = async () => {
       const response = await apiService.update(`/purchase-units/${props.purchaseUnit.id}`, {
         purchase_unit_name: purchaseUnitName.value,
         measurement_group_id: props.groupId,
-        unit: parseInt(unit.value)
+       
       })
       emits('purchase-unit-updated', response.data)
       catchAxiosSuccess(response)
@@ -94,7 +84,7 @@ const submitForm = async () => {
       const response = await apiService.post('/purchase-units', {
         purchase_unit_name: purchaseUnitName.value,
         measurement_group_id: props.groupId,
-        unit: parseInt(unit.value)
+       
       })
       emits('purchase-unit-added', response.data)
       catchAxiosSuccess(response)

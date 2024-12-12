@@ -142,14 +142,14 @@
                   </option>
                 </select>
               </div>
-              <button
+              <!-- <button
                 v-if="index === 0"
                 type="button"
                 class="button btn-brand ml-4"
                 @click="addPurchaseUnit"
               >
                 Add Purchasing Unit
-              </button>
+              </button> -->
             </div>
           </div>
 
@@ -201,8 +201,7 @@ import { useRoute, useRouter } from 'vue-router'
 import apiService from '@/services/apiService'
 import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
 import PurchaseUnitModal from '@/components/UI/Modal/purchaseUnitModal.vue'
-import SellingUnitModal from '@/components/UI/Modal/sellingUnitModal.vue'
-import SellingUnitCapacityModal from '@/components/UI/Modal/sellingUnitCapacityModal.vue'
+
 
 const route = useRoute()
 const router = useRouter()
@@ -262,29 +261,11 @@ const clearBarcode = () => {
   lastScannedBarcode.value = ''
 }
 
-const addPurchaseUnit = () => {
-  showModal.value = true
-}
+// const addPurchaseUnit = () => {
+//   showModal.value = true
+// }
 
-const addSellingUnit = (purchaseUnitId, index) => {
-  if (!purchaseUnitId) {
-    alert('Please select a purchase unit first')
-    return
-  }
-  selectedPurchaseUnit.value = purchaseUnitId
-  currentUnitIndex.value = index
-  displayModal.value = true
-}
 
-const addSellingCapacity = (sellingUnitId, index) => {
-  if (!sellingUnitId) {
-    alert('Please select a selling unit first')
-    return
-  }
-  selectedSellingUnit.value = sellingUnitId
-  currentUnitIndex.value = index
-  displayCapModal.value = true
-}
 
 const closeModal = () => {
   showModal.value = false

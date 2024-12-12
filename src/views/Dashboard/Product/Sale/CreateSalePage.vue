@@ -173,7 +173,7 @@
               />
             </div>
             <!-- Selling Price -->
-            <div class="input-group w-20">
+            <!-- <div class="input-group w-20">
               <label class="block text-sm font-medium text-gray-700">Selling Price</label>
               <input
                 type="number"
@@ -192,7 +192,35 @@
               <div class="estimation-indicator" v-if="getSelectedUnit(index)">
                 {{ getSelectedUnit(index).is_selling_price_est ? 'Estimated' : 'Actual' }}
               </div>
-            </div>
+            </div> -->
+
+            <div class="input-group w-20">
+  <label class="block text-sm font-medium text-gray-700">
+    Selling Price
+    <span class="estimation-badge" :class="{ 
+      'estimated': formState.products[index].is_selling_price_est,
+      'actual': !formState.products[index].is_selling_price_est 
+    }">
+      {{ formState.products[index].is_selling_price_est ? 'Estimated' : 'Actual' }}
+    </span>
+  </label>
+  <input
+    type="number"
+    :name="'selling_price_' + index"
+    v-model="formState.products[index].selling_price"
+    class="input"
+    :readonly="!formState.products[index].is_selling_price_est"
+    @change="handleSellingPriceChange(index)"
+  />
+  <label class="priceView">
+    &#8358;
+    {{
+      formState.products[index].selling_price
+        ? parseFloat(formState.products[index].selling_price).toLocaleString()
+        : '0.00'
+    }}
+  </label>
+</div>
 
             <!-- Amount -->
             <div class="input-group flex-1">
@@ -340,12 +368,12 @@ const handleSearch = (event, index) => {
   showDropdowns.value[index] = true
 }
 
-const getSelectedUnit = (index) => {
-  const product = data.value.find((p) => p.id === formState.products[index].product_type_id)
-  return product?.purchase_units.find(
-    (unit) => unit.purchase_unit_id === formState.products[index].purchase_unit_id
-  )
-}
+// const getSelectedUnit = (index) => {
+//   const product = data.value.find((p) => p.id === formState.products[index].product_type_id)
+//   return product?.purchase_units.find(
+//     (unit) => unit.purchase_unit_id === formState.products[index].purchase_unit_id
+//   )
+// }
 
 // const getEstimationStatus = (isEstimated) => {
 //   return isEstimated ? 'Estimated' : 'Actual'
@@ -458,26 +486,38 @@ const handleSellingUnitSelect = (index) => {
   const selectedUnit = product?.purchase_units.find(
     (unit) => unit.purchase_unit_id === formState.products[index].selling_unit_id
   )
-  console.log("Product:", product)
-console.log("ello:", selectedUnit)
+
   if (selectedUnit) {
+    // Check for duplicate selling unit
     const isDuplicate = formState.products.some(
       (p, i) =>
         i !== index &&
         p.product_type_id === formState.products[index].product_type_id &&
-        p.selling_unit_id === selectedUnit.selling_unit_id
+        p.selling_unit_id === selectedUnit.purchase_unit_id
     )
 
     if (isDuplicate) {
-      alert('This selling unit is already selected for this product')
-      formState.products[index].purchase_unit_id = ''
+      alert('This selling unit has already been selected for this product')
+      formState.products[index].selling_unit_id = ''
       return
     }
 
+    // Set the values
     formState.products[index].selling_price = selectedUnit.selling_price
     formState.products[index].cost_price = selectedUnit.cost_price
     formState.products[index].quantity_available = selectedUnit.capacity_quantity_available
     formState.products[index].purchase_unit_id = selectedUnit.purchase_unit_id
+    
+    // Add estimation status indicators
+    formState.products[index].is_selling_price_est = selectedUnit.is_selling_price_est
+    formState.products[index].is_actual = !selectedUnit.is_selling_price_est
+    
+    // Only allow editing if it's an estimated price
+    const priceInput = document.querySelector(`input[name="selling_price_${index}"]`)
+    if (priceInput) {
+      priceInput.readOnly = !selectedUnit.is_selling_price_est
+    }
+
     formState.products[index].quantity_sold = 0
     formState.products[index].amount = calculateAmountWithVat(
       selectedUnit.selling_price,
@@ -486,6 +526,40 @@ console.log("ello:", selectedUnit)
     )
   }
 }
+
+// const handleSellingUnitSelect = (index) => {
+//   const product = data.value.find((p) => p.id === formState.products[index].product_type_id)
+//   const selectedUnit = product?.purchase_units.find(
+//     (unit) => unit.purchase_unit_id === formState.products[index].selling_unit_id
+//   )
+//   console.log("Product:", product)
+// console.log("ello:", selectedUnit)
+//   if (selectedUnit) {
+//     const isDuplicate = formState.products.some(
+//       (p, i) =>
+//         i !== index &&
+//         p.product_type_id === formState.products[index].product_type_id &&
+//         p.selling_unit_id === selectedUnit.selling_unit_id
+//     )
+
+//     if (isDuplicate) {
+//       alert('This selling unit is already selected for this product')
+//       formState.products[index].purchase_unit_id = ''
+//       return
+//     }
+
+//     formState.products[index].selling_price = selectedUnit.selling_price
+//     formState.products[index].cost_price = selectedUnit.cost_price
+//     formState.products[index].quantity_available = selectedUnit.capacity_quantity_available
+//     formState.products[index].purchase_unit_id = selectedUnit.purchase_unit_id
+//     formState.products[index].quantity_sold = 0
+//     formState.products[index].amount = calculateAmountWithVat(
+//       selectedUnit.selling_price,
+//       formState.products[index].quantity_sold,
+//       formState.products[index].vat
+//     )
+//   }
+// }
 // Function to calculate the total price of all products
 const calculateTotalPrice = () => {
   const total = formState.products.reduce((acc, product) => acc + (product.amount || 0), 0) // Calculate total
@@ -869,6 +943,28 @@ button {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.estimation-badge {
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 4px;
+}
+
+.estimation-badge.estimated {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.estimation-badge.actual {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+input[readonly] {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
 }
 
 .btn-brand:disabled {

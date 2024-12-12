@@ -1,5 +1,5 @@
 <template>
-  <DashboardLayout pageTitle="Estimate Store Page">
+  <DashboardLayout pageTitle="Estimate Purchase">
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
       <div v-if="addPermissions" class="action">

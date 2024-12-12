@@ -205,7 +205,7 @@ const fetchData = async () => {
       apiService.get('all-product-type?mode=actual'),
       apiService.get('last-batch-number')
     ])
-
+console.log("here:", productTypesResponse)
     suppliers.value = suppliersResponse.data || []
     productTypes.value = productTypesResponse.data || []
     
@@ -268,8 +268,10 @@ const handlePurchaseUnitChange = async (index) => {
       `latest-supplier-price/${purchase.product_type_id}/${purchase.supplier_id}/${purchase.purchase_unit_id}?mode=actual`
     )
     
-    if (response.data && response.data.length > 0) {
-      const latestPrice = response.data[0]
+    console.log('here:', response)
+    if (response) {
+      const latestPrice = response[0]
+      console.log(latestPrice)
       purchase.cost_price = latestPrice.cost_price
       purchase.selling_price = latestPrice.selling_price
       purchase.price_id = latestPrice.price_id
@@ -308,6 +310,12 @@ const validateSellingPrice = (index) => {
   if (purchase.selling_price < 1) {
     alert('Selling price cannot be less than 1.')
     purchase.selling_price = 1
+    return
+  }
+
+  if (parseFloat(purchase.selling_price) <= parseFloat(purchase.cost_price)) {
+    alert('Selling price must be higher than the cost price.')
+    purchase.selling_price = (parseFloat(purchase.cost_price) + 1).toString()
   }
 }
 

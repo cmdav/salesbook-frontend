@@ -3,7 +3,7 @@
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search by ..." class="search-input" />
       <div>
-        <button class="button upload-btn" @click="openUploadModal()">Upload</button>
+        <!-- <button class="button upload-btn" @click="openUploadModal()">Upload</button> -->
         <button class="button add-btn" @click="openCreateGroupModal">Add Group</button>
       </div>
     </div>
@@ -19,6 +19,7 @@
                   Add Purchase Unit
                 </button> -->
                 <button
+                v-if="group.purchase_units === 0"
                   class="action-button"
                   @click="openCreatePurchaseUnitModal(group.id)"
                   title="Add Purchase Unit"
@@ -224,6 +225,7 @@ const fetchMeasurementGroups = async (page = 1) => {
   try {
     const response = await apiService.get(`measurement-groups?page=${page}`)
     measurementGroups.value = response.data
+    console.log(response.data)
     pagination.value = {
       next_page_url: response.data.next_page_url,
       prev_page_url: response.data.prev_page_url
@@ -332,10 +334,10 @@ const confirmDeleteGroup = async () => {
   }
 }
 
-// Upload Modal handlers
-const openUploadModal = () => {
-  showUploadModal.value = true
-}
+// // Upload Modal handlers
+// const openUploadModal = () => {
+//   showUploadModal.value = true
+// }
 
 const closeUploadModal = () => {
   showUploadModal.value = false

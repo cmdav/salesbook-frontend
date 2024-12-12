@@ -55,7 +55,69 @@
                     </ul>
                   </div>
 
-                  <!-- Additional Terms sections... -->
+                  <div>
+                    <h5 class="font-semibold mb-2">3. Licensing</h5>
+                    <p>RDAS Software Limited provides users with a limited, non-exclusive, and revocable license to use iSalesBook in accordance with these terms:</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                      <li><strong>Ownership:</strong> The software, including its source code and underlying algorithms, remains the sole property of RDAS Software Limited.</li>
+                      <li><strong>License Restrictions:</strong> Redistribution, sublicensing, or using iSalesBook for creating derivative works without explicit written permission is prohibited.</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h5 class="font-semibold mb-2">4. User Responsibilities</h5>
+                    <p>Users are responsible for:</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                      <li><strong>Compliance with Laws:</strong> Ensuring data entered and actions within the software comply with applicable laws.</li>
+                      <li><strong>Accuracy of Data:</strong> Inputting accurate and up-to-date information.</li>
+                      <li><strong>Data Backup:</strong> Regularly backing up data to minimize risks of loss.</li>
+                      <li><strong>Account Security:</strong> Maintaining the confidentiality of login credentials and reporting security breaches immediately.</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h5 class="font-semibold mb-2">5. Updates and Service Availability</h5>
+                    <ul class="list-disc pl-5 space-y-2">
+                      <li><strong>Updates:</strong> iSalesBook provides updates for performance and security. Users must install updates promptly.</li>
+                      <li><strong>Downtime:</strong> Temporary unavailability may occur during maintenance. RDAS Software Limited will notify users of planned downtime where feasible.</li>
+                      <li><strong>No Guarantee:</strong> The software is provided "as-is," without guarantees of uninterrupted access or error-free performance.</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h5 class="font-semibold mb-2">6. Limitation of Liability</h5>
+                    <p>RDAS Software Limited will not be held liable for:</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                      <li>Loss of data, revenue, or operational interruptions.</li>
+                      <li>Errors caused by user negligence or non-compliance with these terms.</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h5 class="font-semibold mb-2">7. Indemnity</h5>
+                    <p>Users agree to indemnify, defend, and hold harmless RDAS Software Limited, its officers, employees, and agents against claims, losses, damages, or liabilities arising from:</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                      <li>Breaches of these terms.</li>
+                      <li>Unauthorized disclosure or use of confidential information.</li>
+                      <li>Any actions or omissions resulting in infringement of third-party rights.</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h5 class="font-semibold mb-2">8. Governing Law</h5>
+                    <p>These terms are governed by the laws of Nigeria. Disputes will be resolved under the exclusive jurisdiction of Nigerian courts.</p>
+                  </div>
+
+                  <div>
+                    <h5 class="font-semibold mb-2">9. Termination of Access</h5>
+                    <p>RDAS Software Limited reserves the right to suspend or terminate access to iSalesBook for violations of these terms or non-payment of fees.</p>
+                  </div>
+
+                  <div>
+                    <h5 class="font-semibold mb-2">10. Contact Us</h5>
+                    <p>Email: support@isalesbook.com</p>
+                    <p>Website: www.isalesbook.com</p>
+                  </div>
                 </div>
               </div>
             </section>
@@ -81,7 +143,68 @@
                     </ul>
                   </div>
 
-                  <!-- Additional Privacy sections... -->
+                  <div>
+                    <h5 class="font-semibold mb-2">2. How We Use Your Data</h5>
+                    <p>We use collected data to:</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                      <li>Deliver core features like inventory tracking.</li>
+                      <li>Improve software performance and user experience.</li>
+                      <li>Notify users of updates and promotions.</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h5 class="font-semibold mb-2">3. Data Protection</h5>
+                    <p>We employ strict measures such as:</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                      <li>Encryption of data in transit and storage.</li>
+                      <li>Access Controls to protect sensitive information.</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h5 class="font-semibold mb-2">4. Cookies and Tracking</h5>
+                    <p>iSalesBook uses cookies and similar technologies to:</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                      <li>Personalize user experience and save preferences.</li>
+                      <li>Analyze performance and user interactions to improve features.</li>
+                      <li>Track usage patterns to enhance functionality.</li>
+                    </ul>
+                    <p class="mt-2">Users can manage cookies through browser settings, but disabling them may affect functionality.</p>
+                  </div>
+
+                  <div>
+                    <h5 class="font-semibold mb-2">5. Data Sharing</h5>
+                    <p>We share data only when:</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                      <li>Required by law.</li>
+                      <li>Necessary for services, with trusted partners under strict agreements.</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h5 class="font-semibold mb-2">6. Your Rights</h5>
+                    <p>You can:</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                      <li>Access and review your data.</li>
+                      <li>Request corrections or deletion of personal information.</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h5 class="font-semibold mb-2">7. Retention of Data</h5>
+                    <p>We retain your data only as long as necessary to fulfill operational, legal, and business requirements.</p>
+                  </div>
+
+                  <div>
+                    <h5 class="font-semibold mb-2">8. Governing Law and Updates</h5>
+                    <p>This policy is governed by Nigerian laws and may be updated periodically. Users are encouraged to review it regularly.</p>
+                  </div>
+
+                  <div>
+                    <h5 class="font-semibold mb-2">9. Contact Us</h5>
+                    <p>For inquiries: privacy@isalesbook.com</p>
+                  </div>
                 </div>
               </div>
             </section>

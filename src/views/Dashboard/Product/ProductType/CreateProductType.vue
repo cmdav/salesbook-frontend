@@ -144,14 +144,14 @@
                   required
                 ></v-select>
               </div>
-              <button
+              <!-- <button
                 v-if="index === 0"
                 type="button"
                 class="button btn-brand ml-4"
                 @click="addPurchaseUnit"
               >
                 Add New Purchase Unit
-              </button>
+              </button> -->
             </div>
           </div>
 
@@ -238,9 +238,9 @@ const clearBarcode = () => {
   lastScannedBarcode.value = ''
 }
 
-const addPurchaseUnit = () => {
-  showModal.value = true
-}
+// const addPurchaseUnit = () => {
+//   showModal.value = true
+// }
 
 const addAnotherPurchaseUnit = () => {
   units.value.push({
