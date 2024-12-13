@@ -498,26 +498,27 @@ const handleSupplierInvite = async () => {
   let payload = {
     first_name: formData.firstName,
     last_name: formData.lastName,
-    // organization_id: userProfileDetails.value?.organization_id,
+    //organization_id: userProfileDetails.value?.organization_id,
     organization_id: formData.orgId,
     email: formData.email,
     type: "invitation",
   };
   try {
-    const online = await isOnline(); // Check network status
-    if (online) {
+    //const online = await isOnline(); // Check network status
+    //if (online) {
+    
       let res = await resendEmail(payload);
-      alert('Invitation sent')
+      console.log(payload);
       supplierStore.allSupplier();
       HandleToggleModal();
       loading.value = false;
       clearInputs();
       return res;
-    }else{
+   // }else{
       //const db = await initializeSalesDB();
-      await addSupplier( payload);
-      console.log('Supplier data saved to IndexedDB as you are offline.');
-    }
+     // await addSupplier( payload);
+     // console.log('Supplier data saved to IndexedDB as you are offline.');
+   // }
   } catch (error) {
     console.log(error);
   } finally {
