@@ -124,7 +124,16 @@
         <router-link to="/login" class="font-medium text-brand text-[14px]">Login</router-link>
       </p>
     </div>
-    <div class=" mt-4">
+
+        <div class="flex items-center justify-center mt-5 text-center gap-[4px]">
+      <span class="font-normal text-[14px]">
+        By continuing you agree to the
+        <button @click="showPolicy = true" class="text-[#007BFF] font-medium">
+          terms of service and privacy policy
+        </button>
+      </span>
+    </div>
+    <div class=" mt-2 mb-10">
       <button @click="handleSignup()"
       :disabled="!isFormFullyValid || loading"
         :class="(!isFormFullyValid || loading) ? '!bg-primary-100/[30%] cursor-not-allowed' : 'bg-brand'"
@@ -133,14 +142,7 @@
         <Loader v-else />
       </button>
     </div>
-    <div class="flex items-center justify-center mb-10 text-center gap-[4px]">
-      <span class="font-normal text-[14px]">
-        By continuing you agree to the
-        <button @click="showPolicy = true" class="text-[#007BFF] font-medium">
-          terms of service and privacy policy
-        </button>
-      </span>
-    </div>
+
     <PolicyModal :show="showPolicy" @close="showPolicy = false" />
   </div>
 </template>

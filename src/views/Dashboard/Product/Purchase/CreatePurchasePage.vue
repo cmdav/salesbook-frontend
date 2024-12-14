@@ -224,6 +224,10 @@ console.log("here:", productTypesResponse)
   }
 }
 
+/**
+ * Calculate the cost price of a purchase unit based on the base unit cost price of the product.
+ * @param {number} index The index of the purchase in the purchases array.
+ */
 const calculateCostPrice = (index) => {
   const purchase = purchases[index];
   const product = productTypes.value.find(p => p.id === purchase.product_type_id);

@@ -77,8 +77,16 @@
               </div>
             </td>
             <!-- <td>{{ item.selling_unit_capacity.join(', ') }}</td> -->
-            <td>{{ item.purchasing_price }}</td>
-            <td>{{ item.selling_price }}</td>
+             <td>
+              <div class="prod_des">
+                {{ item.purchasing_price.join(', ') }}
+              </div>
+            </td>
+            <td>
+              <div class="prod_des">
+                {{ item.selling_price.join(', ') }}
+              </div>
+            </td>
             <td>{{ item.supplier_name }}</td>
             <td>{{ item.supplier_phone_number }}</td>
             <td>{{ item.created_by }}</td>

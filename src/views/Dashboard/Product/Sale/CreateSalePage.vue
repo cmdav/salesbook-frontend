@@ -269,7 +269,6 @@ import CustomerFormModal from '@/components/UI/Modal/CustomerFormModal.vue' // M
 import ReceiptModal from '@/components/UI/Modal/ReceiptModal.vue' // Modal component for showing the receipt
 import { storeToRefs } from 'pinia'
 import { sendToPrinter } from './sentToPrinter' // Function to generate PDF for the receipt
-import { catchAxiosSuccess } from '@/services/Response' // Services to handle success and error messages for API responses
 import { isOnline } from '@/isOnline'
 import {
   getAllCustomers,
@@ -280,6 +279,7 @@ import {
   getAllPaymentMethods,
   addPaymentMethods
 } from '@/services/indexedDbService'
+import { catchAxiosError, catchAxiosSuccess } from '@/services/Response'
 
 const router = useRouter()
 const customersStore = useCustomerstore() // Access the Pinia customer store
@@ -776,6 +776,7 @@ const addSales = async () => {
       if (res.value.success) {
         showReceiptModal.value = true
       }
+      catchAxiosSuccess(res.value)
     } else {
       // If offline, store sales data in IndexedDB
       alert('App is offline. Storing sales data.')
@@ -800,6 +801,7 @@ const addSales = async () => {
     }
   } catch (error) {
     console.error('Error while adding sales:', error)
+    catchAxiosError(error)
   } finally {
     isSubmitting.value = false
     resetForm()

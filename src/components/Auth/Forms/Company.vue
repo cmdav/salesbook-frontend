@@ -190,8 +190,17 @@
         >
       </p>
     </div>
+ <div class="flex items-center justify-center  text-center gap-[4px] mt-7">
+      <span class="font-normal text-[14px]">
+        By continuing you agree to the
+        <button @click="showPolicy = true" class="text-[#007BFF] font-medium">
+          terms of service and privacy policy
+        </button>
+      </span>
+    </div>
 
-    <div class=" mt-4">
+
+    <div class="mb-10 mt-2">
       <button
         :disabled="!isFormValid || loading"
         @click="handleCompanySignup()"
@@ -203,14 +212,7 @@
       </button>
     </div>
 
-    <div class="flex items-center justify-center mb-10 text-center gap-[4px]">
-      <span class="font-normal text-[14px]">
-        By continuing you agree to the
-        <button @click="showPolicy = true" class="text-[#007BFF] font-medium">
-          terms of service and privacy policy
-        </button>
-      </span>
-    </div>
+   
 
      <PolicyModal :show="showPolicy" @close="showPolicy = false" />
   </div>
