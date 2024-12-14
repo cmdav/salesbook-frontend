@@ -1,4 +1,4 @@
-# Salesbook Frontend Documentation
+# iSalesbook Frontend Documentation
 
 ## Table of Contents
 - [Overview](#overview)
