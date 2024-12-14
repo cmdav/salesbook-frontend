@@ -123,10 +123,11 @@ const productStore = useProductStore();
 await productStore.fetchProducts();
 ```
 
-### 3. Sales Management
-- Order processing
-- Invoice generation
-- Payment tracking
+### 3. Inventory Management
+- Inventory Onboarding
+- Inventory Sales
+- Inventory tracking
+- Report Tracking
 
 ### 4. Offline Support
 - Service Worker caching
