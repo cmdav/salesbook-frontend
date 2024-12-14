@@ -1,4 +1,4 @@
-# Salesbook Frontend Architecture Documentation
+# iSalesbook Frontend Architecture Documentation
 
 ## Overview
 Salesbook is a Vue.js-based frontend application for managing sales, inventory, and business operations. The application uses modern Vue.js practices including Vue 3, Pinia for state management, and follows a modular architecture pattern.
