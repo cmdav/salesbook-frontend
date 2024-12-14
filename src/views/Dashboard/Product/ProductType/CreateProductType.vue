@@ -111,56 +111,65 @@
         </div>
 
         <div v-for="(unit, index) in units" :key="index" class="measurement-unit-container">
-          <h3 class="text-lg font-semibold mb-4">Purchase Unit {{ index + 1 }}</h3>
+  <h3 class="text-lg font-semibold mb-4">Purchase Unit {{ index + 1 }}</h3>
 
-          <div class="input-group w-full">
-            <label class="block text-sm font-medium text-gray-700">
-              Select Purchase Unit
-              <span class="tooltip-container">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  x="0px"
-                  y="0px"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"
-                  ></path>
-                </svg>
-                <span class="tooltip-text">What unit did you purchase this item?</span>
-              </span>
-            </label>
-            <div class="flex">
-              <div class="w-[70%]">
-                <v-select
-                  v-model="unit.purchaseUnit"
-                  :options="purchaseUnits"
-                  :reduce="unit => unit.id"
-                  :get-option-label="unit => unit.purchase_unit_name"
-                  placeholder="Select Purchase Unit..."
-                  class="vue-select-container"
-                  required
-                ></v-select>
-              </div>
-              <!-- <button
-                v-if="index === 0"
-                type="button"
-                class="button btn-brand ml-4"
-                @click="addPurchaseUnit"
-              >
-                Add New Purchase Unit
-              </button> -->
-            </div>
-          </div>
+  <div class="input-group w-full">
+    <label class="block text-sm font-medium text-gray-700">
+      Select Measurement Group
+      <span class="tooltip-container">
+        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="16" height="16" viewBox="0 0 24 24">
+          <path d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"></path>
+        </svg>
+        <span class="tooltip-text">Select the measurement group first</span>
+      </span>
+    </label>
+    <div class="flex">
+      <div class="w-[70%]">
+        <v-select
+          v-model="unit.measurementGroup"
+          :options="measurementGroups"
+          :reduce="group => group.id"
+          :get-option-label="group => group.group_name"
+          placeholder="Select Measurement Group..."
+          class="vue-select-container"
+          @input="handleGroupChange(index)"
+          required
+        ></v-select>
+      </div>
+    </div>
+  </div>
 
-          <div v-if="index !== 0" class="flex justify-end mt-4">
-            <button type="button" class="button btn-danger" @click="units.splice(index, 1)">
-              Remove Unit
-            </button>
-          </div>
+  <div v-if="unit.measurementGroup" class="input-group w-full mt-4">
+      <label class="block text-sm font-medium text-gray-700">
+        Select Purchase Unit
+        <span class="tooltip-container">
+          <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="16" height="16" viewBox="0 0 24 24">
+            <path d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 11 7 L 11 9 L 13 9 L 13 7 L 11 7 z M 11 11 L 11 17 L 13 17 L 13 11 L 11 11 z"></path>
+          </svg>
+          <span class="tooltip-text">Select the purchase unit for this item</span>
+        </span>
+      </label>
+      <div class="flex">
+        <div class="w-[70%]">
+          <v-select
+            v-model="unit.purchaseUnit"
+            :options="getPurchaseUnitsForGroup(unit.measurementGroup, index)"
+            :reduce="unit => unit.id"
+            :get-option-label="unit => unit.purchase_unit_name"
+            placeholder="Select Purchase Unit..."
+            class="vue-select-container"
+            required
+          ></v-select>
         </div>
+      </div>
+    </div>
+
+  <div v-if="index !== 0" class="flex justify-end mt-4">
+    <button type="button" class="button btn-danger" @click="units.splice(index, 1)">
+      Remove Unit
+    </button>
+  </div>
+</div>
 
         <button
           type="button"
@@ -214,10 +223,14 @@ const formState = reactive({
 
 const units = ref([
   {
+    measurementGroup: '',
     purchaseUnit: ''
   }
 ])
 
+const measurementGroups = ref([])
+const availablePurchaseUnits = ref({})
+const selectedPurchaseUnits = ref([])
 const purchaseUnits = ref([])
 const categories = ref([])
 const subCategories = ref([])
@@ -244,6 +257,7 @@ const clearBarcode = () => {
 
 const addAnotherPurchaseUnit = () => {
   units.value.push({
+    measurementGroup: '',
     purchaseUnit: ''
   })
 }
@@ -303,11 +317,31 @@ const fetchSubCategory = async (categoryId) => {
 const fetchPurchaseUnits = async () => {
   try {
     const response = await apiService.get('/list-purchase-units')
-    purchaseUnits.value = response.data
+    measurementGroups.value = response.data
+    measurementGroups.value.forEach(group => {
+      availablePurchaseUnits.value[group.id] = group.purchase_units
+    })
   } catch (error) {
     console.error('Error fetching purchase units:', error)
     catchAxiosError(error)
   }
+}
+
+// Modified function to get available purchase units for a group
+const getPurchaseUnitsForGroup = (groupId, currentUnitIndex) => {
+  const groupUnits = availablePurchaseUnits.value[groupId] || []
+  
+  // Filter out purchase units that are already selected in other unit selections
+  return groupUnits.filter(unit => {
+    return !units.value.some((u, index) => 
+      index !== currentUnitIndex && u.purchaseUnit === unit.id
+    )
+  })
+}
+
+const handleGroupChange = (index) => {
+  // Reset purchase unit when group changes
+  units.value[index].purchaseUnit = ''
 }
 
 onMounted(async () => {
