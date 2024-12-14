@@ -37,44 +37,21 @@ sequenceDiagram
 ### 2. Product Management Technical Flow
 ```mermaid
 graph TD
-    A[Start] --> B{Cache Check}
-    B -->|Hit| C[useProductsStore().products]
-    B -->|Miss| D[fetchProducts()]
+    A[Start] --> B[Cache Check]
+    B --> |Cache Hit| C[Get Products from Store]
+    B --> |Cache Miss| D[Fetch Products]
+    D --> E[API Request]
+    E --> F{Success?}
+    F --> |Yes| G[Update Store]
+    F --> |No| H[Show Error]
+    G --> I[Display Products]
+    H --> I
     
-    subgraph Cache Logic
-    C --> E[computed(() => products)]
+    subgraph Actions
+    I --> J[Add Product]
+    I --> K[Edit Product]
+    I --> L[Delete Product]
     end
-    
-    subgraph API Calls
-    D --> F[GET /api/v1/products]
-    F --> G{Response}
-    G -->|200| H[commit('setProducts')]
-    G -->|Error| I[handleError()]
-    end
-    
-    subgraph Form Handling
-    J[Product Form] --> K[v-model bindings]
-    K --> L{Validation}
-    L -->|Valid| M[submitForm()]
-    L -->|Invalid| N[showErrors()]
-    end
-    
-    subgraph API Integration
-    M --> O[POST/PUT Product]
-    O --> P[handleResponse()]
-    P --> Q[updateStore()]
-    end
-    
-    subgraph Error Handling
-    I --> R[toast.error()]
-    I --> S[logError()]
-    end
-    
-    style Cache Logic fill:#f9f,stroke:#333
-    style API Calls fill:#bbf,stroke:#333
-    style Form Handling fill:#bfb,stroke:#333
-    style API Integration fill:#fbb,stroke:#333
-    style Error Handling fill:#fbf,stroke:#333
 ```
 
 ### 3. Data Synchronization Technical Flow
