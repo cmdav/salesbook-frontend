@@ -116,7 +116,15 @@ salesbook-frontend/
 - Token refresh mechanism
 
 ### 2. Product Management
-``javascript
+```typescript
+// Example Product Interface
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  category: string;
+  stock: number;
+}
 
 // Example Store Usage
 const productStore = useProductStore();
@@ -275,11 +283,23 @@ npm run preview
 - Production: `.env.production`
 - Staging: `.env.staging`
 
+## Contributing
+
+### Code Style
+- Follow Vue.js Style Guide
+- Use TypeScript
+- Use ESLint and Prettier
+- Write meaningful commit messages
+
+### Pull Request Process
+1. Branch naming: `feature/`, `bugfix/`, `hotfix/`
+2. Update documentation
+3. Add tests
+4. Request review
+
 ## Support
 
 For support and questions:
-- Check docs/flow_diagram
-- Contact rdas support team
-
-
-
+- GitHub Issues
+- Documentation Wiki
+- Team Chat
