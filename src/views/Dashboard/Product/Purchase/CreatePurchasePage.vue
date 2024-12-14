@@ -226,7 +226,6 @@ console.log("here:", productTypesResponse)
 
 /**
  * Calculate the cost price of a purchase unit based on the base unit cost price of the product.
- * @param {number} index The index of the purchase in the purchases array.
  */
 const calculateCostPrice = (index) => {
   const purchase = purchases[index];
@@ -249,8 +248,6 @@ const calculateCostPrice = (index) => {
       purchase.cost_price = baseUnitCostPrice * unitData.value;
     }
   }
-
-  console.log(unit)
 };
 
 

@@ -59,27 +59,33 @@
             </div>
 
             <div class="is-actual-container">
-            <label for="is_actual">Mode <span class="required">*</span></label>
-            <select v-model="isActual" required>
-              <option value="">Select Option</option>
-              <option :value="1">Actual</option>
-              <option :value="0">Estimate</option>
-            </select>
-          </div>
+              <label for="is_actual">Mode <span class="required">*</span></label>
+              <select v-model="isActual" required>
+                <option value="">Select Option</option>
+                <option :value="1">Actual</option>
+                <option :value="0">Estimate</option>
+              </select>
+            </div>
 
             <!-- Purchase Unit Selection -->
             <div v-if="purchase.product_type_id">
               <label for="purchase_unit">Purchase Unit <span class="required">*</span></label>
-              <select 
+              <select
                 v-model="purchase.purchase_unit_id"
                 @change="() => handlePurchaseUnitChange(index)"
               >
                 <option value="">Select Purchase Unit</option>
-                <option 
+                <option
                   v-for="unit in getPurchaseUnits(purchase.product_type_id)"
                   :key="unit.purchase_unit_id"
                   :value="unit.purchase_unit_id"
-                  :disabled="isDuplicatePurchase(purchase.supplier_id, purchase.product_type_id, unit.purchase_unit_id)"
+                  :disabled="
+                    isDuplicatePurchase(
+                      purchase.supplier_id,
+                      purchase.product_type_id,
+                      unit.purchase_unit_id
+                    )
+                  "
                 >
                   {{ unit.purchase_unit_name }}
                 </option>
@@ -94,12 +100,22 @@
                   type="number"
                   v-model="purchase.cost_price"
                   min="0"
-                  @blur="validateCostPrice(index)"
+                  @blur="
+                    () => {
+                      validateCostPrice(index)
+                      handleCostPriceBlur(index)
+                    }
+                  "
                   @input="handleCostPriceChange(index)"
                   required
                 />
               </div>
-              <label class="priceView">&#8358; {{ purchase.cost_price ? parseFloat(purchase.cost_price).toLocaleString() : '0.00' }}</label>
+              <label class="priceView"
+                >&#8358;
+                {{
+                  purchase.cost_price ? parseFloat(purchase.cost_price).toLocaleString() : '0.00'
+                }}</label
+              >
             </div>
 
             <div v-if="purchase.purchase_unit_id">
@@ -109,11 +125,23 @@
                   type="number"
                   v-model="purchase.selling_price"
                   min="0"
-                  @blur="validateSellingPrice(index)"
+                  @blur="
+                    () => {
+                      validateSellingPrice(index)
+                      handleSellingPriceBlur(index)
+                    }
+                  "
                   required
                 />
               </div>
-              <label class="priceView">&#8358; {{ purchase.selling_price ? parseFloat(purchase.selling_price).toLocaleString() : '0.00' }}</label>
+              <label class="priceView"
+                >&#8358;
+                {{
+                  purchase.selling_price
+                    ? parseFloat(purchase.selling_price).toLocaleString()
+                    : '0.00'
+                }}</label
+              >
             </div>
 
             <!-- Purchase Qty -->
@@ -123,7 +151,12 @@
                 type="number"
                 min="1"
                 v-model="purchase.capacity_qty"
-                @blur="validatePurchaseQty(index)"
+                @blur="
+                  () => {
+                    validatePurchaseQty(index)
+                    handleQuantityBlur(index)
+                  }
+                "
                 required
               />
             </div>
@@ -182,10 +215,9 @@ const isLoading = ref(false)
 const isSubmitting = ref(false)
 const showDropdown = ref(false)
 
-
 const searchQueries = ref({})
 const showDropdowns = ref({})
-const isActual = ref("")
+const isActual = ref('')
 
 const createEmptyPurchase = () => ({
   supplier_id: '',
@@ -198,7 +230,7 @@ const createEmptyPurchase = () => ({
   capacity_qty: '',
   price_id: null,
 
-selling_unit_data: {}
+  selling_unit_data: {}
 })
 
 const purchases = reactive([createEmptyPurchase()])
@@ -220,10 +252,10 @@ const fetchData = async () => {
 
     suppliers.value = suppliersResponse.data || []
     productTypes.value = productTypesResponse.data || []
-    
+
     if (lastBatchNumberResponse.data) {
       batchNo.value = String(lastBatchNumberResponse.data).padStart(5, '0')
-      purchases.forEach(purchase => purchase.batch_no = batchNo.value)
+      purchases.forEach((purchase) => (purchase.batch_no = batchNo.value))
     }
 
     if (suppliers.value.length > 0) {
@@ -237,14 +269,14 @@ const fetchData = async () => {
 }
 
 const getSelectedProductName = (productTypeId, index) => {
- if (searchQueries.value[index]) return searchQueries.value[index]
-  const product = productTypes.value.find(p => p.id === productTypeId)
+  if (searchQueries.value[index]) return searchQueries.value[index]
+  const product = productTypes.value.find((p) => p.id === productTypeId)
   return product ? product.product_type_name : ''
 }
 
 const filteredProductTypes = (index) => {
   if (!searchQueries.value[index]) return productTypes.value
-  return productTypes.value.filter(product => 
+  return productTypes.value.filter((product) =>
     product.product_type_name.toLowerCase().includes(searchQueries.value[index].toLowerCase())
   )
 }
@@ -255,14 +287,14 @@ const handleSearch = (event, index) => {
 }
 
 const getPurchaseUnits = (productTypeId) => {
-  const product = productTypes.value.find(p => p.id === productTypeId)
+  const product = productTypes.value.find((p) => p.id === productTypeId)
   return product ? product.product_measurement : []
 }
 
 const getSellingUnits = (productTypeId, purchaseUnitId) => {
-  const product = productTypes.value.find(p => p.id === productTypeId)
+  const product = productTypes.value.find((p) => p.id === productTypeId)
   const purchaseUnit = product?.product_measurement.find(
-    pm => pm.purchase_unit_id === purchaseUnitId
+    (pm) => pm.purchase_unit_id === purchaseUnitId
   )
   return purchaseUnit ? purchaseUnit.selling_units : []
 }
@@ -285,7 +317,7 @@ const handlePurchaseUnitChange = async (index) => {
     const response = await apiService.get(
       `latest-supplier-price/${purchase.product_type_id}/${purchase.supplier_id}/${purchase.purchase_unit_id}?mode=estimate`
     )
-    
+
     console.log('here:', response)
     if (response) {
       const latestPrice = response[0]
@@ -303,21 +335,20 @@ const handlePurchaseUnitChange = async (index) => {
 const handleCostPriceChange = (index) => {
   const purchase = purchases[index]
   const costPrice = parseFloat(purchase.cost_price)
-  
+
   if (costPrice < 1) {
     purchase.cost_price = '1'
   }
 
   // Update cost price in selling unit data
-  Object.values(purchase.selling_unit_data).forEach(unit => {
+  Object.values(purchase.selling_unit_data).forEach((unit) => {
     unit.cost_price = purchase.cost_price
-    
   })
 }
 
 const isDuplicatePurchase = (supplierId, productTypeId, purchaseUnitId) => {
   return purchases.some(
-    purchase =>
+    (purchase) =>
       purchase.supplier_id === supplierId &&
       purchase.product_type_id === productTypeId &&
       purchase.purchase_unit_id === purchaseUnitId
@@ -366,7 +397,7 @@ const addPurchase = () => {
     lastPurchase.purchase_unit_id &&
     lastPurchase.cost_price &&
     lastPurchase.capacity_qty &&
-    Object.values(lastPurchase.selling_unit_data).every(unit => unit.selling_price)
+    Object.values(lastPurchase.selling_unit_data).every((unit) => unit.selling_price)
   ) {
     purchases.push(createEmptyPurchase())
   } else {
@@ -380,10 +411,58 @@ const removePurchase = (index) => {
   purchases.splice(index, 1)
 }
 
+const handleQuantityBlur = async (index) => {
+  const purchase = purchases[index]
+  if (!purchase.product_type_id || !purchase.purchase_unit_id) return
+
+  try {
+    await apiService.update(`/estimated-stores/${purchase.product_type_id}?type=quantity`, {
+      purchase_unit_id: purchase.purchase_unit_id,
+      product_type_id: purchase.product_type_id,
+      quantity: purchase.capacity_qty,
+      is_actual: isActual.value
+    })
+  } catch (error) {
+    catchAxiosError(error)
+  }
+}
+
+const handleCostPriceBlur = async (index) => {
+  const purchase = purchases[index]
+  if (!purchase.product_type_id || !purchase.purchase_unit_id) return
+
+  try {
+    await apiService.update(`/estimated-stores/${purchase.product_type_id}?type=cost_price`, {
+      purchase_unit_id: purchase.purchase_unit_id,
+      product_type_id: purchase.product_type_id,
+      cost_price: purchase.cost_price,
+      is_actual: isActual.value
+    })
+  } catch (error) {
+    catchAxiosError(error)
+  }
+}
+
+const handleSellingPriceBlur = async (index) => {
+  const purchase = purchases[index]
+  if (!purchase.product_type_id || !purchase.purchase_unit_id) return
+
+  try {
+    await apiService.update(`/estimated-stores/${purchase.product_type_id}?type=selling_price`, {
+      purchase_unit_id: purchase.purchase_unit_id,
+      product_type_id: purchase.product_type_id,
+      selling_price: purchase.selling_price,
+      is_actual: isActual.value
+    })
+  } catch (error) {
+    catchAxiosError(error)
+  }
+}
+
 const handleSubmit = async () => {
   try {
     isSubmitting.value = true
-    const formattedPurchases = purchases.map(purchase => ({
+    const formattedPurchases = purchases.map((purchase) => ({
       supplier_id: purchase.supplier_id,
       product_type_id: purchase.product_type_id,
       batch_no: batchNo.value,
@@ -402,10 +481,10 @@ const handleSubmit = async () => {
     }))
 
     const res = await apiService.post('estimated-store', { purchases: formattedPurchases })
-   
+
     router.push('/estimated-store')
     catchAxiosSuccess(res)
-     return res
+    return res
   } catch (err) {
     catchAxiosError(err)
   } finally {
@@ -415,7 +494,7 @@ const handleSubmit = async () => {
 
 onMounted(() => {
   fetchData()
-  
+
   document.addEventListener('click', (e) => {
     const select = document.querySelector('.custom-select')
     if (select && !select.contains(e.target)) {
@@ -426,7 +505,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
 .custom-select {
   position: relative;
   width: 250px;
