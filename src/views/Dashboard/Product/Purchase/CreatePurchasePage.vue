@@ -224,30 +224,22 @@ console.log("here:", productTypesResponse)
   }
 }
 
-/**
- * Calculate the cost price of a purchase unit based on the base unit cost price of the product.
- */
-const calculateCostPrice = (index) => {
-  const purchase = purchases[index];
-  const product = productTypes.value.find(p => p.id === purchase.product_type_id);
-  if (!product) return;
+const calculateRelativeCostPrice = (productTypeId, sourcePurchaseUnitId, targetPurchaseUnitId, costPrice) => {
+  const product = productTypes.value.find(p => p.id === productTypeId);
+  if (!product) return costPrice;
 
-  const selectedUnit = product.product_measurement.find(unit => unit.purchase_unit_id === purchase.purchase_unit_id);
-  if (!selectedUnit) return;
+  // Get the source and target unit names
+  const sourceUnit = product.product_measurement.find(u => u.purchase_unit_id === sourcePurchaseUnitId);
+  const targetUnit = product.product_measurement.find(u => u.purchase_unit_id === targetPurchaseUnitId);
+  
+  if (!sourceUnit || !targetUnit) return costPrice;
 
-  const selectedUnitData = product.no_of_smallestUnit_in_each_unit[selectedUnit.purchase_unit_name];
-  if (!selectedUnitData) return;
+  // Get the conversion values from no_of_smallestUnit_in_each_unit
+  const sourceValue = product.no_of_smallestUnit_in_each_unit[sourceUnit.purchase_unit_name].value;
+  const targetValue = product.no_of_smallestUnit_in_each_unit[targetUnit.purchase_unit_name].value;
 
-  const baseUnitCostPrice = purchase.cost_price / selectedUnitData.value;
-  console.log(baseUnitCostPrice)
-  // Update cost price only for the current purchase unit
-  const unit = product.product_measurement.find(u => u.purchase_unit_id === purchase.purchase_unit_id);
-  if (unit) {
-    const unitData = product.no_of_smallestUnit_in_each_unit[unit.purchase_unit_name];
-    if (unitData) {
-      purchase.cost_price = baseUnitCostPrice * unitData.value;
-    }
-  }
+  // Calculate relative cost price
+  return (costPrice * targetValue) / sourceValue;
 };
 
 
@@ -275,56 +267,124 @@ const getPurchaseUnits = (productTypeId) => {
 }
 
 const selectProduct = (productType, index) => {
-  purchases[index].product_type_id = productType.id
-  purchases[index].purchase_unit_id = ''
-  purchases[index].cost_price = ''
-  purchases[index].selling_price = ''
-  purchases[index].price_id = null
-  showDropdowns.value[index] = false
-  searchQueries.value[index] = ''
-}
+  const previousSelections = purchases.filter(
+    (p, i) => i !== index && p.product_type_id === productType.id
+  );
+
+  purchases[index].product_type_id = productType.id;
+  purchases[index].purchase_unit_id = '';
+  purchases[index].cost_price = '';
+  purchases[index].selling_price = '';
+  purchases[index].price_id = null;
+
+  console.log(previousSelections)
+  // If there's a previous selection with cost price, pre-calculate for new selection
+  if (previousSelections.length > 0) {
+    const sourcePurchase = previousSelections[0];
+    console.log(sourcePurchase)
+    if (sourcePurchase.cost_price) {
+      const product = productTypes.value.find(p => p.id === productType.id);
+      purchases[index].baseCostPrice = parseFloat(sourcePurchase.cost_price);
+      purchases[index].sourceUnitId = sourcePurchase.purchase_unit_id;
+    }
+  }
+
+  showDropdowns.value[index] = false;
+  searchQueries.value[index] = '';
+};
 
 const handlePurchaseUnitChange = async (index) => {
-  const purchase = purchases[index]
-  purchase.cost_price = ''
-  purchase.selling_price = ''
-  purchase.price_id = null
+  const purchase = purchases[index];
+  
+  // Check if there's already a cost price set for this product in another row
+  const existingPurchase = purchases.find((p, i) => 
+    i !== index && 
+    p.product_type_id === purchase.product_type_id && 
+    p.purchase_unit_id && 
+    p.cost_price
+  );
 
+  if (existingPurchase) {
+    // Calculate cost price based on existing purchase
+    const product = productTypes.value.find(p => p.id === purchase.product_type_id);
+    if (product) {
+      const fromUnitData = product.no_of_smallestUnit_in_each_unit[
+        product.product_measurement.find(u => u.purchase_unit_id === existingPurchase.purchase_unit_id)?.purchase_unit_name.toLowerCase()
+      ];
+      const toUnitData = product.no_of_smallestUnit_in_each_unit[
+        product.product_measurement.find(u => u.purchase_unit_id === purchase.purchase_unit_id)?.purchase_unit_name.toLowerCase()
+      ];
+
+      if (fromUnitData?.value && toUnitData?.value) {
+        const costPrice = parseFloat(existingPurchase.cost_price);
+        // If converting to larger unit (e.g., crates -> barrel), multiply by ratio
+        // If converting to smaller unit (e.g., barrel -> crates), divide by ratio
+        purchase.cost_price = (costPrice * (toUnitData.value / fromUnitData.value)).toFixed(2);
+        return;
+      }
+    }
+  }
+
+  // If no existing purchase found, fetch from API
   try {
     const response = await apiService.get(
       `latest-supplier-price/${purchase.product_type_id}/${purchase.supplier_id}/${purchase.purchase_unit_id}?mode=actual`
-    )
+    );
     
-    console.log('here:', response)
-    if (response) {
-      const latestPrice = response[0]
-      console.log(latestPrice)
-      purchase.cost_price = latestPrice.cost_price
-      purchase.selling_price = latestPrice.selling_price
-      purchase.price_id = latestPrice.price_id
-      purchase.capacity_qty = latestPrice.quantity
+    if (response && response[0]) {
+      const latestPrice = response[0];
+      purchase.cost_price = latestPrice.cost_price;
+      purchase.selling_price = latestPrice.selling_price;
+      purchase.price_id = latestPrice.price_id;
+      purchase.capacity_qty = latestPrice.quantity;
     }
   } catch (err) {
-    catchAxiosError(err)
+    catchAxiosError(err);
   }
-}
+};
 
 const handleCostPriceChange = (index) => {
-  calculateCostPrice(index);
-  const purchase = purchases[index]
-  if (parseFloat(purchase.cost_price) < 1) {
-    purchase.cost_price = '1'
+  const currentPurchase = purchases[index];
+  
+  if (parseFloat(currentPurchase.cost_price) < 1) {
+    currentPurchase.cost_price = '1';
+    return;
   }
-}
 
+  const product = productTypes.value.find(p => p.id === currentPurchase.product_type_id);
+  if (!product) return;
+
+  // Update cost prices for other units of the same product
+  purchases.forEach((purchase, idx) => {
+    if (idx !== index && 
+        purchase.product_type_id === currentPurchase.product_type_id && 
+        purchase.purchase_unit_id) {
+      const fromUnitData = product.no_of_smallestUnit_in_each_unit[
+        product.product_measurement.find(u => u.purchase_unit_id === currentPurchase.purchase_unit_id)?.purchase_unit_name.toLowerCase()
+      ];
+      const toUnitData = product.no_of_smallestUnit_in_each_unit[
+        product.product_measurement.find(u => u.purchase_unit_id === purchase.purchase_unit_id)?.purchase_unit_name.toLowerCase()
+      ];
+
+      if (fromUnitData?.value && toUnitData?.value) {
+        const costPrice = parseFloat(currentPurchase.cost_price);
+        // If converting to larger unit (e.g., crates -> barrel), multiply by ratio
+        // If converting to smaller unit (e.g., barrel -> crates), divide by ratio
+        purchase.cost_price = (costPrice * (toUnitData.value / fromUnitData.value)).toFixed(2);
+      }
+    }
+  });
+};
+
+//new validation function for duplicate product selections
 const isDuplicatePurchase = (supplierId, productTypeId, purchaseUnitId) => {
   return purchases.some(
     purchase =>
       purchase.supplier_id === supplierId &&
       purchase.product_type_id === productTypeId &&
       purchase.purchase_unit_id === purchaseUnitId
-  )
-}
+  );
+};
 
 const validateCostPrice = (index) => {
   const purchase = purchases[index]
@@ -387,6 +447,7 @@ const handleSubmit = async () => {
     isSubmitting.value = true
 
     const formattedPurchases = purchases.map(purchase => ({
+
       supplier_id: purchase.supplier_id,
       product_type_id: purchase.product_type_id,
       batch_no: batchNo.value,
