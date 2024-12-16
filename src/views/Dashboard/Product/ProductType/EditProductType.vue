@@ -190,18 +190,7 @@
       @close="closeModal"
       @purchase-unit-added="handlePurchaseUnit"
     />
-    <!-- <SellingUnitModal
-      v-if="displayModal"
-      @close="closeModal"
-      @selling-unit-added="handleSellingUnit"
-      :purchaseUnitId="selectedPurchaseUnit"
-    />
-    <SellingUnitCapacityModal
-      v-if="displayCapModal"
-      @close="closeModal"
-      @selling-capacity-added="handleSellingCapacity"
-      :sellingUnitId="selectedSellingUnit"
-    /> -->
+   
   </DashboardLayout>
 </template>
 
@@ -272,12 +261,6 @@ const clearBarcode = () => {
   lastScannedBarcode.value = ''
 }
 
-// const addPurchaseUnit = () => {
-//   showModal.value = true
-// }
-
-
-
 const closeModal = () => {
   showModal.value = false
   displayModal.value = false
@@ -296,24 +279,6 @@ const preventSubmitOnEnter = (event) => {
 const handlePurchaseUnit = (newType) => {
   purchaseUnit.value.push(newType)
 }
-
-// const handleSellingUnit = (newType) => {
-//   const currentUnit = units.value[currentUnitIndex.value]
-//   if (currentUnit) {
-//     currentUnit.availableSellingUnits = currentUnit.availableSellingUnits || []
-//     currentUnit.availableSellingUnits.push(newType)
-//     currentUnit.sellingUnit = newType.id
-//   }
-// }
-
-// const handleSellingCapacity = (newCapacity) => {
-//   const currentUnit = units.value[currentUnitIndex.value]
-//   if (currentUnit) {
-//     currentUnit.availableCapacities = currentUnit.availableCapacities || []
-//     currentUnit.availableCapacities.push(newCapacity)
-//     currentUnit.sellingCapacity = newCapacity.id
-//   }
-// }
 
 // Function to get available purchase units for a group
 const getPurchaseUnitsForGroup = (groupId, currentUnitIndex) => {
