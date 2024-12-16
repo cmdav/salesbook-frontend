@@ -195,32 +195,32 @@
             </div> -->
 
             <div class="input-group w-20">
-  <label class="block text-sm font-medium text-gray-700">
-    Selling Price
-    <span class="estimation-badge" :class="{ 
-      'estimated': formState.products[index].is_selling_price_est,
-      'actual': !formState.products[index].is_selling_price_est 
-    }">
-      {{ formState.products[index].is_selling_price_est ? 'Estimated' : 'Actual' }}
-    </span>
-  </label>
-  <input
-    type="number"
-    :name="'selling_price_' + index"
-    v-model="formState.products[index].selling_price"
-    class="input"
-    :readonly="!formState.products[index].is_selling_price_est"
-    @change="handleSellingPriceChange(index)"
-  />
-  <label class="priceView">
-    &#8358;
-    {{
-      formState.products[index].selling_price
-        ? parseFloat(formState.products[index].selling_price).toLocaleString()
-        : '0.00'
-    }}
-  </label>
-</div>
+              <label class="block text-sm font-medium text-gray-700">
+  Selling Price
+  <span v-if="formState.products[index].selling_unit_id" class="estimation-badge" :class="{ 
+    'estimated': formState.products[index].is_selling_price_est,
+    'actual': !formState.products[index].is_selling_price_est 
+  }">
+    {{ formState.products[index].is_selling_price_est ? 'Estimated' : 'Actual' }}
+  </span>
+</label>
+              <input
+                type="number"
+                :name="'selling_price_' + index"
+                v-model="formState.products[index].selling_price"
+                class="input"
+                :readonly="!formState.products[index].is_selling_price_est"
+                @change="handleSellingPriceChange(index)"
+              />
+              <label class="priceView">
+                &#8358;
+                {{
+                  formState.products[index].selling_price
+                    ? parseFloat(formState.products[index].selling_price).toLocaleString()
+                    : '0.00'
+                }}
+              </label>
+            </div>
 
             <!-- Amount -->
             <div class="input-group flex-1">
@@ -445,7 +445,7 @@ const handleProductTypeSelect = async (index) => {
       //alert('offline mode')
       product = await getProductById(productId)
     }
-    console.log(product);
+    console.log(product)
     if (product) {
       // Reset selling unit related fields
       formState.products[index].selling_unit_id = ''
@@ -454,6 +454,7 @@ const handleProductTypeSelect = async (index) => {
       formState.products[index].quantity_sold = 0
       formState.products[index].vat = product.vat?.toLowerCase() || 'no'
       formState.products[index].barcode = product.barcode || ''
+      formState.products[index].is_selling_price_est = false
     }
   } catch (error) {
     console.error('Error during product selection:', error)
@@ -507,11 +508,11 @@ const handleSellingUnitSelect = (index) => {
     formState.products[index].cost_price = selectedUnit.cost_price
     formState.products[index].quantity_available = selectedUnit.capacity_quantity_available
     formState.products[index].purchase_unit_id = selectedUnit.purchase_unit_id
-    
+
     // Add estimation status indicators
     formState.products[index].is_selling_price_est = selectedUnit.is_selling_price_est
     formState.products[index].is_actual = !selectedUnit.is_selling_price_est
-    
+
     // Only allow editing if it's an estimated price
     const priceInput = document.querySelector(`input[name="selling_price_${index}"]`)
     if (priceInput) {
@@ -586,8 +587,6 @@ const handleBarcodeEnter = (index) => {
   }
 }
 
-
-
 const checkQuantitySold = (index) => {
   const product = data.value.find((p) => p.id === formState.products[index].product_type_id)
   const selectedUnit = product?.selling_units.find(
@@ -618,14 +617,16 @@ const addProducts = () => {
 
   if (lastProduct.barcode || lastProduct.product_type_id) {
     formState.products.push({
-      product_type_id: '',
-      barcode: '',
-      selling_price: '',
-      selling_unit_name: '',
-      quantity_sold: 0,
-      amount: '',
-      vat: 'no'
-    })
+  product_type_id: '',
+  barcode: '',
+  selling_price: '',
+  selling_unit_id: '',
+  selling_unit_name: '',
+  quantity_sold: 0,
+  amount: '',
+  vat: 'no',
+  is_selling_price_est: false
+})
     nextTick(() => focusBarcodeInput()) // Focus on the next empty barcode input
   }
 }
@@ -702,24 +703,26 @@ onMounted(async () => {
 })
 
 const handleSellingPriceChange = async (index) => {
-  const product = formState.products[index];
-  if (!product.product_type_id || !product.selling_unit_id) return;
+  const product = formState.products[index]
+  if (!product.product_type_id || !product.selling_unit_id) return
 
   try {
-    const online = await isOnline();
+    const online = await isOnline()
     if (online) {
       await apiService.update(`/estimated-stores/${product.product_type_id}?type=selling_price`, {
         selling_unit_id: product.selling_unit_id,
         product_type_id: product.product_type_id,
         selling_price: parseFloat(product.selling_price)
-      });
+      })
 
       // Update the estimation status in the local data
-      const productData = data.value.find(p => p.id === product.product_type_id);
+      const productData = data.value.find((p) => p.id === product.product_type_id)
       if (productData) {
-        const unit = productData.selling_units.find(u => u.selling_unit_id === product.selling_unit_id);
+        const unit = productData.selling_units.find(
+          (u) => u.selling_unit_id === product.selling_unit_id
+        )
         if (unit) {
-          unit.is_selling_price_est = false;
+          unit.is_selling_price_est = false
         }
       }
     }
@@ -728,13 +731,13 @@ const handleSellingPriceChange = async (index) => {
       product.selling_price,
       product.quantity_sold,
       product.vat
-    );
-    calculateTotalPrice();
+    )
+    calculateTotalPrice()
   } catch (error) {
-    console.error('Error updating selling price:', error);
+    console.error('Error updating selling price:', error)
     // Optionally show an error message to the user
   }
-};
+}
 
 const addSales = async () => {
   isSubmitting.value = true

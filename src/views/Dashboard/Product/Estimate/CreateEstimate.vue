@@ -291,13 +291,13 @@ const getPurchaseUnits = (productTypeId) => {
   return product ? product.product_measurement : []
 }
 
-const getSellingUnits = (productTypeId, purchaseUnitId) => {
-  const product = productTypes.value.find((p) => p.id === productTypeId)
-  const purchaseUnit = product?.product_measurement.find(
-    (pm) => pm.purchase_unit_id === purchaseUnitId
-  )
-  return purchaseUnit ? purchaseUnit.selling_units : []
-}
+// const getSellingUnits = (productTypeId, purchaseUnitId) => {
+//   const product = productTypes.value.find((p) => p.id === productTypeId)
+//   const purchaseUnit = product?.product_measurement.find(
+//     (pm) => pm.purchase_unit_id === purchaseUnitId
+//   )
+//   return purchaseUnit ? purchaseUnit.selling_units : []
+// }
 
 const selectProduct = (productType, index) => {
   purchases[index].product_type_id = productType.id
