@@ -1,0 +1,11 @@
+{
+  "theme": "default",
+  "themeVariables": {
+    "primaryColor": "#326ce5",
+    "primaryTextColor": "#fff",
+    "primaryBorderColor": "#285cab",
+    "lineColor": "#285cab",
+    "secondaryColor": "#006100",
+    "tertiaryColor": "#fff"
+  }
+}

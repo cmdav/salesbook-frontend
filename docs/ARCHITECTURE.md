@@ -193,54 +193,32 @@ export const authGuard = async (to, from, next) => {
 
 ## Application Flow Diagrams
 
-### 1. Authentication Flow
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant F as Frontend
-    participant A as Auth Service
-    participant B as Backend
-
-    U->>F: Enter Credentials
-    F->>A: Validate Input
-    A->>B: Authentication Request
-    B-->>A: JWT Token
-    A-->>F: Store Token
-    F-->>U: Redirect to Dashboard
-```
+### 1. Authentication Flow (Detailed)
+![Authentication Flow Detailed](C:/Users/Radiant/Work/salesbook-frontend/docs/diagrams/auth-flow-detailed.png)
 
 ### 2. Product Management Flow
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant C as Component
-    participant S as Store
-    participant API as API Service
-    participant B as Backend
+![Product Management Flow](C:/Users/Radiant/Work/salesbook-frontend/docs/diagrams/product-management-flow.png)
 
-    U->>C: Create/Edit Product
-    C->>S: Dispatch Action
-    S->>API: API Request
-    API->>B: HTTP Request
-    B-->>API: Response
-    API-->>S: Update State
-    S-->>C: Update UI
-    C-->>U: Show Success/Error
-```
+### 3. Data Synchronization Flow
+![Data Synchronization Flow](C:/Users/Radiant/Work/salesbook-frontend/docs/diagrams/sync-flow.png)
 
-### 3. State Management Flow
-```mermaid
-flowchart TD
-    A[User Action] --> B[Component]
-    B --> C[Store Action]
-    C --> D[API Service]
-    D --> E[Backend]
-    E --> D
-    D --> F[Store Mutation]
-    F --> G[State Update]
-    G --> H[Component Update]
-    H --> I[UI Update]
-```
+### 4. Form Flow
+![Form Flow](C:/Users/Radiant/Work/salesbook-frontend/docs/diagrams/form-flow.png)
+
+### 5. Component Lifecycle Flow
+![Component Lifecycle Flow](C:/Users/Radiant/Work/salesbook-frontend/docs/diagrams/component-lifecycle.png)
+
+### 6. Store Flow (Pinia)
+![Store Flow](C:/Users/Radiant/Work/salesbook-frontend/docs/diagrams/store-flow.png)
+
+### 7. Router Flow
+![Router Flow](C:/Users/Radiant/Work/salesbook-frontend/docs/diagrams/router-flow.png)
+
+### 8. Error Handling Flow
+![Error Handling Flow](C:/Users/Radiant/Work/salesbook-frontend/docs/diagrams/error-flow.png)
+
+### 9. IndexedDB Flow
+![IndexedDB Flow](C:/Users/Radiant/Work/salesbook-frontend/docs/diagrams/indexeddb-flow.png)
 
 ## Component Communication Patterns
 

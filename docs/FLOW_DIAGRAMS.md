@@ -203,4 +203,4 @@ These technical flows include:
 5. API specifications
 6. Error handling strategies
 7. State management details
-8. Database schemas
+
