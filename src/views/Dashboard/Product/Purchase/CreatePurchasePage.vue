@@ -61,12 +61,12 @@
             <!-- Purchase Unit Selection -->
             <div v-if="purchase.product_type_id">
               <label for="purchase_unit">Purchase Unit <span class="required">*</span></label>
-              <select 
+              <select
                 v-model="purchase.purchase_unit_id"
                 @change="() => handlePurchaseUnitChange(index)"
               >
                 <option value="">Select Purchase Unit</option>
-                <option 
+                <option
                   v-for="unit in getPurchaseUnits(purchase.product_type_id)"
                   :key="unit.purchase_unit_id"
                   :value="unit.purchase_unit_id"
@@ -180,13 +180,15 @@ const createEmptyPurchase = () => ({
   supplier_id: '',
   product_type_id: '',
   purchase_unit_id: '',
-  batch_no: '',
-  product_identifier: '1',
-  expiry_date: '',
   cost_price: '',
   selling_price: '',
   capacity_qty: '',
-  price_id: null
+  expiry_date: '',
+  product_identifier: '',
+  price_id: null,
+  originalCostPrice: null,
+  originalSellingPrice: null,
+  
 })
 
 const purchases = reactive([createEmptyPurchase()])
@@ -208,7 +210,7 @@ const fetchData = async () => {
 console.log("here:", productTypesResponse)
     suppliers.value = suppliersResponse.data || []
     productTypes.value = productTypesResponse.data || []
-    
+
     if (lastBatchNumberResponse.data) {
       batchNo.value = String(lastBatchNumberResponse.data).padStart(5, '0')
       purchases.forEach(purchase => purchase.batch_no = batchNo.value)
@@ -231,7 +233,7 @@ const calculateRelativeCostPrice = (productTypeId, sourcePurchaseUnitId, targetP
   // Get the source and target unit names
   const sourceUnit = product.product_measurement.find(u => u.purchase_unit_id === sourcePurchaseUnitId);
   const targetUnit = product.product_measurement.find(u => u.purchase_unit_id === targetPurchaseUnitId);
-  
+
   if (!sourceUnit || !targetUnit) return costPrice;
 
   // Get the conversion values from no_of_smallestUnit_in_each_unit
@@ -251,7 +253,7 @@ const getSelectedProductName = (productTypeId, index) => {
 
 const filteredProductTypes = (index) => {
   if (!searchQueries.value[index]) return productTypes.value
-  return productTypes.value.filter(product => 
+  return productTypes.value.filter(product =>
     product.product_type_name.toLowerCase().includes(searchQueries.value[index].toLowerCase())
   )
 }
@@ -337,6 +339,10 @@ const handlePurchaseUnitChange = async (index) => {
       purchase.selling_price = latestPrice.selling_price;
       purchase.price_id = latestPrice.price_id;
       purchase.capacity_qty = latestPrice.quantity;
+      // Store original prices for comparison
+      purchase.originalCostPrice = parseFloat(latestPrice.cost_price);
+      purchase.originalSellingPrice = parseFloat(latestPrice.selling_price);
+      
     }
   } catch (err) {
     catchAxiosError(err);
@@ -345,7 +351,7 @@ const handlePurchaseUnitChange = async (index) => {
 
 const handleCostPriceChange = (index) => {
   const currentPurchase = purchases[index];
-  
+
   if (parseFloat(currentPurchase.cost_price) < 1) {
     currentPurchase.cost_price = '1';
     return;
@@ -356,8 +362,8 @@ const handleCostPriceChange = (index) => {
 
   // Update cost prices for other units of the same product
   purchases.forEach((purchase, idx) => {
-    if (idx !== index && 
-        purchase.product_type_id === currentPurchase.product_type_id && 
+    if (idx !== index &&
+        purchase.product_type_id === currentPurchase.product_type_id &&
         purchase.purchase_unit_id) {
       const fromUnitData = product.no_of_smallestUnit_in_each_unit[
         product.product_measurement.find(u => u.purchase_unit_id === currentPurchase.purchase_unit_id)?.purchase_unit_name.toLowerCase()
@@ -446,23 +452,30 @@ const handleSubmit = async () => {
   try {
     isSubmitting.value = true
 
-    const formattedPurchases = purchases.map(purchase => ({
+    const formattedPurchases = purchases.map(purchase => {
+      // Only include price_id if cost_price and selling_price haven't changed from the latest supplier price
+      const shouldIncludePriceId = purchase.price_id && 
+        purchase.originalCostPrice === parseFloat(purchase.cost_price) && 
+        purchase.originalSellingPrice === parseFloat(purchase.selling_price);
+        
 
-      supplier_id: purchase.supplier_id,
-      product_type_id: purchase.product_type_id,
-      batch_no: batchNo.value,
-      product_identifier: purchase.product_identifier,
-      expiry_date: purchase.expiry_date,
-      purchase_unit_data: [
-        {
-          purchase_unit_id: purchase.purchase_unit_id,
-          cost_price: parseFloat(purchase.cost_price),
-          selling_price: parseFloat(purchase.selling_price),
-          capacity_qty: parseInt(purchase.capacity_qty),
-          ...(purchase.price_id && { price_id: purchase.price_id })
-        }
-      ]
-    }))
+      return {
+        supplier_id: purchase.supplier_id,
+        product_type_id: purchase.product_type_id,
+        batch_no: batchNo.value,
+        product_identifier: purchase.product_identifier,
+        expiry_date: purchase.expiry_date,
+        purchase_unit_data: [
+          {
+            purchase_unit_id: purchase.purchase_unit_id,
+            cost_price: parseFloat(purchase.cost_price),
+            selling_price: parseFloat(purchase.selling_price),
+            capacity_qty: parseInt(purchase.capacity_qty),
+            ...(shouldIncludePriceId && { price_id: purchase.price_id })
+          }
+        ]
+      }
+    })
 
     const res = await apiService.post('purchases', { purchases: formattedPurchases })
     router.push('/purchase')
@@ -477,7 +490,7 @@ const handleSubmit = async () => {
 
 onMounted(() => {
   fetchData()
-  
+
   document.addEventListener('click', (e) => {
     const select = document.querySelector('.custom-select')
     if (select && !select.contains(e.target)) {
