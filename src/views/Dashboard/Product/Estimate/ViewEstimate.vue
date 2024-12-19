@@ -4,7 +4,8 @@
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
       <div v-if="addPermissions" class="action">
         <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" />
-        <button class="button add-btn"><router-link to="/create-estimate" class="button add-btn">Add</router-link></button>
+        <button class="button add-btn"><router-link to="/create-estimate" class="button add-btn">Update Price</router-link></button>
+        <button class="button add-btn" @click="openQuantityModal">Update Quantity</button>
       </div>
     </div>
     <div class="table-container">
@@ -71,6 +72,11 @@
       <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
 
     </div>
+    <UpdateQuantityModal 
+      v-if="showQuantityModal" 
+      @close="closeQuantityModal"
+      @updated="forceRefresh"
+    />
 
     <DeleteModal v-if="showDeleteModal" @close="closeDeleteModal" @updated="forceRefresh" :items="itemToDelete" :url="'purchases'" :modalTitle="modalTitle" />
 
@@ -87,6 +93,7 @@ import DeleteModal from '@/components/UI/Modal/DeleteModals.vue';
 import Pagination from '@/components/UI/Pagination/PaginatePage.vue';
 import { useStore } from "@/stores/user";
 import BranchDropDown from '@/components/UI/Dropdown/BranchDropDown.vue';
+import UpdateQuantityModal from '@/components/UI/Modal/UpdateQuantityModal.vue';
 
 const search = ref('');
 const isSearching = ref(false);
@@ -94,6 +101,7 @@ const isSearching = ref(false);
 const data = ref([]);
 const pagination = ref({});
 const showDeleteModal = ref(false);
+const showQuantityModal = ref(false);
 const itemToDelete = ref(null);
 const modalTitle = "Delete Purchase";
 
@@ -113,6 +121,14 @@ onMounted(async () => {
     console.error('Failed to fetch branches:', error);
   }
 });
+
+const openQuantityModal = () => {
+  showQuantityModal.value = true;
+};
+
+const closeQuantityModal = () => {
+  showQuantityModal.value = false;
+};
 
 function handleBranchChange(selectedBranchId) {
   if (selectedBranchId) {

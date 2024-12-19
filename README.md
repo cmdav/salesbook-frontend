@@ -10,7 +10,7 @@
 - [Best Practices](#best-practices)
 - [Testing](#testing)
 - [Deployment](#deployment)
-- [Contributing](#contributing)
+
 
 ## Overview
 
@@ -281,6 +281,4 @@ npm run preview
 For support and questions:
 - Check docs/flow_diagram
 - Contact rdas support team
-
-
 

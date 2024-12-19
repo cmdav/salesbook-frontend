@@ -5,13 +5,14 @@
         <router-link to="/estimated-store" class="button back-btn">Back</router-link>
         <div class="total-and-add">
           <span class="total-cost-price">Total Cost Price: &#8358; {{ totalCostPrice }}</span>
-          <button type="button" @click="addPurchase" class="button add-purchase-button">
+          <!-- <button type="button" @click="addPurchase" class="button add-purchase-button">
             Add Product
-          </button>
+          </button> -->
         </div>
       </div>
       <div v-if="isLoading" class="loading-icon">Loading...</div>
-      <form v-else @submit.prevent="handleSubmit">
+      <!-- <form v-else @submit.prevent="handleSubmit"></form> -->
+        <form>
         <div class="batch-container">
           <label for="batch_no">Batch No</label>
           <input class="batch_input" type="text" v-model="batchNo" readonly />
@@ -145,7 +146,7 @@
             </div>
 
             <!-- Purchase Qty -->
-            <div v-if="purchase.purchase_unit_id">
+            <!-- <div v-if="purchase.purchase_unit_id">
               <label for="capacity_qty">Purchase Qty <span class="required">*</span></label>
               <input
                 type="number"
@@ -159,7 +160,7 @@
                 "
                 required
               />
-            </div>
+            </div> -->
 
             <!-- Expiry Date -->
             <div v-if="purchase.purchase_unit_id">
@@ -191,9 +192,9 @@
           </div>
           <hr class="separator" />
         </div>
-        <button type="submit" class="button submit-button" :disabled="isSubmitting">
+        <!-- <button type="submit" class="button submit-button" :disabled="isSubmitting">
           {{ isSubmitting ? 'Please wait...' : 'Submit' }}
-        </button>
+        </button> -->
       </form>
     </div>
   </DashboardLayout>
@@ -291,13 +292,7 @@ const getPurchaseUnits = (productTypeId) => {
   return product ? product.product_measurement : []
 }
 
-  // const getSellingUnits = (productTypeId, purchaseUnitId) => {
-  //   const product = productTypes.value.find((p) => p.id === productTypeId)
-  //   const purchaseUnit = product?.product_measurement.find(
-  //     (pm) => pm.purchase_unit_id === purchaseUnitId
-  //   )
-  //   return purchaseUnit ? purchaseUnit.selling_units : []
-  // }
+
 
 const selectProduct = (productType, index) => {
   purchases[index].product_type_id = productType.id
@@ -459,38 +454,38 @@ const handleSellingPriceBlur = async (index) => {
   }
 }
 
-const handleSubmit = async () => {
-  try {
-    isSubmitting.value = true
-    const formattedPurchases = purchases.map((purchase) => ({
-      supplier_id: purchase.supplier_id,
-      product_type_id: purchase.product_type_id,
-      batch_no: batchNo.value,
-      is_actual: isActual.value,
-      product_identifier: purchase.product_identifier,
-      expiry_date: purchase.expiry_date,
-      purchase_unit_data: [
-        {
-          purchase_unit_id: purchase.purchase_unit_id,
-          cost_price: parseFloat(purchase.cost_price),
-          selling_price: parseFloat(purchase.selling_price),
-          capacity_qty: parseInt(purchase.capacity_qty),
-          ...(purchase.price_id && { price_id: purchase.price_id })
-        }
-      ]
-    }))
+// const handleSubmit = async () => {
+//   try {
+//     isSubmitting.value = true
+//     const formattedPurchases = purchases.map((purchase) => ({
+//       supplier_id: purchase.supplier_id,
+//       product_type_id: purchase.product_type_id,
+//       batch_no: batchNo.value,
+//       is_actual: isActual.value,
+//       product_identifier: purchase.product_identifier,
+//       expiry_date: purchase.expiry_date,
+//       purchase_unit_data: [
+//         {
+//           purchase_unit_id: purchase.purchase_unit_id,
+//           cost_price: parseFloat(purchase.cost_price),
+//           selling_price: parseFloat(purchase.selling_price),
+//           capacity_qty: parseInt(purchase.capacity_qty),
+//           ...(purchase.price_id && { price_id: purchase.price_id })
+//         }
+//       ]
+//     }))
 
-    const res = await apiService.post('estimated-store', { purchases: formattedPurchases })
+//     const res = await apiService.post('estimated-store', { purchases: formattedPurchases })
 
-    router.push('/estimated-store')
-    catchAxiosSuccess(res)
-    return res
-  } catch (err) {
-    catchAxiosError(err)
-  } finally {
-    isSubmitting.value = false
-  }
-}
+//     router.push('/estimated-store')
+//     catchAxiosSuccess(res)
+//     return res
+//   } catch (err) {
+//     catchAxiosError(err)
+//   } finally {
+//     isSubmitting.value = false
+//   }
+// }
 
 onMounted(() => {
   fetchData()
