@@ -411,12 +411,13 @@ const handleQuantityBlur = async (index) => {
   if (!purchase.product_type_id || !purchase.purchase_unit_id) return
 
   try {
-    await apiService.update(`/estimated-stores/${purchase.product_type_id}?type=quantity`, {
+    const res = await apiService.update(`/estimated-stores/${purchase.product_type_id}?type=quantity`, {
       purchase_unit_id: purchase.purchase_unit_id,
       product_type_id: purchase.product_type_id,
       quantity: purchase.capacity_qty,
       is_actual: isActual.value
     })
+    catchAxiosSuccess(res)
   } catch (error) {
     catchAxiosError(error)
   }
@@ -427,12 +428,13 @@ const handleCostPriceBlur = async (index) => {
   if (!purchase.product_type_id || !purchase.purchase_unit_id) return
 
   try {
-    await apiService.update(`/estimated-stores/${purchase.product_type_id}?type=cost_price`, {
+     const res = await apiService.update(`/estimated-stores/${purchase.product_type_id}?type=cost_price`, {
       purchase_unit_id: purchase.purchase_unit_id,
       product_type_id: purchase.product_type_id,
       cost_price: purchase.cost_price,
       is_actual: isActual.value
     })
+    catchAxiosSuccess(res)
   } catch (error) {
     catchAxiosError(error)
   }
@@ -443,12 +445,13 @@ const handleSellingPriceBlur = async (index) => {
   if (!purchase.product_type_id || !purchase.purchase_unit_id) return
 
   try {
-    await apiService.update(`/estimated-stores/${purchase.product_type_id}?type=selling_price`, {
+    const res = await apiService.update(`/estimated-stores/${purchase.product_type_id}?type=selling_price`, {
       purchase_unit_id: purchase.purchase_unit_id,
       product_type_id: purchase.product_type_id,
       selling_price: purchase.selling_price,
       is_actual: isActual.value
     })
+    catchAxiosSuccess(res)
   } catch (error) {
     catchAxiosError(error)
   }

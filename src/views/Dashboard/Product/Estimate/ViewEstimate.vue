@@ -2,9 +2,9 @@
   <DashboardLayout pageTitle="Estimate Purchase">
     <div class="actions">
       <input type="text" v-model="search" placeholder="Search..." class="search-input" />
-      <div v-if="addPermissions" class="action">
+      <div v-if="addPermissions" class="action gap-4">
         <BranchDropDown v-if="roles" :branches="branches" @change="handleBranchChange" />
-        <button class="button add-btn"><router-link to="/create-estimate" class="button add-btn">Update Price</router-link></button>
+        <button class="button add-btn"><router-link to="/create-estimate">Update Price</router-link></button>
         <button class="button add-btn" @click="openQuantityModal">Update Quantity</button>
       </div>
     </div>
@@ -259,7 +259,7 @@ const addPermissions = computed(() => {
 .action {
   width: 25%;
   display: flex;
-  justify-content: space-between;
+  
   /* margin-bottom: 20px; */
 }
 
@@ -271,7 +271,7 @@ const addPermissions = computed(() => {
 }
 
 .button {
-  padding: 10px 15px;
+  padding: 10px 10px;
   border: none;
   border-radius: 5px;
   color: white;
