@@ -68,7 +68,6 @@
       </div>
 
       <div class="flex lg:flex-row flex-col w-full gap-[20px]">
-
         <div class="mb-2 flex flex-col w-full">
           <PasswordInput label="Password*" :error="errors.password" :errorsMsg="errorsMsg.password"
             v-model="formData.password" placeholder="**********" required />
@@ -163,10 +162,11 @@ const router = useRouter();
 const showPolicy = ref(false);
 
 
+const CnameRegex = /^[A-Za-z0-9\s-_()]+$/; 
 const nameRegex = /^[A-Za-z\s-_()]+$/; 
 
 const isValidName = (name) => nameRegex.test(name);
-
+const isValidCName = (name) => CnameRegex.test(name);
 const middelName = ref("");
 const phoneNo = ref("");
 const dob = ref("");
@@ -253,7 +253,7 @@ const isFormFullyValid = computed(() => {
   return (
     isValidName(formData.firstName) &&
     isValidName(formData.lastName) &&
-    isValidName(formData.company_name) &&
+    isValidCName(formData.company_name) &&
     isValidEmail.value &
     isValidPassword.value &&
     passwordsMatch.value 
@@ -302,7 +302,7 @@ const validateForm = () => {
     errors.company_name = true;
     errorsMsg.company_name = "Company Name is required";
     isValid = false;
-  } else if(!isValidName(formData.company_name)){
+  } else if(!isValidCName(formData.company_name)){
     errors.company_name = true;
     errorsMsg.company_name = "Invalid characters in Company Name"
     isValid = false;
@@ -358,7 +358,6 @@ const validateForm = () => {
 
   return isValid;
 };
-
 
 // Function to clear input errors
 const clearInputErrors = () => {
